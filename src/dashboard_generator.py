@@ -45,6 +45,18 @@ def generate_dashboard_json(latest_vehicle_path: str = None) -> str:
         df_vehicle['join_key'] = df_vehicle['識別番号'].astype(str).str.strip()
         df_threshold['join_key'] = df_threshold['車両識別番号'].astype(str).str.strip()
         
+        # 古い形式のCSV（警告閾値カラムのみ）が読み込まれた場合の自動互換性補正
+        if '警告閾値' in df_threshold.columns and '閾値_Lv1' not in df_threshold.columns:
+            print("Warning: OneDrive上の車両閾値設定.csvが古い形式です。自動的に新形式に変換して処理を継続します。")
+            df_threshold['車種名'] = "その他"
+            # 古い「警告閾値」を「閾値_画面強調」として扱い、他を自動算出
+            v_strong = pd.to_numeric(df_threshold['警告閾値'], errors='coerce')
+            df_threshold['閾値_画面強調'] = v_strong
+            df_threshold['閾値_AT異常'] = v_strong - 4.0
+            df_threshold['閾値_Lv1'] = v_strong + 0.5
+            df_threshold['閾値_Lv2'] = v_strong + 1.2
+            df_threshold['閾値_Lv3'] = v_strong + 2.0
+
         # 必要な列だけ抽出してマージ (5段階の警告閾値カラムと車種名を追加)
         th_cols = ['join_key', '車種名', '閾値_AT異常', '閾値_画面強調', '閾値_Lv1', '閾値_Lv2', '閾値_Lv3']
         df_t_subset = df_threshold[th_cols].drop_duplicates(subset=['join_key'])
