@@ -7,6 +7,7 @@ from src.config import Config
 def export_to_onedrive(df_list: list[pd.DataFrame]) -> str:
     """
     全エリアのDataFrameリストを受け取り、1つのCSVに統合してOneDriveへ保存します。
+    結合の際、最新のGBFSデータ（ポート情報）から `station_id` や `lat`(緯度), `lon`(経度) を紐付けて列追加します。
     引数:
         df_list (list of pd.DataFrame): 各エリアのスクレイピングデータ
     戻り値:
@@ -19,8 +20,43 @@ def export_to_onedrive(df_list: list[pd.DataFrame]) -> str:
     # 全データを統合
     combined_df = pd.concat(df_list, ignore_index=True)
 
-    # カラム順序を整理
-    columns_order = ['エリア名', '識別番号', '車両状態', 'ポート名', '電圧', 'AT通知受信日時']
+    # --- GBFS ポート情報との紐付け処理 ---
+    import glob
+    # output/ ディレクトリ内の最新の gbfs_stations_*.csv を検索
+    gbfs_files = sorted(glob.glob(os.path.join(Config.OUTPUT_DIR, "gbfs_stations_*.csv")))
+    if gbfs_files:
+        latest_gbfs_file = gbfs_files[-1]
+        print(f"Info: 最新のGBFSデータをロードして紐付けを行います: {os.path.basename(latest_gbfs_file)}")
+        try:
+            df_gbfs = pd.read_csv(latest_gbfs_file)
+            # ポート名をキーにするため、空白を排除したクレンジング用のキーを作成してマージします
+            df_gbfs['join_key'] = df_gbfs['name'].astype(str).str.strip()
+            combined_df['join_key'] = combined_df['ポート名'].astype(str).str.strip()
+            
+            # マージ用に必要なカラムだけを抽出
+            df_gbfs_subset = df_gbfs[['join_key', 'station_id', 'lat', 'lon']].drop_duplicates(subset=['join_key'])
+            
+            # 左結合でマージ
+            combined_df = pd.merge(combined_df, df_gbfs_subset, on='join_key', how='left')
+            
+            # 不要なキーを削除し、欠損値(NaN)を空文字等に置換
+            combined_df.drop(columns=['join_key'], inplace=True)
+            combined_df['station_id'] = combined_df['station_id'].fillna("")
+            combined_df['lat'] = combined_df['lat'].fillna("")
+            combined_df['lon'] = combined_df['lon'].fillna("")
+            print("Success: GBFSポート情報（station_id, lat, lon）の紐付けに成功しました。")
+        except Exception as e:
+            print(f"Warning: GBFSデータとの紐付け中にエラーが発生しました（結合なしで保存します）: {e}")
+            if 'join_key' in combined_df.columns:
+                combined_df.drop(columns=['join_key'], inplace=True)
+    else:
+        print("Warning: GBFSデータ（gbfs_stations_*.csv）が見つからないため、紐付け処理をスキップします。")
+        combined_df['station_id'] = ""
+        combined_df['lat'] = ""
+        combined_df['lon'] = ""
+
+    # カラム順序を整理 (新しく追加した station_id, lat, lon も含める)
+    columns_order = ['エリア名', '識別番号', '車両状態', 'ポート名', 'station_id', 'lat', 'lon', '電圧', 'AT通知受信日時']
     # 存在するカラムのみで再配置
     columns_order = [col for col in columns_order if col in combined_df.columns]
     combined_df = combined_df[columns_order]
