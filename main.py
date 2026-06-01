@@ -20,13 +20,8 @@ def run_scraping(is_worker=False):
     """
     Config.validate(is_worker=is_worker)
 
-    # 0. OneDrive から最新の『車両閾値設定.csv』をダウンロードしてローカル同期する
-    #    失敗してもスクレイピング本体には影響しないため、エラーは警告として扱う
-    try:
-        from src.exporter import download_threshold_from_onedrive
-        download_threshold_from_onedrive()
-    except Exception as e:
-        print(f"Warning: 閾値設定のダウンロードに失敗しましたが、スクレイピングは続行します: {e}")
+    # 0. OneDrive から最新の『車両閾値設定.csv』をダウンロードしてローカル同期する処理は廃止し、
+    #    ワークスペース上に保存された『車両閾値設定.csv』を直接読み込む方式としました。
     
     if is_worker:
         # 一時的にConfigのURLとID/PWを作業員用にオーバーライド
