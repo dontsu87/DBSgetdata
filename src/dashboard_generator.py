@@ -194,9 +194,13 @@ def generate_dashboard_json(latest_vehicle_path: str = None) -> str:
         total_alerts += p_info["alert_bikes_count"]
         output_ports.append(p_info)
 
-    # 全体のサマリー情報を作成
+    # 全体のサマリー情報を作成 (日本時間 JST タイムゾーンを明示的に取得)
+    from datetime import timezone, timedelta
+    jst = timezone(timedelta(hours=9))
+    updated_at_str = datetime.now(jst).strftime("%Y-%m-%d %H:%M:%S")
+
     dashboard_payload = {
-        "updated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "updated_at": updated_at_str,
         "total_ports_count": len(output_ports),
         "total_alert_bikes": total_alerts,
         "summary_counts": summary_counts,
