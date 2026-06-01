@@ -618,33 +618,39 @@
             // マーカーレイヤーグループを初期化して地図に追加
             markerGroup = L.layerGroup().addTo(map);
 
-            // 2. 自動データ取得処理 (JSON/JS両対応ハイブリッド型)
-            if (window.dashboardData) {
-                console.log("Success: ローカルJS経由でデータを読み込みました (CORS制限回避)");
-                cachedDashboardData = window.dashboardData;
-                initAreaTabs(cachedDashboardData);
-                updateFilterAndRender();
-                document.getElementById('loader').style.display = 'none';
-            } else {
-                fetch('output/dashboard_data.json')
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        cachedDashboardData = data;
+            // 2. 自動データ取得処理 (JSON/JS両対応ハイブリッド型 - タイムスタンプ付与による超強力リアルタイムキャッシュ対策)
+            const timestamp = new Date().getTime();
+            
+            // サーバー上（GitHub Pages等）での実行時は、動的にタイムスタンプを付与してキャッシュを強制バイパスして最新JSONを取得します
+            fetch('dashboard_data.json?t=' + timestamp)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('JSON fetch failed, fallback to dashboard_data.js');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("Success: 最新の dashboard_data.json をリアルタイムロードしました！");
+                    cachedDashboardData = data;
+                    initAreaTabs(cachedDashboardData);
+                    updateFilterAndRender();
+                    document.getElementById('loader').style.display = 'none';
+                })
+                .catch(error => {
+                    console.log("Info: JSON直接取得をバイパスし、フォールバックJSの読み込みを試みます...", error);
+                    
+                    // JSON取得がコケた場合（ローカルファイル実行時など）は、静的ロードした window.dashboardData を使用
+                    if (window.dashboardData) {
+                        console.log("Success: ローカルJS経由でデータを読み込みました (CORS制限回避)");
+                        cachedDashboardData = window.dashboardData;
                         initAreaTabs(cachedDashboardData);
                         updateFilterAndRender();
                         document.getElementById('loader').style.display = 'none';
-                    })
-                    .catch(error => {
-                        console.error("Error loading JSON via fetch:", error);
+                    } else {
                         document.getElementById('loader').style.display = 'none';
                         document.getElementById('error-screen').style.display = 'flex';
-                    });
-            }
+                    }
+                });
 
             // 3. エリア選択タブの動的初期生成
             function initAreaTabs(data) {
