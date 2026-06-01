@@ -26,12 +26,15 @@ jobs:
 
     - name: Run Scraper and Upload to OneDrive
       env:
+        # クラウドの画面なしサーバーで動かすための必須設定
+        HEADLESS: "True"
+        
         # .env と全く同じ名前で金庫(Secrets)から引き出してプログラムに渡します
         DBS_WORKER_TOP_PAGE: ${{ secrets.DBS_WORKER_TOP_PAGE }}
         DBS_WORKER_ACCOUNT: ${{ secrets.DBS_WORKER_ACCOUNT }}
         DBS_WORKER_PASSWORD: ${{ secrets.DBS_WORKER_PASSWORD }}
         
-        # OneDrive用も .env の名前に合わせます
+        # OneDrive用
         ONEDRIVE_SHARED_LINK: ${{ secrets.ONEDRIVE_SHARED_LINK }}
         ONEDRIVE_PASSWORD: ${{ secrets.ONEDRIVE_PASSWORD }}
         
