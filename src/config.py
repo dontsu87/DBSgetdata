@@ -10,7 +10,7 @@ load_dotenv(dotenv_path=ROOT_DIR / ".env")
 class Config:
     ACCOUNT = os.getenv("DBS_ACCOUNT", "")
     PASSWORD = os.getenv("DBS_PASSWORD", "")
-    TOP_PAGE = os.getenv("DBS_TOP_PAGE", "https://tcc.docomo-cycle.jp/cycle/ENTSYS/cs_web_entsys_main.php")
+    TOP_PAGE = os.getenv("DBS_TOP_PAGE", "")
     
     # OUTPUT_DIR を優先し、従来の ONEDRIVE_OUTPUT_DIR もフォールバックとしてサポート
     OUTPUT_DIR_RAW = os.getenv("OUTPUT_DIR", os.getenv("ONEDRIVE_OUTPUT_DIR", "output"))
@@ -27,6 +27,7 @@ class Config:
     # OneDrive 共有リンクとパスワード
     ONEDRIVE_SHARED_LINK = os.getenv("ONEDRIVE_SHARED_LINK", "")
     ONEDRIVE_PASSWORD = os.getenv("ONEDRIVE_PASSWORD", "")
+
 
     # 作業員用ページ ログイン情報
     WORKER_ACCOUNT = os.getenv("DBS_WORKER_ACCOUNT", "")
@@ -49,6 +50,8 @@ class Config:
                 missing.append("DBS_ACCOUNT")
             if not cls.PASSWORD:
                 missing.append("DBS_PASSWORD")
+            if not cls.TOP_PAGE:
+                missing.append("DBS_TOP_PAGE")
             
         if missing:
             raise ValueError(
