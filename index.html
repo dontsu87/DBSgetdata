@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>バッテリー低下車両マップ (作業員用)</title>
+    
+    <!-- Leaflet.js CSS (軽量・タッチ操作に最適) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    
+    <style>
+        /* タブレット用の全画面・高視認性スタイル */
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f3f4f6;
+            overflow: hidden;
+        }
+
+        #app-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* 現場での読みやすさを重視した高コントラストヘッダー */
+        header {
+            background-color: #1e293b;
+            color: #ffffff;
+            padding: 10px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .update-time {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        #main-content {
+            flex: 1;
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* 地図を画面いっぱいに広げる */
+        #map {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+
+        /* 現場でグローブをしていても押しやすい、超巨大GPSボタン */
+        .gps-button {
+            position: absolute;
+            bottom: 30px;
+            right: 20px;
+            background-color: #007aff;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            width: 70px;
+            height: 70px;
+            font-size: 14px;
+            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            touch-action: manipulation;
+            transition: background-color 0.2s;
+        }
+        
+        .gps-button:active {
+            background-color: #0056b3;
+        }
+
+        .gps-button svg {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 2px;
+            fill: currentColor;
+        }
+
+        /* アラート状況サマリーパネル */
+        .summary-panel {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background-color: rgba(30, 41, 59, 0.95);
+            color: white;
+            padding: 12px 18px;
+            border-radius: 8px;
+            font-size: 14px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+            z-index: 1000;
+            pointer-events: none;
+            border-left: 5px solid #ef4444;
+        }
+
+        .summary-panel div {
+            margin-bottom: 4px;
+        }
+        .summary-panel div:last-child {
+            margin-bottom: 0;
+        }
+
+        .summary-panel .count {
+            font-size: 20px;
+            font-weight: bold;
+            color: #f87171;
+        }
+
+        /* タブレットで見やすいようにポップアップのフォントとサイズを巨大化 */
+        .leaflet-popup-content-wrapper {
+            font-size: 16px;
+            border-radius: 12px;
+            box-shadow: 0 3px 14px rgba(0,0,0,0.4);
+            padding: 4px;
+        }
+
+        .leaflet-popup-content {
+            margin: 12px 14px;
+            line-height: 1.4;
+        }
+
+        .popup-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1e293b;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 6px;
+            margin-bottom: 8px;
+        }
+
+        .popup-desc {
+            font-size: 14px;
+            color: #64748b;
+            margin-bottom: 6px;
+        }
+
+        /* ポップアップ内の警告車両リストスタイル */
+        .popup-bike-list {
+            margin-top: 8px;
+            max-height: 150px;
+            overflow-y: auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 0;
+            list-style: none;
+        }
+
+        .popup-bike-item {
+            padding: 8px 10px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .popup-bike-item:last-child {
+            border-bottom: none;
+        }
+
+        .popup-bike-id {
+            font-weight: bold;
+            color: #0f172a;
+        }
+
+        .popup-bike-volt {
+            color: #ef4444;
+            font-weight: bold;
+            background-color: #fee2e2;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        /* 通信中のローディング */
+        #loader {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .spinner {
+            border: 6px solid #e2e8f0;
+            border-top: 6px solid #007aff;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* エラー表示 */
+        #error-screen {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #fee2e2;
+            color: #991b1b;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="app-container">
+        <header>
+            <h1>🔋 バッテリー低下車両マップ</h1>
+            <div id="update-time" class="update-time">データ取得中...</div>
+        </header>
+
+        <div id="main-content">
+            <!-- 地図表示領域 -->
+            <div id="map"></div>
+
+            <!-- サマリー情報 -->
+            <div id="summary-panel" class="summary-panel" style="display: none;">
+                <div>交換対象ポート数: <span id="alert-ports-count" class="count">0</span> 箇所</div>
+                <div>交換必要車両: <span id="alert-bikes-count" class="count">0</span> 台</div>
+            </div>
+
+            <!-- GPSボタン -->
+            <button id="gps-btn" class="gps-button" title="現在地を表示">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93c-3.95-.49-7-3.54-7.49-7.49H7v-2h-.59C6.9 6.49 9.95 3.44 13.9 2.95V3h2v-.05c3.95.49 7 3.54 7.49 7.49H21v2h.59c-.49 3.95-3.54 7-7.49 7.49V19h-2v.93zM12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4z"/>
+                </svg>
+                <span>現在地</span>
+            </button>
+
+            <!-- ローディング画面 -->
+            <div id="loader">
+                <div class="spinner"></div>
+                <div style="font-size: 16px; font-weight: bold; color: #475569;">最新データを読み込み中...</div>
+            </div>
+
+            <!-- エラー画面 -->
+            <div id="error-screen">
+                <h2 style="margin-top:0;">データの読み込みに失敗しました</h2>
+                <p>dashboard_data.json が見つからないか、データが壊れています。</p>
+                <p style="font-size: 14px;">※スクレイピングを実行してデータを生成してください。</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaflet.js Javascript (軽量地図モジュール) -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            let map;
+            let currentPositionMarker;
+            let currentPositionCircle;
+
+            // 1. 地図の初期設定 (デフォルト表示位置は金沢・または東京都心付近。データが存在すればそちらにジャンプします)
+            map = L.map('map', {
+                zoomControl: false, // タブレットで邪魔にならないようズームボタンを非表示（ピンチ操作可能）
+                tap: true           // タッチ端末のクリックラグ解消
+            }).setView([36.568, 136.648], 13);
+
+            // OpenStreetMapのタイルレイヤーを使用（完全無料・高レスポンス）
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            }).addTo(map);
+
+            // ズームコントロールを手動で右上に小さく追加
+            L.control.zoom({ position: 'topright' }).addTo(map);
+
+            // 2. 自動JSONデータ取得処理
+            // 同一フォルダにある dashboard_data.json を自動フェッチします
+            // OneDriveでWebホスティング等をする場合、同じ相対パスに配置することで完全自動でロードされます
+            fetch('output/dashboard_data.json')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    renderDashboard(data);
+                    document.getElementById('loader').style.display = 'none';
+                })
+                .catch(error => {
+                    console.error('データの取得に失敗しました:', error);
+                    // output/ 配下で見つからなかった場合、直下の相対パスも試す（ダッシュボードが直接ホストされる環境への対応）
+                    fetch('dashboard_data.json')
+                        .then(response => {
+                            if (!response.ok) throw new Error();
+                            return response.json();
+                        })
+                        .then(data => {
+                            renderDashboard(data);
+                            document.getElementById('loader').style.display = 'none';
+                        })
+                        .catch(() => {
+                            document.getElementById('loader').style.display = 'none';
+                            document.getElementById('error-screen').style.display = 'flex';
+                        });
+                });
+
+            // 3. データ描画ロジック
+            function renderDashboard(data) {
+                // サマリーパネルと更新時間の表示
+                document.getElementById('update-time').innerText = "更新: " + data.updated_at;
+                document.getElementById('alert-ports-count').innerText = data.ports.filter(p => p.alert_bikes_count > 0).length;
+                document.getElementById('alert-bikes-count').innerText = data.total_alert_bikes;
+                document.getElementById('summary-panel').style.display = 'block';
+
+                let validCoordinates = [];
+
+                data.ports.forEach(port => {
+                    // 緯度経度が存在しないポート（ポート外や保管倉庫）はスキップ
+                    if (!port.has_gps) return;
+
+                    const lat = port.lat;
+                    const lon = port.lon;
+                    validCoordinates.push([lat, lon]);
+
+                    // ピン（マーカー）の作成
+                    // 警告対象の車両がある場合とない場合で、直感的に色とサイズを変えます
+                    let markerColor = "#94a3b8"; // デフォルト: 警告なし（グレー）
+                    let markerRadius = 12;        // 小さめ
+                    let isAlertPort = port.alert_bikes_count > 0;
+
+                    if (isAlertPort) {
+                        markerColor = "#ef4444"; // 警告あり: 高輝度レッド
+                        markerRadius = 18;        // タップしやすいように大きく表示
+                    }
+
+                    // Leafletの軽量ベクターサークルマーカーを使用 (画像のロードがないため爆速)
+                    const marker = L.circleMarker([lat, lon], {
+                        radius: markerRadius,
+                        fillColor: markerColor,
+                        color: "#ffffff",     // 境界線は白
+                        weight: 2,
+                        fillOpacity: 0.9
+                    }).addTo(map);
+
+                    // タップ（クリック）時のポップアップを構成
+                    let popupContent = `
+                        <div class="popup-title">${port.port_name}</div>
+                        <div class="popup-desc">総駐輪台数: ${port.total_bikes}台</div>
+                        <div class="popup-desc" style="font-weight:bold; color:${isAlertPort ? '#ef4444' : '#10b981'}">
+                            バッテリー交換対象: ${port.alert_bikes_count}台
+                        </div>
+                    `;
+
+                    if (isAlertPort) {
+                        popupContent += `<ul class="popup-bike-list">`;
+                        port.bikes.forEach(bike => {
+                            popupContent += `
+                                <li class="popup-bike-item">
+                                    <span class="popup-bike-id">${bike.bike_id}</span>
+                                    <span class="popup-bike-volt">${bike.voltage}V (閾値: ${bike.threshold}V)</span>
+                                </li>
+                            `;
+                        });
+                        popupContent += `</ul>`;
+                    }
+
+                    // タブレットで指でタップした際に閉じやすいようにオートパン（自動スクロール）を有効化
+                    marker.bindPopup(popupContent, {
+                        maxWidth: 320,
+                        autoPan: true,
+                        autoPanPadding: L.point(50, 50)
+                    });
+                });
+
+                // データが存在する場合、すべての警告ピンが収まる範囲に地図を自動ズーム
+                if (validCoordinates.length > 0) {
+                    const bounds = L.latLngBounds(validCoordinates);
+                    map.fitBounds(bounds, { padding: [40, 40] });
+                }
+            }
+
+            // 4. GPS現在地トラッキング機能
+            const gpsBtn = document.getElementById('gps-btn');
+            gpsBtn.addEventListener('click', function() {
+                if (!navigator.geolocation) {
+                    alert("お使いの端末はGPS機能に対応していません。");
+                    return;
+                }
+
+                // ボタンのテキストを変更してフィードバック
+                const btnText = gpsBtn.querySelector('span');
+                btnText.innerText = "追跡中...";
+                gpsBtn.style.backgroundColor = "#ff9500"; // オレンジ色にして追跡中を表現
+
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        const lat = position.coords.latitude;
+                        const lon = position.coords.longitude;
+                        const accuracy = position.coords.accuracy;
+
+                        // 地図を現在地にジャンプ (ズームレベル 16: ポートがはっきり見えるレベル)
+                        map.setView([lat, lon], 16);
+
+                        // 古い現在地マーカーがあれば消去
+                        if (currentPositionMarker) map.removeLayer(currentPositionMarker);
+                        if (currentPositionCircle) map.removeLayer(currentPositionCircle);
+
+                        // 現在地をブルーのピンで表示
+                        currentPositionMarker = L.circleMarker([lat, lon], {
+                            radius: 9,
+                            fillColor: "#007aff",
+                            color: "#ffffff",
+                            weight: 2,
+                            fillOpacity: 1.0
+                        }).addTo(map);
+                        
+                        currentPositionMarker.bindPopup("<b>あなたの現在地</b>");
+
+                        // 精度範囲を薄いブルーの円で表示
+                        currentPositionCircle = L.circle([lat, lon], {
+                            radius: accuracy,
+                            color: "#007aff",
+                            fillColor: "#007aff",
+                            fillOpacity: 0.15,
+                            weight: 1
+                        }).addTo(map);
+
+                        btnText.innerText = "現在地";
+                        gpsBtn.style.backgroundColor = "#007aff";
+                    },
+                    function(error) {
+                        btnText.innerText = "現在地";
+                        gpsBtn.style.backgroundColor = "#007aff";
+                        let errMsg = "位置情報の取得に失敗しました。";
+                        if (error.code === error.PERMISSION_DENIED) {
+                            errMsg += "\nブラウザの位置情報アクセス権限を許可してください。";
+                        }
+                        alert(errMsg);
+                    },
+                    {
+                        enableHighAccuracy: true, // 高精度GPSモード
+                        timeout: 10000,
+                        maximumAge: 0
+                    }
+                );
+            });
+        });
+    </script>
+</body>
+</html>
