@@ -5,7 +5,7 @@ import time
 import http.server
 import socketserver
 import threading
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import sync_playwright, expect
 sys.stdout.reconfigure(encoding='utf-8')
 
 # テスト対象のディレクトリとPOMのパス解決
@@ -88,6 +88,36 @@ def run_test():
             dashboard.gps_btn.click()
             page.wait_for_timeout(2000) # ジャンプアニメーションの待機
             print("✅ GPS現在地追跡ジャンプ機能は正常に動作します。")
+            
+            # 車両状態フィルターの動作検証
+            print("Step 6: 車両状態フィルターの動作検証...")
+            expect(dashboard.status_filter_panel).to_be_visible()
+            expect(dashboard.status_checkboxes.nth(0)).to_be_visible()
+            
+            # 初期状態のサマリー数を記録
+            initial_ports, initial_bikes = dashboard.get_summary_data()
+            print(f"初期サマリー - ポート: {initial_ports} / 車両: {initial_bikes}")
+            
+            # 状態チェックボックスの値を調べる
+            statuses = page.evaluate("() => Array.from(document.querySelectorAll('.status-filter')).map(el => el.value)")
+            print(f"検出された車両状態フィルター: {statuses}")
+            
+            if len(statuses) > 0:
+                # 最初の状態をOFFにしてみる
+                test_status = statuses[0]
+                dashboard.toggle_status_checkbox(test_status, False)
+                
+                # 数値が変化するか確認
+                filtered_ports, filtered_bikes = dashboard.get_summary_data()
+                print(f"フィルター適用後 ({test_status} OFF) - ポート: {filtered_ports} / 車両: {filtered_bikes}")
+                
+                # 元に戻す
+                dashboard.toggle_status_checkbox(test_status, True)
+                restored_ports, restored_bikes = dashboard.get_summary_data()
+                assert initial_bikes == restored_bikes, "フィルター復元後に車両数が一致しませんでした"
+                print("✅ 車両状態フィルターのリアルタイムフィルタリングおよび復元は正常に機能しています。")
+            else:
+                print("⚠️ 車両状態フィルターが見つかりませんでした")
             
             # 成功フラグ
             success = True

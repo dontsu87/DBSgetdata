@@ -451,6 +451,53 @@
             margin-left: 12px;
         }
 
+        /* 地図上の車両状態 (Status) フィルターパネル */
+        .status-filter-panel {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: rgba(30, 41, 59, 0.95);
+            color: #ffffff;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            z-index: 1000;
+            border: 1px solid #475569;
+            min-width: 200px;
+        }
+
+        .status-filter-title {
+            font-weight: bold;
+            font-size: 13px;
+            border-bottom: 1px solid #475569;
+            padding-bottom: 6px;
+            margin-bottom: 8px;
+            color: #e2e8f0;
+        }
+
+        .status-filter-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            cursor: pointer;
+            user-select: none;
+            padding: 4px 0;
+        }
+        .status-filter-item:last-child {
+            margin-bottom: 0;
+        }
+
+        /* 大きめのタップしやすいチェックボックス */
+        .status-filter {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            accent-color: #007aff;
+            margin-left: 12px;
+        }
+
         /* エリア選択タブ用スタイル */
         .area-tabs-container {
             background-color: #1e293b;
@@ -515,7 +562,7 @@
             }
 
             /* 1. 凡例・サマリーパネルを画面下のスライド式ドロワーに変更 */
-            .map-legend, .summary-panel {
+            .map-legend, .summary-panel, .status-filter-panel {
                 display: none !important; /* 初期表示は完全に非表示 */
                 position: fixed;
                 bottom: -400px; /* 初期状態は画面外に隠す */
@@ -538,7 +585,7 @@
                 z-index: 2001;
             }
 
-            .map-legend.show-mobile-drawer, .summary-panel.show-mobile-drawer {
+            .map-legend.show-mobile-drawer, .summary-panel.show-mobile-drawer, .status-filter-panel.show-mobile-drawer {
                 display: block !important; /* トグルの時だけ表示 */
                 bottom: 0px; /* 画面内にスライドイン */
             }
@@ -690,13 +737,28 @@
                 </label>
             </div>
 
+            <!-- 右上の車両状態 (Status) フィルターパネル -->
+            <div class="status-filter-panel" id="status-filter-panel">
+                <div class="panel-header-mobile">
+                    <span style="font-weight:bold;">🚲 車両状態フィルター</span>
+                    <button class="close-panel-btn" onclick="toggleStatusMobile()">✕</button>
+                </div>
+                <div class="status-filter-title">🚲 車両状態 (フィルター)</div>
+                <div id="status-checkboxes-container">
+                    <!-- JavaScriptで動的生成 -->
+                </div>
+            </div>
+
             <!-- モバイル専用：フローティングメニューボタン (画面をすっきりさせるため) -->
             <div id="mobile-control-bar" class="mobile-only-controls">
                 <button class="mobile-toggle-btn btn-summary" onclick="toggleSummaryMobile()">
                     📊 サマリー
                 </button>
                 <button class="mobile-toggle-btn btn-legend" onclick="toggleLegendMobile()">
-                    🔋 フィルター
+                    🔋 バッテリー
+                </button>
+                <button class="mobile-toggle-btn btn-status" onclick="toggleStatusMobile()">
+                    🚲 車両状態
                 </button>
             </div>
 
@@ -736,10 +798,11 @@
             let currentPositionMarker;
             let currentPositionCircle;
             
-            // データキャッシュ、マーカーレイヤーグループ、選択されたエリアの定義
+            // データキャッシュ、マーカーレイヤーグループ、選択されたエリア、選択された車両状態の定義
             let cachedDashboardData = null;
             let markerGroup;
             let selectedArea = ""; // 選択中のエリア名
+            let checkedStatuses = []; // 選択中の車両状態フィルターの配列
 
             // 1. 地図の初期設定 (デフォルト表示位置は金沢)
             map = L.map('map', {
@@ -753,8 +816,8 @@
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
             }).addTo(map);
 
-            // ズームコントロールを手動で右上に小さく追加
-            L.control.zoom({ position: 'topright' }).addTo(map);
+            // ズームコントロールを手動で左上に小さく追加 (右上の状態フィルタと重ならないように調整)
+            L.control.zoom({ position: 'topleft' }).addTo(map);
             
             // マーカーレイヤーグループを初期化して地図に追加
             markerGroup = L.layerGroup().addTo(map);
@@ -774,6 +837,7 @@
                     console.log("Success: 最新の dashboard_data.json をリアルタイムロードしました！");
                     cachedDashboardData = data;
                     initAreaTabs(cachedDashboardData);
+                    initStatusFilter(cachedDashboardData);
                     updateFilterAndRender();
                     document.getElementById('loader').style.display = 'none';
                 })
@@ -785,6 +849,7 @@
                         console.log("Success: ローカルJS経由でデータを読み込みました (CORS制限回避)");
                         cachedDashboardData = window.dashboardData;
                         initAreaTabs(cachedDashboardData);
+                        initStatusFilter(cachedDashboardData);
                         updateFilterAndRender();
                         document.getElementById('loader').style.display = 'none';
                     } else {
@@ -826,6 +891,53 @@
                 });
             }
 
+            // 3-2. 車両状態 (Status) フィルターの動的初期生成
+            function initStatusFilter(data) {
+                if (!data || !data.ports) return;
+
+                // データに含まれる全ての車両状態（status）をユニークに抽出
+                const statuses = new Set();
+                data.ports.forEach(port => {
+                    port.bikes.forEach(bike => {
+                        if (bike.status) {
+                            statuses.add(bike.status.trim());
+                        }
+                    });
+                });
+
+                const sortedStatuses = Array.from(statuses).sort();
+                checkedStatuses = [...sortedStatuses]; // デフォルトは全て選択状態
+
+                const container = document.getElementById('status-checkboxes-container');
+                container.innerHTML = '';
+
+                sortedStatuses.forEach(status => {
+                    const label = document.createElement('label');
+                    label.className = 'status-filter-item';
+                    
+                    label.innerHTML = `
+                        <div style="display: flex; align-items: center;">
+                            <span><b>${status}</b></span>
+                        </div>
+                        <input type="checkbox" class="status-filter" value="${status}" checked>
+                    `;
+
+                    const checkbox = label.querySelector('input');
+                    checkbox.addEventListener('change', function() {
+                        if (checkbox.checked) {
+                            if (!checkedStatuses.includes(status)) {
+                                checkedStatuses.push(status);
+                            }
+                        } else {
+                            checkedStatuses = checkedStatuses.filter(s => s !== status);
+                        }
+                        updateFilterAndRender();
+                    });
+
+                    container.appendChild(label);
+                });
+            }
+
             // 4. フィルター状態の更新と再描画
             function updateFilterAndRender() {
                 if (!cachedDashboardData) return;
@@ -834,7 +946,7 @@
                 const checkedLevels = Array.from(document.querySelectorAll('.legend-filter:checked'))
                                            .map(el => parseInt(el.value));
                                            
-                renderDashboardWithFilter(cachedDashboardData, checkedLevels);
+                renderDashboardWithFilter(cachedDashboardData, checkedLevels, checkedStatuses);
             }
 
             // 凡例のチェックボックス変更時に再描画を連動
@@ -842,9 +954,14 @@
                 checkbox.addEventListener('change', updateFilterAndRender);
             });
 
-            // 5. フィルター（警告レベル ＆ 選択エリア）適用済みのダッシュボード描画関数
-            function renderDashboardWithFilter(data, checkedLevels) {
+            // 5. フィルター（警告レベル ＆ 車両状態 ＆ 選択エリア）適用済みのダッシュボード描画関数
+            function renderDashboardWithFilter(data, checkedLevels, targetStatuses) {
                 if (!data || !data.ports) return;
+
+                // 引数がない場合の安全なフォールバック
+                if (!targetStatuses) {
+                    targetStatuses = checkedStatuses;
+                }
 
                 // 以前のマーカーを全てクリア
                 markerGroup.clearLayers();
@@ -870,8 +987,11 @@
                         return;
                     }
 
-                    // 2. 警告レベルフィルターを適用：選択された警告レベルに一致する自転車のみを抽出
-                    const matchingBikes = port.bikes.filter(bike => checkedLevels.includes(bike.alert_level));
+                    // 2. 警告レベルフィルター ＆ 車両状態フィルターを適用：合致する自転車のみを抽出
+                    const matchingBikes = port.bikes.filter(bike => 
+                        checkedLevels.includes(bike.alert_level) && 
+                        (bike.status ? targetStatuses.includes(bike.status.trim()) : false)
+                    );
 
                     // 描画判定
                     const isDrawPort = matchingBikes.length > 0;
@@ -1022,6 +1142,7 @@
 
                 // スマホ表示でオーバーレイされないよう、inline styleのdisplay:noneをクリアし、CSSクラス制御に委ねます。
                 document.getElementById('summary-panel').style.display = '';
+                document.getElementById('status-filter-panel').style.display = '';
 
                 // エリアやフィルター変更時に、存在するピンが綺麗に収まる範囲へ地図をスムーズズーム
                 if (validCoordinates.length > 0) {
@@ -1096,8 +1217,10 @@
         function toggleSummaryMobile() {
             const panel = document.getElementById('summary-panel');
             const legend = document.getElementById('map-legend-panel');
+            const statusPanel = document.getElementById('status-filter-panel');
             // 反対側のパネルは閉じる
             if (legend) legend.classList.remove('show-mobile-drawer');
+            if (statusPanel) statusPanel.classList.remove('show-mobile-drawer');
             
             if (panel) {
                 panel.classList.toggle('show-mobile-drawer');
@@ -1107,8 +1230,23 @@
         function toggleLegendMobile() {
             const panel = document.getElementById('map-legend-panel');
             const summary = document.getElementById('summary-panel');
+            const statusPanel = document.getElementById('status-filter-panel');
             // 反対側のパネルは閉じる
             if (summary) summary.classList.remove('show-mobile-drawer');
+            if (statusPanel) statusPanel.classList.remove('show-mobile-drawer');
+            
+            if (panel) {
+                panel.classList.toggle('show-mobile-drawer');
+            }
+        }
+
+        function toggleStatusMobile() {
+            const panel = document.getElementById('status-filter-panel');
+            const summary = document.getElementById('summary-panel');
+            const legend = document.getElementById('map-legend-panel');
+            // 反対側のパネルは閉じる
+            if (summary) summary.classList.remove('show-mobile-drawer');
+            if (legend) legend.classList.remove('show-mobile-drawer');
             
             if (panel) {
                 panel.classList.toggle('show-mobile-drawer');

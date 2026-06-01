@@ -18,6 +18,8 @@ class MapDashboardPage:
         self.map_element = page.locator("#map")
         self.loader = page.locator("#loader")
         self.error_screen = page.locator("#error-screen")
+        self.status_filter_panel = page.locator("#status-filter-panel")
+        self.status_checkboxes = page.locator(".status-filter")
         
         # LeafletのDivIconマーカー (カスタムHTML要素として描画されます)
         self.markers = page.locator(".port-marker-level1, .port-marker-level2, .port-marker-level3, .port-marker-level4, .port-marker-level5, .port-marker-normal")
@@ -67,3 +69,17 @@ class MapDashboardPage:
             print(f"Verified: ポップアップが開き、ポート名 '{title.text_content()}' が表示されました。")
         else:
             raise AssertionError("クリックするマーカーが見つかりません。")
+
+    def toggle_status_checkbox(self, status_value: str, checked: bool):
+        """特定の車両状態フィルターのチェックボックスをON/OFFします"""
+        checkbox = self.page.locator(f".status-filter[value='{status_value}']")
+        if checkbox.count() > 0:
+            is_currently_checked = checkbox.is_checked()
+            if is_currently_checked != checked:
+                checkbox.click(force=True)
+                # 反映のための少しの待機
+                self.page.wait_for_timeout(300)
+                print(f"Action: 車両状態 '{status_value}' を {'ON' if checked else 'OFF'} に切り替えました。")
+        else:
+            raise AssertionError(f"車両状態 '{status_value}' のチェックボックスが見つかりません。")
+
