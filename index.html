@@ -488,7 +488,152 @@
             color: #ffffff;
             box-shadow: 0 2px 6px rgba(0, 122, 255, 0.4);
         }
-    </style>
+
+        /* モバイル対応：通常時は非表示、スマホ画面幅のときだけ有効になるスタイル */
+        .panel-header-mobile {
+            display: none; /* デフォルト（PC）では非表示 */
+        }
+        
+        .mobile-only-controls {
+            display: none;
+        }
+
+        /* 📱 スマホサイズ（画面幅768px以下）のスタイル定義 */
+        @media screen and (max-width: 768px) {
+            /* ヘッダーの文字を小さくして収まりを良くする */
+            header h1 {
+                font-size: 15px;
+            }
+            .update-time {
+                font-size: 10px;
+            }
+
+            /* エリア切り替えタブのサイズ調整 */
+            .area-tab {
+                padding: 8px 14px;
+                font-size: 12px;
+            }
+
+            /* 1. 凡例パネルを画面下のスライド式ドロワーに変更 */
+            .map-legend {
+                position: fixed;
+                bottom: -400px; /* 初期状態は画面外に隠す */
+                left: 0;
+                right: 0;
+                width: 100%;
+                min-width: 100%;
+                max-height: 80vh;
+                overflow-y: auto;
+                border-radius: 16px 16px 0 0;
+                margin: 0;
+                padding: 16px 20px 30px 20px;
+                box-sizing: border-box;
+                transition: bottom 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+                border-top: 2px solid #475569;
+                border-left: none;
+                border-right: none;
+                border-bottom: none;
+                background-color: rgba(30, 41, 59, 0.98);
+            }
+
+            .map-legend.show-mobile-drawer {
+                bottom: 0px; /* 画面内にスライドイン */
+            }
+
+            .map-legend-title {
+                display: none; /* スマホ用タイトルがあるので従来のものは非表示 */
+            }
+
+            /* 2. サマリーパネルもスライド式ドロワーに変更 */
+            .summary-panel {
+                position: fixed;
+                bottom: -500px; /* 初期状態は画面外に隠す */
+                left: 0;
+                right: 0;
+                width: 100%;
+                min-width: 100%;
+                max-height: 80vh;
+                overflow-y: auto;
+                border-radius: 16px 16px 0 0;
+                margin: 0;
+                padding: 16px 20px 30px 20px;
+                box-sizing: border-box;
+                transition: bottom 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+                border-top: 3px solid #ef4444;
+                border-left: none;
+                border-right: none;
+                border-bottom: none;
+                background-color: rgba(30, 41, 59, 0.98);
+            }
+
+            .summary-panel.show-mobile-drawer {
+                bottom: 0px; /* 画面内にスライドイン */
+            }
+
+            /* モバイル用ドロワーヘッダー（閉じるボタン付き）の有効化 */
+            .panel-header-mobile {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-bottom: 1px solid #475569;
+                padding-bottom: 8px;
+                margin-bottom: 12px;
+                color: #cbd5e1;
+                font-size: 14px;
+            }
+
+            .close-panel-btn {
+                background: none;
+                border: none;
+                color: #94a3b8;
+                font-size: 20px;
+                font-weight: bold;
+                cursor: pointer;
+                padding: 4px 8px;
+            }
+
+            /* 3. スマホ下部に浮かぶ、フローティング操作ボタンバー */
+            .mobile-only-controls {
+                display: flex;
+                position: absolute;
+                bottom: 20px;
+                left: 15px;
+                gap: 10px;
+                z-index: 1001; /* Leafletより上 */
+                pointer-events: auto;
+            }
+
+            .mobile-toggle-btn {
+                background-color: #1e293b;
+                color: #ffffff;
+                border: 1px solid #475569;
+                padding: 10px 14px;
+                border-radius: 30px;
+                font-size: 13px;
+                font-weight: bold;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                gap: 4px;
+            }
+            .mobile-toggle-btn:active {
+                background-color: #334155;
+            }
+            
+            /* GPSボタンの位置調整 (フローティングバーと重ならないように上に上げる) */
+            .gps-button {
+                bottom: 85px;
+                right: 15px;
+                width: 55px;
+                height: 55px;
+                font-size: 11px;
+            }
+            .gps-button svg {
+                width: 20px;
+                height: 20px;
+            }
+        }
 </head>
 <body>
 
@@ -507,13 +652,21 @@
 
             <!-- サマリー情報 -->
             <div id="summary-panel" class="summary-panel" style="display: none;">
+                <div class="panel-header-mobile">
+                    <span style="font-weight:bold;">📊 エリア状況サマリー</span>
+                    <button class="close-panel-btn" onclick="toggleSummaryMobile()">✕</button>
+                </div>
                 <div>交換対象ポート数: <span id="alert-ports-count" class="count">0</span> 箇所</div>
                 <div>交換必要車両: <span id="alert-bikes-count" class="count">0</span> 台</div>
                 <div id="summary-table-container"></div>
             </div>
 
             <!-- 地図上の凡例 (Legend) パネル (タップ可能な大ぶりチェックボックス付き) -->
-            <div class="map-legend">
+            <div class="map-legend" id="map-legend-panel">
+                <div class="panel-header-mobile">
+                    <span style="font-weight:bold;">🔋 バッテリー深刻度凡例</span>
+                    <button class="close-panel-btn" onclick="toggleLegendMobile()">✕</button>
+                </div>
                 <div class="map-legend-title">🔋 バッテリー深刻度凡例 (フィルター)</div>
                 <label class="map-legend-item">
                     <div style="display: flex; align-items: center;">
@@ -557,6 +710,16 @@
                     </div>
                     <input type="checkbox" class="legend-filter" value="0">
                 </label>
+            </div>
+
+            <!-- モバイル専用：フローティングメニューボタン (画面をすっきりさせるため) -->
+            <div id="mobile-control-bar" class="mobile-only-controls">
+                <button class="mobile-toggle-btn btn-summary" onclick="toggleSummaryMobile()">
+                    📊 サマリー
+                </button>
+                <button class="mobile-toggle-btn btn-legend" onclick="toggleLegendMobile()">
+                    🔋 フィルター
+                </button>
             </div>
 
             <!-- GPSボタン -->
@@ -949,6 +1112,29 @@
                 );
             });
         });
+
+        // モバイル用ドロワーの開閉トグル関数 (グローバルスコープ)
+        function toggleSummaryMobile() {
+            const panel = document.getElementById('summary-panel');
+            const legend = document.getElementById('map-legend-panel');
+            // 反対側のパネルは閉じる
+            if (legend) legend.classList.remove('show-mobile-drawer');
+            
+            if (panel) {
+                panel.classList.toggle('show-mobile-drawer');
+            }
+        }
+
+        function toggleLegendMobile() {
+            const panel = document.getElementById('map-legend-panel');
+            const summary = document.getElementById('summary-panel');
+            // 反対側のパネルは閉じる
+            if (summary) summary.classList.remove('show-mobile-drawer');
+            
+            if (panel) {
+                panel.classList.toggle('show-mobile-drawer');
+            }
+        }
     </script>
 </body>
 </html>
