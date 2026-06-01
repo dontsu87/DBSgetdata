@@ -12,10 +12,10 @@ jobs:
 
     steps:
     - name: Checkout Code
-      uses: actions/checkout@v4 # Node.js 24に対応した最新版にアップグレード
+      uses: actions/checkout@v4
 
     - name: Set up Python
-      uses: actions/setup-python@v5 # Node.js 24に対応した最新版にアップグレード
+      uses: actions/setup-python@v5
       with:
         python-version: '3.10'
 
@@ -26,21 +26,20 @@ jobs:
 
     - name: Run Scraper and Upload to OneDrive
       env:
-        # プログラムが要求する正しい変数名(DBS_WORKER_*)に、Secretsからマッピングして注入します
-        DBS_WORKER_TOP_PAGE: ${{ secrets.ENTPOS_URL }}
-        DBS_WORKER_ACCOUNT: ${{ secrets.ENTPOS_USER }}
-        DBS_WORKER_PASSWORD: ${{ secrets.ENTPOS_PASSWORD }}
+        # .env と全く同じ名前で金庫(Secrets)から引き出してプログラムに渡します
+        DBS_WORKER_TOP_PAGE: ${{ secrets.DBS_WORKER_TOP_PAGE }}
+        DBS_WORKER_ACCOUNT: ${{ secrets.DBS_WORKER_ACCOUNT }}
+        DBS_WORKER_PASSWORD: ${{ secrets.DBS_WORKER_PASSWORD }}
         
-        # OneDrive用
-        ONEDRIVE_SHARE_URL: ${{ secrets.ONEDRIVE_SHARE_URL }}
+        # OneDrive用も .env の名前に合わせます
+        ONEDRIVE_SHARED_LINK: ${{ secrets.ONEDRIVE_SHARED_LINK }}
         ONEDRIVE_PASSWORD: ${{ secrets.ONEDRIVE_PASSWORD }}
         
-        # 事業者用モードの変数もマッピングしておきます
-        DBS_ADMIN_TOP_PAGE: ${{ secrets.ENTSYS_URL }}
-        DBS_ADMIN_ACCOUNT: ${{ secrets.ENTSYS_USER }}
-        DBS_ADMIN_PASSWORD: ${{ secrets.ENTSYS_PASSWORD }}
+        # 事業者用モードの変数 (必要に応じて)
+        DBS_TOP_PAGE: ${{ secrets.DBS_TOP_PAGE }}
+        DBS_ACCOUNT: ${{ secrets.DBS_ACCOUNT }}
+        DBS_PASSWORD: ${{ secrets.DBS_PASSWORD }}
         
         PYTHONIOENCODING: "utf-8"
       run: |
-        # 引数なしでシンプルに起動します
         python main.py
