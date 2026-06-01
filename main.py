@@ -117,7 +117,25 @@ def main():
         action="store_true",
         help="従来の事業者用管理画面（ENTSYS・要VPN）を使用して実行します"
     )
+    parser.add_argument(
+        "--gbfs",
+        action="store_true",
+        help="ドコモ・バイクシェアのGBFS APIからポート位置情報(ステーション情報)を取得し保存します"
+    )
     args = parser.parse_args()
+
+    # --gbfs が指定された場合の処理
+    if args.gbfs:
+        from src.gbfs_station_retriever import retrieve_gbfs_stations
+        Config.validate(is_worker=False)  # 出力フォルダの保証など最低限の設定チェック
+        json_path, csv_path = retrieve_gbfs_stations()
+        if csv_path:
+            # OneDriveへの自動アップロードも連動させる
+            upload_to_onedrive_web(csv_path)
+            # 必要であればJSONもアップロードする
+            if json_path:
+                upload_to_onedrive_web(json_path)
+        return
 
     # デフォルトを作業員モード(is_worker=True)とする設計
     is_worker = not args.admin
