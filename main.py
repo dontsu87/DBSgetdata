@@ -74,81 +74,127 @@ def run_scraping(is_worker=False):
         return
 
     all_data = []
+
+    def _navigate_to_area_and_scrape(drv, idx, area_name, area_sel_url):
+        """
+        指定エリアの車両情報をスクレイピングして DataFrame を返す。
+        失敗した場合は None を返す。
+        """
+        from selenium.webdriver.common.by import By
+        from src.auth import Locators
+        from selenium.webdriver.support.ui import WebDriverWait
+        from selenium.webdriver.support import expected_conditions as EC
+
+        # エリア選択画面に戻る（既にいる場合はスキップ）
+        try:
+            current = drv.current_url
+        except Exception:
+            current = ""
+
+        if current != area_sel_url:
+            drv.get(area_sel_url)
+            time.sleep(2)
+
+        # エリア選択画面の読み込み完了を待つ
+        WebDriverWait(drv, 20).until(EC.presence_of_element_located(Locators.BTN_TO_TOP))
+        time.sleep(1)  # DOM 安定化のための追加待機
+
+        buttons = drv.find_elements(*Locators.BTN_TO_TOP)
+        target_btn = None
+
+        for btn in buttons:
+            try:
+                tr = btn.find_element(By.XPATH, "./ancestor::tr[1]")
+                tds = tr.find_elements(By.TAG_NAME, "td")
+                if len(tds) >= 2:
+                    area_id = tds[0].text.strip()
+                    area_real_name = tds[1].text.strip()
+                    if f"{area_id}_{area_real_name}" == area_name:
+                        target_btn = btn
+                        break
+            except Exception:
+                continue
+
+        if not target_btn:
+            if idx < len(buttons):
+                target_btn = buttons[idx]
+            else:
+                print(f"Warning: エリア '{area_name}' のボタンを特定できませんでした。スキップします。")
+                return None
+
+        print(f"エリア '{area_name}' のトップ画面へ遷移中...")
+        drv.execute_script("arguments[0].click();", target_btn)
+        time.sleep(2)
+
+        if open_vehicle_page(drv):
+            print(f"車両情報をスクレイピング中...")
+            return scrape_vehicle_page(drv, area_name)
+        else:
+            print(f"Error: エリア '{area_name}' の車両情報ページを開けませんでした。")
+            return None
+
+    # 2. 同一ブラウザセッションを用いて全エリアを連続巡回する。
+    #    Chrome がクラッシュした場合はブラウザを再起動して再ログインし、後続エリアの処理を継続する。
     area_selection_url = driver.current_url  # ログイン後のエリア選択画面のURLを記憶
 
-    # 2. 同一ブラウザセッションを用いて全エリアを連続巡回する超高速モード
     for idx, area_name in enumerate(area_names):
         if idx > 0:
-            print("⏳ サーバー負荷軽減のため、3秒間待機します...")
+            print("Waiting 3 seconds to reduce server load...")
             time.sleep(3)
 
         print(f"\n[{idx+1}/{len(area_names)}] エリア '{area_name}' の取得を開始します...")
-        
-        try:
-            # エリア選択画面のURLに直接ジャンプし、セッションを維持したまま遷移
-            if driver.current_url != area_selection_url:
-                driver.get(area_selection_url)
-                time.sleep(2)
-            
-            # エリア選択画面から再度エリアボタンの一覧を検出し、対象エリアをクリック
-            from selenium.webdriver.common.by import By
-            from src.auth import Locators
-            
-            # 再読み込み待機
-            from selenium.webdriver.support.ui import WebDriverWait
-            from selenium.webdriver.support import expected_conditions as EC
-            WebDriverWait(driver, 15).until(EC.presence_of_element_located(Locators.BTN_TO_TOP))
-            
-            buttons = driver.find_elements(*Locators.BTN_TO_TOP)
-            target_btn = None
-            
-            # ボタンの隣のテキスト（エリア名）を照合してターゲットの要素を特定
-            for btn in buttons:
-                try:
-                    tr = btn.find_element(By.XPATH, "./ancestor::tr[1]")
-                    tds = tr.find_elements(By.TAG_NAME, "td")
-                    if len(tds) >= 2:
-                        area_id = tds[0].text.strip()
-                        area_real_name = tds[1].text.strip()
-                        curr_name = f"{area_id}_{area_real_name}"
-                        if curr_name == area_name:
-                            target_btn = btn
-                            break
-                except Exception:
-                    continue
-            
-            if not target_btn:
-                # インデックスベースでのフォールバック特定
-                if idx < len(buttons):
-                    target_btn = buttons[idx]
-                else:
-                    print(f"Warning: エリア '{area_name}' のボタンを特定できませんでした。スキップします。")
-                    continue
 
-            # エリアの「トップ画面へ」をクリック
-            print(f"エリア '{area_name}' のトップ画面へ遷移中...")
-            driver.execute_script("arguments[0].click();", target_btn)
-            time.sleep(2)
-            
-            # 車両情報ページへ遷移
-            if open_vehicle_page(driver):
-                print(f"車両情報をスクレイピング中...")
-                df = scrape_vehicle_page(driver, area_name)
+        try:
+            df = _navigate_to_area_and_scrape(driver, idx, area_name, area_selection_url)
+            if df is not None:
                 all_data.append(df)
                 print(f"Success: エリア '{area_name}' のデータ {len(df)} 件を取得しました。")
-            else:
-                print(f"Error: エリア '{area_name}' の車両情報ページを開けませんでした。")
 
         except Exception as e:
-            print(f"Error: エリア '{area_name}' の処理中にエラーが発生しました: {e}")
-            # エラー発生時はセッション切れを防ぐため、一度元のエリア選択URLへ強制復帰を試みる
-            try:
-                driver.get(area_selection_url)
-            except Exception:
-                pass
-            
-    # 全巡回完了後に初めてブラウザセッションを完全に終了
-    driver.quit()
+            err_msg = str(e)
+            print(f"Error: エリア '{area_name}' の処理中にエラーが発生しました: {err_msg[:200]}")
+
+            # Chrome クラッシュを検出（空メッセージ＋スタックトレースのパターン）
+            is_chrome_crash = (
+                "Message: \n" in err_msg
+                or err_msg.strip() == ""
+                or "unknown" in err_msg.lower()
+                or "session" in err_msg.lower()
+            )
+
+            if is_chrome_crash:
+                print(f"Chrome のクラッシュを検出しました。ブラウザを再起動して再ログインします...")
+                try:
+                    driver.quit()
+                except Exception:
+                    pass
+
+                time.sleep(3)
+                try:
+                    driver = build_driver()
+                    areas_info_retry = login_and_get_areas(driver)
+                    area_selection_url = driver.current_url
+                    print(f"再ログイン成功。エリア '{area_name}' の処理を再試行します...")
+
+                    # 再ログイン後に同じエリアを再試行
+                    df = _navigate_to_area_and_scrape(driver, idx, area_name, area_selection_url)
+                    if df is not None:
+                        all_data.append(df)
+                        print(f"Success (再試行): エリア '{area_name}' のデータ {len(df)} 件を取得しました。")
+                except Exception as retry_err:
+                    print(f"Error: 再試行にも失敗しました: {retry_err}")
+            else:
+                # 通常のセッション切れ → エリア選択画面に強制復帰を試みる
+                try:
+                    driver.get(area_selection_url)
+                except Exception:
+                    pass
+
+    # 全巡回完了後にブラウザセッションを終了
+    try:
+        driver.quit()
+    except Exception:
+        pass
 
     # 3. データの統合と超高速マップ連携処理
     if all_data:
