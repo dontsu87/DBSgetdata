@@ -2,9 +2,9 @@ name: DBS Scraper Auto Run
 
 on:
   schedule:
-    # 毎時0分（1時間に1回）自動実行するスケジュール（UTC時間基準なので日本時間から9時間引いた表記です）
+    # 毎時0分（1時間に1回）自動実行するスケジュール
     - cron: '0 * * * *'
-  workflow_dispatch: # GitHubの管理画面から「今すぐ実行」ボタンで手動起動できるようにする設定
+  workflow_dispatch: # 手動起動用
 
 jobs:
   run-scraper:
@@ -12,10 +12,10 @@ jobs:
 
     steps:
     - name: Checkout Code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4 # Node.js 24に対応した最新版にアップグレード
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5 # Node.js 24に対応した最新版にアップグレード
       with:
         python-version: '3.10'
 
@@ -26,16 +26,21 @@ jobs:
 
     - name: Run Scraper and Upload to OneDrive
       env:
-        # GitHub Secrets（金庫）から機密情報を安全にプログラムに注入
-        ENTPOS_URL: ${{ secrets.ENTPOS_URL }}
-        ENTPOS_USER: ${{ secrets.ENTPOS_USER }}
-        ENTPOS_PASSWORD: ${{ secrets.ENTPOS_PASSWORD }}
+        # プログラムが要求する正しい変数名(DBS_WORKER_*)に、Secretsからマッピングして注入します
+        DBS_WORKER_TOP_PAGE: ${{ secrets.ENTPOS_URL }}
+        DBS_WORKER_ACCOUNT: ${{ secrets.ENTPOS_USER }}
+        DBS_WORKER_PASSWORD: ${{ secrets.ENTPOS_PASSWORD }}
+        
+        # OneDrive用
         ONEDRIVE_SHARE_URL: ${{ secrets.ONEDRIVE_SHARE_URL }}
         ONEDRIVE_PASSWORD: ${{ secrets.ONEDRIVE_PASSWORD }}
-        ENTSYS_URL: ${{ secrets.ENTSYS_URL }}
-        ENTSYS_USER: ${{ secrets.ENTSYS_USER }}
-        ENTSYS_PASSWORD: ${{ secrets.ENTSYS_PASSWORD }}
+        
+        # 事業者用モードの変数もマッピングしておきます
+        DBS_ADMIN_TOP_PAGE: ${{ secrets.ENTSYS_URL }}
+        DBS_ADMIN_ACCOUNT: ${{ secrets.ENTSYS_USER }}
+        DBS_ADMIN_PASSWORD: ${{ secrets.ENTSYS_PASSWORD }}
+        
         PYTHONIOENCODING: "utf-8"
       run: |
-        # 引数なしでシンプルに起動します（クラウド上で自動的にヘッドレスモードで起動します）
+        # 引数なしでシンプルに起動します
         python main.py
