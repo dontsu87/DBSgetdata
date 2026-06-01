@@ -156,8 +156,10 @@ def upload_to_onedrive_web(local_file_path: str) -> bool:
                     continue
             
             if folder_element:
-                utils.click_js(folder_element)
-                print(f"Info: 子フォルダ「{subfolder_name}」をクリックしました。遷移を待機します...")
+                from selenium.webdriver.common.action_chains import ActionChains
+                actions = ActionChains(driver)
+                actions.double_click(folder_element).perform()
+                print(f"Info: 子フォルダ「{subfolder_name}」をダブルクリックしました。遷移を待機します...")
                 time.sleep(5)
             else:
                 print(f"Warning: 子フォルダ「{subfolder_name}」が見つかりませんでした。ルートにアップロードします。")
