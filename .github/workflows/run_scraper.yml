@@ -3,7 +3,7 @@ name: DBS Scraper Auto Run
 on:
   schedule:
     # 毎時0分（1時間に1回）自動実行するスケジュール
-    - cron: '0 * * * *'
+    - cron: '*/15 * * * *'
   workflow_dispatch: # 手動起動用
 
 jobs:
