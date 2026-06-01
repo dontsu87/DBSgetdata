@@ -10,6 +10,9 @@ jobs:
   run-scraper:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write
+
     steps:
     - name: Checkout Code
       uses: actions/checkout@v4
@@ -46,3 +49,12 @@ jobs:
         PYTHONIOENCODING: "utf-8"
       run: |
         python main.py
+
+    - name: Deploy to GitHub Pages (Commit and push latest dashboard data)
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        # Force add ignored files (dashboard_data.json is gitignored but we want to publish it)
+        git add -f dashboard_data.json dashboard_data.js || true
+        git commit -m "Auto-update map dashboard data [skip ci]" || true
+        git push origin master || true

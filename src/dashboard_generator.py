@@ -193,7 +193,7 @@ def generate_dashboard_json(latest_vehicle_path: str = None) -> str:
 
     # 6. JSONファイルの書き出し
     json_filename = "dashboard_data.json"
-    json_path = os.path.join(Config.OUTPUT_DIR, json_filename)
+    json_path = os.path.join(str(ROOT_DIR), json_filename)
     
     try:
         with open(json_path, "w", encoding="utf-8") as f:
@@ -205,7 +205,7 @@ def generate_dashboard_json(latest_vehicle_path: str = None) -> str:
 
     # 7. CORSセキュリティ制限回避用の JS ファイルの書き出し (ダブルクリック受入用)
     js_filename = "dashboard_data.js"
-    js_path = os.path.join(Config.OUTPUT_DIR, js_filename)
+    js_path = os.path.join(str(ROOT_DIR), js_filename)
     
     try:
         with open(js_path, "w", encoding="utf-8") as f:
