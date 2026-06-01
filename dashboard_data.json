@@ -1,11 +1,11 @@
 {
-  "updated_at": "2026-06-01 10:15:40",
+  "updated_at": "2026-06-01 10:20:02",
   "total_ports_count": 29,
   "total_alert_bikes": 99,
   "summary_counts": {
     "at_error": 0,
-    "strong": 43,
-    "lv1": 46,
+    "strong": 44,
+    "lv1": 45,
     "lv2": 3,
     "lv3": 7
   },
@@ -142,7 +142,7 @@
             "lv2": 28.7,
             "lv3": 29.5
           },
-          "at_time": "2026-06-01 18:16:48"
+          "at_time": "2026-06-01 19:16:48"
         },
         {
           "bike_id": "FKI065",
@@ -298,7 +298,7 @@
             "lv2": 30.2,
             "lv3": 31.0
           },
-          "at_time": "2026-06-01 18:15:06"
+          "at_time": "2026-06-01 19:15:06"
         },
         {
           "bike_id": "FKI082",
@@ -406,7 +406,7 @@
             "lv2": 30.3,
             "lv3": 31.1
           },
-          "at_time": "2026-06-01 18:15:58"
+          "at_time": "2026-06-01 19:16:03"
         }
       ]
     },
@@ -450,7 +450,7 @@
             "lv2": 29.7,
             "lv3": 30.5
           },
-          "at_time": "2026-06-01 18:16:23"
+          "at_time": "2026-06-01 19:16:22"
         }
       ]
     },
@@ -478,7 +478,7 @@
             "lv2": 29.7,
             "lv3": 30.5
           },
-          "at_time": "2026-06-01 18:15:48"
+          "at_time": "2026-06-01 19:15:50"
         },
         {
           "bike_id": "FKI012",
@@ -512,7 +512,7 @@
           "bike_id": "FKI007",
           "status": "利用中",
           "model_name": "その他",
-          "voltage": 27.6,
+          "voltage": 27.9,
           "alert_level": 4,
           "alert_level_name": "電圧閾値",
           "thresholds": {
@@ -522,7 +522,7 @@
             "lv2": 29.8,
             "lv3": 30.6
           },
-          "at_time": "2026-06-01 19:13:19"
+          "at_time": "2026-06-01 19:16:19"
         },
         {
           "bike_id": "FKI011",
@@ -538,7 +538,23 @@
             "lv2": 29.8,
             "lv3": 30.6
           },
-          "at_time": "2026-06-01 19:13:53"
+          "at_time": "2026-06-01 19:16:53"
+        },
+        {
+          "bike_id": "FKI015",
+          "status": "利用中",
+          "model_name": "その他",
+          "voltage": 27.5,
+          "alert_level": 4,
+          "alert_level_name": "電圧閾値",
+          "thresholds": {
+            "at_error": 24.3,
+            "strong": 28.3,
+            "lv1": 28.8,
+            "lv2": 29.5,
+            "lv3": 30.3
+          },
+          "at_time": "2026-06-01 19:16:08"
         },
         {
           "bike_id": "FKI016",
@@ -570,23 +586,7 @@
             "lv2": 28.9,
             "lv3": 29.7
           },
-          "at_time": "2026-06-01 19:11:39"
-        },
-        {
-          "bike_id": "FKI022",
-          "status": "利用中",
-          "model_name": "その他",
-          "voltage": 28.6,
-          "alert_level": 4,
-          "alert_level_name": "電圧閾値",
-          "thresholds": {
-            "at_error": 24.7,
-            "strong": 28.7,
-            "lv1": 29.2,
-            "lv2": 29.9,
-            "lv3": 30.7
-          },
-          "at_time": "2026-06-01 19:13:45"
+          "at_time": "2026-06-01 19:17:39"
         },
         {
           "bike_id": "FKI041",
@@ -602,13 +602,13 @@
             "lv2": 29.7,
             "lv3": 30.5
           },
-          "at_time": "2026-06-01 19:11:39"
+          "at_time": "2026-06-01 19:17:39"
         },
         {
           "bike_id": "FKI052",
           "status": "利用中",
           "model_name": "その他",
-          "voltage": 27.4,
+          "voltage": 27.3,
           "alert_level": 4,
           "alert_level_name": "電圧閾値",
           "thresholds": {
@@ -618,7 +618,7 @@
             "lv2": 28.7,
             "lv3": 29.5
           },
-          "at_time": "2026-06-01 19:13:35"
+          "at_time": "2026-06-01 19:18:08"
         },
         {
           "bike_id": "FKI072",
@@ -650,15 +650,15 @@
             "lv2": 27.9,
             "lv3": 28.7
           },
-          "at_time": "2026-06-01 19:13:26"
+          "at_time": "2026-06-01 19:16:26"
         },
         {
           "bike_id": "FKI100",
           "status": "一時駐輪",
           "model_name": "その他",
-          "voltage": 28.9,
-          "alert_level": 3,
-          "alert_level_name": "Lv.1",
+          "voltage": 28.8,
+          "alert_level": 4,
+          "alert_level_name": "電圧閾値",
           "thresholds": {
             "at_error": 24.8,
             "strong": 28.8,
@@ -666,7 +666,7 @@
             "lv2": 30.0,
             "lv3": 30.8
           },
-          "at_time": "2026-06-01 19:11:04"
+          "at_time": "2026-06-01 19:17:05"
         }
       ]
     },
@@ -970,7 +970,7 @@
             "lv2": 30.0,
             "lv3": 30.8
           },
-          "at_time": "2026-06-01 18:17:34"
+          "at_time": "2026-06-01 19:17:33"
         }
       ]
     },
@@ -1056,26 +1056,10 @@
       "lat": 36.062804,
       "lon": 136.240577,
       "has_gps": true,
-      "total_bikes": 3,
-      "max_alert_level": 4,
-      "alert_bikes_count": 3,
+      "total_bikes": 2,
+      "max_alert_level": 3,
+      "alert_bikes_count": 2,
       "bikes": [
-        {
-          "bike_id": "FKI015",
-          "status": "利用中",
-          "model_name": "その他",
-          "voltage": 27.9,
-          "alert_level": 4,
-          "alert_level_name": "電圧閾値",
-          "thresholds": {
-            "at_error": 24.3,
-            "strong": 28.3,
-            "lv1": 28.8,
-            "lv2": 29.5,
-            "lv3": 30.3
-          },
-          "at_time": "2026-06-01 19:13:08"
-        },
         {
           "bike_id": "FKI017",
           "status": "利用可能",
@@ -1192,9 +1176,9 @@
       "lat": 36.070834,
       "lon": 136.233104,
       "has_gps": true,
-      "total_bikes": 6,
+      "total_bikes": 7,
       "max_alert_level": 4,
-      "alert_bikes_count": 5,
+      "alert_bikes_count": 6,
       "bikes": [
         {
           "bike_id": "FKI020",
@@ -1211,6 +1195,22 @@
             "lv3": 30.9
           },
           "at_time": "2026-06-01 19:06:59"
+        },
+        {
+          "bike_id": "FKI022",
+          "status": "利用可能",
+          "model_name": "その他",
+          "voltage": 28.7,
+          "alert_level": 4,
+          "alert_level_name": "電圧閾値",
+          "thresholds": {
+            "at_error": 24.7,
+            "strong": 28.7,
+            "lv1": 29.2,
+            "lv2": 29.9,
+            "lv3": 30.7
+          },
+          "at_time": "2026-06-01 19:14:58"
         },
         {
           "bike_id": "FKI026",
@@ -1562,7 +1562,7 @@
             "lv2": 29.9,
             "lv3": 30.7
           },
-          "at_time": "2026-06-01 18:15:09"
+          "at_time": "2026-06-01 19:15:09"
         },
         {
           "bike_id": "FKI053",
@@ -1876,7 +1876,7 @@
           "bike_id": "FKI086",
           "status": "利用可能",
           "model_name": "その他",
-          "voltage": 28.6,
+          "voltage": 28.7,
           "alert_level": 3,
           "alert_level_name": "Lv.1",
           "thresholds": {
@@ -1886,7 +1886,7 @@
             "lv2": 29.7,
             "lv3": 30.5
           },
-          "at_time": "2026-06-01 18:16:39"
+          "at_time": "2026-06-01 19:16:45"
         }
       ]
     },
