@@ -129,40 +129,48 @@ def upload_to_onedrive_web(local_file_path: str) -> bool:
             subfolder_name = "GBFS"
 
         if subfolder_name:
-            print(f"Info: 子フォルダ「{subfolder_name}」への遷移を試みます...")
-            # フォルダ一覧の読み込みを待機
-            utils.W(15).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, "[role='row'], [role='gridcell'], button[data-automationid='DetailsRowLink']"))
-            )
-            time.sleep(3)
-            
-            # フォルダ要素を検索
-            xpath_exprs = [
-                f"//span[contains(text(), '{subfolder_name}')]",
-                f"//*[text()='{subfolder_name}']",
-                f"//button[contains(text(), '{subfolder_name}')]",
-                f"//a[contains(text(), '{subfolder_name}')]"
-            ]
-            
-            folder_element = None
-            for xpath in xpath_exprs:
-                try:
-                    el = driver.find_element(By.XPATH, xpath)
-                    if el.is_displayed():
-                        folder_element = el
-                        print(f"Info: 子フォルダ要素を発見しました: {xpath}")
-                        break
-                except Exception:
-                    continue
-            
-            if folder_element:
-                from selenium.webdriver.common.action_chains import ActionChains
-                actions = ActionChains(driver)
-                actions.double_click(folder_element).perform()
-                print(f"Info: 子フォルダ「{subfolder_name}」をダブルクリックしました。遷移を待機します...")
-                time.sleep(5)
-            else:
-                print(f"Warning: 子フォルダ「{subfolder_name}」が見つかりませんでした。ルートにアップロードします。")
+            print(f"Info: 子フォルダ「{subfolder_name}」へのURL直接遷移を開始します...")
+            try:
+                # 初期フォルダの読み込み完了（URLリダイレクト）を待機
+                utils.W(15).until(
+                    EC.presence_of_element_located((By.CSS_SELECTOR, "[role='row'], [role='gridcell']"))
+                )
+                time.sleep(3)
+                
+                from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
+                current_url = driver.current_url
+                parsed = urlparse(current_url)
+                params = parse_qs(parsed.query)
+                
+                if 'id' in params:
+                    root_path = params['id'][0]
+                    subfolder_path = root_path + "/" + subfolder_name
+                    new_params = params.copy()
+                    new_params['id'] = [subfolder_path]
+                    
+                    new_query = urlencode(new_params, doseq=True)
+                    subfolder_url = urlunparse((
+                        parsed.scheme,
+                        parsed.netloc,
+                        parsed.path,
+                        parsed.params,
+                        new_query,
+                        parsed.fragment
+                    ))
+                    
+                    print(f"Info: 子フォルダのURLに直接遷移します: {subfolder_url}")
+                    driver.get(subfolder_url)
+                    
+                    # 遷移後の読み込みを待機
+                    utils.W(15).until(
+                        EC.presence_of_element_located((By.CSS_SELECTOR, "[role='row'], [role='gridcell']"))
+                    )
+                    time.sleep(3)
+                    print(f"Success: 子フォルダ「{subfolder_name}」へのURL直接遷移が完了しました。")
+                else:
+                    print("Warning: URLに'id'パラメータが見つからないため、ルートにアップロードします。")
+            except Exception as ex:
+                print(f"Warning: 直接URL遷移中にエラーが発生したため、ルートフォルダへのアップロードに切り替えます: {ex}")
 
         # 3. アップロードメニューのクリックとファイルの選択
         print("Info: アップロードボタンの表示を待機中...")
