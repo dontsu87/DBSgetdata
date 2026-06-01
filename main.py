@@ -136,7 +136,8 @@ def main():
     # --gbfs が指定された場合の処理
     if args.gbfs:
         from src.gbfs_station_retriever import retrieve_gbfs_stations
-        Config.validate(is_worker=False)  # 出力フォルダの保証など最低限の設定チェック
+        import os
+        os.makedirs(Config.OUTPUT_DIR, exist_ok=True)  # 出力フォルダの存在保証
         json_path, csv_path = retrieve_gbfs_stations()
         if csv_path:
             # OneDriveへの自動アップロードも連動させる
