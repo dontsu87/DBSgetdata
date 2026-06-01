@@ -1,13 +1,13 @@
 window.dashboardData = {
-  "updated_at": "2026-06-01 19:23:30",
+  "updated_at": "2026-06-01 19:36:14",
   "total_ports_count": 29,
-  "total_alert_bikes": 99,
+  "total_alert_bikes": 100,
   "summary_counts": {
     "at_error": 0,
-    "strong": 42,
-    "lv1": 47,
+    "strong": 47,
+    "lv1": 42,
     "lv2": 3,
-    "lv3": 7
+    "lv3": 8
   },
   "ports": [
     {
@@ -92,9 +92,9 @@ window.dashboardData = {
       "lat": 36.062671,
       "lon": 136.223709,
       "has_gps": true,
-      "total_bikes": 9,
+      "total_bikes": 10,
       "max_alert_level": 4,
-      "alert_bikes_count": 9,
+      "alert_bikes_count": 10,
       "bikes": [
         {
           "bike_id": "FKI002",
@@ -127,6 +127,22 @@ window.dashboardData = {
             "lv3": 30.9
           },
           "at_time": "2026-06-01 19:12:14"
+        },
+        {
+          "bike_id": "FKI052",
+          "status": "利用可能",
+          "model_name": "その他",
+          "voltage": 27.2,
+          "alert_level": 4,
+          "alert_level_name": "電圧閾値",
+          "thresholds": {
+            "at_error": 23.5,
+            "strong": 27.5,
+            "lv1": 28.0,
+            "lv2": 28.7,
+            "lv3": 29.5
+          },
+          "at_time": "2026-06-01 19:26:49"
         },
         {
           "bike_id": "FKI054",
@@ -180,7 +196,7 @@ window.dashboardData = {
           "bike_id": "FKI089",
           "status": "利用可能",
           "model_name": "その他",
-          "voltage": 28.9,
+          "voltage": 28.8,
           "alert_level": 3,
           "alert_level_name": "Lv.1",
           "thresholds": {
@@ -190,7 +206,7 @@ window.dashboardData = {
             "lv2": 29.9,
             "lv3": 30.7
           },
-          "at_time": "2026-06-01 18:33:30"
+          "at_time": "2026-06-01 19:33:30"
         },
         {
           "bike_id": "FKI090",
@@ -222,7 +238,7 @@ window.dashboardData = {
             "lv2": 30.1,
             "lv3": 30.9
           },
-          "at_time": "2026-06-01 18:24:15"
+          "at_time": "2026-06-01 19:24:15"
         },
         {
           "bike_id": "FKI101",
@@ -374,7 +390,7 @@ window.dashboardData = {
             "lv2": 29.8,
             "lv3": 30.6
           },
-          "at_time": "2026-06-01 18:26:13"
+          "at_time": "2026-06-01 19:26:14"
         },
         {
           "bike_id": "FKI061",
@@ -504,15 +520,15 @@ window.dashboardData = {
       "lat": null,
       "lon": null,
       "has_gps": false,
-      "total_bikes": 10,
+      "total_bikes": 8,
       "max_alert_level": 4,
-      "alert_bikes_count": 9,
+      "alert_bikes_count": 8,
       "bikes": [
         {
           "bike_id": "FKI007",
           "status": "利用中",
           "model_name": "その他",
-          "voltage": 28.1,
+          "voltage": 28.0,
           "alert_level": 4,
           "alert_level_name": "電圧閾値",
           "thresholds": {
@@ -522,13 +538,13 @@ window.dashboardData = {
             "lv2": 29.8,
             "lv3": 30.6
           },
-          "at_time": "2026-06-01 19:19:19"
+          "at_time": "2026-06-01 19:34:19"
         },
         {
           "bike_id": "FKI011",
-          "status": "一時駐輪",
+          "status": "利用中",
           "model_name": "その他",
-          "voltage": 28.2,
+          "voltage": 27.7,
           "alert_level": 4,
           "alert_level_name": "電圧閾値",
           "thresholds": {
@@ -538,13 +554,13 @@ window.dashboardData = {
             "lv2": 29.8,
             "lv3": 30.6
           },
-          "at_time": "2026-06-01 19:19:53"
+          "at_time": "2026-06-01 19:31:53"
         },
         {
-          "bike_id": "FKI015",
+          "bike_id": "FKI013",
           "status": "利用中",
           "model_name": "その他",
-          "voltage": 27.8,
+          "voltage": 28.3,
           "alert_level": 4,
           "alert_level_name": "電圧閾値",
           "thresholds": {
@@ -554,7 +570,7 @@ window.dashboardData = {
             "lv2": 29.5,
             "lv3": 30.3
           },
-          "at_time": "2026-06-01 19:19:08"
+          "at_time": "2026-06-01 19:34:22"
         },
         {
           "bike_id": "FKI016",
@@ -573,28 +589,12 @@ window.dashboardData = {
           "at_time": "2026-06-01 18:54:36"
         },
         {
-          "bike_id": "FKI019",
+          "bike_id": "FKI041",
           "status": "利用中",
           "model_name": "その他",
-          "voltage": 27.2,
+          "voltage": 28.4,
           "alert_level": 4,
           "alert_level_name": "電圧閾値",
-          "thresholds": {
-            "at_error": 23.7,
-            "strong": 27.7,
-            "lv1": 28.2,
-            "lv2": 28.9,
-            "lv3": 29.7
-          },
-          "at_time": "2026-06-01 19:20:39"
-        },
-        {
-          "bike_id": "FKI041",
-          "status": "一時駐輪",
-          "model_name": "その他",
-          "voltage": 28.6,
-          "alert_level": 3,
-          "alert_level_name": "Lv.1",
           "thresholds": {
             "at_error": 24.5,
             "strong": 28.5,
@@ -602,23 +602,7 @@ window.dashboardData = {
             "lv2": 29.7,
             "lv3": 30.5
           },
-          "at_time": "2026-06-01 19:20:39"
-        },
-        {
-          "bike_id": "FKI052",
-          "status": "利用中",
-          "model_name": "その他",
-          "voltage": 27.3,
-          "alert_level": 4,
-          "alert_level_name": "電圧閾値",
-          "thresholds": {
-            "at_error": 23.5,
-            "strong": 27.5,
-            "lv1": 28.0,
-            "lv2": 28.7,
-            "lv3": 29.5
-          },
-          "at_time": "2026-06-01 19:21:08"
+          "at_time": "2026-06-01 19:32:39"
         },
         {
           "bike_id": "FKI072",
@@ -640,9 +624,9 @@ window.dashboardData = {
           "bike_id": "FKI092",
           "status": "一時駐輪",
           "model_name": "その他",
-          "voltage": 28.8,
-          "alert_level": 0,
-          "alert_level_name": "正常",
+          "voltage": 28.7,
+          "alert_level": 1,
+          "alert_level_name": "Lv.3",
           "thresholds": {
             "at_error": 22.7,
             "strong": 26.7,
@@ -650,15 +634,15 @@ window.dashboardData = {
             "lv2": 27.9,
             "lv3": 28.7
           },
-          "at_time": "2026-06-01 19:19:26"
+          "at_time": "2026-06-01 19:34:26"
         },
         {
           "bike_id": "FKI100",
-          "status": "一時駐輪",
+          "status": "利用中",
           "model_name": "その他",
-          "voltage": 28.9,
-          "alert_level": 3,
-          "alert_level_name": "Lv.1",
+          "voltage": 28.6,
+          "alert_level": 4,
+          "alert_level_name": "電圧閾値",
           "thresholds": {
             "at_error": 24.8,
             "strong": 28.8,
@@ -666,7 +650,7 @@ window.dashboardData = {
             "lv2": 30.0,
             "lv3": 30.8
           },
-          "at_time": "2026-06-01 19:20:04"
+          "at_time": "2026-06-01 19:32:04"
         }
       ]
     },
@@ -676,9 +660,9 @@ window.dashboardData = {
       "lat": 36.062931,
       "lon": 136.213895,
       "has_gps": true,
-      "total_bikes": 3,
+      "total_bikes": 5,
       "max_alert_level": 4,
-      "alert_bikes_count": 3,
+      "alert_bikes_count": 5,
       "bikes": [
         {
           "bike_id": "FKI008",
@@ -695,6 +679,38 @@ window.dashboardData = {
             "lv3": 30.5
           },
           "at_time": "2026-06-01 18:46:56"
+        },
+        {
+          "bike_id": "FKI015",
+          "status": "利用可能",
+          "model_name": "その他",
+          "voltage": 27.6,
+          "alert_level": 4,
+          "alert_level_name": "電圧閾値",
+          "thresholds": {
+            "at_error": 24.3,
+            "strong": 28.3,
+            "lv1": 28.8,
+            "lv2": 29.5,
+            "lv3": 30.3
+          },
+          "at_time": "2026-06-01 19:30:30"
+        },
+        {
+          "bike_id": "FKI019",
+          "status": "利用可能",
+          "model_name": "その他",
+          "voltage": 27.5,
+          "alert_level": 4,
+          "alert_level_name": "電圧閾値",
+          "thresholds": {
+            "at_error": 23.7,
+            "strong": 27.7,
+            "lv1": 28.2,
+            "lv2": 28.9,
+            "lv3": 29.7
+          },
+          "at_time": "2026-06-01 19:23:11"
         },
         {
           "bike_id": "FKI055",
@@ -754,7 +770,7 @@ window.dashboardData = {
             "lv2": 29.7,
             "lv3": 30.5
           },
-          "at_time": "2026-06-01 18:21:57"
+          "at_time": "2026-06-01 19:21:57"
         },
         {
           "bike_id": "FKI023",
@@ -776,9 +792,9 @@ window.dashboardData = {
           "bike_id": "FKI044",
           "status": "利用可能",
           "model_name": "その他",
-          "voltage": 28.6,
-          "alert_level": 4,
-          "alert_level_name": "電圧閾値",
+          "voltage": 28.7,
+          "alert_level": 3,
+          "alert_level_name": "Lv.1",
           "thresholds": {
             "at_error": 24.6,
             "strong": 28.6,
@@ -786,7 +802,7 @@ window.dashboardData = {
             "lv2": 29.8,
             "lv3": 30.6
           },
-          "at_time": "2026-06-01 18:26:26"
+          "at_time": "2026-06-01 19:26:33"
         },
         {
           "bike_id": "FKI098",
@@ -868,7 +884,7 @@ window.dashboardData = {
           "bike_id": "FKI034",
           "status": "利用可能",
           "model_name": "その他",
-          "voltage": 29.0,
+          "voltage": 28.9,
           "alert_level": 3,
           "alert_level_name": "Lv.1",
           "thresholds": {
@@ -878,7 +894,7 @@ window.dashboardData = {
             "lv2": 30.0,
             "lv3": 30.8
           },
-          "at_time": "2026-06-01 18:33:40"
+          "at_time": "2026-06-01 19:33:40"
         },
         {
           "bike_id": "FKI068",
@@ -894,7 +910,7 @@ window.dashboardData = {
             "lv2": 30.1,
             "lv3": 30.9
           },
-          "at_time": "2026-06-01 18:34:26"
+          "at_time": "2026-06-01 19:34:26"
         },
         {
           "bike_id": "FKI074",
@@ -927,50 +943,6 @@ window.dashboardData = {
             "lv3": 30.4
           },
           "at_time": "2026-06-01 18:55:36"
-        }
-      ]
-    },
-    {
-      "port_name": "09.錦公園（片町）",
-      "area_name": "FKI_ふくチャリ",
-      "lat": 36.064786,
-      "lon": 136.213783,
-      "has_gps": true,
-      "total_bikes": 2,
-      "max_alert_level": 3,
-      "alert_bikes_count": 2,
-      "bikes": [
-        {
-          "bike_id": "FKI013",
-          "status": "利用可能",
-          "model_name": "その他",
-          "voltage": 28.4,
-          "alert_level": 3,
-          "alert_level_name": "Lv.1",
-          "thresholds": {
-            "at_error": 24.3,
-            "strong": 28.3,
-            "lv1": 28.8,
-            "lv2": 29.5,
-            "lv3": 30.3
-          },
-          "at_time": "2026-06-01 19:09:51"
-        },
-        {
-          "bike_id": "FKI083",
-          "status": "利用可能",
-          "model_name": "その他",
-          "voltage": 28.9,
-          "alert_level": 3,
-          "alert_level_name": "Lv.1",
-          "thresholds": {
-            "at_error": 24.8,
-            "strong": 28.8,
-            "lv1": 29.3,
-            "lv2": 30.0,
-            "lv3": 30.8
-          },
-          "at_time": "2026-06-01 19:17:33"
         }
       ]
     },
@@ -1036,7 +1008,7 @@ window.dashboardData = {
           "bike_id": "FKI102",
           "status": "利用可能",
           "model_name": "その他",
-          "voltage": 29.0,
+          "voltage": 29.1,
           "alert_level": 1,
           "alert_level_name": "Lv.3",
           "thresholds": {
@@ -1046,7 +1018,7 @@ window.dashboardData = {
             "lv2": 28.5,
             "lv3": 29.3
           },
-          "at_time": "2026-06-01 18:31:46"
+          "at_time": "2026-06-01 19:31:47"
         }
       ]
     },
@@ -1166,7 +1138,7 @@ window.dashboardData = {
             "lv2": 29.1,
             "lv3": 29.9
           },
-          "at_time": "2026-06-01 18:21:50"
+          "at_time": "2026-06-01 19:21:49"
         }
       ]
     },
@@ -1308,9 +1280,9 @@ window.dashboardData = {
           "bike_id": "FKI021",
           "status": "利用可能",
           "model_name": "その他",
-          "voltage": 29.0,
-          "alert_level": 3,
-          "alert_level_name": "Lv.1",
+          "voltage": 28.9,
+          "alert_level": 4,
+          "alert_level_name": "電圧閾値",
           "thresholds": {
             "at_error": 24.9,
             "strong": 28.9,
@@ -1318,7 +1290,7 @@ window.dashboardData = {
             "lv2": 30.1,
             "lv3": 30.9
           },
-          "at_time": "2026-06-01 18:28:21"
+          "at_time": "2026-06-01 19:28:22"
         },
         {
           "bike_id": "FKI036",
@@ -1454,7 +1426,7 @@ window.dashboardData = {
             "lv2": 26.1,
             "lv3": 26.9
           },
-          "at_time": "2026-06-01 18:33:37"
+          "at_time": "2026-06-01 19:33:37"
         },
         {
           "bike_id": "FKI048",
@@ -1490,9 +1462,9 @@ window.dashboardData = {
         },
         {
           "bike_id": "FKI062",
-          "status": "利用可能",
+          "status": "利用中",
           "model_name": "その他",
-          "voltage": 28.7,
+          "voltage": 28.4,
           "alert_level": 4,
           "alert_level_name": "電圧閾値",
           "thresholds": {
@@ -1502,13 +1474,13 @@ window.dashboardData = {
             "lv2": 30.0,
             "lv3": 30.8
           },
-          "at_time": "2026-06-01 19:19:49"
+          "at_time": "2026-06-01 19:31:37"
         },
         {
           "bike_id": "FKI067",
           "status": "利用可能",
           "model_name": "その他",
-          "voltage": 28.9,
+          "voltage": 29.0,
           "alert_level": 3,
           "alert_level_name": "Lv.1",
           "thresholds": {
@@ -1518,7 +1490,7 @@ window.dashboardData = {
             "lv2": 29.9,
             "lv3": 30.7
           },
-          "at_time": "2026-06-01 18:33:22"
+          "at_time": "2026-06-01 19:33:23"
         },
         {
           "bike_id": "FKI071",
@@ -1534,7 +1506,7 @@ window.dashboardData = {
             "lv2": 29.6,
             "lv3": 30.4
           },
-          "at_time": "2026-06-01 18:34:00"
+          "at_time": "2026-06-01 19:34:01"
         }
       ]
     },
@@ -1568,7 +1540,7 @@ window.dashboardData = {
           "bike_id": "FKI053",
           "status": "利用可能",
           "model_name": "その他",
-          "voltage": 29.0,
+          "voltage": 29.1,
           "alert_level": 3,
           "alert_level_name": "Lv.1",
           "thresholds": {
@@ -1578,7 +1550,7 @@ window.dashboardData = {
             "lv2": 30.0,
             "lv3": 30.8
           },
-          "at_time": "2026-06-01 18:24:57"
+          "at_time": "2026-06-01 19:24:57"
         }
       ]
     },
@@ -1738,7 +1710,7 @@ window.dashboardData = {
             "lv2": 29.3,
             "lv3": 30.1
           },
-          "at_time": "2026-06-01 18:31:26"
+          "at_time": "2026-06-01 19:31:26"
         },
         {
           "bike_id": "FKI088",
@@ -1809,14 +1781,14 @@ window.dashboardData = {
       "lon": 136.211091,
       "has_gps": true,
       "total_bikes": 2,
-      "max_alert_level": 3,
+      "max_alert_level": 4,
       "alert_bikes_count": 2,
       "bikes": [
         {
           "bike_id": "FKI043",
           "status": "利用可能",
           "model_name": "その他",
-          "voltage": 28.6,
+          "voltage": 28.5,
           "alert_level": 3,
           "alert_level_name": "Lv.1",
           "thresholds": {
@@ -1826,15 +1798,15 @@ window.dashboardData = {
             "lv2": 29.6,
             "lv3": 30.4
           },
-          "at_time": "2026-06-01 18:23:33"
+          "at_time": "2026-06-01 19:23:34"
         },
         {
           "bike_id": "FKI066",
           "status": "利用可能",
           "model_name": "その他",
-          "voltage": 29.1,
-          "alert_level": 3,
-          "alert_level_name": "Lv.1",
+          "voltage": 29.0,
+          "alert_level": 4,
+          "alert_level_name": "電圧閾値",
           "thresholds": {
             "at_error": 25.0,
             "strong": 29.0,
@@ -1842,7 +1814,7 @@ window.dashboardData = {
             "lv2": 30.2,
             "lv3": 31.0
           },
-          "at_time": "2026-06-01 18:32:25"
+          "at_time": "2026-06-01 19:32:25"
         }
       ]
     },
@@ -1853,16 +1825,16 @@ window.dashboardData = {
       "lon": 136.213385,
       "has_gps": true,
       "total_bikes": 2,
-      "max_alert_level": 3,
+      "max_alert_level": 4,
       "alert_bikes_count": 2,
       "bikes": [
         {
           "bike_id": "FKI049",
           "status": "利用可能",
           "model_name": "その他",
-          "voltage": 28.7,
-          "alert_level": 3,
-          "alert_level_name": "Lv.1",
+          "voltage": 28.6,
+          "alert_level": 4,
+          "alert_level_name": "電圧閾値",
           "thresholds": {
             "at_error": 24.6,
             "strong": 28.6,
@@ -1870,7 +1842,7 @@ window.dashboardData = {
             "lv2": 29.8,
             "lv3": 30.6
           },
-          "at_time": "2026-06-01 18:33:22"
+          "at_time": "2026-06-01 19:33:23"
         },
         {
           "bike_id": "FKI086",
@@ -1987,6 +1959,34 @@ window.dashboardData = {
             "lv3": 29.8
           },
           "at_time": "2026-06-01 18:54:41"
+        }
+      ]
+    },
+    {
+      "port_name": "09.錦公園（片町）",
+      "area_name": "FKI_ふくチャリ",
+      "lat": 36.064786,
+      "lon": 136.213783,
+      "has_gps": true,
+      "total_bikes": 1,
+      "max_alert_level": 3,
+      "alert_bikes_count": 1,
+      "bikes": [
+        {
+          "bike_id": "FKI083",
+          "status": "利用可能",
+          "model_name": "その他",
+          "voltage": 28.9,
+          "alert_level": 3,
+          "alert_level_name": "Lv.1",
+          "thresholds": {
+            "at_error": 24.8,
+            "strong": 28.8,
+            "lv1": 29.3,
+            "lv2": 30.0,
+            "lv3": 30.8
+          },
+          "at_time": "2026-06-01 19:17:33"
         }
       ]
     }
