@@ -70,10 +70,15 @@ def generate_dashboard_json(latest_vehicle_path: str = None) -> str:
         df_merged['閾値_Lv2'] = df_merged['閾値_Lv2'].fillna(26.2)
         df_merged['閾値_Lv3'] = df_merged['閾値_Lv3'].fillna(27.0)
         
-        # --- 金沢(KNZ)のDDおよびPasCityCマスタ値強制保護機能 ---
+        # --- 金沢(KNZ)のDDおよびグリッター・EBマスタ値強制保護機能 ---
         # OneDrive等のCSV上に誤った大きな値が入っている場合でも、添付画像の仕様通りに強制補正します
         for idx, row in df_merged.iterrows():
             model = str(row['車種名']).strip()
+            # もしCSV上で "PasCityC" になってしまっている車両があれば、画像通り「グリッター・EB」に正式書き換えします
+            if model == "PasCityC":
+                df_merged.at[idx, '車種名'] = "グリッター・EB"
+                model = "グリッター・EB"
+
             # DDの補正
             if model == "DD":
                 df_merged.at[idx, '閾値_AT異常'] = 18.0
@@ -81,13 +86,13 @@ def generate_dashboard_json(latest_vehicle_path: str = None) -> str:
                 df_merged.at[idx, '閾値_Lv1'] = 35.1
                 df_merged.at[idx, '閾値_Lv2'] = 35.8
                 df_merged.at[idx, '閾値_Lv3'] = 37.5
-            # PasCityCの補正
-            elif model == "PasCityC":
-                df_merged.at[idx, '閾値_AT異常'] = 24.0
-                df_merged.at[idx, '閾値_画面強調'] = 24.0
-                df_merged.at[idx, '閾値_Lv1'] = 24.6
-                df_merged.at[idx, '閾値_Lv2'] = 25.3
-                df_merged.at[idx, '閾値_Lv3'] = 26.4
+            # グリッター・EBの補正 (添付画像3行目の値)
+            elif model == "グリッター・EB":
+                df_merged.at[idx, '閾値_AT異常'] = 20.5
+                df_merged.at[idx, '閾値_画面強調'] = 20.5
+                df_merged.at[idx, '閾値_Lv1'] = 23.9
+                df_merged.at[idx, '閾値_Lv2'] = 24.7
+                df_merged.at[idx, '閾値_Lv3'] = 26.3
 
         # 数値変換
         df_merged['電圧'] = pd.to_numeric(df_merged['電圧'], errors='coerce')
