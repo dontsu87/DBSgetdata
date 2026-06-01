@@ -238,11 +238,20 @@ def download_threshold_from_onedrive() -> bool:
         print("Warning: ONEDRIVE_SHARED_LINK が設定されていないため、閾値設定のダウンロードをスキップします。")
         return False
 
+    from src.config import ROOT_DIR
+    # テスト高速化モード: OneDriveのログイン・WebUIロード処理をスキップして既存のローカルファイルを利用する
+    if Config.RUN_MODE == "MAP_DATA_ONLY":
+        local_path = os.path.join(str(ROOT_DIR), "車両閾値設定.csv")
+        if os.path.exists(local_path):
+            print("Success: [MAP_DATA_ONLY] モードが有効です。OneDriveダウンロードをスキップし、ローカルの既存の『車両閾値設定.csv』をそのまま使用します。")
+            return True
+        else:
+            print("Warning: [MAP_DATA_ONLY] モードですが、ローカルに『車両閾値設定.csv』が存在しません。OneDriveからダウンロードを試みます。")
+
     from src.browser import build_driver, BrowserUtils
     from selenium.webdriver.common.by import By
     from selenium.webdriver.support import expected_conditions as EC
     from selenium.common.exceptions import TimeoutException
-    from src.config import ROOT_DIR
     import time
     import glob
 

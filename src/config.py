@@ -28,6 +28,9 @@ class Config:
     ONEDRIVE_SHARED_LINK = os.getenv("ONEDRIVE_SHARED_LINK", "")
     ONEDRIVE_PASSWORD = os.getenv("ONEDRIVE_PASSWORD", "")
 
+    # 動作モード判定: "MAP_DATA_ONLY" 等のテストショートカットに対応するため
+    RUN_MODE = os.getenv("DBS_RUN_MODE", "")
+
 
     # 作業員用ページ ログイン情報
     WORKER_ACCOUNT = os.getenv("DBS_WORKER_ACCOUNT", "")

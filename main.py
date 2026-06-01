@@ -29,7 +29,33 @@ def run_scraping(is_worker=False):
         Config.ACCOUNT = Config.WORKER_ACCOUNT
         Config.PASSWORD = Config.WORKER_PASSWORD
         Config.TOP_PAGE = Config.WORKER_TOP_PAGE
-        print("💡 作業員モード（固定IP制限・VPNなし）で実行します...")
+        print("作業員モード（固定IP制限・VPNなし）で実行します...")
+
+    # MAP_DATA_ONLY モードの場合、スクレイピングを全バイパスしてローカルの最新車両情報からマップデータ（JSON/JS）のみを再生成・再デプロイします
+    if Config.RUN_MODE == "MAP_DATA_ONLY":
+        print("\n[MAP_DATA_ONLY] モードが有効です。実機スクレイピング処理をスキップし、既存のローカル車両情報CSVから可視化用JSON/JSの生成とGitHub Pages更新のみを行います。")
+        try:
+            import glob
+            import os
+            vehicle_files = sorted(glob.glob(os.path.join(Config.OUTPUT_DIR, "車両情報_*.csv")))
+            if not vehicle_files:
+                print("Error: ローカルに『車両情報_*.csv』が存在しません。生成できませんでした。")
+                return
+            latest_vehicle_path = vehicle_files[-1]
+            print(f"元データとして最新のローカルCSVを使用します: {os.path.basename(latest_vehicle_path)}")
+            
+            # ダッシュボード用データの生成
+            print("ダッシュボード用データの自動生成を開始します...")
+            from src.dashboard_generator import generate_dashboard_json
+            json_path, js_path = generate_dashboard_json(latest_vehicle_path)
+            
+            if json_path and js_path:
+                print("Success: [MAP_DATA_ONLY] ダッシュボード用JSONとJSのローカル生成に成功しました。")
+            else:
+                print("Error: [MAP_DATA_ONLY] ダッシュボード用データの生成に失敗しました。")
+        except Exception as e:
+            print(f"Error: [MAP_DATA_ONLY] 処理中に例外が発生しました: {e}")
+        return
 
     start_time = datetime.now()
     print("=== ドコモ・バイクシェア 車両情報取得開始 ===")

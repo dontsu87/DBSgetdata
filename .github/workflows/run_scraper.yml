@@ -1,6 +1,12 @@
 name: DBS Scraper Auto Run
 
 on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
   schedule:
     # 毎時0分（1時間に1回）自動実行するスケジュール
     - cron: '*/15 * * * *'
@@ -45,6 +51,9 @@ jobs:
         DBS_TOP_PAGE: ${{ secrets.DBS_TOP_PAGE }}
         DBS_ACCOUNT: ${{ secrets.DBS_ACCOUNT }}
         DBS_PASSWORD: ${{ secrets.DBS_PASSWORD }}
+        
+        # 動作モード制御用変数 (MAP_DATA_ONLY 等の指定が可能)
+        DBS_RUN_MODE: ${{ secrets.DBS_RUN_MODE }}
         
         PYTHONIOENCODING: "utf-8"
       run: |
