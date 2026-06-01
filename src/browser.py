@@ -91,7 +91,7 @@ def build_driver():
     options.add_argument("--disable-sync")
     options.add_argument("--disable-translate")
     options.add_argument("--disable-notifications")
-    options.page_load_strategy = "eager"  # DOM読み込み完了時点で制御を戻し、重いアセットの遅延によるタイムアウトを回避
+    # eager 戦略は高速ですが、DOM破棄時にバックグラウンド通信がセグメンテーションフォルトを誘発するため標準(normal)に戻します
 
     service = Service(
         ChromeDriverManager().install(),

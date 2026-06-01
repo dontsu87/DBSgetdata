@@ -132,7 +132,16 @@ def run_scraping(is_worker=False):
 
         if open_vehicle_page(drv):
             print(f"車両情報をスクレイピング中...")
-            return scrape_vehicle_page(drv, area_name)
+            df = scrape_vehicle_page(drv, area_name)
+            
+            # 次のエリアへ行く前に about:blank を経由し、重いDOM（500行のテーブル）を明示的にメモリから解放する（クラッシュ対策）
+            try:
+                drv.get("about:blank")
+                time.sleep(0.5)
+            except Exception:
+                pass
+                
+            return df
         else:
             print(f"Error: エリア '{area_name}' の車両情報ページを開けませんでした。")
             return None
