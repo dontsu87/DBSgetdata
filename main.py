@@ -11,13 +11,21 @@ from src.exporter import export_to_onedrive, upload_to_onedrive_web
 from src.area_inspector import inspect_area_page
 from src.worker_inspector import inspect_worker_login_page
 
-def run_scraping():
+def run_scraping(is_worker=False):
     """
     通常スクレイピング処理。
     1つのエリア情報を取得するごとにブラウザを終了し、状態の不整合を防ぐため
     ログインから順番にやり直す堅牢なアプローチをとります。
     """
-    Config.validate()
+    Config.validate(is_worker=is_worker)
+    
+    if is_worker:
+        # 一時的にConfigのURLとID/PWを作業員用にオーバーライド
+        Config.ACCOUNT = Config.WORKER_ACCOUNT
+        Config.PASSWORD = Config.WORKER_PASSWORD
+        Config.TOP_PAGE = Config.WORKER_TOP_PAGE
+        print("💡 作業員モード（固定IP制限・VPNなし）で実行します...")
+
     start_time = datetime.now()
     print("=== ドコモ・バイクシェア 車両情報取得開始 ===")
 
@@ -110,8 +118,7 @@ def main():
         if args.inspect:
             inspect_worker_login_page()
         else:
-            print("作業員用ページからのスクレイピング機能は現在調査・調整フェーズです。")
-            print("まずは --worker --inspect オプションでログイン画面の特定を行ってください。")
+            run_scraping(is_worker=True)
     else:
         if args.inspect:
             inspect_area_page()
