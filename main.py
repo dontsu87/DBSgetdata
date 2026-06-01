@@ -95,9 +95,11 @@ def run_scraping(is_worker=False):
                 # --- [可視化自動連携] ダッシュボード用JSONの自動生成とOneDrive転送 ---
                 print("\n🔄 ダッシュボード用データの自動生成とアップロードを開始します...")
                 from src.dashboard_generator import generate_dashboard_json
-                json_path = generate_dashboard_json(output_path)
+                json_path, js_path = generate_dashboard_json(output_path)
                 if json_path:
                     upload_to_onedrive_web(json_path)
+                if js_path:
+                    upload_to_onedrive_web(js_path)
 
             elapsed = str(datetime.now() - start_time).split('.')[0]
             total_rows = sum(len(df) for df in all_data)

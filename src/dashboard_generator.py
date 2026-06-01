@@ -150,7 +150,22 @@ def generate_dashboard_json(latest_vehicle_path: str = None) -> str:
         with open(json_path, "w", encoding="utf-8") as f:
             json.dump(dashboard_payload, f, ensure_ascii=False, indent=2)
         print(f"Success: ダッシュボード用JSONを生成しました (警告車両総数: {total_alerts}台): {json_path}")
-        return json_path
     except Exception as e:
         print(f"Error: JSON出力に失敗しました: {e}")
-        return None
+        json_path = None
+
+    # 7. CORSセキュリティ制限回避用の JS ファイルの書き出し (ダブルクリック受入用)
+    js_filename = "dashboard_data.js"
+    js_path = os.path.join(Config.OUTPUT_DIR, js_filename)
+    
+    try:
+        with open(js_path, "w", encoding="utf-8") as f:
+            f.write("window.dashboardData = ")
+            json.dump(dashboard_payload, f, ensure_ascii=False, indent=2)
+            f.write(";")
+        print(f"Success: セキュリティ制限回避用JSを生成しました: {js_path}")
+    except Exception as e:
+        print(f"Error: JS出力に失敗しました: {e}")
+        js_path = None
+
+    return json_path, js_path

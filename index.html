@@ -291,6 +291,10 @@
     <!-- Leaflet.js Javascript (軽量地図モジュール) -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
+    <!-- セキュリティ制限(CORS)回避用のローカルデータ読み込みタグ (ダブルクリックで開く用) -->
+    <script src="output/dashboard_data.js"></script>
+    <script src="dashboard_data.js"></script>
+
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             let map;
@@ -312,37 +316,44 @@
             // ズームコントロールを手動で右上に小さく追加
             L.control.zoom({ position: 'topright' }).addTo(map);
 
-            // 2. 自動JSONデータ取得処理
-            // 同一フォルダにある dashboard_data.json を自動フェッチします
-            // OneDriveでWebホスティング等をする場合、同じ相対パスに配置することで完全自動でロードされます
-            fetch('output/dashboard_data.json')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    renderDashboard(data);
-                    document.getElementById('loader').style.display = 'none';
-                })
-                .catch(error => {
-                    console.error('データの取得に失敗しました:', error);
-                    // output/ 配下で見つからなかった場合、直下の相対パスも試す（ダッシュボードが直接ホストされる環境への対応）
-                    fetch('dashboard_data.json')
-                        .then(response => {
-                            if (!response.ok) throw new Error();
-                            return response.json();
-                        })
-                        .then(data => {
-                            renderDashboard(data);
-                            document.getElementById('loader').style.display = 'none';
-                        })
-                        .catch(() => {
-                            document.getElementById('loader').style.display = 'none';
-                            document.getElementById('error-screen').style.display = 'flex';
-                        });
-                });
+            // 2. 自動データ取得処理 (JSON/JS両対応ハイブリッド型)
+            // ダブルクリック時(file:///実行)は、事前にscriptタグで読み込まれた window.dashboardData を使用し、
+            // Webサーバー起動時は、fetchによる最新データの動的取得を行います。
+            if (window.dashboardData) {
+                console.log("Success: ローカルJS経由でデータを読み込みました (CORS制限回避)");
+                renderDashboard(window.dashboardData);
+                document.getElementById('loader').style.display = 'none';
+            } else {
+                // サーバー上で動かす場合はfetchを試みます
+                fetch('output/dashboard_data.json')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        renderDashboard(data);
+                        document.getElementById('loader').style.display = 'none';
+                    })
+                    .catch(error => {
+                        console.error('データの取得に失敗しました:', error);
+                        // 直下の相対パスも試す
+                        fetch('dashboard_data.json')
+                            .then(response => {
+                                if (!response.ok) throw new Error();
+                                return response.json();
+                            })
+                            .then(data => {
+                                renderDashboard(data);
+                                document.getElementById('loader').style.display = 'none';
+                            })
+                            .catch(() => {
+                                document.getElementById('loader').style.display = 'none';
+                                document.getElementById('error-screen').style.display = 'flex';
+                            });
+                    });
+            }
 
             // 3. データ描画ロジック
             function renderDashboard(data) {
