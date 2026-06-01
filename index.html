@@ -514,8 +514,9 @@
                 font-size: 12px;
             }
 
-            /* 1. 凡例パネルを画面下のスライド式ドロワーに変更 */
-            .map-legend {
+            /* 1. 凡例・サマリーパネルを画面下のスライド式ドロワーに変更 */
+            .map-legend, .summary-panel {
+                display: none !important; /* 初期表示は完全に非表示 */
                 position: fixed;
                 bottom: -400px; /* 初期状態は画面外に隠す */
                 left: 0;
@@ -534,40 +535,16 @@
                 border-right: none;
                 border-bottom: none;
                 background-color: rgba(30, 41, 59, 0.98);
+                z-index: 2001;
             }
 
-            .map-legend.show-mobile-drawer {
+            .map-legend.show-mobile-drawer, .summary-panel.show-mobile-drawer {
+                display: block !important; /* トグルの時だけ表示 */
                 bottom: 0px; /* 画面内にスライドイン */
             }
 
             .map-legend-title {
                 display: none; /* スマホ用タイトルがあるので従来のものは非表示 */
-            }
-
-            /* 2. サマリーパネルもスライド式ドロワーに変更 */
-            .summary-panel {
-                position: fixed;
-                bottom: -500px; /* 初期状態は画面外に隠す */
-                left: 0;
-                right: 0;
-                width: 100%;
-                min-width: 100%;
-                max-height: 80vh;
-                overflow-y: auto;
-                border-radius: 16px 16px 0 0;
-                margin: 0;
-                padding: 16px 20px 30px 20px;
-                box-sizing: border-box;
-                transition: bottom 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-                border-top: 3px solid #ef4444;
-                border-left: none;
-                border-right: none;
-                border-bottom: none;
-                background-color: rgba(30, 41, 59, 0.98);
-            }
-
-            .summary-panel.show-mobile-drawer {
-                bottom: 0px; /* 画面内にスライドイン */
             }
 
             /* モバイル用ドロワーヘッダー（閉じるボタン付き）の有効化 */
@@ -1043,7 +1020,8 @@
                     tableContainer.style.display = 'none';
                 }
 
-                document.getElementById('summary-panel').style.display = 'block';
+                // スマホ表示でオーバーレイされないよう、inline styleのdisplay:noneをクリアし、CSSクラス制御に委ねます。
+                document.getElementById('summary-panel').style.display = '';
 
                 // エリアやフィルター変更時に、存在するピンが綺麗に収まる範囲へ地図をスムーズズーム
                 if (validCoordinates.length > 0) {
