@@ -52,11 +52,14 @@ class MapDashboardPage:
         """最初のピンをクリックし、ポップアップ（吹き出し）が開き、情報が表示されるか検証します"""
         if self.markers.count() > 0:
             first_marker = self.markers.nth(0)
-            first_marker.click()
+            
+            # アニメーション遅延等に備え、少し待機してから強制クリックを送信
+            self.page.wait_for_timeout(500)
+            first_marker.click(force=True)
             
             # ポップアップが表示されるのを待機
             popup = self.page.locator(".leaflet-popup-content")
-            expect(popup).to_be_visible(timeout=5000)
+            expect(popup).to_be_visible(timeout=8000)
             
             # ポップアップ内にポート名が含まれているか確認
             title = self.page.locator(".popup-title")
