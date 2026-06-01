@@ -8,8 +8,8 @@ on:
     branches:
       - master
   schedule:
-    # 毎時0分（1時間に1回）自動実行するスケジュール
-    - cron: '*/15 * * * *'
+    # 5分おきに自動実行するスケジュール
+    - cron: '*/5 * * * *'
   workflow_dispatch: # 手動起動用
 
 jobs:
