@@ -7,6 +7,9 @@
 *.png
 *.log
 *.json
+output/
+debug/
+scratch/
 
 
 # Python cache / virtual environments
