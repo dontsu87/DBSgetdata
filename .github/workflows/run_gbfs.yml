@@ -1,0 +1,49 @@
+name: DBS GBFS Daily Sync
+
+on:
+  schedule:
+    # 毎日午前3時0分 JST (18:00 UTC) に実行
+    - cron: '0 18 * * *'
+  workflow_dispatch: # 手動起動用
+
+jobs:
+  run-gbfs:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run GBFS Sync and Upload to OneDrive
+      env:
+        HEADLESS: "True"
+        
+        # OneDrive用
+        ONEDRIVE_SHARED_LINK: ${{ secrets.ONEDRIVE_SHARED_LINK }}
+        ONEDRIVE_PASSWORD: ${{ secrets.ONEDRIVE_PASSWORD }}
+        
+        PYTHONIOENCODING: "utf-8"
+      run: |
+        python main.py --gbfs
+
+    - name: Commit and push updated GBFS data cache
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        # Force add output directory's daily GBFS csv/json to Git so it is pushed and cached
+        git add -f output/gbfs_stations_*.csv output/gbfs_stations_*.json || true
+        git commit -m "Auto-update daily GBFS stations list cache [skip ci]" || true
+        git push origin master || true
