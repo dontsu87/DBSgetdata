@@ -1,0 +1,43 @@
+name: DBS Scraper Auto Run
+
+on:
+  schedule:
+    # 毎時0分（1時間に1回）自動実行するスケジュール（UTC時間基準なので日本時間から9時間引いた表記です）
+    # ※最初は動作確認のため手動実行でテストし、間隔は後から自在に変更可能です。
+    - cron: '0 * * * *'
+  workflow_dispatch: # GitHubの管理画面から「今すぐ実行」ボタンで手動起動できるようにする設定
+
+jobs:
+  run-scraper:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run Scraper and Upload to OneDrive
+      env:
+        # GitHub Secrets（金庫）から機密情報を安全にプログラムに注入
+        ENTPOS_URL: ${{ secrets.ENTPOS_URL }}
+        ENTPOS_USER: ${{ secrets.ENTPOS_USER }}
+        ENTPOS_PASSWORD: ${{ secrets.ENTPOS_PASSWORD }}
+        ONEDRIVE_SHARE_URL: ${{ secrets.ONEDRIVE_SHARE_URL }}
+        ONEDRIVE_PASSWORD: ${{ secrets.ONEDRIVE_PASSWORD }}
+        # 管理者モードが必要な場合のためにダミーとして置いておきます
+        ENTSYS_URL: ${{ secrets.ENTSYS_URL }}
+        ENTSYS_USER: ${{ secrets.ENTSYS_USER }}
+        ENTSYS_PASSWORD: ${{ secrets.ENTSYS_PASSWORD }}
+        PYTHONIOENCODING: "utf-8"
+      run: |
+        # --headless フラグを付与してクラウドの仮想画面上でChromeを実行します
+        python main.py --headless
