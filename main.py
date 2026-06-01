@@ -9,6 +9,7 @@ from src.auth import login_and_get_areas
 from src.scraper import open_vehicle_page, scrape_vehicle_page
 from src.exporter import export_to_onedrive, upload_to_onedrive_web
 from src.area_inspector import inspect_area_page
+from src.worker_inspector import inspect_worker_login_page
 
 def run_scraping():
     """
@@ -96,14 +97,26 @@ def main():
     parser.add_argument(
         "--inspect",
         action="store_true",
-        help="ログイン直後のエリア選択画面を安全に調査し、スクリーンショットとHTMLを保存します（運営データには触れません）"
+        help="安全にログイン画面またはエリア選択画面を調査し、スクリーンショットとHTMLを保存します（データには触れません）"
+    )
+    parser.add_argument(
+        "--worker",
+        action="store_true",
+        help="固定IP制限のない作業員用ページを使用して実行します"
     )
     args = parser.parse_args()
 
-    if args.inspect:
-        inspect_area_page()
+    if args.worker:
+        if args.inspect:
+            inspect_worker_login_page()
+        else:
+            print("作業員用ページからのスクレイピング機能は現在調査・調整フェーズです。")
+            print("まずは --worker --inspect オプションでログイン画面の特定を行ってください。")
     else:
-        run_scraping()
+        if args.inspect:
+            inspect_area_page()
+        else:
+            run_scraping()
 
 if __name__ == "__main__":
     main()

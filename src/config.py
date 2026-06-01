@@ -28,14 +28,27 @@ class Config:
     ONEDRIVE_SHARED_LINK = os.getenv("ONEDRIVE_SHARED_LINK", "")
     ONEDRIVE_PASSWORD = os.getenv("ONEDRIVE_PASSWORD", "")
 
+    # 作業員用ページ ログイン情報
+    WORKER_ACCOUNT = os.getenv("DBS_WORKER_ACCOUNT", "")
+    WORKER_PASSWORD = os.getenv("DBS_WORKER_PASSWORD", "")
+    WORKER_TOP_PAGE = os.getenv("DBS_WORKER_TOP_PAGE", "")
+
     @classmethod
-    def validate(cls):
+    def validate(cls, is_worker=False):
         """設定値のチェックを行い、不足している場合は例外を発生させます。"""
         missing = []
-        if not cls.ACCOUNT:
-            missing.append("DBS_ACCOUNT")
-        if not cls.PASSWORD:
-            missing.append("DBS_PASSWORD")
+        if is_worker:
+            if not cls.WORKER_ACCOUNT:
+                missing.append("DBS_WORKER_ACCOUNT")
+            if not cls.WORKER_PASSWORD:
+                missing.append("DBS_WORKER_PASSWORD")
+            if not cls.WORKER_TOP_PAGE:
+                missing.append("DBS_WORKER_TOP_PAGE")
+        else:
+            if not cls.ACCOUNT:
+                missing.append("DBS_ACCOUNT")
+            if not cls.PASSWORD:
+                missing.append("DBS_PASSWORD")
             
         if missing:
             raise ValueError(
