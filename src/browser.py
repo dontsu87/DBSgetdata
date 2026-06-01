@@ -82,17 +82,15 @@ def build_driver():
 
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
-    # GitHub Actions (Docker/Linux) 環境での Chrome クラッシュ防止
+    # GitHub Actions (Docker/Linux) 環境での Chrome クラッシュ防止（正式推奨フラグ）
     options.add_argument("--disable-gpu")
+    options.add_argument("--disable-setuid-sandbox")
     options.add_argument("--disable-software-rasterizer")
     options.add_argument("--disable-background-networking")
     options.add_argument("--disable-extensions")
     options.add_argument("--disable-sync")
     options.add_argument("--disable-translate")
     options.add_argument("--disable-notifications")
-    options.add_argument("--single-process")           # プロセス分離による /dev/shm 消費を抑制
-    options.add_argument("--memory-pressure-off")      # メモリプレッシャーによる強制クラッシュを抑制
-    options.add_argument("--shm-size=256m")            # 共有メモリを明示的に確保
     options.page_load_strategy = "eager"  # DOM読み込み完了時点で制御を戻し、重いアセットの遅延によるタイムアウトを回避
 
     service = Service(
