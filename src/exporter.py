@@ -228,3 +228,125 @@ def upload_to_onedrive_web(local_file_path: str) -> bool:
         return False
     finally:
         driver.quit()
+
+def download_threshold_from_onedrive() -> bool:
+    """
+    OneDriveのルートフォルダから最新の「車両閾値設定.csv」をダウンロードし、
+    プロジェクトのルートフォルダへ保存（上書き）します。
+    """
+    if not Config.ONEDRIVE_SHARED_LINK:
+        print("Warning: ONEDRIVE_SHARED_LINK が設定されていないため、閾値設定のダウンロードをスキップします。")
+        return False
+
+    from src.browser import build_driver, BrowserUtils
+    from selenium.webdriver.common.by import By
+    from selenium.webdriver.support import expected_conditions as EC
+    from selenium.common.exceptions import TimeoutException
+    from src.config import ROOT_DIR
+    import time
+    import glob
+
+    # まずローカルの古い「車両閾値設定.csv」があれば退避または削除する
+    local_path = os.path.join(str(ROOT_DIR), "車両閾値設定.csv")
+    backup_path = os.path.join(str(ROOT_DIR), "車両閾値設定_backup.csv")
+    if os.path.exists(local_path):
+        try:
+            if os.path.exists(backup_path):
+                os.remove(backup_path)
+            os.rename(local_path, backup_path)
+            print("Info: ローカルの既存の閾値設定ファイルをバックアップへ退避しました。")
+        except Exception as e:
+            print(f"Warning: 既存ファイルの退避に失敗しました: {e}")
+
+    print("Info: OneDriveから「車両閾値設定.csv」のダウンロードを開始します...")
+    driver = build_driver()
+    utils = BrowserUtils(driver)
+
+    try:
+        # 1. 共有リンクにアクセス
+        driver.get(Config.ONEDRIVE_SHARED_LINK)
+
+        # 2. パスワード画面の処理
+        try:
+            pwd_input = utils.W(8).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, "input[type='password'], #sharepoint-password-input"))
+            )
+            pwd_input.clear()
+            pwd_input.send_keys(Config.ONEDRIVE_PASSWORD)
+            btn = driver.find_element(
+                By.CSS_SELECTOR,
+                "input[type='submit'], button[type='submit'], input[value='確認'], input[value='Verify'], button.ms-Button--primary"
+            )
+            utils.click_js(btn)
+            time.sleep(5)
+        except TimeoutException:
+            pass
+
+        # 3. フォルダ一覧の読み込みを待機
+        utils.W(15).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "[role='row'], [role='gridcell']"))
+        )
+        time.sleep(3)
+
+        # 4. 「車両閾値設定.csv」の行要素を探してクリック（選択）
+        target_name = "車両閾値設定.csv"
+        xpath_exprs = [
+            f"//span[contains(text(), '{target_name}')]",
+            f"//*[text()='{target_name}']",
+            f"//button[contains(text(), '{target_name}')]"
+        ]
+        
+        file_element = None
+        for xpath in xpath_exprs:
+            try:
+                el = driver.find_element(By.XPATH, xpath)
+                if el.is_displayed():
+                    file_element = el
+                    break
+            except Exception:
+                continue
+
+        if not file_element:
+            print(f"Error: OneDrive上に「{target_name}」が見つかりませんでした。バックアップを復元します。")
+            if os.path.exists(backup_path):
+                os.rename(backup_path, local_path)
+            return False
+
+        # ファイル要素をクリックして「選択」する
+        print("Info: ファイル要素を選択します...")
+        utils.click_js(file_element)
+        time.sleep(2)
+
+        # 5. ダウンロードボタンをクリック
+        print("Info: ダウンロードボタンの表示を待機中...")
+        download_btn = utils.W(10).until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, "button[data-automationid='downloadCommand']"))
+        )
+        print("Info: ダウンロードを開始します...")
+        utils.click_js(download_btn)
+
+        # ダウンロード完了を待機 (最大15秒)
+        print("Info: ダウンロード完了を待機中...")
+        for _ in range(15):
+            # Chromeのダウンロード中一時ファイルがないか、かつ目的のファイルが存在するかチェック
+            if os.path.exists(local_path) and not any(".crdownload" in f for f in os.listdir(str(ROOT_DIR))):
+                print("Success: OneDriveからの「車両閾値設定.csv」のダウンロードが正常に完了しました！")
+                if os.path.exists(backup_path):
+                    os.remove(backup_path) # 不要になったバックアップを削除
+                return True
+            time.sleep(1)
+
+        print("Error: ダウンロードがタイムアウトしました。バックアップを復元します。")
+        if os.path.exists(backup_path):
+            if os.path.exists(local_path):
+                os.remove(local_path)
+            os.rename(backup_path, local_path)
+        return False
+
+    except Exception as e:
+        print(f"Error: 閾値設定ファイルのダウンロード中に例外が発生しました: {e}")
+        if os.path.exists(backup_path) and not os.path.exists(local_path):
+            os.rename(backup_path, local_path)
+        return False
+    finally:
+        driver.quit()

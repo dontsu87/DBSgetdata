@@ -43,6 +43,16 @@ def build_driver():
     """Chrome WebDriverを構築します。"""
     options = webdriver.ChromeOptions()
 
+    # 自動ダウンロードフォルダの設定 (プロジェクトのルートフォルダを指定)
+    from src.config import ROOT_DIR
+    prefs = {
+        "download.default_directory": str(ROOT_DIR),
+        "download.prompt_for_download": False,
+        "download.directory_upgrade": True,
+        "safebrowsing.enabled": True
+    }
+    options.add_experimental_option("prefs", prefs)
+
     # ログ抑制設定
     options.add_experimental_option("excludeSwitches", ["enable-logging"])
     options.add_argument("--log-level=3")

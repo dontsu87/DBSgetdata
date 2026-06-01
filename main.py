@@ -19,6 +19,10 @@ def run_scraping(is_worker=False):
     ログインから順番にやり直す堅牢なアプローチをとります。
     """
     Config.validate(is_worker=is_worker)
+
+    # 0. OneDrive から最新の『車両閾値設定.csv』をダウンロードしてローカル同期する
+    from src.exporter import download_threshold_from_onedrive
+    download_threshold_from_onedrive()
     
     if is_worker:
         # 一時的にConfigのURLとID/PWを作業員用にオーバーライド
