@@ -1,0 +1,7 @@
+検出ボタン数: 6
+ボタン 1: attrs=[type='submit', value='トップ画面へ'], 周辺テキスト=''
+ボタン 2: attrs=[type='submit', value='トップ画面へ'], 周辺テキスト=''
+ボタン 3: attrs=[type='submit', value='トップ画面へ'], 周辺テキスト=''
+ボタン 4: attrs=[type='submit', value='トップ画面へ'], 周辺テキスト=''
+ボタン 5: attrs=[type='submit', value='トップ画面へ'], 周辺テキスト=''
+ボタン 6: attrs=[type='submit', value='トップ画面へ'], 周辺テキスト=''
