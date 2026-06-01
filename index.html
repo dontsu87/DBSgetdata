@@ -245,6 +245,55 @@
             padding: 20px;
             text-align: center;
         }
+
+        /* ========================================== */
+        /* 新しいカスタムマーカー（DivIcon）用スタイル */
+        /* ========================================== */
+        
+        /* 正常なポート（グレー、数字なし） */
+        .port-marker-normal {
+            background-color: #94a3b8;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            width: 20px !important;
+            height: 20px !important;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 警告ありのポート（高輝度赤色、中央にアラート台数を表示） */
+        .port-marker-alert {
+            background-color: #ef4444;
+            border: 2.5px solid #ffffff;
+            border-radius: 50%;
+            width: 32px !important;
+            height: 32px !important;
+            box-shadow: 0 4px 8px rgba(239, 68, 68, 0.5), 0 2px 4px rgba(0,0,0,0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 900;
+            text-align: center;
+            line-height: 1;
+            /* 脈動するようなアニメーションを加えて視認性を極限まで高めます */
+            animation: pulse-border 2s infinite;
+        }
+
+        @keyframes pulse-border {
+            0% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7), 0 2px 4px rgba(0,0,0,0.3);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(239, 68, 68, 0), 0 2px 4px rgba(0,0,0,0.3);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0), 0 2px 4px rgba(0,0,0,0.3);
+            }
+        }
     </style>
 </head>
 <body>
@@ -374,23 +423,34 @@
                     validCoordinates.push([lat, lon]);
 
                     // ピン（マーカー）の作成
-                    // 警告対象の車両がある場合とない場合で、直感的に色とサイズを変えます
-                    let markerColor = "#94a3b8"; // デフォルト: 警告なし（グレー）
-                    let markerRadius = 12;        // 小さめ
+                    let markerIcon;
+                    let zIndexOrder = 100; // デフォルトの重なり順
                     let isAlertPort = port.alert_bikes_count > 0;
 
                     if (isAlertPort) {
-                        markerColor = "#ef4444"; // 警告あり: 高輝度レッド
-                        markerRadius = 18;        // タップしやすいように大きく表示
+                        // 警告あり：赤色の巨大バブル ＋ 中央に交換必要台数を配置 ＋ 脈動アニメーション
+                        markerIcon = L.divIcon({
+                            className: 'port-marker-alert',
+                            html: `<div>${port.alert_bikes_count}</div>`,
+                            iconSize: [32, 32],
+                            iconAnchor: [16, 16] // 中央に固定
+                        });
+                        zIndexOrder = 10000; // 重なった時に最前面に強制表示
+                    } else {
+                        // 正常：グレーの小さな丸
+                        markerIcon = L.divIcon({
+                            className: 'port-marker-normal',
+                            html: '',
+                            iconSize: [20, 20],
+                            iconAnchor: [10, 10] // 中央に固定
+                        });
                     }
 
-                    // Leafletの軽量ベクターサークルマーカーを使用 (画像のロードがないため爆速)
-                    const marker = L.circleMarker([lat, lon], {
-                        radius: markerRadius,
-                        fillColor: markerColor,
-                        color: "#ffffff",     // 境界線は白
-                        weight: 2,
-                        fillOpacity: 0.9
+                    // LeafletのDivIconマーカーを使用
+                    const marker = L.marker([lat, lon], {
+                        icon: markerIcon,
+                        zIndexOffset: zIndexOrder, // 最前面への押し上げ
+                        riseOnHover: true          // ホバー・タッチ時に最前面へ
                     }).addTo(map);
 
                     // タップ（クリック）時のポップアップを構成

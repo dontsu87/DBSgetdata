@@ -19,8 +19,8 @@ class MapDashboardPage:
         self.loader = page.locator("#loader")
         self.error_screen = page.locator("#error-screen")
         
-        # Leafletのサークルマーカー (svgのpath要素として描画されます)
-        self.markers = page.locator("path.leaflet-interactive")
+        # LeafletのDivIconマーカー (カスタムHTML要素として描画されます)
+        self.markers = page.locator(".port-marker-alert, .port-marker-normal")
 
     def navigate(self, url: str):
         """ページへアクセスし、ローディング画面が消えるまで待機します"""
