@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import sys
+import time
 import argparse
 import pandas as pd
 from datetime import datetime
@@ -46,6 +47,10 @@ def run_scraping(is_worker=False):
 
     # 2. 各エリアについて個別にログインしてスクレイピングを行う（状態不整合を避ける安全設計）
     for idx, area_name in enumerate(area_names):
+        if idx > 0:
+            print("⏳ サーバー負荷軽減のため、3秒間待機します...")
+            time.sleep(3)
+
         print(f"\n[{idx+1}/{len(area_names)}] 🔄 エリア '{area_name}' の取得を開始します...")
         
         driver = build_driver()
@@ -108,13 +113,16 @@ def main():
         help="安全にログイン画面またはエリア選択画面を調査し、スクリーンショットとHTMLを保存します（データには触れません）"
     )
     parser.add_argument(
-        "--worker",
+        "--admin",
         action="store_true",
-        help="固定IP制限のない作業員用ページを使用して実行します"
+        help="従来の事業者用管理画面（ENTSYS・要VPN）を使用して実行します"
     )
     args = parser.parse_args()
 
-    if args.worker:
+    # デフォルトを作業員モード(is_worker=True)とする設計
+    is_worker = not args.admin
+
+    if is_worker:
         if args.inspect:
             inspect_worker_login_page()
         else:
@@ -123,7 +131,7 @@ def main():
         if args.inspect:
             inspect_area_page()
         else:
-            run_scraping()
+            run_scraping(is_worker=False)
 
 if __name__ == "__main__":
     main()

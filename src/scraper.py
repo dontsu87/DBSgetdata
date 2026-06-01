@@ -18,28 +18,38 @@ class ScraperLocators:
     ROWS = (By.CSS_SELECTOR, "#scroll_table > table > tbody > tr")
 
 def open_vehicle_page(driver) -> bool:
-    """車両情報ページへ安全に遷移します。"""
+    """車両情報ページへ安全に遷移します。一時的な遅延に備えて1回だけリトライを行います。"""
     utils = BrowserUtils(driver)
-    try:
-        btn = utils.W(utils.wait_short).until(EC.element_to_be_clickable(Locators.BTN_VEHICLE))
-        utils.click_js(btn)
-        
-        # 画面切り替えの待機
+    max_attempts = 2
+    for attempt in range(1, max_attempts + 1):
         try:
-            utils.W(5).until(EC.staleness_of(btn))
-        except Exception:
-            pass
+            btn = utils.W(utils.wait_short).until(EC.element_to_be_clickable(Locators.BTN_VEHICLE))
+            utils.click_js(btn)
+            
+            # 画面切り替えの待機
+            try:
+                utils.W(5).until(EC.staleness_of(btn))
+            except Exception:
+                pass
 
-        utils.W(utils.wait_long).until(
-            EC.any_of(
-                EC.presence_of_element_located(ScraperLocators.DD_PAGE_SIZE),
-                EC.presence_of_element_located(ScraperLocators.DD_CATEGORY),
+            utils.W(utils.wait_long).until(
+                EC.any_of(
+                    EC.presence_of_element_located(ScraperLocators.DD_PAGE_SIZE),
+                    EC.presence_of_element_located(ScraperLocators.DD_CATEGORY),
+                )
             )
-        )
-        return True
-    except TimeoutException:
-        print("車両情報ページに到達できませんでした。")
-        return False
+            return True
+        except TimeoutException:
+            if attempt < max_attempts:
+                print(f"⚠️ 車両情報ページへの遷移にタイムアウトしました（試行 {attempt}/{max_attempts}）。3秒後に再試行します...")
+                time.sleep(3)
+                try:
+                    driver.refresh()
+                except Exception:
+                    pass
+            else:
+                print("❌ 車両情報ページに到達できませんでした。")
+                return False
 
 def set_page_size_500(driver):
     """表示件数を500件に切り替えます。"""
