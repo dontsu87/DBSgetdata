@@ -60,76 +60,115 @@ def run_scraping(is_worker=False):
     start_time = datetime.now()
     print("=== ドコモ・バイクシェア 車両情報取得開始 ===")
 
-    # 1. 最初に全エリアの数とエリア名を取得するために一度ログインする
-    print("🔍 エリア一覧の取得を開始します...")
+    # 1. ログインして全エリアの一覧を取得
+    print("エリア一覧の取得を開始します...")
     driver = build_driver()
+    
     try:
         areas_info = login_and_get_areas(driver)
         area_names = [area["area_name"] for area in areas_info]
-        print(f"✅ 管轄エリアを {len(area_names)} 個検出しました: {', '.join(area_names)}")
+        print(f"管轄エリアを {len(area_names)} 個検出しました: {', '.join(area_names)}")
     except Exception as e:
-        print(f"❌ 初期エリア一覧の取得に失敗しました: {e}")
-        return
-    finally:
+        print(f"Error: 初期エリア一覧の取得に失敗しました: {e}")
         driver.quit()
+        return
 
     all_data = []
+    area_selection_url = driver.current_url  # ログイン後のエリア選択画面のURLを記憶
 
-    # 2. 各エリアについて個別にログインしてスクレイピングを行う（状態不整合を避ける安全設計）
+    # 2. 同一ブラウザセッションを用いて全エリアを連続巡回する超高速モード
     for idx, area_name in enumerate(area_names):
         if idx > 0:
             print("⏳ サーバー負荷軽減のため、3秒間待機します...")
             time.sleep(3)
 
-        print(f"\n[{idx+1}/{len(area_names)}] 🔄 エリア '{area_name}' の取得を開始します...")
+        print(f"\n[{idx+1}/{len(area_names)}] エリア '{area_name}' の取得を開始します...")
         
-        driver = build_driver()
         try:
-            # ログインとエリア一覧の再取得
-            areas = login_and_get_areas(driver)
+            # エリア選択画面のURLに直接ジャンプし、セッションを維持したまま遷移
+            if driver.current_url != area_selection_url:
+                driver.get(area_selection_url)
+                time.sleep(2)
             
-            # 該当するエリアのボタンを特定してクリック
-            target_area = next((a for a in areas if a["area_name"] == area_name), None)
-            if not target_area:
-                print(f"⚠️ エリア '{area_name}' が見つかりません。スキップします。")
-                continue
+            # エリア選択画面から再度エリアボタンの一覧を検出し、対象エリアをクリック
+            from selenium.webdriver.common.by import By
+            from src.auth import Locators
+            
+            # 再読み込み待機
+            from selenium.webdriver.support.ui import WebDriverWait
+            from selenium.webdriver.support import expected_conditions as EC
+            WebDriverWait(driver, 15).until(EC.presence_of_element_located(Locators.BTN_TO_TOP))
+            
+            buttons = driver.find_elements(*Locators.BTN_TO_TOP)
+            target_btn = None
+            
+            # ボタンの隣のテキスト（エリア名）を照合してターゲットの要素を特定
+            for btn in buttons:
+                try:
+                    tr = btn.find_element(By.XPATH, "./ancestor::tr[1]")
+                    tds = tr.find_elements(By.TAG_NAME, "td")
+                    if len(tds) >= 2:
+                        area_id = tds[0].text.strip()
+                        area_real_name = tds[1].text.strip()
+                        curr_name = f"{area_id}_{area_real_name}"
+                        if curr_name == area_name:
+                            target_btn = btn
+                            break
+                except Exception:
+                    continue
+            
+            if not target_btn:
+                # インデックスベースでのフォールバック特定
+                if idx < len(buttons):
+                    target_btn = buttons[idx]
+                else:
+                    print(f"Warning: エリア '{area_name}' のボタンを特定できませんでした。スキップします。")
+                    continue
 
             # エリアの「トップ画面へ」をクリック
-            print(f"👉 エリア '{area_name}' のトップ画面へ遷移中...")
-            driver.execute_script("arguments[0].click();", target_area["element"])
+            print(f"エリア '{area_name}' のトップ画面へ遷移中...")
+            driver.execute_script("arguments[0].click();", target_btn)
+            time.sleep(2)
             
             # 車両情報ページへ遷移
             if open_vehicle_page(driver):
-                print(f"📥 車両情報をスクレイピング中...")
+                print(f"車両情報をスクレイピング中...")
                 df = scrape_vehicle_page(driver, area_name)
                 all_data.append(df)
-                print(f"✅ エリア '{area_name}' のデータ {len(df)} 件を取得しました。")
+                print(f"Success: エリア '{area_name}' のデータ {len(df)} 件を取得しました。")
             else:
-                print(f"❌ エリア '{area_name}' の車両情報ページを開けませんでした。")
+                print(f"Error: エリア '{area_name}' の車両情報ページを開けませんでした。")
 
         except Exception as e:
-            print(f"❌ エリア '{area_name}' の処理中にエラーが発生しました: {e}")
-        finally:
-            driver.quit()
+            print(f"Error: エリア '{area_name}' の処理中にエラーが発生しました: {e}")
+            # エラー発生時はセッション切れを防ぐため、一度元のエリア選択URLへ強制復帰を試みる
+            try:
+                driver.get(area_selection_url)
+            except Exception:
+                pass
+            
+    # 全巡回完了後に初めてブラウザセッションを完全に終了
+    driver.quit()
 
-    # 3. データの統合とOneDriveへの書き出し
+    # 3. データの統合と超高速マップ連携処理
     if all_data:
         print("\n💾 データを統合してCSVファイルに書き出しています...")
         try:
             output_path = export_to_onedrive(all_data)
             
-            # OneDriveへの自動アップロード実行
             if output_path:
-                upload_to_onedrive_web(output_path)
-                
-                # --- [可視化自動連携] ダッシュボード用JSONの自動生成とOneDrive転送 ---
-                print("\n🔄 ダッシュボード用データの自動生成とアップロードを開始します...")
+                # --- 【超高速マップ連携】最優先でマップ用 JSON と JS をローカル生成し、即時処理完了にする ---
+                print("\n🔄 [最優先] マップ可視化用データの自動生成を開始します...")
                 from src.dashboard_generator import generate_dashboard_json
                 json_path, js_path = generate_dashboard_json(output_path)
-                if json_path:
-                    upload_to_onedrive_web(json_path)
-                if js_path:
-                    upload_to_onedrive_web(js_path)
+                
+                if json_path and js_path:
+                    print("✅ マップデータのローカル生成に成功しました。この後 GitHub Actions 経由で GitHub Pages に即時デプロイされます！")
+                
+                # --- 【非同期型・蓄積用】時間のかかる OneDrive Web への CSV バックアップ転送は最後にゆっくり実行 ---
+                print("\n📁 [バックアップ] 蓄積用データを OneDrive へアップロードします (約25秒)...")
+                upload_to_onedrive_web(output_path)
+                print("✅ OneDrive への蓄積用データのバックアップアップロード処理が完了しました。")
 
             elapsed = str(datetime.now() - start_time).split('.')[0]
             total_rows = sum(len(df) for df in all_data)
