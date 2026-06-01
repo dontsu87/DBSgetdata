@@ -1,8 +1,0 @@
-作業員ログイン画面入力要素数: 7
-Input 1: name='EventNo', id='N/A', type='hidden', attrs=[type='hidden', name='EventNo', value='220101']
-Input 2: name='GarblePrevention', id='N/A', type='hidden', attrs=[type='hidden', name='GarblePrevention', value='ＰＯＳＴデータ']
-Input 3: name='Account', id='N/A', type='text', attrs=[type='text', name='Account', size='25']
-Input 4: name='Password', id='N/A', type='password', attrs=[type='password', name='Password', size='25']
-Input 5: name='PosFlg', id='N/A', type='hidden', attrs=[type='hidden', name='PosFlg', value='1']
-Input 6: name='AndroidDLFlg', id='N/A', type='hidden', attrs=[type='hidden', name='AndroidDLFlg', value='0']
-Input 7: name='N/A', id='N/A', type='submit', attrs=[type='submit', value='ログイン']
