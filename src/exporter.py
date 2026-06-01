@@ -116,8 +116,51 @@ def upload_to_onedrive_web(local_file_path: str) -> bool:
             )
             utils.click_js(btn)
             print("Info: パスワードを送信しました。")
+            time.sleep(5)
         except TimeoutException:
             print("Info: パスワード入力画面は要求されませんでした。直接フォルダに進みます。")
+
+        # 2.5 子フォルダへのナビゲーション (車両情報 or GBFS)
+        filename = os.path.basename(local_file_path)
+        subfolder_name = None
+        if "車両情報" in filename:
+            subfolder_name = "車両情報"
+        elif "gbfs" in filename.lower() or "station" in filename.lower():
+            subfolder_name = "GBFS"
+
+        if subfolder_name:
+            print(f"Info: 子フォルダ「{subfolder_name}」への遷移を試みます...")
+            # フォルダ一覧の読み込みを待機
+            utils.W(15).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, "[role='row'], [role='gridcell'], button[data-automationid='DetailsRowLink']"))
+            )
+            time.sleep(3)
+            
+            # フォルダ要素を検索
+            xpath_exprs = [
+                f"//span[contains(text(), '{subfolder_name}')]",
+                f"//*[text()='{subfolder_name}']",
+                f"//button[contains(text(), '{subfolder_name}')]",
+                f"//a[contains(text(), '{subfolder_name}')]"
+            ]
+            
+            folder_element = None
+            for xpath in xpath_exprs:
+                try:
+                    el = driver.find_element(By.XPATH, xpath)
+                    if el.is_displayed():
+                        folder_element = el
+                        print(f"Info: 子フォルダ要素を発見しました: {xpath}")
+                        break
+                except Exception:
+                    continue
+            
+            if folder_element:
+                utils.click_js(folder_element)
+                print(f"Info: 子フォルダ「{subfolder_name}」をクリックしました。遷移を待機します...")
+                time.sleep(5)
+            else:
+                print(f"Warning: 子フォルダ「{subfolder_name}」が見つかりませんでした。ルートにアップロードします。")
 
         # 3. アップロードメニューのクリックとファイルの選択
         print("Info: アップロードボタンの表示を待機中...")

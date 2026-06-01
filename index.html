@@ -111,13 +111,41 @@
             left: 15px;
             background-color: rgba(30, 41, 59, 0.95);
             color: white;
-            padding: 12px 18px;
+            padding: 14px 18px;
             border-radius: 8px;
             font-size: 14px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.25);
             z-index: 1000;
-            pointer-events: none;
+            pointer-events: auto;
             border-left: 5px solid #ef4444;
+            min-width: 360px;
+        }
+
+        /* サマリーマトリクス表のスタイル */
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+            font-size: 11px;
+            color: #e2e8f0;
+            border: 1px solid #475569;
+        }
+        .summary-table th, .summary-table td {
+            border: 1px solid #475569;
+            padding: 6px 4px;
+            text-align: center;
+        }
+        .summary-table th {
+            background-color: #334155;
+            font-weight: bold;
+            color: #cbd5e1;
+        }
+        .summary-table td.count-cell {
+            font-weight: bold;
+        }
+        .summary-table td.has-count {
+            background-color: rgba(0, 122, 255, 0.25);
+            color: #60a5fa;
         }
 
         .summary-panel div {
@@ -250,6 +278,18 @@
         /* 新しいカスタムマーカー（DivIcon）用スタイル */
         /* ========================================== */
         
+        /* 共通マーカー設定 */
+        .port-marker-base {
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            line-height: 1;
+        }
+
         /* 正常なポート（グレー、数字なし） */
         .port-marker-normal {
             background-color: #94a3b8;
@@ -258,41 +298,195 @@
             width: 20px !important;
             height: 20px !important;
             box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-            display: flex;
-            justify-content: center;
-            align-items: center;
         }
 
-        /* 警告ありのポート（高輝度赤色、中央にアラート台数を表示） */
-        .port-marker-alert {
-            background-color: #ef4444;
+        /* レベル5: AT異常 (黒紫系統、最大) */
+        .port-marker-level5 {
+            background-color: #4c1d95; /* 濃い黒紫 */
             border: 2.5px solid #ffffff;
             border-radius: 50%;
             width: 32px !important;
             height: 32px !important;
-            box-shadow: 0 4px 8px rgba(239, 68, 68, 0.5), 0 2px 4px rgba(0,0,0,0.3);
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            box-shadow: 0 4px 8px rgba(76, 29, 149, 0.6), 0 2px 4px rgba(0,0,0,0.3);
             color: #ffffff;
             font-size: 14px;
             font-weight: 900;
-            text-align: center;
-            line-height: 1;
-            /* 脈動するようなアニメーションを加えて視認性を極限まで高めます */
-            animation: pulse-border 2s infinite;
+            animation: pulse-border-purple 2s infinite;
         }
 
-        @keyframes pulse-border {
-            0% {
-                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7), 0 2px 4px rgba(0,0,0,0.3);
-            }
-            70% {
-                box-shadow: 0 0 0 10px rgba(239, 68, 68, 0), 0 2px 4px rgba(0,0,0,0.3);
-            }
-            100% {
-                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0), 0 2px 4px rgba(0,0,0,0.3);
-            }
+        /* レベル4: 電圧閾値/画面強調 (赤系統) */
+        .port-marker-level4 {
+            background-color: #ef4444; /* 赤 */
+            border: 2.5px solid #ffffff;
+            border-radius: 50%;
+            width: 32px !important;
+            height: 32px !important;
+            box-shadow: 0 4px 8px rgba(239, 68, 68, 0.6), 0 2px 4px rgba(0,0,0,0.3);
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 900;
+            animation: pulse-border-red 2s infinite;
+        }
+
+        /* レベル3: Lv.1 (橙系統) */
+        .port-marker-level3 {
+            background-color: #f97316; /* 橙 */
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            width: 28px !important;
+            height: 28px !important;
+            box-shadow: 0 3px 6px rgba(249, 115, 22, 0.5), 0 1px 3px rgba(0,0,0,0.2);
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* レベル2: Lv.2 (黄系統) */
+        .port-marker-level2 {
+            background-color: #eab308; /* 黄 */
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            width: 28px !important;
+            height: 28px !important;
+            box-shadow: 0 3px 6px rgba(234, 179, 8, 0.5), 0 1px 3px rgba(0,0,0,0.2);
+            color: #000000;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* レベル1: Lv.3 (薄緑系統) */
+        .port-marker-level1 {
+            background-color: #22c55e; /* 薄緑 */
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            width: 28px !important;
+            height: 28px !important;
+            box-shadow: 0 3px 6px rgba(34, 197, 94, 0.5), 0 1px 3px rgba(0,0,0,0.2);
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* パルスアニメーション (黒紫用) */
+        @keyframes pulse-border-purple {
+            0% { box-shadow: 0 0 0 0 rgba(76, 29, 149, 0.8), 0 2px 4px rgba(0,0,0,0.3); }
+            70% { box-shadow: 0 0 0 10px rgba(76, 29, 149, 0), 0 2px 4px rgba(0,0,0,0.3); }
+            100% { box-shadow: 0 0 0 0 rgba(76, 29, 149, 0), 0 2px 4px rgba(0,0,0,0.3); }
+        }
+
+        /* パルスアニメーション (赤用) */
+        @keyframes pulse-border-red {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.8), 0 2px 4px rgba(0,0,0,0.3); }
+            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0), 0 2px 4px rgba(0,0,0,0.3); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0), 0 2px 4px rgba(0,0,0,0.3); }
+        }
+
+        /* 警告度バッジ用スタイル (ポップアップ内) */
+        .badge {
+            font-size: 11px;
+            font-weight: bold;
+            padding: 3px 6px;
+            border-radius: 4px;
+            color: #ffffff;
+            margin-left: 5px;
+        }
+        .badge-level5 { background-color: #4c1d95; }
+        .badge-level4 { background-color: #ef4444; }
+        .badge-level3 { background-color: #f97316; }
+        .badge-level2 { background-color: #eab308; color: #000000; }
+        .badge-level1 { background-color: #22c55e; }
+
+        /* 地図上の凡例 (Legend) パネル */
+        .map-legend {
+            position: absolute;
+            bottom: 25px;
+            left: 15px;
+            background-color: rgba(30, 41, 59, 0.95);
+            color: #ffffff;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            z-index: 1000;
+            border: 1px solid #475569;
+            min-width: 250px;
+        }
+
+        .map-legend-title {
+            font-weight: bold;
+            font-size: 13px;
+            border-bottom: 1px solid #475569;
+            padding-bottom: 6px;
+            margin-bottom: 8px;
+            color: #e2e8f0;
+        }
+
+        .map-legend-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            cursor: pointer;
+            user-select: none;
+            padding: 4px 0;
+        }
+        .map-legend-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .map-legend-color {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            margin-right: 8px;
+            border: 1px solid #ffffff;
+        }
+
+        /* 大きめのタップしやすいチェックボックス */
+        .legend-filter {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            accent-color: #007aff;
+            margin-left: 12px;
+        }
+
+        /* エリア選択タブ用スタイル */
+        .area-tabs-container {
+            background-color: #1e293b;
+            border-top: 1px solid #334155;
+            padding: 8px 16px;
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            white-space: nowrap;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+            /* スクロールバー非表示 */
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .area-tabs-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .area-tab {
+            background-color: #334155;
+            color: #cbd5e1;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            touch-action: manipulation;
+        }
+
+        .area-tab.active {
+            background-color: #007aff;
+            color: #ffffff;
+            box-shadow: 0 2px 6px rgba(0, 122, 255, 0.4);
         }
     </style>
 </head>
@@ -304,6 +498,9 @@
             <div id="update-time" class="update-time">データ取得中...</div>
         </header>
 
+        <!-- エリア選択タブコンテナ -->
+        <div id="area-tabs" class="area-tabs-container"></div>
+
         <div id="main-content">
             <!-- 地図表示領域 -->
             <div id="map"></div>
@@ -312,6 +509,54 @@
             <div id="summary-panel" class="summary-panel" style="display: none;">
                 <div>交換対象ポート数: <span id="alert-ports-count" class="count">0</span> 箇所</div>
                 <div>交換必要車両: <span id="alert-bikes-count" class="count">0</span> 台</div>
+                <div id="summary-table-container"></div>
+            </div>
+
+            <!-- 地図上の凡例 (Legend) パネル (タップ可能な大ぶりチェックボックス付き) -->
+            <div class="map-legend">
+                <div class="map-legend-title">🔋 バッテリー深刻度凡例 (フィルター)</div>
+                <label class="map-legend-item">
+                    <div style="display: flex; align-items: center;">
+                        <div class="map-legend-color" style="background-color: #4c1d95;"></div>
+                        <span><b>AT異常</b> (黒紫)</span>
+                    </div>
+                    <input type="checkbox" class="legend-filter" value="5">
+                </label>
+                <label class="map-legend-item">
+                    <div style="display: flex; align-items: center;">
+                        <div class="map-legend-color" style="background-color: #ef4444;"></div>
+                        <span><b>電圧閾値</b> (赤系統)</span>
+                    </div>
+                    <input type="checkbox" class="legend-filter" value="4" checked>
+                </label>
+                <label class="map-legend-item">
+                    <div style="display: flex; align-items: center;">
+                        <div class="map-legend-color" style="background-color: #f97316;"></div>
+                        <span><b>Lv.1</b> (橙系統)</span>
+                    </div>
+                    <input type="checkbox" class="legend-filter" value="3">
+                </label>
+                <label class="map-legend-item">
+                    <div style="display: flex; align-items: center;">
+                        <div class="map-legend-color" style="background-color: #eab308;"></div>
+                        <span><b>Lv.2</b> (黄系統)</span>
+                    </div>
+                    <input type="checkbox" class="legend-filter" value="2">
+                </label>
+                <label class="map-legend-item">
+                    <div style="display: flex; align-items: center;">
+                        <div class="map-legend-color" style="background-color: #22c55e;"></div>
+                        <span><b>Lv.3</b> (薄緑系統)</span>
+                    </div>
+                    <input type="checkbox" class="legend-filter" value="1">
+                </label>
+                <label class="map-legend-item">
+                    <div style="display: flex; align-items: center;">
+                        <div class="map-legend-color" style="background-color: #94a3b8;"></div>
+                        <span><b>正常</b> (グレー)</span>
+                    </div>
+                    <input type="checkbox" class="legend-filter" value="0">
+                </label>
             </div>
 
             <!-- GPSボタン -->
@@ -349,14 +594,19 @@
             let map;
             let currentPositionMarker;
             let currentPositionCircle;
+            
+            // データキャッシュ、マーカーレイヤーグループ、選択されたエリアの定義
+            let cachedDashboardData = null;
+            let markerGroup;
+            let selectedArea = ""; // 選択中のエリア名
 
-            // 1. 地図の初期設定 (デフォルト表示位置は金沢・または東京都心付近。データが存在すればそちらにジャンプします)
+            // 1. 地図の初期設定 (デフォルト表示位置は金沢)
             map = L.map('map', {
                 zoomControl: false, // タブレットで邪魔にならないようズームボタンを非表示（ピンチ操作可能）
                 tap: true           // タッチ端末のクリックラグ解消
             }).setView([36.568, 136.648], 13);
 
-            // OpenStreetMapのタイルレイヤーを使用（完全無料・高レスポンス）
+            // OpenStreetMap of タイルレイヤーを使用
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 19,
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -364,16 +614,18 @@
 
             // ズームコントロールを手動で右上に小さく追加
             L.control.zoom({ position: 'topright' }).addTo(map);
+            
+            // マーカーレイヤーグループを初期化して地図に追加
+            markerGroup = L.layerGroup().addTo(map);
 
             // 2. 自動データ取得処理 (JSON/JS両対応ハイブリッド型)
-            // ダブルクリック時(file:///実行)は、事前にscriptタグで読み込まれた window.dashboardData を使用し、
-            // Webサーバー起動時は、fetchによる最新データの動的取得を行います。
             if (window.dashboardData) {
                 console.log("Success: ローカルJS経由でデータを読み込みました (CORS制限回避)");
-                renderDashboard(window.dashboardData);
+                cachedDashboardData = window.dashboardData;
+                initAreaTabs(cachedDashboardData);
+                updateFilterAndRender();
                 document.getElementById('loader').style.display = 'none';
             } else {
-                // サーバー上で動かす場合はfetchを試みます
                 fetch('output/dashboard_data.json')
                     .then(response => {
                         if (!response.ok) {
@@ -382,100 +634,190 @@
                         return response.json();
                     })
                     .then(data => {
-                        renderDashboard(data);
+                        cachedDashboardData = data;
+                        initAreaTabs(cachedDashboardData);
+                        updateFilterAndRender();
                         document.getElementById('loader').style.display = 'none';
                     })
                     .catch(error => {
-                        console.error('データの取得に失敗しました:', error);
-                        // 直下の相対パスも試す
-                        fetch('dashboard_data.json')
-                            .then(response => {
-                                if (!response.ok) throw new Error();
-                                return response.json();
-                            })
-                            .then(data => {
-                                renderDashboard(data);
-                                document.getElementById('loader').style.display = 'none';
-                            })
-                            .catch(() => {
-                                document.getElementById('loader').style.display = 'none';
-                                document.getElementById('error-screen').style.display = 'flex';
-                            });
+                        console.error("Error loading JSON via fetch:", error);
+                        document.getElementById('loader').style.display = 'none';
+                        document.getElementById('error-screen').style.display = 'flex';
                     });
             }
 
-            // 3. データ描画ロジック
-            function renderDashboard(data) {
-                // サマリーパネルと更新時間の表示
-                document.getElementById('update-time').innerText = "更新: " + data.updated_at;
-                document.getElementById('alert-ports-count').innerText = data.ports.filter(p => p.alert_bikes_count > 0).length;
-                document.getElementById('alert-bikes-count').innerText = data.total_alert_bikes;
-                document.getElementById('summary-panel').style.display = 'block';
+            // 3. エリア選択タブの動的初期生成
+            function initAreaTabs(data) {
+                if (!data || !data.ports) return;
+                
+                // データに含まれる全てのエリア名をユニークに抽出
+                const areas = Array.from(new Set(data.ports.map(p => p.area_name))).filter(Boolean);
+                
+                // デフォルトは金沢エリア（KNZを含むもの）を最優先、なければ最初のエリア
+                if (!selectedArea) {
+                    selectedArea = areas.find(a => a.includes("KNZ")) || areas[0] || "";
+                }
+                
+                const tabsContainer = document.getElementById('area-tabs');
+                tabsContainer.innerHTML = '';
+                
+                areas.forEach(area => {
+                    const btn = document.createElement('button');
+                    btn.className = 'area-tab' + (area === selectedArea ? ' active' : '');
+                    
+                    // 表示名を見栄え良く調整 (KNZ_まちのり -> KNZ まちのり)
+                    btn.innerText = area.replace(/_/g, ' ');
+                    
+                    btn.addEventListener('click', () => {
+                        document.querySelectorAll('.area-tab').forEach(t => t.classList.remove('active'));
+                        btn.classList.add('active');
+                        selectedArea = area;
+                        updateFilterAndRender();
+                    });
+                    
+                    tabsContainer.appendChild(btn);
+                });
+            }
+
+            // 4. フィルター状態の更新と再描画
+            function updateFilterAndRender() {
+                if (!cachedDashboardData) return;
+                
+                // チェックされている警告レベルの値を取得
+                const checkedLevels = Array.from(document.querySelectorAll('.legend-filter:checked'))
+                                           .map(el => parseInt(el.value));
+                                           
+                renderDashboardWithFilter(cachedDashboardData, checkedLevels);
+            }
+
+            // 凡例のチェックボックス変更時に再描画を連動
+            document.querySelectorAll('.legend-filter').forEach(checkbox => {
+                checkbox.addEventListener('change', updateFilterAndRender);
+            });
+
+            // 5. フィルター（警告レベル ＆ 選択エリア）適用済みのダッシュボード描画関数
+            function renderDashboardWithFilter(data, checkedLevels) {
+                if (!data || !data.ports) return;
+
+                // 以前のマーカーを全てクリア
+                markerGroup.clearLayers();
+
+                // 更新日時の反映
+                document.getElementById('update-time').innerText = "最終更新: " + (data.updated_at || "不明");
 
                 let validCoordinates = [];
+                let filteredPortsCount = 0;
+                let filteredBikesCount = 0;
+                let allFilteredBikes = []; // フィルターに合致した全自転車を蓄積
 
                 data.ports.forEach(port => {
-                    // 緯度経度が存在しないポート（ポート外や保管倉庫）はスキップ
-                    if (!port.has_gps) return;
+                    const lat = parseFloat(port.lat);
+                    const lon = parseFloat(port.lon);
+                    
+                    if (isNaN(lat) || isNaN(lon) || lat === 0.0 || lon === 0.0) {
+                        return; // 位置情報のないポートはスキップ
+                    }
 
-                    const lat = port.lat;
-                    const lon = port.lon;
+                    // 1. エリアフィルターを適用：選択されていないエリアは描画対象外
+                    if (port.area_name !== selectedArea) {
+                        return;
+                    }
+
+                    // 2. 警告レベルフィルターを適用：選択された警告レベルに一致する自転車のみを抽出
+                    const matchingBikes = port.bikes.filter(bike => checkedLevels.includes(bike.alert_level));
+
+                    // 描画判定
+                    const isDrawPort = matchingBikes.length > 0;
+
+                    if (!isDrawPort) {
+                        return; // 該当する自転車がいないポートは描画しない
+                    }
+
+                    // 合致した自転車を全体バッファに蓄積
+                    allFilteredBikes.push(...matchingBikes);
+
                     validCoordinates.push([lat, lon]);
+                    filteredPortsCount++;
+                    filteredBikesCount += matchingBikes.length;
 
                     // ピン（マーカー）の作成
                     let markerIcon;
-                    let zIndexOrder = 100; // デフォルトの重なり順
-                    let isAlertPort = port.alert_bikes_count > 0;
+                    let zIndexOrder = 100;
+                    
+                    // 抽出された自転車の中での最大警告レベルを算出
+                    const maxLevel = Math.max(...matchingBikes.map(b => b.alert_level));
+                    let className = 'port-marker-base ';
+                    
+                    if (maxLevel === 5) {
+                        className += 'port-marker-level5';
+                        zIndexOrder = 20000; // AT異常
+                    } else if (maxLevel === 4) {
+                        className += 'port-marker-level4';
+                        zIndexOrder = 15000; // 電圧閾値
+                    } else if (maxLevel === 3) {
+                        className += 'port-marker-level3';
+                        zIndexOrder = 10000; // Lv1
+                    } else if (maxLevel === 2) {
+                        className += 'port-marker-level2';
+                        zIndexOrder = 5000;  // Lv2
+                    } else if (maxLevel === 1) {
+                        className += 'port-marker-level1';
+                        zIndexOrder = 1000;  // Lv3
+                    } else {
+                        className += 'port-marker-normal';
+                    }
 
-                    if (isAlertPort) {
-                        // 警告あり：赤色の巨大バブル ＋ 中央に交換必要台数を配置 ＋ 脈動アニメーション
+                    if (maxLevel > 0) {
+                        // 警告あり：バブルの中央に「フィルター合致車両の総数」を表示
                         markerIcon = L.divIcon({
-                            className: 'port-marker-alert',
-                            html: `<div>${port.alert_bikes_count}</div>`,
-                            iconSize: [32, 32],
-                            iconAnchor: [16, 16] // 中央に固定
+                            className: className,
+                            html: `<div>${matchingBikes.length}</div>`,
+                            iconSize: maxLevel >= 4 ? [32, 32] : [28, 28],
+                            iconAnchor: maxLevel >= 4 ? [16, 16] : [14, 14]
                         });
-                        zIndexOrder = 10000; // 重なった時に最前面に強制表示
                     } else {
                         // 正常：グレーの小さな丸
                         markerIcon = L.divIcon({
                             className: 'port-marker-normal',
                             html: '',
                             iconSize: [20, 20],
-                            iconAnchor: [10, 10] // 中央に固定
+                            iconAnchor: [10, 10]
                         });
                     }
 
-                    // LeafletのDivIconマーカーを使用
                     const marker = L.marker([lat, lon], {
                         icon: markerIcon,
-                        zIndexOffset: zIndexOrder, // 最前面への押し上げ
-                        riseOnHover: true          // ホバー・タッチ時に最前面へ
-                    }).addTo(map);
+                        zIndexOffset: zIndexOrder,
+                        riseOnHover: true
+                    }).addTo(markerGroup);
 
-                    // タップ（クリック）時のポップアップを構成
+                    // ポップアップの構成（フィルター合致した車両のみを表示）
                     let popupContent = `
                         <div class="popup-title">${port.port_name}</div>
                         <div class="popup-desc">総駐輪台数: ${port.total_bikes}台</div>
-                        <div class="popup-desc" style="font-weight:bold; color:${isAlertPort ? '#ef4444' : '#10b981'}">
-                            バッテリー交換対象: ${port.alert_bikes_count}台
+                        <div class="popup-desc" style="font-weight:bold; color:#ef4444">
+                            表示対象車両: ${matchingBikes.length}台
                         </div>
                     `;
 
-                    if (isAlertPort) {
-                        popupContent += `<ul class="popup-bike-list">`;
-                        port.bikes.forEach(bike => {
-                            popupContent += `
-                                <li class="popup-bike-item">
+                    popupContent += `<ul class="popup-bike-list">`;
+                    matchingBikes.forEach(bike => {
+                        let badgeClass = `badge-level${bike.alert_level}`;
+                        let badgeName = bike.alert_level_name;
+                        
+                        popupContent += `
+                            <li class="popup-bike-item">
+                                <div>
                                     <span class="popup-bike-id">${bike.bike_id}</span>
-                                    <span class="popup-bike-volt">${bike.voltage}V (閾値: ${bike.threshold}V)</span>
-                                </li>
-                            `;
-                        });
-                        popupContent += `</ul>`;
-                    }
+                                    <span class="popup-desc" style="font-size:11px; margin-left:5px;">(${bike.model_name})</span>
+                                    <span class="badge ${badgeClass}">${badgeName}</span>
+                                </div>
+                                <span class="popup-bike-volt">${bike.voltage}V</span>
+                            </li>
+                        `;
+                    });
+                    popupContent += `</ul>`;
 
-                    // タブレットで指でタップした際に閉じやすいようにオートパン（自動スクロール）を有効化
                     marker.bindPopup(popupContent, {
                         maxWidth: 320,
                         autoPan: true,
@@ -483,14 +825,64 @@
                     });
                 });
 
-                // データが存在する場合、すべての警告ピンが収まる範囲に地図を自動ズーム
+                // サマリー値のリアルタイム連動更新 (選択されたエリア内での合計値になります)
+                document.getElementById('alert-ports-count').innerText = filteredPortsCount;
+                document.getElementById('alert-bikes-count').innerText = filteredBikesCount;
+
+                // --- 車種名 × 警告レベル(閾値) マトリクス表の動的生成 ---
+                const tableContainer = document.getElementById('summary-table-container');
+                if (allFilteredBikes.length > 0) {
+                    // ユニークな車種リストをソートして抽出 (例: ['DD', 'PasCityC', 'その他'])
+                    const uniqueModels = Array.from(new Set(allFilteredBikes.map(b => b.model_name))).sort();
+                    
+                    // マトリクスデータの初期化
+                    const matrix = {};
+                    uniqueModels.forEach(m => {
+                        matrix[m] = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0, 0: 0 };
+                    });
+                    
+                    // 集計実行
+                    allFilteredBikes.forEach(bike => {
+                        if (matrix[bike.model_name]) {
+                            matrix[bike.model_name][bike.alert_level]++;
+                        }
+                    });
+                    
+                    // マトリクス表のHTML構築
+                    let tableHtml = '<table class="summary-table">';
+                    tableHtml += '<thead><tr><th>車種</th><th>AT異常</th><th>電圧閾値</th><th>Lv.1</th><th>Lv.2</th><th>Lv.3</th><th>正常</th></tr></thead><tbody>';
+                    
+                    uniqueModels.forEach(model => {
+                        tableHtml += `<tr><td><b>${model}</b></td>`;
+                        [5, 4, 3, 2, 1, 0].forEach(lvl => {
+                            const count = matrix[model][lvl];
+                            const isChecked = checkedLevels.includes(lvl);
+                            const hasCountClass = count > 0 && isChecked ? ' class="count-cell has-count"' : '';
+                            // フィルターされていないレベルの列は少しグレーアウトする
+                            const styleStr = !isChecked ? ' style="opacity: 0.4;"' : '';
+                            tableHtml += `<td${hasCountClass}${styleStr}>${count}</td>`;
+                        });
+                        tableHtml += '</tr>';
+                    });
+                    
+                    tableHtml += '</tbody></table>';
+                    tableContainer.innerHTML = tableHtml;
+                    tableContainer.style.display = 'block';
+                } else {
+                    tableContainer.innerHTML = '';
+                    tableContainer.style.display = 'none';
+                }
+
+                document.getElementById('summary-panel').style.display = 'block';
+
+                // エリアやフィルター変更時に、存在するピンが綺麗に収まる範囲へ地図をスムーズズーム
                 if (validCoordinates.length > 0) {
                     const bounds = L.latLngBounds(validCoordinates);
                     map.fitBounds(bounds, { padding: [40, 40] });
                 }
             }
 
-            // 4. GPS現在地トラッキング機能
+            // 6. GPS現在地トラッキング機能
             const gpsBtn = document.getElementById('gps-btn');
             gpsBtn.addEventListener('click', function() {
                 if (!navigator.geolocation) {
@@ -498,10 +890,9 @@
                     return;
                 }
 
-                // ボタンのテキストを変更してフィードバック
                 const btnText = gpsBtn.querySelector('span');
                 btnText.innerText = "追跡中...";
-                gpsBtn.style.backgroundColor = "#ff9500"; // オレンジ色にして追跡中を表現
+                gpsBtn.style.backgroundColor = "#ff9500";
 
                 navigator.geolocation.getCurrentPosition(
                     function(position) {
@@ -509,14 +900,11 @@
                         const lon = position.coords.longitude;
                         const accuracy = position.coords.accuracy;
 
-                        // 地図を現在地にジャンプ (ズームレベル 16: ポートがはっきり見えるレベル)
                         map.setView([lat, lon], 16);
 
-                        // 古い現在地マーカーがあれば消去
                         if (currentPositionMarker) map.removeLayer(currentPositionMarker);
                         if (currentPositionCircle) map.removeLayer(currentPositionCircle);
 
-                        // 現在地をブルーのピンで表示
                         currentPositionMarker = L.circleMarker([lat, lon], {
                             radius: 9,
                             fillColor: "#007aff",
@@ -527,7 +915,6 @@
                         
                         currentPositionMarker.bindPopup("<b>あなたの現在地</b>");
 
-                        // 精度範囲を薄いブルーの円で表示
                         currentPositionCircle = L.circle([lat, lon], {
                             radius: accuracy,
                             color: "#007aff",
@@ -549,7 +936,7 @@
                         alert(errMsg);
                     },
                     {
-                        enableHighAccuracy: true, // 高精度GPSモード
+                        enableHighAccuracy: true,
                         timeout: 10000,
                         maximumAge: 0
                     }

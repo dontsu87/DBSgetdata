@@ -25,22 +25,11 @@ def generate_dashboard_json(latest_vehicle_path: str = None) -> str:
             return None
         latest_vehicle_path = vehicle_files[-1]
     
-    threshold_path = os.path.join(Config.OUTPUT_DIR, "車両閾値設定.csv")
+    from src.config import ROOT_DIR
+    threshold_path = os.path.join(str(ROOT_DIR), "車両閾値設定.csv")
     if not os.path.exists(threshold_path):
-        print(f"Warning: 閾値設定ファイル（{threshold_path}）が見つかりません。新規作成します...")
-        # 閾値設定ファイルがない場合は、デフォルトで25.0Vを閾値とするダミーを自動生成（または何もしない）
-        try:
-            df_v = pd.read_csv(latest_vehicle_path)
-            bikes = df_v['識別番号'].dropna().unique()
-            df_t = pd.DataFrame({
-                "車両識別番号": sorted(bikes),
-                "警告閾値": 25.0  # 初期デフォルト閾値
-            })
-            df_t.to_csv(threshold_path, index=False, encoding="utf-8-sig")
-            print(f"Success: 初期閾値設定ファイルを自動生成しました: {threshold_path}")
-        except Exception as e:
-            print(f"Error: 初期閾値設定ファイルの生成に失敗しました: {e}")
-            return None
+        print(f"Error: 閾値設定ファイル（{threshold_path}）が見つかりません。")
+        return None, None
 
     # 2. データのロード
     try:
@@ -48,7 +37,7 @@ def generate_dashboard_json(latest_vehicle_path: str = None) -> str:
         df_threshold = pd.read_csv(threshold_path)
     except Exception as e:
         print(f"Error: データのロードに失敗しました: {e}")
-        return None
+        return None, None
 
     # 3. データの結合とクレンジング
     try:
@@ -56,27 +45,56 @@ def generate_dashboard_json(latest_vehicle_path: str = None) -> str:
         df_vehicle['join_key'] = df_vehicle['識別番号'].astype(str).str.strip()
         df_threshold['join_key'] = df_threshold['車両識別番号'].astype(str).str.strip()
         
-        # 必要な列だけ抽出してマージ (警告閾値カラムを追加)
-        df_t_subset = df_threshold[['join_key', '警告閾値']].drop_duplicates(subset=['join_key'])
+        # 必要な列だけ抽出してマージ (5段階の警告閾値カラムと車種名を追加)
+        th_cols = ['join_key', '車種名', '閾値_AT異常', '閾値_画面強調', '閾値_Lv1', '閾値_Lv2', '閾値_Lv3']
+        df_t_subset = df_threshold[th_cols].drop_duplicates(subset=['join_key'])
         df_merged = pd.merge(df_vehicle, df_t_subset, on='join_key', how='left')
         
-        # 閾値が設定されていない車両はデフォルト 25.0V とする
-        df_merged['警告閾値'] = df_merged['警告閾値'].fillna(25.0)
+        # 閾値が設定されていない車両のデフォルト値を安全にフォールバック
+        df_merged['車種名'] = df_merged['車種名'].fillna("その他")
+        df_merged['閾値_AT異常'] = df_merged['閾値_AT異常'].fillna(21.0)
+        df_merged['閾値_画面強調'] = df_merged['閾値_画面強調'].fillna(25.0)
+        df_merged['閾値_Lv1'] = df_merged['閾値_Lv1'].fillna(25.5)
+        df_merged['閾値_Lv2'] = df_merged['閾値_Lv2'].fillna(26.2)
+        df_merged['閾値_Lv3'] = df_merged['閾値_Lv3'].fillna(27.0)
         
-        # 数値変換とクレンジング
+        # 数値変換
         df_merged['電圧'] = pd.to_numeric(df_merged['電圧'], errors='coerce')
-        df_merged['警告閾値'] = pd.to_numeric(df_merged['警告閾値'], errors='coerce')
-        df_merged['lat'] = pd.to_numeric(df_merged['lat'], errors='coerce')
-        df_merged['lon'] = pd.to_numeric(df_merged['lon'], errors='coerce')
+        for col in ['閾値_AT異常', '閾値_画面強調', '閾値_Lv1', '閾値_Lv2', '閾値_Lv3', 'lat', 'lon']:
+            df_merged[col] = pd.to_numeric(df_merged[col], errors='coerce')
         
-        # 電圧が閾値以下の車両を「警告対象 (is_alert=True)」とする
-        df_merged['is_alert'] = df_merged['電圧'] <= df_merged['警告閾値']
+        # --- 多段階判定ロジック ---
+        # 電圧値に基づき、最も深刻度が高い警告レベル（1=Lv3〜5=AT異常、0=正常）を動的に決定します
+        def determine_alert_level(row):
+            volt = row['電圧']
+            if pd.isna(volt):
+                return 0, "正常"
+            
+            # 深刻度順（高い順）に判定
+            if volt <= row['閾値_AT異常']:
+                return 5, "AT異常"
+            elif volt <= row['閾値_画面強調']:
+                return 4, "電圧閾値"
+            elif volt <= row['閾値_Lv1']:
+                return 3, "Lv.1"
+            elif volt <= row['閾値_Lv2']:
+                return 2, "Lv.2"
+            elif volt <= row['閾値_Lv3']:
+                return 1, "Lv.3"
+            else:
+                return 0, "正常"
+
+        # 判定の適用
+        df_merged['alert_data'] = df_merged.apply(determine_alert_level, axis=1)
+        df_merged['alert_level'] = df_merged['alert_data'].apply(lambda x: x[0])
+        df_merged['alert_level_name'] = df_merged['alert_data'].apply(lambda x: x[1])
+        df_merged['is_alert'] = df_merged['alert_level'] > 0
+        
     except Exception as e:
         print(f"Error: 結合・フィルタリング処理中にエラーが発生しました: {e}")
-        return None
+        return None, None
 
     # 4. ポートごとの集計処理
-    # マップで表示しやすいよう、ポート単位で「緯度・経度・警告対象の車両一覧」を構造化します
     ports_data = {}
     
     for idx, row in df_merged.iterrows():
@@ -86,51 +104,81 @@ def generate_dashboard_json(latest_vehicle_path: str = None) -> str:
         lat = row['lat']
         lon = row['lon']
         
-        # 緯度経度が存在しない場合でも、集計は行う（地図には乗らないが、リストには出せるようにする）
         has_gps = not (pd.isna(lat) or pd.isna(lon) or lat == 0.0 or lon == 0.0)
         
         bike_id = str(row['識別番号'])
         status = str(row['車両状態'])
         voltage = row['電圧']
-        threshold = row['警告閾値']
-        is_alert = bool(row['is_alert'])
         at_time = str(row['AT通知受信日時']) if not pd.isna(row['AT通知受信日時']) else ""
         
         if port_name not in ports_data:
             ports_data[port_name] = {
                 "port_name": port_name,
+                "area_name": str(row['エリア名']).strip() if not pd.isna(row['エリア名']) else "その他",
                 "lat": float(lat) if has_gps else None,
                 "lon": float(lon) if has_gps else None,
                 "has_gps": has_gps,
                 "total_bikes": 0,
-                "alert_bikes_count": 0,
+                "max_alert_level": 0,  # ポート内にある最も深刻度の高いアラートレベル
+                "alert_bikes_count": 0, # アラート対象車両の総数
                 "bikes": []
             }
             
         bike_info = {
             "bike_id": bike_id,
             "status": status,
+            "model_name": str(row['車種名']),
             "voltage": float(voltage) if not pd.isna(voltage) else None,
-            "threshold": float(threshold) if not pd.isna(threshold) else 25.0,
-            "is_alert": is_alert,
+            "alert_level": int(row['alert_level']),
+            "alert_level_name": str(row['alert_level_name']),
+            "thresholds": {
+                "at_error": float(row['閾値_AT異常']),
+                "strong": float(row['閾値_画面強調']),
+                "lv1": float(row['閾値_Lv1']),
+                "lv2": float(row['閾値_Lv2']),
+                "lv3": float(row['閾値_Lv3'])
+            },
             "at_time": at_time
         }
         
         ports_data[port_name]["bikes"].append(bike_info)
         ports_data[port_name]["total_bikes"] += 1
-        if is_alert:
+        
+        if row['is_alert']:
             ports_data[port_name]["alert_bikes_count"] += 1
+            # 最も高い深刻度レベルを追従
+            if row['alert_level'] > ports_data[port_name]["max_alert_level"]:
+                ports_data[port_name]["max_alert_level"] = int(row['alert_level'])
 
-    # 5. 可視化に必要なデータ（警告車両が1台以上あるポート、または全ポート）をまとめる
-    # データ軽量化のため、警告がないポートも最小限の情報にしてリスト化
+    # 5. 可視化に必要なデータ（警告車両のみに絞り込み、軽量化）
     output_ports = []
     total_alerts = 0
     
+    # 深刻度ごとの総集計カウンタ
+    summary_counts = {
+        "at_error": 0,
+        "strong": 0,
+        "lv1": 0,
+        "lv2": 0,
+        "lv3": 0
+    }
+    
     for port_name, p_info in ports_data.items():
-        # 警告車両のみに絞り込んだ車両リストを作成（容量削減）
-        alert_bikes = [b for b in p_info["bikes"] if b["is_alert"]]
-        p_info["bikes"] = alert_bikes
-        
+        # 絞り込みを行わず、正常電圧（レベル0）の自転車情報も含めて全て保持
+        # 全体カウンタの集計（警告対象レベル1〜5のみカウント）
+        for bike in p_info["bikes"]:
+            lvl = bike["alert_level"]
+            if lvl == 5:
+                summary_counts["at_error"] += 1
+            elif lvl == 4:
+                summary_counts["strong"] += 1
+            elif lvl == 3:
+                summary_counts["lv1"] += 1
+            elif lvl == 2:
+                summary_counts["lv2"] += 1
+            elif lvl == 1:
+                summary_counts["lv3"] += 1
+                
         total_alerts += p_info["alert_bikes_count"]
         output_ports.append(p_info)
 
@@ -139,6 +187,7 @@ def generate_dashboard_json(latest_vehicle_path: str = None) -> str:
         "updated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "total_ports_count": len(output_ports),
         "total_alert_bikes": total_alerts,
+        "summary_counts": summary_counts,
         "ports": output_ports
     }
 

@@ -20,7 +20,7 @@ class MapDashboardPage:
         self.error_screen = page.locator("#error-screen")
         
         # LeafletのDivIconマーカー (カスタムHTML要素として描画されます)
-        self.markers = page.locator(".port-marker-alert, .port-marker-normal")
+        self.markers = page.locator(".port-marker-level1, .port-marker-level2, .port-marker-level3, .port-marker-level4, .port-marker-level5, .port-marker-normal")
 
     def navigate(self, url: str):
         """ページへアクセスし、ローディング画面が消えるまで待機します"""
