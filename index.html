@@ -1464,6 +1464,10 @@
                             let badgeClass = `badge-level${bike.alert_level}`;
                             let badgeName = bike.alert_level_name;
                             
+                            // 表示名を「極低」「低」に補正
+                            if (badgeName === "AT異常") badgeName = "極低";
+                            if (badgeName === "電圧閾値") badgeName = "低";
+                            
                             popupContent += `
                                 <li class="popup-bike-item">
                                     <div>
@@ -1515,7 +1519,7 @@
                     
                     // マトリクス表のHTML構築
                     let tableHtml = '<table class="summary-table">';
-                    tableHtml += '<thead><tr><th>車種</th><th>AT異常</th><th>電圧閾値</th><th>Lv.1</th><th>Lv.2</th><th>Lv.3</th><th>正常</th></tr></thead><tbody>';
+                    tableHtml += '<thead><tr><th>車種</th><th>極低</th><th>低</th><th>Lv.1</th><th>Lv.2</th><th>Lv.3</th><th>正常</th></tr></thead><tbody>';
                     
                     uniqueModels.forEach(model => {
                         tableHtml += `<tr><td><b>${model}</b></td>`;
