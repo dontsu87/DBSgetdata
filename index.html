@@ -1527,12 +1527,14 @@
                 const restrictedStatus = getRestrictedStatus();
                 if (restrictedStatus) {
                     document.getElementById('status-filter-panel').style.display = 'none';
+                    document.getElementById('basemap-panel').style.right = '15px'; // フィルター非表示時は右寄せにする
                     
                     // スマホ用ボタンも念のため確実に非表示にする
                     const statusBtn = document.querySelector('.btn-status');
                     if (statusBtn) statusBtn.style.display = 'none';
                 } else {
                     document.getElementById('status-filter-panel').style.display = '';
+                    document.getElementById('basemap-panel').style.right = ''; // 通常位置に戻す
                 }
 
                 // エリアやフィルター変更時に、存在するピンが綺麗に収まる範囲へ地図をスムーズズーム (自動更新時はズーム・中心座標を維持するためスキップ)
