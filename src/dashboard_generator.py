@@ -206,7 +206,11 @@ def generate_dashboard_json(latest_vehicle_path: str = None) -> str:
         if p_name and a_name and a_name != "その他":
             master_data["ports"][p_name] = a_name
         if not pd.isna(s_id) and a_name and a_name != "その他":
-            master_data["stations"][str(int(s_id))] = a_name
+            try:
+                s_id_str = f"{int(s_id):08d}"
+                master_data["stations"][s_id_str] = a_name
+            except (ValueError, TypeError):
+                pass
 
     # 最新のGBFS JSONデータを探索して読み込み
     gbfs_files = sorted(glob.glob(os.path.join(Config.OUTPUT_DIR, "gbfs_stations_*.json")))
@@ -221,11 +225,17 @@ def generate_dashboard_json(latest_vehicle_path: str = None) -> str:
             with open(latest_gbfs_path, "r", encoding="utf-8") as f:
                 gbfs_stations = json.load(f)
             for s in gbfs_stations:
-                s_id = str(int(s.get("station_id", "0")))
+                s_id_raw = s.get("station_id", "").strip()
+                if not s_id_raw:
+                    continue
+                try:
+                    s_id = f"{int(s_id_raw):08d}"
+                except ValueError:
+                    s_id = s_id_raw
                 s_name = s.get("name", "").strip()
                 if s_name:
                     gbfs_active_names.add(s_name)
-                if s_id and s_id != "0":
+                if s_id and s_id != "00000000":
                     gbfs_active_ids.add(s_id)
             print(f"Success: 最新のGBFSデータをロードしました (ステーション数: {len(gbfs_stations)})")
         except Exception as e:
@@ -273,17 +283,24 @@ def generate_dashboard_json(latest_vehicle_path: str = None) -> str:
 
     # GBFSポートをもとに、マスタへのジオフェンス初回学習を追加
     for s in gbfs_stations:
-        s_id = str(int(s.get("station_id", "0")))
+        s_id_raw = s.get("station_id", "").strip()
+        if not s_id_raw:
+            continue
+        try:
+            s_id_str = f"{int(s_id_raw):08d}"
+        except ValueError:
+            s_id_str = s_id_raw
+            
         s_name = s.get("name", "").strip()
         s_lat = float(s.get("lat", 0.0))
         s_lon = float(s.get("lon", 0.0))
         
         # マスタに未登録の場合、ジオフェンスで判定して学習
-        if s_name not in master_data["ports"] or s_id not in master_data["stations"]:
+        if s_name not in master_data["ports"] or s_id_str not in master_data["stations"]:
             area = get_area_by_coords(s_lat, s_lon)
             if area:
                 if s_name: master_data["ports"][s_name] = area
-                if s_id and s_id != "0": master_data["stations"][s_id] = area
+                if s_id_str and s_id_str != "00000000": master_data["stations"][s_id_str] = area
 
     # マスタファイルの永続化保存
     try:
@@ -353,7 +370,14 @@ def generate_dashboard_json(latest_vehicle_path: str = None) -> str:
     gbfs_merged_count = 0
     if gbfs_stations:
         for s in gbfs_stations:
-            s_id = str(int(s.get("station_id", "0")))
+            s_id_raw = s.get("station_id", "").strip()
+            if not s_id_raw:
+                continue
+            try:
+                s_id = f"{int(s_id_raw):08d}"
+            except ValueError:
+                s_id = s_id_raw
+                
             s_name = s.get("name", "").strip()
             s_lat = float(s.get("lat", 0.0))
             s_lon = float(s.get("lon", 0.0))
