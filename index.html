@@ -1489,13 +1489,14 @@
                             if (badgeName === "電圧閾値") badgeName = "低";
                             
                             popupContent += `
-                                <li class="popup-bike-item">
+                                <li class="popup-bike-item" style="align-items: flex-start;">
                                     <div>
                                         <span class="popup-bike-id">${bike.bike_id}</span>
-                                        <span class="popup-desc" style="font-size:11px; margin-left:5px;">(${bike.model_name})</span>
+                                        <span class="popup-desc" style="font-size:11px; margin-left:5px; color: #0284c7; font-weight: bold;">[${bike.status}]</span>
                                         <span class="badge ${badgeClass}">${badgeName}</span>
+                                        <div class="popup-desc" style="font-size:10px; margin: 2px 0 0 0; color: #64748b;">車種: ${bike.model_name}</div>
                                     </div>
-                                    <span class="popup-bike-volt">${bike.voltage}V</span>
+                                    <span class="popup-bike-volt" style="margin-top: 2px;">${bike.voltage}V</span>
                                 </li>
                             `;
                         });
