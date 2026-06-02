@@ -92,10 +92,18 @@ def generate_dashboard_json(latest_vehicle_path: str = None) -> str:
         df_merged['閾値_Lv2'] = df_merged['閾値_Lv2'].fillna(26.2)
         df_merged['閾値_Lv3'] = df_merged['閾値_Lv3'].fillna(27.0)
         
-        # --- 動的車種判定およびしきい値マスタ適用 ---
+        # --- 車種判定およびしきい値マスタ適用 ---
         for idx, row in df_merged.iterrows():
             join_key = row['join_key']
             
+            # 『車両閾値設定.csv』に定義済みの車両は、CSVに書かれた車種・閾値を最優先して上書きや自動補正を完全にバイパスします
+            if join_key in df_threshold['join_key'].values:
+                # CSVに登録がある場合は一切のハードコード上書きを行わず、そのままマージされた値を使用します
+                # PasCityC を「グリッター・EB」に正式書き換え（フロント表示用）のみ適用
+                if str(row['車種名']).strip() == "PasCityC":
+                    df_merged.at[idx, '車種名'] = "グリッター・EB"
+                continue
+                
             # スクレイピングされた車種データがあれば最優先で適用
             scraped_model = None
             if df_bike_types is not None:
@@ -109,14 +117,27 @@ def generate_dashboard_json(latest_vehicle_path: str = None) -> str:
             else:
                 model = str(row['車種名']).strip()
                 
-            # PasCityC を「グリッター・EB」に正式書き換え（フロント表示用）
+            # TRGエリアで、且つAT種別情報がある場合は、直接端末のタイプ（丸形=グリッター・EB, 四角型=SW）から車種を決定します
+            is_trg_area = "TRG" in str(row.get('エリア名', '')) or "Tokyo Ring" in str(row.get('エリア名', '')) or str(row.get('識別番号', '')).startswith("TRG")
+            if is_trg_area and 'AT種別' in df_merged.columns:
+                at_val = str(row['AT種別']).strip()
+                if "丸形" in at_val:
+                    df_merged.at[idx, '車種名'] = "グリッター・EB"
+                    model = "グリッター・EB"
+                elif "四角型" in at_val:
+                    df_merged.at[idx, '車種名'] = "SW"
+                    model = "SW"
+                
+            # PasCityC を「グリッター・EB」に正式書き換え
             if model == "PasCityC":
                 df_merged.at[idx, '車種名'] = "グリッター・EB"
                 model = "グリッター・EB"
                 
             # 車種マスタからのしきい値動的適用
             applied_thresholds = False
-            if df_type_master is not None:
+            # TRGエリアの場合は他エリア（金沢など）の共通マスタを適用せず、TRG専用のしきい値を適用します
+            is_trg = "TRG" in str(row.get('エリア名', '')) or "Tokyo Ring" in str(row.get('エリア名', ''))
+            if df_type_master is not None and not is_trg:
                 # PasCityC と グリッター・EB の両方でマッチングを試みる
                 master_match = df_type_master[
                     (df_type_master['車種名'].astype(str).str.strip() == model) |
@@ -144,6 +165,13 @@ def generate_dashboard_json(latest_vehicle_path: str = None) -> str:
                 elif model == "グリッター・EB":
                     df_merged.at[idx, '閾値_AT異常'] = 20.5
                     df_merged.at[idx, '閾値_画面強調'] = 20.5
+                    df_merged.at[idx, '閾値_Lv1'] = 23.9
+                    df_merged.at[idx, '閾値_Lv2'] = 24.7
+                    df_merged.at[idx, '閾値_Lv3'] = 26.3
+                # SWの補正
+                elif model == "SW":
+                    df_merged.at[idx, '閾値_AT異常'] = 20.5
+                    df_merged.at[idx, '閾値_画面強調'] = 24.5
                     df_merged.at[idx, '閾値_Lv1'] = 23.9
                     df_merged.at[idx, '閾値_Lv2'] = 24.7
                     df_merged.at[idx, '閾値_Lv3'] = 26.3

@@ -55,8 +55,8 @@ def export_to_onedrive(df_list: list[pd.DataFrame]) -> str:
         combined_df['lat'] = ""
         combined_df['lon'] = ""
 
-    # カラム順序を整理 (新しく追加した station_id, lat, lon も含める)
-    columns_order = ['エリア名', '識別番号', '車両状態', 'ポート名', 'station_id', 'lat', 'lon', '電圧', 'AT通知受信日時']
+    # カラム順序を整理 (新しく追加した station_id, lat, lon, AT種別 も含める)
+    columns_order = ['エリア名', '識別番号', '車両状態', 'ポート名', 'station_id', 'lat', 'lon', '電圧', 'AT通知受信日時', 'AT種別']
     # 存在するカラムのみで再配置
     columns_order = [col for col in columns_order if col in combined_df.columns]
     combined_df = combined_df[columns_order]
