@@ -1423,6 +1423,21 @@
                         riseOnHover: true
                     }).addTo(markerGroup);
 
+                    // Leafletの「緯度ベースY座標 + zIndexOffset」による自動z-index計算を上書き
+                    // デフォルトでは南側ポートほどz-indexが高くなり、台数差を上回る場合がある
+                    // _updateZIndex をオーバーライドして「深刻度→台数」の純粋な優先順序を保証する
+                    // riseOnHover の offset引数（デフォルト250）はそのまま残してホバー動作を維持
+                    const fixedZIndex = zIndexOrder;
+                    marker._updateZIndex = function(offset) {
+                        if (this._icon) {
+                            this._icon.style.zIndex = fixedZIndex + (offset || 0);
+                        }
+                    };
+                    // addTo直後（markerGroupがmapに既に追加済みの場合）に即時適用
+                    if (marker._icon) {
+                        marker._icon.style.zIndex = fixedZIndex;
+                    }
+
                     // 後でポップアップ状態を復旧するためにマーカーにポート名を付与
                     marker.portName = port.port_name;
 
