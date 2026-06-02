@@ -51,6 +51,34 @@
             color: #94a3b8;
         }
 
+        /* 高機能更新ボタンのスタイル */
+        .refresh-button {
+            background-color: #007aff;
+            color: #ffffff;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 14px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: all 0.2s;
+            touch-action: manipulation;
+        }
+        .refresh-button:active {
+            background-color: #0056b3;
+            transform: scale(0.95);
+        }
+        .refresh-button svg {
+            transition: transform 0.5s ease;
+        }
+        .refresh-button.spinning svg {
+            transform: rotate(360deg);
+        }
+
         #main-content {
             flex: 1;
             position: relative;
@@ -664,8 +692,14 @@
 
     <div id="app-container">
         <header>
-            <h1>🔋 バッテリー低下車両マップ</h1>
-            <div id="update-time" class="update-time">データ取得中...</div>
+            <h1 style="display: flex; align-items: center; gap: 8px;">🔋 バッテリー低下車両マップ</h1>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div id="update-time" class="update-time">データ取得中...</div>
+                <button id="refresh-btn" class="refresh-button">
+                    <svg viewBox="0 0 24 24" style="width: 16px; height: 16px; fill: currentColor;"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+                    <span>情報更新</span>
+                </button>
+            </div>
         </header>
 
         <!-- エリア選択タブコンテナ -->
@@ -823,40 +857,76 @@
             markerGroup = L.layerGroup().addTo(map);
 
             // 2. 自動データ取得処理 (JSON/JS両対応ハイブリッド型 - タイムスタンプ付与による超強力リアルタイムキャッシュ対策)
-            const timestamp = new Date().getTime();
-            
-            // サーバー上（GitHub Pages等）での実行時は、動的にタイムスタンプを付与してキャッシュを強制バイパスして最新JSONを取得します
-            fetch('dashboard_data.json?t=' + timestamp)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('JSON fetch failed, fallback to dashboard_data.js');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log("Success: 最新の dashboard_data.json をリアルタイムロードしました！");
-                    cachedDashboardData = data;
-                    initAreaTabs(cachedDashboardData);
-                    initStatusFilter(cachedDashboardData);
-                    updateFilterAndRender();
-                    document.getElementById('loader').style.display = 'none';
-                })
-                .catch(error => {
-                    console.log("Info: JSON直接取得をバイパスし、フォールバックJSの読み込みを試みます...", error);
-                    
-                    // JSON取得がコケた場合（ローカルファイル実行時など）は、静的ロードした window.dashboardData を使用
-                    if (window.dashboardData) {
-                        console.log("Success: ローカルJS経由でデータを読み込みました (CORS制限回避)");
-                        cachedDashboardData = window.dashboardData;
+            function loadDashboardData(isManual = false) {
+                const timestamp = new Date().getTime();
+                const loader = document.getElementById('loader');
+                const errorScreen = document.getElementById('error-screen');
+                const refreshBtn = document.getElementById('refresh-btn');
+                
+                // ロード画面の表示とボタンのインジケータ開始
+                loader.style.display = 'flex';
+                errorScreen.style.display = 'none';
+                if (refreshBtn) {
+                    refreshBtn.classList.add('spinning');
+                    refreshBtn.disabled = true;
+                }
+                
+                // サーバー上（GitHub Pages等）での実行時は、動的にタイムスタンプを付与してキャッシュを強制バイパスして最新JSONを取得します
+                fetch('dashboard_data.json?t=' + timestamp)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('JSON fetch failed, fallback to dashboard_data.js');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log("Success: 最新の dashboard_data.json をリアルタイムロードしました！");
+                        cachedDashboardData = data;
                         initAreaTabs(cachedDashboardData);
                         initStatusFilter(cachedDashboardData);
                         updateFilterAndRender();
-                        document.getElementById('loader').style.display = 'none';
-                    } else {
-                        document.getElementById('loader').style.display = 'none';
-                        document.getElementById('error-screen').style.display = 'flex';
-                    }
+                        
+                        // ロード終了処理
+                        setTimeout(() => {
+                            loader.style.display = 'none';
+                            if (refreshBtn) {
+                                refreshBtn.classList.remove('spinning');
+                                refreshBtn.disabled = false;
+                            }
+                        }, 500);
+                    })
+                    .catch(error => {
+                        console.log("Info: JSON直接取得をバイパスし、フォールバックJSの読み込みを試みます...", error);
+                        
+                        // JSON取得がコケた場合（ローカルファイル実行時など）は、静的ロードした window.dashboardData を使用
+                        if (window.dashboardData) {
+                            console.log("Success: ローカルJS経由でデータを読み込みました (CORS制限回避)");
+                            cachedDashboardData = window.dashboardData;
+                            initAreaTabs(cachedDashboardData);
+                            initStatusFilter(cachedDashboardData);
+                            updateFilterAndRender();
+                            loader.style.display = 'none';
+                        } else {
+                            loader.style.display = 'none';
+                            errorScreen.style.display = 'flex';
+                        }
+                        if (refreshBtn) {
+                            refreshBtn.classList.remove('spinning');
+                            refreshBtn.disabled = false;
+                        }
+                    });
+            }
+
+            // 初期ロードの実行
+            loadDashboardData(false);
+
+            // 更新ボタンのクリックイベントを設定
+            const refreshBtn = document.getElementById('refresh-btn');
+            if (refreshBtn) {
+                refreshBtn.addEventListener('click', function() {
+                    loadDashboardData(true);
                 });
+            }
 
             // 3. エリア選択タブの動的初期生成
             function initAreaTabs(data) {
