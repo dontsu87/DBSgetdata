@@ -1220,9 +1220,36 @@
                 });
             }
 
+            // URLパラメータから制限する車両状態を取得
+            function getRestrictedStatus() {
+                const params = new URLSearchParams(window.location.search);
+                const status = params.get('status');
+                if (status && (status.toLowerCase() === 'available' || status === '利用可能')) {
+                    return '利用可能';
+                }
+                return null;
+            }
+
             // 3-2. 車両状態 (Status) フィルターの動的初期生成
             function initStatusFilter(data) {
                 if (!data || !data.ports) return;
+
+                // URLパラメータによる車両状態の制限確認
+                const restrictedStatus = getRestrictedStatus();
+
+                if (restrictedStatus) {
+                    // 「利用可能」のみにロック
+                    checkedStatuses = [restrictedStatus];
+                    
+                    // パネル全体とスマホ用トグルボタンを非表示
+                    const statusPanel = document.getElementById('status-filter-panel');
+                    if (statusPanel) statusPanel.style.display = 'none';
+                    
+                    const statusBtn = document.querySelector('.btn-status');
+                    if (statusBtn) statusBtn.style.display = 'none';
+                    
+                    return; // チェックボックスの動的生成自体をスキップ
+                }
 
                 // データに含まれる全ての車両状態（status）をユニークに抽出
                 const statuses = new Set();
@@ -1496,7 +1523,17 @@
 
                 // スマホ表示でオーバーレイされないよう、inline styleのdisplay:noneをクリアし、CSSクラス制御に委ねます。
                 document.getElementById('summary-panel').style.display = '';
-                document.getElementById('status-filter-panel').style.display = '';
+                
+                const restrictedStatus = getRestrictedStatus();
+                if (restrictedStatus) {
+                    document.getElementById('status-filter-panel').style.display = 'none';
+                    
+                    // スマホ用ボタンも念のため確実に非表示にする
+                    const statusBtn = document.querySelector('.btn-status');
+                    if (statusBtn) statusBtn.style.display = 'none';
+                } else {
+                    document.getElementById('status-filter-panel').style.display = '';
+                }
 
                 // エリアやフィルター変更時に、存在するピンが綺麗に収まる範囲へ地図をスムーズズーム (自動更新時はズーム・中心座標を維持するためスキップ)
                 if (shouldFitBounds && validCoordinates.length > 0) {
