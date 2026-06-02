@@ -514,6 +514,53 @@
             min-width: 200px;
         }
 
+        /* 地図上のベースマップ選択パネル */
+        .basemap-panel {
+            position: absolute;
+            top: 15px;
+            right: 230px; /* status-filter-panel の左側に並ぶように調整 */
+            background-color: rgba(30, 41, 59, 0.95);
+            color: #ffffff;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            z-index: 1000;
+            border: 1px solid #475569;
+            min-width: 200px;
+        }
+
+        .basemap-title {
+            font-weight: bold;
+            font-size: 13px;
+            border-bottom: 1px solid #475569;
+            padding-bottom: 6px;
+            margin-bottom: 8px;
+            color: #e2e8f0;
+        }
+
+        .basemap-options {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .basemap-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 4px 0;
+            user-select: none;
+        }
+
+        .basemap-item input {
+            cursor: pointer;
+            accent-color: #007aff;
+            width: 18px;
+            height: 18px;
+        }
+
         .status-filter-title {
             font-weight: bold;
             font-size: 13px;
@@ -608,8 +655,8 @@
                 font-size: 12px;
             }
 
-            /* 1. 凡例・サマリーパネルを画面下のスライド式ドロワーに変更 */
-            .map-legend, .summary-panel, .status-filter-panel {
+            /* 1. 凡例・サマリー・ベースマップパネルを画面下のスライド式ドロワーに変更 */
+            .map-legend, .summary-panel, .status-filter-panel, .basemap-panel {
                 display: none !important; /* 初期表示は完全に非表示 */
                 position: fixed;
                 bottom: -400px; /* 初期状態は画面外に隠す */
@@ -632,7 +679,7 @@
                 z-index: 2001;
             }
 
-            .map-legend.show-mobile-drawer, .summary-panel.show-mobile-drawer, .status-filter-panel.show-mobile-drawer {
+            .map-legend.show-mobile-drawer, .summary-panel.show-mobile-drawer, .status-filter-panel.show-mobile-drawer, .basemap-panel.show-mobile-drawer {
                 display: block !important; /* トグルの時だけ表示 */
                 bottom: 0px; /* 画面内にスライドイン */
             }
@@ -793,6 +840,33 @@
                 </label>
             </div>
 
+            <!-- 右上のベースマップ選択パネル -->
+            <div class="basemap-panel" id="basemap-panel">
+                <div class="panel-header-mobile">
+                    <span style="font-weight:bold;">🗺️ 地図の切り替え</span>
+                    <button class="close-panel-btn" onclick="toggleBaseMapMobile()">✕</button>
+                </div>
+                <div class="basemap-title">🗺️ 地図の切り替え</div>
+                <div class="basemap-options">
+                    <label class="basemap-item">
+                        <input type="radio" name="basemap-select" value="googleRoad" checked>
+                        <span>Google マップ (道路)</span>
+                    </label>
+                    <label class="basemap-item">
+                        <input type="radio" name="basemap-select" value="googleSatellite">
+                        <span>Google マップ (衛星画像)</span>
+                    </label>
+                    <label class="basemap-item">
+                        <input type="radio" name="basemap-select" value="gsiStd">
+                        <span>地理院地図 (標準)</span>
+                    </label>
+                    <label class="basemap-item">
+                        <input type="radio" name="basemap-select" value="gsiPale">
+                        <span>地理院地図 (淡色)</span>
+                    </label>
+                </div>
+            </div>
+
             <!-- 右上の車両状態 (Status) フィルターパネル -->
             <div class="status-filter-panel" id="status-filter-panel">
                 <div class="panel-header-mobile">
@@ -815,6 +889,9 @@
                 </button>
                 <button class="mobile-toggle-btn btn-status" onclick="toggleStatusMobile()">
                     🚲 車両状態
+                </button>
+                <button class="mobile-toggle-btn btn-basemap" onclick="toggleBaseMapMobile()">
+                    🗺️ 地図
                 </button>
             </div>
 
@@ -866,11 +943,41 @@
                 tap: true           // タッチ端末のクリックラグ解消
             }).setView([36.568, 136.648], 13);
 
-            // OpenStreetMap of タイルレイヤーを使用
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-            }).addTo(map);
+            // ベースマップレイヤーの定義
+            const baseMaps = {
+                googleRoad: L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+                    maxZoom: 21,
+                    attribution: '&copy; <a href="https://maps.google.com/" target="_blank">Google Maps</a>'
+                }),
+                googleSatellite: L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+                    maxZoom: 21,
+                    attribution: '&copy; <a href="https://maps.google.com/" target="_blank">Google Maps</a>'
+                }),
+                gsiStd: L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png', {
+                    maxZoom: 18,
+                    attribution: '&copy; <a href="https://maps.gsi.go.jp/development/ichiran.html" target="_blank">国土地理院</a>'
+                }),
+                gsiPale: L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png', {
+                    maxZoom: 18,
+                    attribution: '&copy; <a href="https://maps.gsi.go.jp/development/ichiran.html" target="_blank">国土地理院</a>'
+                })
+            };
+
+            // デフォルトでGoogleマップ（道路）を表示
+            let currentBaseLayer = baseMaps.googleRoad;
+            currentBaseLayer.addTo(map);
+
+            // ベースマップの切り替えイベントリスナー登録
+            document.querySelectorAll('input[name="basemap-select"]').forEach(radio => {
+                radio.addEventListener('change', function(e) {
+                    const selectedVal = e.target.value;
+                    if (baseMaps[selectedVal]) {
+                        map.removeLayer(currentBaseLayer);
+                        currentBaseLayer = baseMaps[selectedVal];
+                        currentBaseLayer.addTo(map);
+                    }
+                });
+            });
 
             // ズームコントロールを手動で左上に小さく追加 (右上の状態フィルタと重ならないように調整)
             L.control.zoom({ position: 'topleft' }).addTo(map);
@@ -1356,9 +1463,11 @@
             const panel = document.getElementById('summary-panel');
             const legend = document.getElementById('map-legend-panel');
             const statusPanel = document.getElementById('status-filter-panel');
+            const basemapPanel = document.getElementById('basemap-panel');
             // 反対側のパネルは閉じる
             if (legend) legend.classList.remove('show-mobile-drawer');
             if (statusPanel) statusPanel.classList.remove('show-mobile-drawer');
+            if (basemapPanel) basemapPanel.classList.remove('show-mobile-drawer');
             
             if (panel) {
                 panel.classList.toggle('show-mobile-drawer');
@@ -1369,9 +1478,11 @@
             const panel = document.getElementById('map-legend-panel');
             const summary = document.getElementById('summary-panel');
             const statusPanel = document.getElementById('status-filter-panel');
+            const basemapPanel = document.getElementById('basemap-panel');
             // 反対側のパネルは閉じる
             if (summary) summary.classList.remove('show-mobile-drawer');
             if (statusPanel) statusPanel.classList.remove('show-mobile-drawer');
+            if (basemapPanel) basemapPanel.classList.remove('show-mobile-drawer');
             
             if (panel) {
                 panel.classList.toggle('show-mobile-drawer');
@@ -1382,9 +1493,26 @@
             const panel = document.getElementById('status-filter-panel');
             const summary = document.getElementById('summary-panel');
             const legend = document.getElementById('map-legend-panel');
+            const basemapPanel = document.getElementById('basemap-panel');
             // 反対側のパネルは閉じる
             if (summary) summary.classList.remove('show-mobile-drawer');
             if (legend) legend.classList.remove('show-mobile-drawer');
+            if (basemapPanel) basemapPanel.classList.remove('show-mobile-drawer');
+            
+            if (panel) {
+                panel.classList.toggle('show-mobile-drawer');
+            }
+        }
+
+        function toggleBaseMapMobile() {
+            const panel = document.getElementById('basemap-panel');
+            const summary = document.getElementById('summary-panel');
+            const legend = document.getElementById('map-legend-panel');
+            const statusPanel = document.getElementById('status-filter-panel');
+            // 反対側のパネルは閉じる
+            if (summary) summary.classList.remove('show-mobile-drawer');
+            if (legend) legend.classList.remove('show-mobile-drawer');
+            if (statusPanel) statusPanel.classList.remove('show-mobile-drawer');
             
             if (panel) {
                 panel.classList.toggle('show-mobile-drawer');
