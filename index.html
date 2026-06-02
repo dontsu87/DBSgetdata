@@ -981,7 +981,8 @@
             // 1. 地図の初期設定 (デフォルト表示位置は金沢)
             map = L.map('map', {
                 zoomControl: false, // タブレットで邪魔にならないようズームボタンを非表示（ピンチ操作可能）
-                tap: true           // タッチ端末のクリックラグ解消
+                tap: true,          // タッチ端末のクリックラグ解消
+                zoomSnap: 0.5       // 0.5刻みのズーム（滑らかな縮尺微調整）を可能にする
             }).setView([36.568, 136.648], 13);
 
             // ベースマップレイヤーの定義
@@ -1171,7 +1172,37 @@
                     });
             }
 
+            // 金沢大学サポーター用の設定と判定
+            function isKindaiMode() {
+                const params = new URLSearchParams(window.location.search);
+                return params.has('kindai');
+            }
+
+            const KINDAI_PORTS_MASTER = {
+                "00001685": { name: "E13_臨時 角間キャンパス北地区駐車場", lat: 36.5485, lon: 136.7025 },
+                "00001686": { name: "E14_臨時 角間キャンパス南地区駐車場", lat: 36.54614, lon: 136.703719 },
+                "00001684": { name: "101.ネッツトヨタ石川田上もりの里店", lat: 36.544754, lon: 136.690079 },
+                "00001683": { name: "E12_臨時 イオンもりの里店", lat: 36.552681, lon: 136.691265 },
+                "00000352": { name: "100.若松バス停前駐輪場", lat: 36.553937, lon: 136.69042 },
+                "00001682": { name: "108.アルビスくらす杜の里店", lat: 36.559986, lon: 136.683003 },
+                "00004334": { name: "104.浅野川すずかけ公園", lat: 36.55598, lon: 136.68486 },
+                "00089057": { name: "55.天神高架橋下第２自転車駐輪場", lat: 36.559343, lon: 136.67713 }
+            };
+
+            const KINDAI_STATION_IDS = Object.keys(KINDAI_PORTS_MASTER);
+
             // 初期ロードの実行
+            if (isKindaiMode()) {
+                // kindaiモード時は凡例フィルタをサポーター用に設定 (5,4,3のみON、他はOFF)
+                document.querySelectorAll('.legend-filter').forEach(el => {
+                    const val = parseInt(el.value);
+                    if (val === 5 || val === 4 || val === 3) {
+                        el.checked = true;
+                    } else {
+                        el.checked = false;
+                    }
+                });
+            }
             loadDashboardData(false);
 
             // 2分ごと(120000ms)にバックグラウンドでサイレント自動更新を繰り返す
@@ -1195,7 +1226,14 @@
                 
                 // URLパラメータによるエリア制限
                 const limitAreaParam = getRestrictedArea();
-                if (limitAreaParam && limitAreaParam.toLowerCase() !== 'all') {
+                if (isKindaiMode()) {
+                    // 金沢大学モードの時は金沢エリアに強制固定
+                    const matchedArea = areas.find(a => a.includes("KNZ"));
+                    if (matchedArea) {
+                        areas = [matchedArea];
+                        selectedArea = matchedArea;
+                    }
+                } else if (limitAreaParam && limitAreaParam.toLowerCase() !== 'all') {
                     // 部分一致するエリア名だけを抽出 (例: "KNZ" が指定されたら "KNZ_金沢..." に一致させる)
                     const matchedArea = areas.find(a => a.toLowerCase().includes(limitAreaParam.toLowerCase()));
                     if (matchedArea) {
@@ -1239,6 +1277,9 @@
 
             // URLパラメータから制限する車両状態を取得
             function getRestrictedStatus() {
+                if (isKindaiMode()) {
+                    return '利用可能';
+                }
                 const params = new URLSearchParams(window.location.search);
                 const status = params.get('status');
                 if (status && (status.toLowerCase() === 'available' || status === '利用可能')) {
@@ -1364,6 +1405,13 @@
                         return;
                     }
 
+                    // 金沢大学モード時のポートID絞り込み (station_id がリストにない場合は描画対象外)
+                    if (isKindaiMode()) {
+                        if (!port.station_id || !KINDAI_STATION_IDS.includes(port.station_id)) {
+                            return;
+                        }
+                    }
+
                     // 自転車が0台のポートかどうかを判定
                     const isEmptyPort = (parseInt(port.total_bikes) === 0 || !port.bikes || port.bikes.length === 0);
 
@@ -1375,7 +1423,12 @@
 
                     // 描画判定
                     // 自転車が0台のポートは凡例のチェック(-1)が入っている時のみ表示。それ以外はフィルターに合致する自転車が1台以上いる場合のみ表示
-                    const isDrawPort = (isEmptyPort && checkedLevels.includes(-1)) || (!isEmptyPort && matchingBikes.length > 0);
+                    let isDrawPort = (isEmptyPort && checkedLevels.includes(-1)) || (!isEmptyPort && matchingBikes.length > 0);
+
+                    // 金沢大学モードのときは、対象8ポートであれば自転車0台(または表示対象0台)であっても常にピンを表示する
+                    if (isKindaiMode()) {
+                        isDrawPort = true;
+                    }
 
                     if (!isDrawPort) {
                         return; // 該当する自転車がいないポートは描画しない
@@ -1388,11 +1441,13 @@
                     filteredPortsCount++;
                     filteredBikesCount += matchingBikes.length;
 
-                    // ピン（マーカー）の作成
+                    // 表示対象の自転車が0台かどうかのフラグ
+                    const isActuallyEmpty = isEmptyPort || matchingBikes.length === 0;
+
                     let markerIcon;
                     let zIndexOrder = 100;
                     
-                    if (isEmptyPort) {
+                    if (isActuallyEmpty) {
                         // 自転車0台：正常より目立たない薄いグレー、中に「0」を薄く表示、サイズ[20,20]
                         markerIcon = L.divIcon({
                             className: 'port-marker-empty',
@@ -1467,10 +1522,10 @@
                         <div class="popup-desc">総駐輪台数: ${port.total_bikes}台</div>
                     `;
 
-                    if (isEmptyPort) {
+                    if (isActuallyEmpty) {
                         popupContent += `
                             <div class="popup-desc" style="font-weight:bold; color:#64748b; margin-top: 8px;">
-                                現在、駐輪されている自転車はありません。
+                                表示対象の利用可能車両はありません。
                             </div>
                         `;
                     } else {
@@ -1580,9 +1635,14 @@
                 }
 
                 // エリアやフィルター変更時に、存在するピンが綺麗に収まる範囲へ地図をスムーズズーム (自動更新時はズーム・中心座標を維持するためスキップ)
-                if (shouldFitBounds && validCoordinates.length > 0) {
-                    const bounds = L.latLngBounds(validCoordinates);
-                    map.fitBounds(bounds, { padding: [40, 40] });
+                if (shouldFitBounds) {
+                    if (isKindaiMode()) {
+                        // 金沢大学モードのときは環境によるズーム計算バグを防ぐため、8ポートの中間座標と最適なズームレベルで固定セット
+                        map.setView([36.5526, 136.6903], 14.5);
+                    } else if (validCoordinates.length > 0) {
+                        const bounds = L.latLngBounds(validCoordinates);
+                        map.fitBounds(bounds, { padding: [40, 40] });
+                    }
                 }
 
                 // 開いていたポップアップを新しいマーカーで復元する

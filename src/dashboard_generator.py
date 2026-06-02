@@ -327,10 +327,19 @@ def generate_dashboard_json(latest_vehicle_path: str = None) -> str:
         voltage = row['電圧']
         at_time = str(row['AT通知受信日時']) if not pd.isna(row['AT通知受信日時']) else ""
         
+        s_id = row.get('station_id')
+        s_id_str = ""
+        if not pd.isna(s_id):
+            try:
+                s_id_str = f"{int(s_id):08d}"
+            except (ValueError, TypeError):
+                s_id_str = str(s_id).strip()
+
         if port_name not in ports_data:
             ports_data[port_name] = {
                 "port_name": port_name,
                 "area_name": str(row['エリア名']).strip() if not pd.isna(row['エリア名']) else "その他",
+                "station_id": s_id_str,
                 "lat": float(lat) if has_gps else None,
                 "lon": float(lon) if has_gps else None,
                 "has_gps": has_gps,
@@ -339,6 +348,10 @@ def generate_dashboard_json(latest_vehicle_path: str = None) -> str:
                 "alert_bikes_count": 0, # アラート対象車両の総数
                 "bikes": []
             }
+        else:
+            # 既に登録されているが station_id が空の場合の保険
+            if not ports_data[port_name].get("station_id") and s_id_str:
+                ports_data[port_name]["station_id"] = s_id_str
             
         bike_info = {
             "bike_id": bike_id,
@@ -396,6 +409,7 @@ def generate_dashboard_json(latest_vehicle_path: str = None) -> str:
             ports_data[s_name] = {
                 "port_name": s_name,
                 "area_name": area,
+                "station_id": s_id,
                 "lat": s_lat,
                 "lon": s_lon,
                 "has_gps": True,
