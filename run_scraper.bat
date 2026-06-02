@@ -11,10 +11,13 @@ call .venv\Scripts\activate
 rem Run Python scraper script
 python -u main.py
 
-rem --- [GitHub Pages Auto Deploy] ---
-rem Push the latest dashboard data to GitHub Pages
-echo === Pushing latest dashboard data to GitHub... ===
-"C:\Program Files\Git\cmd\git.exe" add dashboard_data.json dashboard_data.js
-"C:\Program Files\Git\cmd\git.exe" commit -m "Auto-update map dashboard data from local [skip ci]"
-"C:\Program Files\Git\cmd\git.exe" push origin master
-echo === Deploy Completed ===
+rem --- [Cloudflare R2 Upload] ---
+rem Upload the latest dashboard data to Cloudflare R2
+echo === Uploading dashboard data to Cloudflare R2... ===
+python -u src/upload_to_r2.py
+if errorlevel 1 (
+    echo [ERROR] R2 upload failed. Please check your .env credentials or network.
+    exit /b 1
+)
+echo === Upload Completed ===
+

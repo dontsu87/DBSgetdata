@@ -1108,7 +1108,7 @@
                 errorScreen.style.display = 'none';
                 
                 // サーバー上（GitHub Pages等）での実行時は、動的にタイムスタンプを付与してキャッシュを強制バイパスして最新JSONを取得します
-                fetch('dashboard_data.json?t=' + timestamp)
+                fetch('https://pub-1c068f2df9ab42a0b9dcc5d112078269.r2.dev/dashboard_data.json?t=' + timestamp)
                     .then(response => {
                         if (!response.ok) {
                             throw new Error('JSON fetch failed, fallback to dashboard_data.js');
