@@ -530,44 +530,41 @@
             min-width: 200px;
         }
 
-        .basemap-title {
+        .basemap-title, .status-filter-title {
             font-weight: bold;
             font-size: 13px;
-            border-bottom: 1px solid #475569;
-            padding-bottom: 6px;
-            margin-bottom: 8px;
             color: #e2e8f0;
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: color 0.2s;
+        }
+        
+        .basemap-title:hover, .status-filter-title:hover {
+            color: #ffffff;
+        }
+
+        .panel-arrow {
+            font-size: 10px;
+            transition: transform 0.3s ease;
+            color: #94a3b8;
+        }
+
+        .basemap-options-container, .status-options-container {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
         }
 
         .basemap-options {
             display: flex;
             flex-direction: column;
             gap: 6px;
-        }
-
-        .basemap-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            padding: 4px 0;
-            user-select: none;
-        }
-
-        .basemap-item input {
-            cursor: pointer;
-            accent-color: #007aff;
-            width: 18px;
-            height: 18px;
-        }
-
-        .status-filter-title {
-            font-weight: bold;
-            font-size: 13px;
-            border-bottom: 1px solid #475569;
-            padding-bottom: 6px;
-            margin-bottom: 8px;
-            color: #e2e8f0;
+            padding-top: 8px;
+            border-top: 1px solid #475569;
+            margin-top: 8px;
         }
 
         .status-filter-item {
@@ -682,6 +679,23 @@
             .map-legend.show-mobile-drawer, .summary-panel.show-mobile-drawer, .status-filter-panel.show-mobile-drawer, .basemap-panel.show-mobile-drawer {
                 display: block !important; /* トグルの時だけ表示 */
                 bottom: 0px; /* 画面内にスライドイン */
+            }
+
+            /* スマホのドロワー内ではアコーディオンを全展開する */
+            .basemap-options-container, .status-options-container {
+                max-height: none !important;
+                overflow: visible !important;
+            }
+            .panel-arrow {
+                display: none !important; /* スマホでは矢印非表示 */
+            }
+            .basemap-title, .status-filter-title {
+                cursor: default !important;
+                color: #cbd5e1 !important;
+                border-bottom: 1px solid #475569 !important;
+                padding-bottom: 8px !important;
+                margin-top: 0 !important;
+                margin-bottom: 12px !important;
             }
 
             .map-legend-title {
@@ -846,24 +860,29 @@
                     <span style="font-weight:bold;">🗺️ 地図の切り替え</span>
                     <button class="close-panel-btn" onclick="toggleBaseMapMobile()">✕</button>
                 </div>
-                <div class="basemap-title">🗺️ 地図の切り替え</div>
-                <div class="basemap-options">
-                    <label class="basemap-item">
-                        <input type="radio" name="basemap-select" value="googleRoad" checked>
-                        <span>Google マップ (道路)</span>
-                    </label>
-                    <label class="basemap-item">
-                        <input type="radio" name="basemap-select" value="googleSatellite">
-                        <span>Google マップ (衛星画像)</span>
-                    </label>
-                    <label class="basemap-item">
-                        <input type="radio" name="basemap-select" value="gsiStd">
-                        <span>地理院地図 (標準)</span>
-                    </label>
-                    <label class="basemap-item">
-                        <input type="radio" name="basemap-select" value="gsiPale">
-                        <span>地理院地図 (淡色)</span>
-                    </label>
+                <div class="basemap-title" id="basemap-header-btn">
+                    <span>🗺️ 地図の切り替え</span>
+                    <span class="panel-arrow">▼</span>
+                </div>
+                <div class="basemap-options-container" id="basemap-options-container">
+                    <div class="basemap-options">
+                        <label class="basemap-item">
+                            <input type="radio" name="basemap-select" value="googleRoad" checked>
+                            <span>Google マップ (道路)</span>
+                        </label>
+                        <label class="basemap-item">
+                            <input type="radio" name="basemap-select" value="googleSatellite">
+                            <span>Google マップ (衛星画像)</span>
+                        </label>
+                        <label class="basemap-item">
+                            <input type="radio" name="basemap-select" value="gsiStd">
+                            <span>地理院地図 (標準)</span>
+                        </label>
+                        <label class="basemap-item">
+                            <input type="radio" name="basemap-select" value="gsiPale">
+                            <span>地理院地図 (淡色)</span>
+                        </label>
+                    </div>
                 </div>
             </div>
 
@@ -873,9 +892,14 @@
                     <span style="font-weight:bold;">🚲 車両状態フィルター</span>
                     <button class="close-panel-btn" onclick="toggleStatusMobile()">✕</button>
                 </div>
-                <div class="status-filter-title">🚲 車両状態 (フィルター)</div>
-                <div id="status-checkboxes-container">
-                    <!-- JavaScriptで動的生成 -->
+                <div class="status-filter-title" id="status-header-btn">
+                    <span>🚲 車両状態 (フィルター)</span>
+                    <span class="panel-arrow">▼</span>
+                </div>
+                <div class="status-options-container" id="status-options-container">
+                    <div id="status-checkboxes-container" style="padding-top: 8px;">
+                        <!-- JavaScriptで動的生成 -->
+                    </div>
                 </div>
             </div>
 
@@ -977,6 +1001,75 @@
                         currentBaseLayer.addTo(map);
                     }
                 });
+            });
+
+            // --- 右パネルのアコーディオン（折りたたみ）制御 ---
+            function isMobileLayout() {
+                return window.innerWidth <= 768;
+            }
+
+            const basemapHeader = document.getElementById('basemap-header-btn');
+            const basemapPanel = document.getElementById('basemap-panel');
+            const basemapContainer = document.getElementById('basemap-options-container');
+            const basemapArrow = basemapHeader.querySelector('.panel-arrow');
+
+            basemapHeader.addEventListener('click', function() {
+                if (isMobileLayout()) return; // スマホドロワー内では無効化
+                
+                const isExpanded = basemapPanel.classList.toggle('expanded');
+                if (isExpanded) {
+                    basemapContainer.style.maxHeight = basemapContainer.scrollHeight + 'px';
+                    basemapArrow.style.transform = 'rotate(180deg)';
+                } else {
+                    basemapContainer.style.maxHeight = '0px';
+                    basemapArrow.style.transform = 'rotate(0deg)';
+                }
+            });
+
+            const statusHeader = document.getElementById('status-header-btn');
+            const statusPanel = document.getElementById('status-filter-panel');
+            const statusContainer = document.getElementById('status-options-container');
+            const statusArrow = statusHeader.querySelector('.panel-arrow');
+
+            statusHeader.addEventListener('click', function() {
+                if (isMobileLayout()) return; // スマホドロワー内では無効化
+                
+                const isExpanded = statusPanel.classList.toggle('expanded');
+                if (isExpanded) {
+                    statusContainer.style.maxHeight = statusContainer.scrollHeight + 'px';
+                    statusArrow.style.transform = 'rotate(180deg)';
+                } else {
+                    statusContainer.style.maxHeight = '0px';
+                    statusArrow.style.transform = 'rotate(0deg)';
+                }
+            });
+
+            // 画面サイズ変更時（リサイズ）にスマホ表示とPC表示の不整合を防ぐ自動補正
+            window.addEventListener('resize', function() {
+                if (isMobileLayout()) {
+                    // スマホ用のスタイルへリセット
+                    basemapContainer.style.maxHeight = '';
+                    statusContainer.style.maxHeight = '';
+                    basemapArrow.style.transform = '';
+                    statusArrow.style.transform = '';
+                } else {
+                    // デスクトップ用のアコーディオン状態（初期：閉じた状態）にリセット
+                    if (!basemapPanel.classList.contains('expanded')) {
+                        basemapContainer.style.maxHeight = '0px';
+                        basemapArrow.style.transform = 'rotate(0deg)';
+                    } else {
+                        basemapContainer.style.maxHeight = basemapContainer.scrollHeight + 'px';
+                        basemapArrow.style.transform = 'rotate(180deg)';
+                    }
+                    
+                    if (!statusPanel.classList.contains('expanded')) {
+                        statusContainer.style.maxHeight = '0px';
+                        statusArrow.style.transform = 'rotate(0deg)';
+                    } else {
+                        statusContainer.style.maxHeight = statusContainer.scrollHeight + 'px';
+                        statusArrow.style.transform = 'rotate(180deg)';
+                    }
+                }
             });
 
             // ズームコントロールを手動で左上に小さく追加 (右上の状態フィルタと重ならないように調整)
