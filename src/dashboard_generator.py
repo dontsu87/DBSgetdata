@@ -130,6 +130,115 @@ def generate_dashboard_json(latest_vehicle_path: str = None) -> str:
         print(f"Error: 結合・フィルタリング処理中にエラーが発生しました: {e}")
         return None, None
 
+    # --- 学習型ポート・エリアマスタ (port_area_master.json) のロードと更新 ---
+    master_path = os.path.join(str(ROOT_DIR), "port_area_master.json")
+    master_data = {"ports": {}, "stations": {}}
+    
+    if os.path.exists(master_path):
+        try:
+            with open(master_path, "r", encoding="utf-8") as f:
+                master_data = json.load(f)
+            if "ports" not in master_data: master_data["ports"] = {}
+            if "stations" not in master_data: master_data["stations"] = {}
+        except Exception as e:
+            print(f"Warning: マスタファイルのロードに失敗しました (再構築します): {e}")
+
+    # 今回の車両情報からポート名・station_idとエリアの対応関係を自動学習
+    for idx, row in df_merged.iterrows():
+        p_name = str(row['ポート名']).strip()
+        a_name = str(row['エリア名']).strip() if not pd.isna(row['エリア名']) else "その他"
+        s_id = row['station_id']
+        
+        if p_name and a_name and a_name != "その他":
+            master_data["ports"][p_name] = a_name
+        if not pd.isna(s_id) and a_name and a_name != "その他":
+            master_data["stations"][str(int(s_id))] = a_name
+
+    # 最新のGBFS JSONデータを探索して読み込み
+    gbfs_files = sorted(glob.glob(os.path.join(Config.OUTPUT_DIR, "gbfs_stations_*.json")))
+    latest_gbfs_path = gbfs_files[-1] if gbfs_files else None
+    
+    gbfs_stations = []
+    gbfs_active_names = set()
+    gbfs_active_ids = set()
+    
+    if latest_gbfs_path:
+        try:
+            with open(latest_gbfs_path, "r", encoding="utf-8") as f:
+                gbfs_stations = json.load(f)
+            for s in gbfs_stations:
+                s_id = str(int(s.get("station_id", "0")))
+                s_name = s.get("name", "").strip()
+                if s_name:
+                    gbfs_active_names.add(s_name)
+                if s_id and s_id != "0":
+                    gbfs_active_ids.add(s_id)
+            print(f"Success: 最新のGBFSデータをロードしました (ステーション数: {len(gbfs_stations)})")
+        except Exception as e:
+            print(f"Warning: GBFSデータのロードに失敗しました: {e}")
+
+    # --- 撤去・改名ポートの自動消し込み (クレンジング) ロジック ---
+    if gbfs_stations:
+        # 消し込み対象の抽出
+        stale_ports = [p for p in master_data["ports"].keys() if p not in gbfs_active_names]
+        stale_stations = [s for s in master_data["stations"].keys() if s not in gbfs_active_ids]
+        
+        # 車両情報CSVに登場している倉庫等のGPS無し・位置情報なしポートは消し込まないように保護
+        gps_active_ports = set()
+        for idx, row in df_merged.iterrows():
+            lat = row['lat']
+            lon = row['lon']
+            has_gps = not (pd.isna(lat) or pd.isna(lon) or lat == 0.0 or lon == 0.0)
+            if not has_gps:
+                p_name = str(row['ポート名']).strip()
+                gps_active_ports.add(p_name)
+        
+        deleted_ports_count = 0
+        deleted_stations_count = 0
+        
+        for p in stale_ports:
+            if p not in gps_active_ports:
+                del master_data["ports"][p]
+                deleted_ports_count += 1
+        for s in stale_stations:
+            del master_data["stations"][s]
+            deleted_stations_count += 1
+            
+        if deleted_ports_count or deleted_stations_count:
+            print(f"Info: 不要な古いポート情報をマスタから自動消し込みしました (ポート名: {deleted_ports_count}件, ID: {deleted_stations_count}件)")
+
+    # ジオフェンシングによるエリア判定ヘルパー
+    def get_area_by_coords(lat, lon):
+        if 36.5 <= lat <= 36.65 and 136.55 <= lon <= 136.75:
+            return "KNZ_金沢市公共シェアサイクルまちのり事務局"
+        elif 36.0 <= lat <= 36.15 and 136.15 <= lon <= 136.25:
+            return "FKI_ふくチャリ"
+        elif 36.3 <= lat <= 36.45 and 136.4 <= lon <= 136.5:
+            return "KMT_こまつシェアサイクル"
+        return None
+
+    # GBFSポートをもとに、マスタへのジオフェンス初回学習を追加
+    for s in gbfs_stations:
+        s_id = str(int(s.get("station_id", "0")))
+        s_name = s.get("name", "").strip()
+        s_lat = float(s.get("lat", 0.0))
+        s_lon = float(s.get("lon", 0.0))
+        
+        # マスタに未登録の場合、ジオフェンスで判定して学習
+        if s_name not in master_data["ports"] or s_id not in master_data["stations"]:
+            area = get_area_by_coords(s_lat, s_lon)
+            if area:
+                if s_name: master_data["ports"][s_name] = area
+                if s_id and s_id != "0": master_data["stations"][s_id] = area
+
+    # マスタファイルの永続化保存
+    try:
+        with open(master_path, "w", encoding="utf-8") as f:
+            json.dump(master_data, f, ensure_ascii=False, indent=2)
+        print(f"Success: 学習型マスタファイルを更新しました: {master_path}")
+    except Exception as e:
+        print(f"Error: マスタファイルの書き込みに失敗しました: {e}")
+
     # 4. ポートごとの集計処理
     ports_data = {}
     
@@ -143,7 +252,7 @@ def generate_dashboard_json(latest_vehicle_path: str = None) -> str:
         has_gps = not (pd.isna(lat) or pd.isna(lon) or lat == 0.0 or lon == 0.0)
         
         bike_id = str(row['識別番号'])
-        status = str(row['車両状態'])
+        status = str(row['車両status']) if '車両status' in df_merged.columns else str(row['車両状態'])
         voltage = row['電圧']
         at_time = str(row['AT通知受信日時']) if not pd.isna(row['AT通知受信日時']) else ""
         
@@ -185,6 +294,40 @@ def generate_dashboard_json(latest_vehicle_path: str = None) -> str:
             # 最も高い深刻度レベルを追従
             if row['alert_level'] > ports_data[port_name]["max_alert_level"]:
                 ports_data[port_name]["max_alert_level"] = int(row['alert_level'])
+
+    # --- GBFSデータの0台ポートをマージ ---
+    gbfs_merged_count = 0
+    if gbfs_stations:
+        for s in gbfs_stations:
+            s_id = str(int(s.get("station_id", "0")))
+            s_name = s.get("name", "").strip()
+            s_lat = float(s.get("lat", 0.0))
+            s_lon = float(s.get("lon", 0.0))
+            
+            # 既に車両データから追加されているポートはスキップ
+            if s_name in ports_data:
+                continue
+                
+            # マスタからエリア名を引き当て
+            area = master_data["stations"].get(s_id) or master_data["ports"].get(s_name)
+            if not area:
+                # どのエリアにも該当しないポートは無視
+                continue
+            
+            # 0台の空ポートとして登録
+            ports_data[s_name] = {
+                "port_name": s_name,
+                "area_name": area,
+                "lat": s_lat,
+                "lon": s_lon,
+                "has_gps": True,
+                "total_bikes": 0,
+                "max_alert_level": 0,
+                "alert_bikes_count": 0,
+                "bikes": []
+            }
+            gbfs_merged_count += 1
+        print(f"Success: GBFSから駐輪台数0台のポートを {gbfs_merged_count} 件マージしました")
 
     # 5. 可視化に必要なデータ（警告車両のみに絞り込み、軽量化）
     output_ports = []
