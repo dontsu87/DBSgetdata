@@ -1,9 +1,9 @@
 name: DBS GBFS Daily Sync
 
 on:
-  schedule:
-    # 毎日午前3時0分 JST (18:00 UTC) に実行
-    - cron: '0 18 * * *'
+#   schedule:
+#     # 毎日午前3時0分 JST (18:00 UTC) に実行
+#     - cron: '0 18 * * *'
   workflow_dispatch: # 手動起動用
 
 jobs:

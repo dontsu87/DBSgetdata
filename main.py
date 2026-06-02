@@ -4,6 +4,7 @@ import time
 import argparse
 import pandas as pd
 from datetime import datetime
+from selenium.webdriver.common.by import By
 from src.config import Config
 from src.browser import build_driver
 from src.auth import login_and_get_areas
@@ -129,28 +130,38 @@ def run_scraping(is_worker=False):
             print(f"車両情報をスクレイピング中...")
             df = scrape_vehicle_page(drv, area_name)
             
-            # 次のエリアへ行く前に about:blank を経由し、重いDOM（500行のテーブル）を明示的にメモリから解放する（クラッシュ対策）
-            try:
-                drv.get("about:blank")
-                time.sleep(0.5)
-            except Exception:
-                pass
-                
             return df
         else:
             print(f"Error: エリア '{area_name}' の車両情報ページを開けませんでした。")
             return None
 
     # 2. 同一ブラウザセッションを用いて全エリアを連続巡回する。
-    #    Chrome がクラッシュした場合はブラウザを再起動して再ログインし、後続エリアの処理を継続する。
-    area_selection_url = driver.current_url  # ログイン後のエリア選択画面のURLを記憶
-
+    #    各エリアの処理完了後に明示的に「ログアウト」を行うことで、ブラウザ再起動の無駄な待機時間を無くし、
+    #    セッションの不整合によるChromeクラッシュを防止して超高速化を実現します。
+    
     for idx, area_name in enumerate(area_names):
         if idx > 0:
             print("Waiting 3 seconds to reduce server load...")
             time.sleep(3)
+            
+            # 2回目以降の巡回では、ログアウト後のログイン画面から再ログインしてエリア選択画面に入ります
+            print(f"\n次のエリアのために再ログインを実行しています...")
+            try:
+                areas_info_retry = login_and_get_areas(driver)
+            except Exception as e:
+                print(f"Error: 再ログインに失敗しました。ブラウザを再起動して復旧を試みます: {e}")
+                try:
+                    driver.quit()
+                except Exception:
+                    pass
+                time.sleep(3)
+                driver = build_driver()
+                login_and_get_areas(driver)
 
         print(f"\n[{idx+1}/{len(area_names)}] エリア '{area_name}' の取得を開始します...")
+
+        # ログイン後のエリア選択画面のURLをカレントURLから取得
+        area_selection_url = driver.current_url
 
         try:
             df = _navigate_to_area_and_scrape(driver, idx, area_name, area_selection_url)
@@ -191,12 +202,19 @@ def run_scraping(is_worker=False):
                         print(f"Success (再試行): エリア '{area_name}' のデータ {len(df)} 件を取得しました。")
                 except Exception as retry_err:
                     print(f"Error: 再試行にも失敗しました: {retry_err}")
-            else:
-                # 通常のセッション切れ → エリア選択画面に強制復帰を試みる
+
+        finally:
+            # 正常終了か例外発生かにかかわらず、次のエリアへ行く前に明示的に「ログアウト」してセッションを綺麗にする
+            # (最後のエリアの場合はループを抜けてから通常終了するためログアウトは省略)
+            if idx < len(area_names) - 1:
+                print("🚪 セッション切替のため、ログアウト処理を実行しています...")
                 try:
-                    driver.get(area_selection_url)
-                except Exception:
-                    pass
+                    # ログアウトボタン（input[value='ログアウト']）を探してクリック
+                    logout_btn = driver.find_element(By.CSS_SELECTOR, "input[value='ログアウト']")
+                    driver.execute_script("arguments[0].click();", logout_btn)
+                    time.sleep(2)
+                except Exception as le:
+                    print(f"Warning: ログアウト処理中にエラーが発生しました（後続の再ログイン処理でリカバリします）: {le}")
 
     # 全巡回完了後にブラウザセッションを終了
     try:
