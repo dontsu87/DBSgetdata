@@ -863,12 +863,17 @@
                 const errorScreen = document.getElementById('error-screen');
                 const refreshBtn = document.getElementById('refresh-btn');
                 
-                // ロード画面の表示とボタンのインジケータ開始
-                loader.style.display = 'flex';
+                // 初期ロードのみ画面全体を覆うローダーを表示
+                // 手動更新時は画面を白く点滅させず、ボタンのインジケータだけで裏側で静かに更新します
+                if (!isManual) {
+                    loader.style.display = 'flex';
+                }
                 errorScreen.style.display = 'none';
+                
                 if (refreshBtn) {
                     refreshBtn.classList.add('spinning');
                     refreshBtn.disabled = true;
+                    refreshBtn.querySelector('span').innerText = "更新中...";
                 }
                 
                 // サーバー上（GitHub Pages等）での実行時は、動的にタイムスタンプを付与してキャッシュを強制バイパスして最新JSONを取得します
@@ -892,6 +897,7 @@
                             if (refreshBtn) {
                                 refreshBtn.classList.remove('spinning');
                                 refreshBtn.disabled = false;
+                                refreshBtn.querySelector('span').innerText = "情報更新";
                             }
                         }, 500);
                     })
@@ -913,6 +919,7 @@
                         if (refreshBtn) {
                             refreshBtn.classList.remove('spinning');
                             refreshBtn.disabled = false;
+                            refreshBtn.querySelector('span').innerText = "情報更新";
                         }
                     });
             }
