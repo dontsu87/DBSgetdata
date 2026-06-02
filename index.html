@@ -331,14 +331,20 @@
             font-weight: bold;
         }
 
-        /* 自転車0台のポート（正常より目立たない薄いグレー、数字なし） */
+        /* 自転車0台のポート（正常より目立たない薄グレー、中身が白抜き、数字0を表示） */
         .port-marker-empty {
-            background-color: #e2e8f0;
-            border: 1.5px dashed #94a3b8;
+            background-color: #f8fafc; /* 非常に薄いグレー */
+            border: 1.5px dashed #cbd5e1; /* 薄い点線 */
             border-radius: 50%;
-            width: 14px !important;
-            height: 14px !important;
-            box-shadow: none;
+            width: 20px !important;
+            height: 20px !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            color: #94a3b8; /* 薄い文字色 */
+            font-size: 10px;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         /* レベル5: AT異常 (黒紫系統、最大) */
@@ -778,6 +784,13 @@
                     </div>
                     <input type="checkbox" class="legend-filter" value="0">
                 </label>
+                <label class="map-legend-item">
+                    <div style="display: flex; align-items: center;">
+                        <div class="map-legend-color" style="background-color: #f8fafc; border: 1.5px dashed #cbd5e1;"></div>
+                        <span><b>自転車0台</b> (薄グレー)</span>
+                    </div>
+                    <input type="checkbox" class="legend-filter" value="-1" checked>
+                </label>
             </div>
 
             <!-- 右上の車両状態 (Status) フィルターパネル -->
@@ -1090,8 +1103,8 @@
                     );
 
                     // 描画判定
-                    // 自転車が0台のポートは常に表示。それ以外はフィルターに合致する自転車が1台以上いる場合のみ表示
-                    const isDrawPort = isEmptyPort || (matchingBikes.length > 0);
+                    // 自転車が0台のポートは凡例のチェック(-1)が入っている時のみ表示。それ以外はフィルターに合致する自転車が1台以上いる場合のみ表示
+                    const isDrawPort = (isEmptyPort && checkedLevels.includes(-1)) || (!isEmptyPort && matchingBikes.length > 0);
 
                     if (!isDrawPort) {
                         return; // 該当する自転車がいないポートは描画しない
@@ -1109,12 +1122,12 @@
                     let zIndexOrder = 100;
                     
                     if (isEmptyPort) {
-                        // 自転車0台：正常より目立たない薄いグレー、台数表示なし
+                        // 自転車0台：正常より目立たない薄いグレー、中に「0」を薄く表示、サイズ[20,20]
                         markerIcon = L.divIcon({
                             className: 'port-marker-empty',
-                            html: '',
-                            iconSize: [14, 14],
-                            iconAnchor: [7, 7]
+                            html: '<div>0</div>',
+                            iconSize: [20, 20],
+                            iconAnchor: [10, 10]
                         });
                         zIndexOrder = 10; // 最背面
                     } else {
