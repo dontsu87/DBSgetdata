@@ -7,9 +7,12 @@
 *.png
 *.log
 *.json
+dashboard_data.json
+dashboard_data.js
 output/
 debug/
 scratch/
+
 
 
 # Python cache / virtual environments
