@@ -806,14 +806,14 @@
                 <label class="map-legend-item" id="legend-item-level5">
                     <div style="display: flex; align-items: center;">
                         <div class="map-legend-color" style="background-color: #4c1d95;"></div>
-                        <span><b>AT異常</b> (黒紫)</span>
+                        <span><b>極低</b> (黒紫)</span>
                     </div>
-                    <input type="checkbox" class="legend-filter" value="5">
+                    <input type="checkbox" class="legend-filter" value="5" checked>
                 </label>
                 <label class="map-legend-item">
                     <div style="display: flex; align-items: center;">
                         <div class="map-legend-color" style="background-color: #ef4444;"></div>
-                        <span><b>電圧閾値</b> (赤系統)</span>
+                        <span><b>低</b> (赤系統)</span>
                     </div>
                     <input type="checkbox" class="legend-filter" value="4" checked>
                 </label>
@@ -1542,11 +1542,9 @@
                 document.getElementById('summary-panel').style.display = '';
                 
                 const restrictedStatus = getRestrictedStatus();
-                const legendLevel5 = document.getElementById('legend-item-level5');
                 if (restrictedStatus) {
                     document.getElementById('status-filter-panel').style.display = 'none';
                     document.getElementById('basemap-panel').style.right = '15px'; // フィルター非表示時は右寄せにする
-                    if (legendLevel5) legendLevel5.style.display = 'none'; // AT異常凡例を非表示
                     
                     // スマホ用ボタンも念のため確実に非表示にする
                     const statusBtn = document.querySelector('.btn-status');
@@ -1554,7 +1552,6 @@
                 } else {
                     document.getElementById('status-filter-panel').style.display = '';
                     document.getElementById('basemap-panel').style.right = ''; // 通常位置に戻す
-                    if (legendLevel5) legendLevel5.style.display = ''; // AT異常凡例を表示
                 }
 
                 // エリアやフィルター変更時に、存在するピンが綺麗に収まる範囲へ地図をスムーズズーム (自動更新時はズーム・中心座標を維持するためスキップ)
