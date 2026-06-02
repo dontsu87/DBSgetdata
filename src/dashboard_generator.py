@@ -57,6 +57,28 @@ def generate_dashboard_json(latest_vehicle_path: str = None) -> str:
             df_threshold['閾値_Lv2'] = v_strong + 1.2
             df_threshold['閾値_Lv3'] = v_strong + 2.0
 
+        # --- 動的に取得した車種マッピングとしきい値マスタのロード ---
+        df_bike_types = None
+        df_type_master = None
+        
+        bikes_path = os.path.join(Config.OUTPUT_DIR, "bike_types.csv")
+        master_path = os.path.join(Config.OUTPUT_DIR, "vehicle_type_master.csv")
+        
+        if os.path.exists(bikes_path):
+            try:
+                df_bike_types = pd.read_csv(bikes_path)
+                df_bike_types['join_key'] = df_bike_types['識別番号'].astype(str).str.strip()
+                print("Info: スクレイピングされた車種マッピングをロードしました。")
+            except Exception as e:
+                print(f"Warning: bike_types.csv のロードに失敗しました: {e}")
+                
+        if os.path.exists(master_path):
+            try:
+                df_type_master = pd.read_csv(master_path)
+                print("Info: スクレイピングされた車種マスタをロードしました。")
+            except Exception as e:
+                print(f"Warning: vehicle_type_master.csv のロードに失敗しました: {e}")
+
         # 必要な列だけ抽出してマージ (5段階の警告閾値カラムと車種名を追加)
         th_cols = ['join_key', '車種名', '閾値_AT異常', '閾値_画面強調', '閾値_Lv1', '閾値_Lv2', '閾値_Lv3']
         df_t_subset = df_threshold[th_cols].drop_duplicates(subset=['join_key'])
@@ -70,29 +92,61 @@ def generate_dashboard_json(latest_vehicle_path: str = None) -> str:
         df_merged['閾値_Lv2'] = df_merged['閾値_Lv2'].fillna(26.2)
         df_merged['閾値_Lv3'] = df_merged['閾値_Lv3'].fillna(27.0)
         
-        # --- 金沢(KNZ)のDDおよびグリッター・EBマスタ値強制保護機能 ---
-        # OneDrive等のCSV上に誤った大きな値が入っている場合でも、添付画像の仕様通りに強制補正します
+        # --- 動的車種判定およびしきい値マスタ適用 ---
         for idx, row in df_merged.iterrows():
-            model = str(row['車種名']).strip()
-            # もしCSV上で "PasCityC" になってしまっている車両があれば、画像通り「グリッター・EB」に正式書き換えします
+            join_key = row['join_key']
+            
+            # スクレイピングされた車種データがあれば最優先で適用
+            scraped_model = None
+            if df_bike_types is not None:
+                match = df_bike_types[df_bike_types['join_key'] == join_key]
+                if not match.empty:
+                    scraped_model = str(match.iloc[0]['車種']).strip()
+                    
+            if scraped_model:
+                df_merged.at[idx, '車種名'] = scraped_model
+                model = scraped_model
+            else:
+                model = str(row['車種名']).strip()
+                
+            # PasCityC を「グリッター・EB」に正式書き換え（フロント表示用）
             if model == "PasCityC":
                 df_merged.at[idx, '車種名'] = "グリッター・EB"
                 model = "グリッター・EB"
+                
+            # 車種マスタからのしきい値動的適用
+            applied_thresholds = False
+            if df_type_master is not None:
+                # PasCityC と グリッター・EB の両方でマッチングを試みる
+                master_match = df_type_master[
+                    (df_type_master['車種名'].astype(str).str.strip() == model) |
+                    (df_type_master['車種名'].astype(str).str.strip() == "PasCityC" if model == "グリッター・EB" else False)
+                ]
+                if not master_match.empty:
+                    master_row = master_match.iloc[0]
+                    df_merged.at[idx, '閾値_AT異常'] = float(master_row['閾値_AT異常'])
+                    df_merged.at[idx, '閾値_画面強調'] = float(master_row['閾値_画面強調'])
+                    df_merged.at[idx, '閾値_Lv1'] = float(master_row['閾値_Lv1'])
+                    df_merged.at[idx, '閾値_Lv2'] = float(master_row['閾値_Lv2'])
+                    df_merged.at[idx, '閾値_Lv3'] = float(master_row['閾値_Lv3'])
+                    applied_thresholds = True
 
-            # DDの補正
-            if model == "DD":
-                df_merged.at[idx, '閾値_AT異常'] = 18.0
-                df_merged.at[idx, '閾値_画面強調'] = 24.5
-                df_merged.at[idx, '閾値_Lv1'] = 35.1
-                df_merged.at[idx, '閾値_Lv2'] = 35.8
-                df_merged.at[idx, '閾値_Lv3'] = 37.5
-            # グリッター・EBの補正 (添付画像3行目の値)
-            elif model == "グリッター・EB":
-                df_merged.at[idx, '閾値_AT異常'] = 20.5
-                df_merged.at[idx, '閾値_画面強調'] = 20.5
-                df_merged.at[idx, '閾値_Lv1'] = 23.9
-                df_merged.at[idx, '閾値_Lv2'] = 24.7
-                df_merged.at[idx, '閾値_Lv3'] = 26.3
+            # マスタにない場合のハードコーディング補正（DDおよびグリッターの既定フォールバック）
+            if not applied_thresholds:
+                # DDの補正
+                if model == "DD":
+                    df_merged.at[idx, '閾値_AT異常'] = 18.0
+                    df_merged.at[idx, '閾値_画面強調'] = 24.5
+                    df_merged.at[idx, '閾値_Lv1'] = 35.1
+                    df_merged.at[idx, '閾値_Lv2'] = 35.8
+                    df_merged.at[idx, '閾値_Lv3'] = 37.5
+                # グリッター・EBの補正 (添付画像3行目の値)
+                elif model == "グリッター・EB":
+                    df_merged.at[idx, '閾値_AT異常'] = 20.5
+                    df_merged.at[idx, '閾値_画面強調'] = 20.5
+                    df_merged.at[idx, '閾値_Lv1'] = 23.9
+                    df_merged.at[idx, '閾値_Lv2'] = 24.7
+                    df_merged.at[idx, '閾値_Lv3'] = 26.3
 
         # 数値変換
         df_merged['電圧'] = pd.to_numeric(df_merged['電圧'], errors='coerce')

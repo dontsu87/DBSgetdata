@@ -272,7 +272,18 @@ def main():
         action="store_true",
         help="ドコモ・バイクシェアのGBFS APIからポート位置情報(ステーション情報)を取得し保存します"
     )
+    parser.add_argument(
+        "--bike-types",
+        action="store_true",
+        help="事業者用管理画面から自転車ごとの車種および車種設定マスタを取得し保存します"
+    )
     args = parser.parse_args()
+
+    # --bike-types が指定された場合の処理
+    if args.bike_types:
+        from src.bike_type_retriever import run_bike_types_scraping
+        run_bike_types_scraping()
+        return
 
     # --gbfs が指定された場合の処理
     if args.gbfs:

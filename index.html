@@ -1386,24 +1386,26 @@
                         const maxLevel = Math.max(...matchingBikes.map(b => b.alert_level));
                         let className = 'port-marker-base ';
                         
+                        // 同一深刻度内では台数が多いものが上に表示されるよう、台数をオフセットとして加算
+                        const bikeCountOffset = matchingBikes.length;
                         if (maxLevel === 5) {
                             className += 'port-marker-level5';
-                            zIndexOrder = 20000; // AT異常
+                            zIndexOrder = 20000 + bikeCountOffset; // AT異常
                         } else if (maxLevel === 4) {
                             className += 'port-marker-level4';
-                            zIndexOrder = 15000; // 電圧閾値
+                            zIndexOrder = 15000 + bikeCountOffset; // 電圧閾値
                         } else if (maxLevel === 3) {
                             className += 'port-marker-level3';
-                            zIndexOrder = 10000; // Lv1
+                            zIndexOrder = 10000 + bikeCountOffset; // Lv1
                         } else if (maxLevel === 2) {
                             className += 'port-marker-level2';
-                            zIndexOrder = 5000;  // Lv2
+                            zIndexOrder = 5000 + bikeCountOffset;  // Lv2
                         } else if (maxLevel === 1) {
                             className += 'port-marker-level1';
-                            zIndexOrder = 1000;  // Lv3
+                            zIndexOrder = 1000 + bikeCountOffset;  // Lv3
                         } else {
                             className += 'port-marker-normal';
-                            zIndexOrder = 500;   // 正常
+                            zIndexOrder = 500 + bikeCountOffset;   // 正常
                         }
 
                         // 正常(0)も含むすべてのレベルで台数を表示するように統一
