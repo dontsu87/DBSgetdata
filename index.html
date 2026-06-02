@@ -1114,6 +1114,14 @@
             });
 
             function loadDashboardData(isAutoUpdate = false) {
+                // URLパラメータが1つも存在しない場合は、描画を行わず空のマップを表示
+                if (!window.location.search || window.location.search.length <= 1) {
+                    console.log("Info: URLパラメータがありません。データをロードしません。");
+                    const loader = document.getElementById('loader');
+                    if (loader) loader.style.display = 'none';
+                    return;
+                }
+
                 const timestamp = new Date().getTime();
                 const loader = document.getElementById('loader');
                 const errorScreen = document.getElementById('error-screen');
