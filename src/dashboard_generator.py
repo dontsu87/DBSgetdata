@@ -433,6 +433,23 @@ def generate_dashboard_json(latest_vehicle_path: str = None) -> str:
                 # どのエリアにも該当しないポートは無視
                 continue
             
+            # 【重要】他都市（仙台、東京など）のポートが station_id の重複によって誤マージされるのを防ぐため、
+            # ジオフェンスによる座標の境界チェック（ガード）を厳密に行います。
+            # 管轄エリアの物理的な地理境界に合致しない場合は、マスタに登録があっても無視（スキップ）します。
+            is_valid_coords = False
+            if "KNZ" in area:
+                is_valid_coords = (36.5 <= s_lat <= 36.65 and 136.55 <= s_lon <= 136.75)
+            elif "FKI" in area:
+                is_valid_coords = (36.0 <= s_lat <= 36.15 and 136.15 <= s_lon <= 136.25)
+            elif "KMT" in area:
+                is_valid_coords = (36.3 <= s_lat <= 36.45 and 136.4 <= s_lon <= 136.5)
+            elif "TRG" in area:
+                is_valid_coords = (35.5 <= s_lat <= 35.7 and 136.0 <= s_lon <= 136.15)
+                
+            if not is_valid_coords:
+                # 座標がエリアの境界外（例: 仙台の宮城県庁などがID重複でKNZとして引き当てられた場合）はスキップ
+                continue
+            
             # 0台の空ポートとして登録
             ports_data[s_name] = {
                 "port_name": s_name,
