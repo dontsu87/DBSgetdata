@@ -695,10 +695,6 @@
             <h1 style="display: flex; align-items: center; gap: 8px;">🔋 バッテリー低下車両マップ</h1>
             <div style="display: flex; align-items: center; gap: 12px;">
                 <div id="update-time" class="update-time">データ取得中...</div>
-                <button id="refresh-btn" class="refresh-button">
-                    <svg viewBox="0 0 24 24" style="width: 16px; height: 16px; fill: currentColor;"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
-                    <span>情報更新</span>
-                </button>
             </div>
         </header>
 
@@ -857,24 +853,33 @@
             markerGroup = L.layerGroup().addTo(map);
 
             // 2. 自動データ取得処理 (JSON/JS両対応ハイブリッド型 - タイムスタンプ付与による超強力リアルタイムキャッシュ対策)
-            function loadDashboardData(isManual = false) {
+            let openPortName = null; // 現在ポップアップが開いているポートの名前を記録
+            let isFirstLoad = true; // 初回ロード判定
+
+            // ポップアップの開閉を監視して開いているポート名を記録
+            map.on('popupopen', function(e) {
+                const source = e.source; // ポップアップを開いたマーカー
+                if (source && source.portName) {
+                    openPortName = source.portName;
+                    console.log("Popup opened for:", openPortName);
+                }
+            });
+
+            map.on('popupclose', function(e) {
+                openPortName = null;
+            });
+
+            function loadDashboardData(isAutoUpdate = false) {
                 const timestamp = new Date().getTime();
                 const loader = document.getElementById('loader');
                 const errorScreen = document.getElementById('error-screen');
-                const refreshBtn = document.getElementById('refresh-btn');
                 
-                // 初期ロードのみ画面全体を覆うローダーを表示
-                // 手動更新時は画面を白く点滅させず、ボタンのインジケータだけで裏側で静かに更新します
-                if (!isManual) {
+                // 初回ロードまたは手動エリア変更等の時のみローダーを表示
+                // 2分ごとの定期自動更新時は画面を白く点滅させず、裏側でサイレントに更新します
+                if (!isAutoUpdate) {
                     loader.style.display = 'flex';
                 }
                 errorScreen.style.display = 'none';
-                
-                if (refreshBtn) {
-                    refreshBtn.classList.add('spinning');
-                    refreshBtn.disabled = true;
-                    refreshBtn.querySelector('span').innerText = "更新中...";
-                }
                 
                 // サーバー上（GitHub Pages等）での実行時は、動的にタイムスタンプを付与してキャッシュを強制バイパスして最新JSONを取得します
                 fetch('dashboard_data.json?t=' + timestamp)
@@ -889,16 +894,16 @@
                         cachedDashboardData = data;
                         initAreaTabs(cachedDashboardData);
                         initStatusFilter(cachedDashboardData);
-                        updateFilterAndRender();
+                        
+                        // 自動更新（isAutoUpdate=true）の時はズーム・位置を動かさない（維持する）
+                        const shouldFitBounds = !isAutoUpdate && isFirstLoad;
+                        updateFilterAndRender(shouldFitBounds);
+                        
+                        isFirstLoad = false;
                         
                         // ロード終了処理
                         setTimeout(() => {
                             loader.style.display = 'none';
-                            if (refreshBtn) {
-                                refreshBtn.classList.remove('spinning');
-                                refreshBtn.disabled = false;
-                                refreshBtn.querySelector('span').innerText = "情報更新";
-                            }
                         }, 500);
                     })
                     .catch(error => {
@@ -910,16 +915,15 @@
                             cachedDashboardData = window.dashboardData;
                             initAreaTabs(cachedDashboardData);
                             initStatusFilter(cachedDashboardData);
-                            updateFilterAndRender();
+                            
+                            const shouldFitBounds = !isAutoUpdate && isFirstLoad;
+                            updateFilterAndRender(shouldFitBounds);
+                            
+                            isFirstLoad = false;
                             loader.style.display = 'none';
                         } else {
                             loader.style.display = 'none';
                             errorScreen.style.display = 'flex';
-                        }
-                        if (refreshBtn) {
-                            refreshBtn.classList.remove('spinning');
-                            refreshBtn.disabled = false;
-                            refreshBtn.querySelector('span').innerText = "情報更新";
                         }
                     });
             }
@@ -927,13 +931,11 @@
             // 初期ロードの実行
             loadDashboardData(false);
 
-            // 更新ボタンのクリックイベントを設定
-            const refreshBtn = document.getElementById('refresh-btn');
-            if (refreshBtn) {
-                refreshBtn.addEventListener('click', function() {
-                    loadDashboardData(true);
-                });
-            }
+            // 2分ごと(120000ms)にバックグラウンドでサイレント自動更新を繰り返す
+            setInterval(function() {
+                console.log("🔄 定期自動アップデートを実行中...");
+                loadDashboardData(true);
+            }, 120000);
 
             // 3. エリア選択タブの動的初期生成
             function initAreaTabs(data) {
@@ -1016,23 +1018,23 @@
             }
 
             // 4. フィルター状態の更新と再描画
-            function updateFilterAndRender() {
+            function updateFilterAndRender(shouldFitBounds = true) {
                 if (!cachedDashboardData) return;
                 
                 // チェックされている警告レベルの値を取得
                 const checkedLevels = Array.from(document.querySelectorAll('.legend-filter:checked'))
                                            .map(el => parseInt(el.value));
                                            
-                renderDashboardWithFilter(cachedDashboardData, checkedLevels, checkedStatuses);
+                renderDashboardWithFilter(cachedDashboardData, checkedLevels, checkedStatuses, shouldFitBounds);
             }
 
-            // 凡例のチェックボックス変更時に再描画を連動
+            // 凡例のチェックボックス変更時に再描画を連動 (この時はマップ範囲をフィットさせる)
             document.querySelectorAll('.legend-filter').forEach(checkbox => {
-                checkbox.addEventListener('change', updateFilterAndRender);
+                checkbox.addEventListener('change', () => updateFilterAndRender(true));
             });
 
             // 5. フィルター（警告レベル ＆ 車両状態 ＆ 選択エリア）適用済みのダッシュボード描画関数
-            function renderDashboardWithFilter(data, checkedLevels, targetStatuses) {
+            function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFitBounds = true) {
                 if (!data || !data.ports) return;
 
                 // 引数がない場合の安全なフォールバック
@@ -1050,6 +1052,7 @@
                 let filteredPortsCount = 0;
                 let filteredBikesCount = 0;
                 let allFilteredBikes = []; // フィルターに合致した全自転車を蓄積
+                let activePopupMarker = null; // 現在開いていたポート名に一致する新しいマーカー
 
                 data.ports.forEach(port => {
                     const lat = parseFloat(port.lat);
@@ -1135,6 +1138,9 @@
                         riseOnHover: true
                     }).addTo(markerGroup);
 
+                    // 後でポップアップ状態を復旧するためにマーカーにポート名を付与
+                    marker.portName = port.port_name;
+
                     // ポップアップの構成（フィルター合致した車両のみを表示）
                     let popupContent = `
                         <div class="popup-title">${port.port_name}</div>
@@ -1167,6 +1173,11 @@
                         autoPan: true,
                         autoPanPadding: L.point(50, 50)
                     });
+
+                    // もしこのポート名が、さきほど開いていたポート名と一致すれば記憶する
+                    if (openPortName && port.port_name === openPortName) {
+                        activePopupMarker = marker;
+                    }
                 });
 
                 // サマリー値のリアルタイム連動更新 (選択されたエリア内での合計値になります)
@@ -1221,10 +1232,18 @@
                 document.getElementById('summary-panel').style.display = '';
                 document.getElementById('status-filter-panel').style.display = '';
 
-                // エリアやフィルター変更時に、存在するピンが綺麗に収まる範囲へ地図をスムーズズーム
-                if (validCoordinates.length > 0) {
+                // エリアやフィルター変更時に、存在するピンが綺麗に収まる範囲へ地図をスムーズズーム (自動更新時はズーム・中心座標を維持するためスキップ)
+                if (shouldFitBounds && validCoordinates.length > 0) {
                     const bounds = L.latLngBounds(validCoordinates);
                     map.fitBounds(bounds, { padding: [40, 40] });
+                }
+
+                // 開いていたポップアップを新しいマーカーで復元する
+                if (activePopupMarker) {
+                    // 少し時間差を設けて確実に描画完了後にポップアップを開く
+                    setTimeout(() => {
+                        activePopupMarker.openPopup();
+                    }, 50);
                 }
             }
 
