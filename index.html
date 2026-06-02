@@ -1163,12 +1163,29 @@
                 loadDashboardData(true);
             }, 120000);
 
+            // URLパラメータから制限エリアを取得
+            function getRestrictedArea() {
+                const params = new URLSearchParams(window.location.search);
+                return params.get('area'); // 例: "KNZ" または "KNZ_金沢市公共シェアサイクルまちのり事務局"
+            }
+
             // 3. エリア選択タブの動的初期生成
             function initAreaTabs(data) {
                 if (!data || !data.ports) return;
                 
                 // データに含まれる全てのエリア名をユニークに抽出
-                const areas = Array.from(new Set(data.ports.map(p => p.area_name))).filter(Boolean);
+                let areas = Array.from(new Set(data.ports.map(p => p.area_name))).filter(Boolean);
+                
+                // URLパラメータによるエリア制限
+                const limitAreaParam = getRestrictedArea();
+                if (limitAreaParam && limitAreaParam.toLowerCase() !== 'all') {
+                    // 部分一致するエリア名だけを抽出 (例: "KNZ" が指定されたら "KNZ_金沢..." に一致させる)
+                    const matchedArea = areas.find(a => a.toLowerCase().includes(limitAreaParam.toLowerCase()));
+                    if (matchedArea) {
+                        areas = [matchedArea];
+                        selectedArea = matchedArea; // 強制的にそのエリアを選択
+                    }
+                }
                 
                 // デフォルトは金沢エリア（KNZを含むもの）を最優先、なければ最初のエリア
                 if (!selectedArea) {
@@ -1177,6 +1194,13 @@
                 
                 const tabsContainer = document.getElementById('area-tabs');
                 tabsContainer.innerHTML = '';
+                
+                // タブが1つだけの場合は、エリアタブバー自体を非表示にして画面を広くする
+                if (areas.length <= 1) {
+                    tabsContainer.style.display = 'none';
+                } else {
+                    tabsContainer.style.display = 'flex';
+                }
                 
                 areas.forEach(area => {
                     const btn = document.createElement('button');
