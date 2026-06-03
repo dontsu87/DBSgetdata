@@ -5,6 +5,7 @@
 *.csv
 *.xlsx
 *.png
+!docs/images/*.png
 *.log
 *.json
 dashboard_data.json
