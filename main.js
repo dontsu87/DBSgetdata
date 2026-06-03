@@ -30,7 +30,9 @@ document.addEventListener("DOMContentLoaded", function() {
     map = L.map('map', {
         zoomControl: false, // タブレットで邪魔にならないようズームボタンを非表示（ピンチ操作可能）
         tap: true,          // タッチ端末のクリックラグ解消
-        zoomSnap: 0.5       // 0.5刻みのズーム（滑らかな縮尺微調整）を可能にする
+        doubleClickZoom: false, // ダブルクリックズームを無効化（ダブルタップドラッグと競合するため）
+        doubleTapDragZoom: true, // ダブルタップドラッグズームを有効化
+        zoomSnap: 0        // 完全に滑らかな無段階ズームを可能にする
     }).setView([36.568, 136.648], 13);
 
     // ベースマップレイヤーの定義
@@ -188,7 +190,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // ポップアップの開閉を監視して開いているポート名を記録
     map.on('popupopen', function(e) {
-        const source = e.source; // ポップアップを開いたマーカー
+        const source = e.source || (e.popup && e.popup._source); // ポップアップを開いたマーカー
         if (source && source.portName) {
             openPortName = source.portName;
             console.log("Popup opened for:", openPortName);
