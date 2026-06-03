@@ -31,9 +31,64 @@ document.addEventListener("DOMContentLoaded", function() {
         zoomControl: false, // タブレットで邪魔にならないようズームボタンを非表示（ピンチ操作可能）
         tap: true,          // タッチ端末のクリックラグ解消
         doubleClickZoom: false, // ダブルクリックズームを無効化（ダブルタップドラッグと競合するため）
-        doubleTapDragZoom: true, // ダブルタップドラッグズームを有効化
         zoomSnap: 0        // 完全に滑らかな無段階ズームを可能にする
     }).setView([36.568, 136.648], 13);
+
+    // ダブルタップ＋ドラッグズームの自前実装 (Android/Chrome等のブラウザジェスチャー競合回避用)
+    (function() {
+        let lastTapTime = 0;
+        let isDoubleTapDragging = false;
+        let startY = 0;
+        let startZoom = 0;
+        
+        const mapContainer = map.getContainer();
+        
+        mapContainer.addEventListener('touchstart', function(e) {
+            if (e.touches.length !== 1) return; // 指1本の場合のみ処理
+            
+            const currentTime = new Date().getTime();
+            const tapDelay = currentTime - lastTapTime;
+            
+            if (tapDelay < 300) {
+                // 300ms以内の連続タップでダブルタップと判定
+                isDoubleTapDragging = true;
+                startY = e.touches[0].clientY;
+                startZoom = map.getZoom();
+                // ブラウザ標準のダブルタップズーム動作を強制抑止
+                e.preventDefault();
+            }
+            
+            lastTapTime = currentTime;
+        }, { passive: false });
+        
+        mapContainer.addEventListener('touchmove', function(e) {
+            if (!isDoubleTapDragging) return;
+            if (e.touches.length !== 1) return; // 指が2本以上になったら中断
+            
+            // スクロールやページスライドなどのブラウザデフォルト挙動を防止
+            e.preventDefault();
+            
+            const currentY = e.touches[0].clientY;
+            const diffY = startY - currentY; // 上にスライドするとズームアップ（値がプラス）
+            
+            // 感度調整 (80px スライドでズームが 1段階 変化する程度)
+            const zoomDelta = diffY / 80; 
+            let targetZoom = startZoom + zoomDelta;
+            
+            // マップの制限範囲内に収める
+            targetZoom = Math.max(map.getMinZoom(), Math.min(map.getMaxZoom(), targetZoom));
+            
+            // 滑らかにズーム (zoomSnap: 0 なので小数値も許容)
+            map.setZoom(targetZoom, { animate: false });
+        }, { passive: false });
+        
+        mapContainer.addEventListener('touchend', function(e) {
+            if (isDoubleTapDragging) {
+                isDoubleTapDragging = false;
+                e.preventDefault();
+            }
+        }, { passive: false });
+    })();
 
     // ベースマップレイヤーの定義
     const baseMaps = {
