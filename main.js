@@ -705,22 +705,22 @@ document.addEventListener("DOMContentLoaded", function() {
                 const bikeCountOffset = matchingBikes.length;
                 if (maxLevel === 5) {
                     className += 'port-marker-level5';
-                    zIndexOrder = 20000 + bikeCountOffset; // AT異常
+                    zIndexOrder = 20000 + bikeCountOffset; // 最低
                 } else if (maxLevel === 4) {
                     className += 'port-marker-level4';
-                    zIndexOrder = 15000 + bikeCountOffset; // 電圧閾値
+                    zIndexOrder = 15000 + bikeCountOffset; // 低
                 } else if (maxLevel === 3) {
                     className += 'port-marker-level3';
-                    zIndexOrder = 10000 + bikeCountOffset; // Lv1
+                    zIndexOrder = 10000 + bikeCountOffset; // 中
                 } else if (maxLevel === 2) {
                     className += 'port-marker-level2';
-                    zIndexOrder = 5000 + bikeCountOffset;  // Lv2
-                } else if (maxLevel === 1) {
+                    zIndexOrder = 5000 + bikeCountOffset;  // 高
+                } else if (maxLevel === 0) {
                     className += 'port-marker-level1';
-                    zIndexOrder = 1000 + bikeCountOffset;  // Lv3
+                    zIndexOrder = 1000 + bikeCountOffset;  // 最高
                 } else {
                     className += 'port-marker-normal';
-                    zIndexOrder = 500 + bikeCountOffset;   // 正常
+                    zIndexOrder = 500 + bikeCountOffset;   // fallback
                 }
 
                 // 正常(0)も含むすべてのレベルで台数を表示するように統一
@@ -778,10 +778,12 @@ document.addEventListener("DOMContentLoaded", function() {
                 matchingBikes.forEach(bike => {
                     let badgeClass = `badge-level${bike.alert_level}`;
                     let badgeName = bike.alert_level_name;
+                    let unregisteredBadge = bike.is_unregistered ? '<span class="badge" style="background-color:#dc2626; margin-left:4px;">⚠️未登録（要CSV追加）</span>' : '';
                     
-                    // 表示名を「極低」「低」に補正
-                    if (badgeName === "AT異常") badgeName = "極低";
-                    if (badgeName === "電圧閾値") badgeName = "低";
+                    // 最高レベル(0)はbadge-level1のスタイルを流用する
+                    if (bike.alert_level === 0) {
+                        badgeClass = 'badge-level1';
+                    }
                     
                     popupContent += `
                         <li class="popup-bike-item" style="align-items: flex-start;">
@@ -789,6 +791,7 @@ document.addEventListener("DOMContentLoaded", function() {
                                 <span class="popup-bike-id">${bike.bike_id}</span>
                                 <span class="popup-desc" style="font-size:11px; margin-left:5px; color: #0284c7; font-weight: bold;">[${bike.status}]</span>
                                 <span class="badge ${badgeClass}">${badgeName}</span>
+                                ${unregisteredBadge}
                                 <div class="popup-desc" style="font-size:10px; margin: 2px 0 0 0; color: #64748b;">車種: ${bike.model_name}</div>
                             </div>
                             <span class="popup-bike-volt" style="margin-top: 2px;">${bike.voltage}V</span>
@@ -823,7 +826,7 @@ document.addEventListener("DOMContentLoaded", function() {
             // マトリクスデータの初期化
             const matrix = {};
             uniqueModels.forEach(m => {
-                matrix[m] = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0, 0: 0 };
+                matrix[m] = { 5: 0, 4: 0, 3: 0, 2: 0, 0: 0 };
             });
             
             // 集計実行
@@ -835,11 +838,11 @@ document.addEventListener("DOMContentLoaded", function() {
             
             // マトリクス表のHTML構築
             let tableHtml = '<table class="summary-table">';
-            tableHtml += '<thead><tr><th>車種</th><th>極低</th><th>低</th><th>Lv.1</th><th>Lv.2</th><th>Lv.3</th><th>正常</th></tr></thead><tbody>';
+            tableHtml += '<thead><tr><th>車種</th><th>最低</th><th>低</th><th>中</th><th>高</th><th>最高</th></tr></thead><tbody>';
             
             uniqueModels.forEach(model => {
                 tableHtml += `<tr><td><b>${model}</b></td>`;
-                [5, 4, 3, 2, 1, 0].forEach(lvl => {
+                [5, 4, 3, 2, 0].forEach(lvl => {
                     const count = matrix[model][lvl];
                     const isChecked = checkedLevels.includes(lvl);
                     const hasCountClass = count > 0 && isChecked ? ' class="count-cell has-count"' : '';

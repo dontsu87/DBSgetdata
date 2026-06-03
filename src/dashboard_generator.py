@@ -6,6 +6,16 @@ import pandas as pd
 from datetime import datetime
 from src.config import Config
 
+def read_csv_safe(path):
+    """エンコーディングを自動フォールバックしながら安全にCSVをロードします"""
+    for enc in ['utf-8-sig', 'utf-8', 'cp932']:
+        try:
+            # 警告を避けるためエンジンに python または適切なパラメータを指定しても良いが、シンプルに試行
+            return pd.read_csv(path, encoding=enc)
+        except Exception:
+            continue
+    return pd.read_csv(path)
+
 def generate_dashboard_json(latest_vehicle_path: str = None) -> str:
     """
     最新の車両情報CSVと手動メンテ用『車両閾値設定.csv』を安全にマージし、
@@ -33,8 +43,8 @@ def generate_dashboard_json(latest_vehicle_path: str = None) -> str:
 
     # 2. データのロード
     try:
-        df_vehicle = pd.read_csv(latest_vehicle_path)
-        df_threshold = pd.read_csv(threshold_path)
+        df_vehicle = read_csv_safe(latest_vehicle_path)
+        df_threshold = read_csv_safe(threshold_path)
     except Exception as e:
         print(f"Error: データのロードに失敗しました: {e}")
         return None, None
@@ -66,7 +76,7 @@ def generate_dashboard_json(latest_vehicle_path: str = None) -> str:
         
         if os.path.exists(bikes_path):
             try:
-                df_bike_types = pd.read_csv(bikes_path)
+                df_bike_types = read_csv_safe(bikes_path)
                 df_bike_types['join_key'] = df_bike_types['識別番号'].astype(str).str.strip()
                 print("Info: スクレイピングされた車種マッピングをロードしました。")
             except Exception as e:
@@ -74,7 +84,7 @@ def generate_dashboard_json(latest_vehicle_path: str = None) -> str:
                 
         if os.path.exists(master_path):
             try:
-                df_type_master = pd.read_csv(master_path)
+                df_type_master = read_csv_safe(master_path)
                 print("Info: スクレイピングされた車種マスタをロードしました。")
             except Exception as e:
                 print(f"Warning: vehicle_type_master.csv のロードに失敗しました: {e}")
@@ -93,6 +103,7 @@ def generate_dashboard_json(latest_vehicle_path: str = None) -> str:
         df_merged['閾値_Lv3'] = df_merged['閾値_Lv3'].fillna(27.0)
         
         # --- 車種判定およびしきい値マスタ適用 ---
+        df_merged['is_unregistered'] = False
         for idx, row in df_merged.iterrows():
             join_key = row['join_key']
             
@@ -103,6 +114,8 @@ def generate_dashboard_json(latest_vehicle_path: str = None) -> str:
                 if str(row['車種名']).strip() == "PasCityC":
                     df_merged.at[idx, '車種名'] = "グリッター・EB"
                 continue
+                
+            df_merged.at[idx, 'is_unregistered'] = True
                 
             # スクレイピングされた車種データがあれば最優先で適用
             scraped_model = None
@@ -156,18 +169,18 @@ def generate_dashboard_json(latest_vehicle_path: str = None) -> str:
             if not applied_thresholds:
                 # DDの補正
                 if model == "DD":
-                    df_merged.at[idx, '閾値_AT異常'] = 18.0
-                    df_merged.at[idx, '閾値_画面強調'] = 24.5
-                    df_merged.at[idx, '閾値_Lv1'] = 35.1
-                    df_merged.at[idx, '閾値_Lv2'] = 35.8
-                    df_merged.at[idx, '閾値_Lv3'] = 37.5
+                    df_merged.at[idx, '閾値_AT異常'] = 34.8
+                    df_merged.at[idx, '閾値_画面強調'] = 35.9
+                    df_merged.at[idx, '閾値_Lv1'] = 36.5
+                    df_merged.at[idx, '閾値_Lv2'] = 38.4
+                    df_merged.at[idx, '閾値_Lv3'] = None
                 # グリッター・EBの補正 (添付画像3行目の値)
                 elif model == "グリッター・EB":
-                    df_merged.at[idx, '閾値_AT異常'] = 20.5
-                    df_merged.at[idx, '閾値_画面強調'] = 20.5
-                    df_merged.at[idx, '閾値_Lv1'] = 23.9
-                    df_merged.at[idx, '閾値_Lv2'] = 24.7
-                    df_merged.at[idx, '閾値_Lv3'] = 26.3
+                    df_merged.at[idx, '閾値_AT異常'] = 23.9
+                    df_merged.at[idx, '閾値_画面強調'] = 25.2
+                    df_merged.at[idx, '閾値_Lv1'] = 25.9
+                    df_merged.at[idx, '閾値_Lv2'] = 27.9
+                    df_merged.at[idx, '閾値_Lv3'] = None
                 # SWの補正
                 elif model == "SW":
                     df_merged.at[idx, '閾値_AT異常'] = 20.5
@@ -182,25 +195,23 @@ def generate_dashboard_json(latest_vehicle_path: str = None) -> str:
             df_merged[col] = pd.to_numeric(df_merged[col], errors='coerce')
         
         # --- 多段階判定ロジック ---
-        # 電圧値に基づき、最も深刻度が高い警告レベル（1=Lv3〜5=AT異常、0=正常）を動的に決定します
+        # 電圧値に基づき、最も深刻度が高い警告レベルを動的に決定します
         def determine_alert_level(row):
             volt = row['電圧']
             if pd.isna(volt):
-                return 0, "正常"
+                return 0, "最高"
             
             # 深刻度順（高い順）に判定
             if volt <= row['閾値_AT異常']:
-                return 5, "AT異常"
+                return 5, "最低"
             elif volt <= row['閾値_画面強調']:
-                return 4, "電圧閾値"
+                return 4, "低"
             elif volt <= row['閾値_Lv1']:
-                return 3, "Lv.1"
+                return 3, "中"
             elif volt <= row['閾値_Lv2']:
-                return 2, "Lv.2"
-            elif volt <= row['閾値_Lv3']:
-                return 1, "Lv.3"
+                return 2, "高"
             else:
-                return 0, "正常"
+                return 0, "最高"
 
         # 判定の適用
         df_merged['alert_data'] = df_merged.apply(determine_alert_level, axis=1)
@@ -388,12 +399,13 @@ def generate_dashboard_json(latest_vehicle_path: str = None) -> str:
             "voltage": float(voltage) if not pd.isna(voltage) else None,
             "alert_level": int(row['alert_level']),
             "alert_level_name": str(row['alert_level_name']),
+            "is_unregistered": bool(row.get('is_unregistered', False)),
             "thresholds": {
                 "at_error": float(row['閾値_AT異常']),
                 "strong": float(row['閾値_画面強調']),
                 "lv1": float(row['閾値_Lv1']),
                 "lv2": float(row['閾値_Lv2']),
-                "lv3": float(row['閾値_Lv3'])
+                "lv3": float(row['閾値_Lv3']) if pd.notna(row['閾値_Lv3']) else None
             },
             "at_time": at_time
         }

@@ -39,7 +39,7 @@ class TestBikeTypeIntegration(unittest.TestCase):
         # 1. モック車両データの作成 (AT種別列を追加)
         df_veh = pd.DataFrame({
             "エリア名": ["KNZ_金沢市公共シェアサイクルまちのり事務局", "KNZ_金沢市公共シェアサイクルまちのり事務局", "TRG_Tokyo Ring", "TRG_Tokyo Ring"],
-            "識別番号": ["KNZ0100", "KNZ0600", "TRG001", "TRG002"],
+            "識別番号": ["KNZ9999", "KNZ9998", "TRG9999", "TRG9998"],
             "車両状態": ["利用可能", "利用可能", "利用可能", "利用可能"],
             "ポート名": ["ポートA", "ポートB", "ポートC", "ポートC"],
             "電圧": ["34.5", "23.5", "25.0", "22.0"],
@@ -54,7 +54,7 @@ class TestBikeTypeIntegration(unittest.TestCase):
         # 2. モック車種データの作成 (TRG車両を除外し、AT種別からの直接判定をテスト)
         df_types = pd.DataFrame({
             "エリア名": ["KNZ_金沢市公共シェアサイクルまちのり事務局", "KNZ_金沢市公共シェアサイクルまちのり事務局"],
-            "識別番号": ["KNZ0100", "KNZ0600"],
+            "識別番号": ["KNZ9999", "KNZ9998"],
             "車種": ["PasCityC", "VIENTA5"]
         })
         df_types.to_csv(self.dummy_bike_types_csv, index=False, encoding="utf-8-sig")
@@ -87,31 +87,31 @@ class TestBikeTypeIntegration(unittest.TestCase):
         ports = data["ports"]
         self.assertTrue(len(ports) > 0)
         
-        # 車両情報の確認
-        knz_0100_found = False
-        knz_0600_found = False
-        trg_001_found = False
-        trg_002_found = False
+        # 車料情報の確認
+        knz_9999_found = False
+        knz_9998_found = False
+        trg_9999_found = False
+        trg_9998_found = False
         
         for port in ports:
             for bike in port["bikes"]:
-                if bike["bike_id"] == "KNZ0100":
-                    knz_0100_found = True
+                if bike["bike_id"] == "KNZ9999":
+                    knz_9999_found = True
                     # PasCityC は自動で "グリッター・EB" に正式名変更される
                     self.assertEqual(bike["model_name"], "グリッター・EB")
                     # しきい値がマスタ（PasCityC）から引き当たっているか検証
                     self.assertEqual(bike["thresholds"]["at_error"], 24.0)
                     self.assertEqual(bike["thresholds"]["lv1"], 24.6)
                     self.assertEqual(bike["thresholds"]["lv3"], 26.4)
-                elif bike["bike_id"] == "KNZ0600":
-                    knz_0600_found = True
+                elif bike["bike_id"] == "KNZ9998":
+                    knz_9998_found = True
                     self.assertEqual(bike["model_name"], "VIENTA5")
                     # しきい値がマスタ（VIENTA5）から引き当たっているか検証
                     self.assertEqual(bike["thresholds"]["at_error"], 22.0)
                     self.assertEqual(bike["thresholds"]["lv1"], 23.0)
                     self.assertEqual(bike["thresholds"]["lv3"], 25.0)
-                elif bike["bike_id"] == "TRG001":
-                    trg_001_found = True
+                elif bike["bike_id"] == "TRG9999":
+                    trg_9999_found = True
                     self.assertEqual(bike["model_name"], "SW")
                     # SWの補正閾値検証
                     self.assertEqual(bike["thresholds"]["at_error"], 20.5)
@@ -119,20 +119,20 @@ class TestBikeTypeIntegration(unittest.TestCase):
                     self.assertEqual(bike["thresholds"]["lv1"], 23.9)
                     self.assertEqual(bike["thresholds"]["lv2"], 24.7)
                     self.assertEqual(bike["thresholds"]["lv3"], 26.3)
-                elif bike["bike_id"] == "TRG002":
-                    trg_002_found = True
+                elif bike["bike_id"] == "TRG9998":
+                    trg_9998_found = True
                     self.assertEqual(bike["model_name"], "グリッター・EB")
-                    # グリッター・EBの補正閾値検証
-                    self.assertEqual(bike["thresholds"]["at_error"], 20.5)
-                    self.assertEqual(bike["thresholds"]["strong"], 20.5)
-                    self.assertEqual(bike["thresholds"]["lv1"], 23.9)
-                    self.assertEqual(bike["thresholds"]["lv2"], 24.7)
-                    self.assertEqual(bike["thresholds"]["lv3"], 26.3)
+                    # グリッター・EBの補正閾値検証 (新しい5段階閾値)
+                    self.assertEqual(bike["thresholds"]["at_error"], 23.9)
+                    self.assertEqual(bike["thresholds"]["strong"], 25.2)
+                    self.assertEqual(bike["thresholds"]["lv1"], 25.9)
+                    self.assertEqual(bike["thresholds"]["lv2"], 27.9)
+                    self.assertIsNone(bike["thresholds"]["lv3"])
                     
-        self.assertTrue(knz_0100_found, "KNZ0100 がJSONに含まれていません")
-        self.assertTrue(knz_0600_found, "KNZ0600 がJSONに含まれていません")
-        self.assertTrue(trg_001_found, "TRG001 (SW) がJSONに含まれていません")
-        self.assertTrue(trg_002_found, "TRG002 (グリッター・EB) がJSONに含まれていません")
+        self.assertTrue(knz_9999_found, "KNZ9999 がJSONに含まれていません")
+        self.assertTrue(knz_9998_found, "KNZ9998 がJSONに含まれていません")
+        self.assertTrue(trg_9999_found, "TRG9999 (SW) がJSONに含まれていません")
+        self.assertTrue(trg_9998_found, "TRG9998 (グリッター・EB) がJSONに含まれていません")
         print("[SUCCESS] Integration data generation test succeeded!")
 
 if __name__ == "__main__":
