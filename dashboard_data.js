@@ -1,13 +1,13 @@
 window.dashboardData = {
-  "updated_at": "2026-06-03 13:18:23",
-  "total_ports_count": 247,
-  "total_alert_bikes": 764,
+  "updated_at": "2026-06-03 13:23:31",
+  "total_ports_count": 246,
+  "total_alert_bikes": 759,
   "summary_counts": {
-    "at_error": 35,
-    "strong": 219,
-    "lv1": 122,
-    "lv2": 108,
-    "lv3": 280
+    "at_error": 36,
+    "strong": 217,
+    "lv1": 119,
+    "lv2": 110,
+    "lv3": 277
   },
   "ports": [
     {
@@ -189,7 +189,7 @@ window.dashboardData = {
             "lv2": 29.7,
             "lv3": 30.5
           },
-          "at_time": "2026-06-03 12:21:07"
+          "at_time": "2026-06-03 13:21:07"
         },
         {
           "bike_id": "FKI011",
@@ -280,9 +280,9 @@ window.dashboardData = {
       "lat": 36.081518,
       "lon": 136.218017,
       "has_gps": true,
-      "total_bikes": 4,
+      "total_bikes": 3,
       "max_alert_level": 4,
-      "alert_bikes_count": 4,
+      "alert_bikes_count": 3,
       "bikes": [
         {
           "bike_id": "FKI004",
@@ -331,22 +331,6 @@ window.dashboardData = {
             "lv3": 30.7
           },
           "at_time": "2026-06-03 12:30:10"
-        },
-        {
-          "bike_id": "FKI088",
-          "status": "利用可能",
-          "model_name": "その他",
-          "voltage": 28.6,
-          "alert_level": 4,
-          "alert_level_name": "電圧閾値",
-          "thresholds": {
-            "at_error": 24.6,
-            "strong": 28.6,
-            "lv1": 29.1,
-            "lv2": 29.8,
-            "lv3": 30.6
-          },
-          "at_time": "2026-06-03 12:41:30"
         }
       ]
     },
@@ -480,16 +464,16 @@ window.dashboardData = {
       "lon": 136.21764,
       "has_gps": true,
       "total_bikes": 5,
-      "max_alert_level": 4,
+      "max_alert_level": 3,
       "alert_bikes_count": 5,
       "bikes": [
         {
           "bike_id": "FKI007",
           "status": "利用可能",
           "model_name": "その他",
-          "voltage": 27.0,
-          "alert_level": 4,
-          "alert_level_name": "電圧閾値",
+          "voltage": 29.3,
+          "alert_level": 2,
+          "alert_level_name": "Lv.2",
           "thresholds": {
             "at_error": 24.6,
             "strong": 28.6,
@@ -497,15 +481,15 @@ window.dashboardData = {
             "lv2": 29.8,
             "lv3": 30.6
           },
-          "at_time": "2026-06-03 12:46:34"
+          "at_time": "2026-06-03 13:19:20"
         },
         {
           "bike_id": "FKI026",
           "status": "利用可能",
           "model_name": "その他",
-          "voltage": 27.5,
-          "alert_level": 4,
-          "alert_level_name": "電圧閾値",
+          "voltage": 28.9,
+          "alert_level": 3,
+          "alert_level_name": "Lv.1",
           "thresholds": {
             "at_error": 24.4,
             "strong": 28.4,
@@ -513,7 +497,7 @@ window.dashboardData = {
             "lv2": 29.6,
             "lv3": 30.4
           },
-          "at_time": "2026-06-03 12:22:17"
+          "at_time": "2026-06-03 13:19:24"
         },
         {
           "bike_id": "FKI090",
@@ -535,9 +519,9 @@ window.dashboardData = {
           "bike_id": "FKI095",
           "status": "利用可能",
           "model_name": "その他",
-          "voltage": 27.8,
-          "alert_level": 4,
-          "alert_level_name": "電圧閾値",
+          "voltage": 29.3,
+          "alert_level": 2,
+          "alert_level_name": "Lv.2",
           "thresholds": {
             "at_error": 24.5,
             "strong": 28.5,
@@ -545,7 +529,7 @@ window.dashboardData = {
             "lv2": 29.7,
             "lv3": 30.5
           },
-          "at_time": "2026-06-03 12:54:05"
+          "at_time": "2026-06-03 13:19:57"
         },
         {
           "bike_id": "FKI097",
@@ -651,7 +635,7 @@ window.dashboardData = {
             "lv2": 29.5,
             "lv3": 30.3
           },
-          "at_time": "2026-06-03 13:15:28"
+          "at_time": "2026-06-03 13:21:00"
         }
       ]
     },
@@ -662,15 +646,15 @@ window.dashboardData = {
       "lat": null,
       "lon": null,
       "has_gps": false,
-      "total_bikes": 146,
+      "total_bikes": 152,
       "max_alert_level": 5,
-      "alert_bikes_count": 50,
+      "alert_bikes_count": 55,
       "bikes": [
         {
           "bike_id": "FKI014",
           "status": "利用中",
           "model_name": "その他",
-          "voltage": 27.0,
+          "voltage": 26.9,
           "alert_level": 4,
           "alert_level_name": "電圧閾値",
           "thresholds": {
@@ -680,7 +664,7 @@ window.dashboardData = {
             "lv2": 29.5,
             "lv3": 30.3
           },
-          "at_time": "2026-06-03 13:14:27"
+          "at_time": "2026-06-03 13:20:27"
         },
         {
           "bike_id": "FKI038",
@@ -731,6 +715,22 @@ window.dashboardData = {
           "at_time": "2026-06-03 13:01:14"
         },
         {
+          "bike_id": "FKI088",
+          "status": "利用中",
+          "model_name": "その他",
+          "voltage": 28.5,
+          "alert_level": 4,
+          "alert_level_name": "電圧閾値",
+          "thresholds": {
+            "at_error": 24.6,
+            "strong": 28.6,
+            "lv1": 29.1,
+            "lv2": 29.8,
+            "lv3": 30.6
+          },
+          "at_time": "2026-06-03 13:19:44"
+        },
+        {
           "bike_id": "FKI099",
           "status": "回収中",
           "model_name": "その他",
@@ -760,7 +760,7 @@ window.dashboardData = {
             "lv2": 28.9,
             "lv3": 29.7
           },
-          "at_time": "2026-06-03 12:19:01"
+          "at_time": "2026-06-03 13:19:01"
         },
         {
           "bike_id": "KMT046",
@@ -782,7 +782,7 @@ window.dashboardData = {
           "bike_id": "KMT056",
           "status": "利用中",
           "model_name": "その他",
-          "voltage": 26.0,
+          "voltage": 25.9,
           "alert_level": 4,
           "alert_level_name": "電圧閾値",
           "thresholds": {
@@ -792,13 +792,13 @@ window.dashboardData = {
             "lv2": 29.8,
             "lv3": 30.6
           },
-          "at_time": "2026-06-03 13:13:56"
+          "at_time": "2026-06-03 13:19:56"
         },
         {
           "bike_id": "KMT069",
           "status": "一時駐輪",
           "model_name": "その他",
-          "voltage": 27.2,
+          "voltage": 27.3,
           "alert_level": 2,
           "alert_level_name": "Lv.2",
           "thresholds": {
@@ -808,7 +808,7 @@ window.dashboardData = {
             "lv2": 27.4,
             "lv3": 28.2
           },
-          "at_time": "2026-06-03 13:16:20"
+          "at_time": "2026-06-03 13:19:20"
         },
         {
           "bike_id": "KNZ0005",
@@ -824,7 +824,23 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 13:14:52"
+          "at_time": "2026-06-03 13:20:53"
+        },
+        {
+          "bike_id": "KNZ0025",
+          "status": "利用中",
+          "model_name": "DD",
+          "voltage": 36.8,
+          "alert_level": 1,
+          "alert_level_name": "Lv.3",
+          "thresholds": {
+            "at_error": 18.0,
+            "strong": 24.5,
+            "lv1": 35.1,
+            "lv2": 35.8,
+            "lv3": 37.5
+          },
+          "at_time": "2026-06-03 13:20:24"
         },
         {
           "bike_id": "KNZ0059",
@@ -878,7 +894,7 @@ window.dashboardData = {
           "bike_id": "KNZ0073",
           "status": "一時駐輪",
           "model_name": "DD",
-          "voltage": 35.3,
+          "voltage": 35.2,
           "alert_level": 2,
           "alert_level_name": "Lv.2",
           "thresholds": {
@@ -888,7 +904,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 13:15:25"
+          "at_time": "2026-06-03 13:21:25"
         },
         {
           "bike_id": "KNZ0097",
@@ -926,7 +942,7 @@ window.dashboardData = {
           "bike_id": "KNZ0144",
           "status": "メンテナンス",
           "model_name": "DD",
-          "voltage": 37.8,
+          "voltage": 37.7,
           "alert_level": 0,
           "alert_level_name": "正常",
           "thresholds": {
@@ -936,7 +952,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 13:16:28"
+          "at_time": "2026-06-03 13:19:28"
         },
         {
           "bike_id": "KNZ0188",
@@ -987,6 +1003,22 @@ window.dashboardData = {
           "at_time": "2026-06-03 13:13:36"
         },
         {
+          "bike_id": "KNZ0203",
+          "status": "利用中",
+          "model_name": "DD",
+          "voltage": 35.7,
+          "alert_level": 2,
+          "alert_level_name": "Lv.2",
+          "thresholds": {
+            "at_error": 18.0,
+            "strong": 24.5,
+            "lv1": 35.1,
+            "lv2": 35.8,
+            "lv3": 37.5
+          },
+          "at_time": "2026-06-03 13:21:34"
+        },
+        {
           "bike_id": "KNZ0204",
           "status": "メンテナンス",
           "model_name": "DD",
@@ -1003,10 +1035,10 @@ window.dashboardData = {
           "at_time": ""
         },
         {
-          "bike_id": "KNZ0207",
-          "status": "一時駐輪",
+          "bike_id": "KNZ0205",
+          "status": "利用中",
           "model_name": "DD",
-          "voltage": 40.8,
+          "voltage": 39.7,
           "alert_level": 0,
           "alert_level_name": "正常",
           "thresholds": {
@@ -1016,7 +1048,23 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 13:15:35"
+          "at_time": "2026-06-03 13:21:36"
+        },
+        {
+          "bike_id": "KNZ0207",
+          "status": "一時駐輪",
+          "model_name": "DD",
+          "voltage": 40.6,
+          "alert_level": 0,
+          "alert_level_name": "正常",
+          "thresholds": {
+            "at_error": 18.0,
+            "strong": 24.5,
+            "lv1": 35.1,
+            "lv2": 35.8,
+            "lv3": 37.5
+          },
+          "at_time": "2026-06-03 13:21:36"
         },
         {
           "bike_id": "KNZ0248",
@@ -1038,7 +1086,7 @@ window.dashboardData = {
           "bike_id": "KNZ0257",
           "status": "一時駐輪",
           "model_name": "DD",
-          "voltage": 34.7,
+          "voltage": 34.6,
           "alert_level": 3,
           "alert_level_name": "Lv.1",
           "thresholds": {
@@ -1048,7 +1096,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 13:14:58"
+          "at_time": "2026-06-03 13:20:58"
         },
         {
           "bike_id": "KNZ0266",
@@ -1064,7 +1112,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 13:13:53"
+          "at_time": "2026-06-03 13:19:52"
         },
         {
           "bike_id": "KNZ0272",
@@ -1096,7 +1144,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 13:14:23"
+          "at_time": "2026-06-03 13:20:30"
         },
         {
           "bike_id": "KNZ0316",
@@ -1112,13 +1160,45 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 13:13:55"
+          "at_time": "2026-06-03 13:19:55"
         },
         {
-          "bike_id": "KNZ0357",
+          "bike_id": "KNZ0349",
           "status": "利用中",
           "model_name": "DD",
-          "voltage": 40.7,
+          "voltage": 36.2,
+          "alert_level": 1,
+          "alert_level_name": "Lv.3",
+          "thresholds": {
+            "at_error": 18.0,
+            "strong": 24.5,
+            "lv1": 35.1,
+            "lv2": 35.8,
+            "lv3": 37.5
+          },
+          "at_time": "2026-06-03 13:20:30"
+        },
+        {
+          "bike_id": "KNZ0384",
+          "status": "利用中",
+          "model_name": "DD",
+          "voltage": 36.2,
+          "alert_level": 1,
+          "alert_level_name": "Lv.3",
+          "thresholds": {
+            "at_error": 18.0,
+            "strong": 24.5,
+            "lv1": 35.1,
+            "lv2": 35.8,
+            "lv3": 37.5
+          },
+          "at_time": "2026-06-03 13:21:24"
+        },
+        {
+          "bike_id": "KNZ0400",
+          "status": "利用中",
+          "model_name": "DD",
+          "voltage": 39.9,
           "alert_level": 0,
           "alert_level_name": "正常",
           "thresholds": {
@@ -1128,13 +1208,13 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 13:14:17"
+          "at_time": "2026-06-03 13:21:25"
         },
         {
           "bike_id": "KNZ0429",
           "status": "メンテナンス",
           "model_name": "DD",
-          "voltage": 39.3,
+          "voltage": 39.2,
           "alert_level": 0,
           "alert_level_name": "正常",
           "thresholds": {
@@ -1144,7 +1224,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 13:14:27"
+          "at_time": "2026-06-03 13:20:27"
         },
         {
           "bike_id": "KNZ0462",
@@ -1160,7 +1240,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 13:14:10"
+          "at_time": "2026-06-03 13:20:10"
         },
         {
           "bike_id": "KNZ0465",
@@ -1195,26 +1275,10 @@ window.dashboardData = {
           "at_time": ""
         },
         {
-          "bike_id": "KNZ0559",
-          "status": "利用中",
-          "model_name": "グリッター・EB",
-          "voltage": 22.7,
-          "alert_level": 5,
-          "alert_level_name": "AT異常",
-          "thresholds": {
-            "at_error": 24.0,
-            "strong": 24.0,
-            "lv1": 24.6,
-            "lv2": 25.3,
-            "lv3": 26.4
-          },
-          "at_time": "2026-06-03 13:15:00"
-        },
-        {
           "bike_id": "KNZ0580",
-          "status": "利用中",
+          "status": "一時駐輪",
           "model_name": "グリッター・EB",
-          "voltage": 28.5,
+          "voltage": 28.6,
           "alert_level": 0,
           "alert_level_name": "正常",
           "thresholds": {
@@ -1224,13 +1288,13 @@ window.dashboardData = {
             "lv2": 25.3,
             "lv3": 26.4
           },
-          "at_time": "2026-06-03 13:15:43"
+          "at_time": "2026-06-03 13:21:43"
         },
         {
           "bike_id": "KNZ0609",
           "status": "一時駐輪",
           "model_name": "グリッター・EB",
-          "voltage": 26.5,
+          "voltage": 26.7,
           "alert_level": 0,
           "alert_level_name": "正常",
           "thresholds": {
@@ -1240,7 +1304,7 @@ window.dashboardData = {
             "lv2": 25.3,
             "lv3": 26.4
           },
-          "at_time": "2026-06-03 13:15:57"
+          "at_time": "2026-06-03 13:21:52"
         },
         {
           "bike_id": "KNZ0612",
@@ -1259,6 +1323,22 @@ window.dashboardData = {
           "at_time": "2026-04-28 23:31:13"
         },
         {
+          "bike_id": "KNZ0616",
+          "status": "利用中",
+          "model_name": "グリッター・EB",
+          "voltage": 25.0,
+          "alert_level": 2,
+          "alert_level_name": "Lv.2",
+          "thresholds": {
+            "at_error": 24.0,
+            "strong": 24.0,
+            "lv1": 24.6,
+            "lv2": 25.3,
+            "lv3": 26.4
+          },
+          "at_time": "2026-06-03 13:20:59"
+        },
+        {
           "bike_id": "KNZ0632",
           "status": "ポート外乗り捨て",
           "model_name": "グリッター・EB",
@@ -1275,22 +1355,6 @@ window.dashboardData = {
           "at_time": "2026-06-03 13:03:58"
         },
         {
-          "bike_id": "KNZ0635",
-          "status": "一時駐輪",
-          "model_name": "グリッター・EB",
-          "voltage": 24.5,
-          "alert_level": 3,
-          "alert_level_name": "Lv.1",
-          "thresholds": {
-            "at_error": 24.0,
-            "strong": 24.0,
-            "lv1": 24.6,
-            "lv2": 25.3,
-            "lv3": 26.4
-          },
-          "at_time": "2026-06-03 13:14:11"
-        },
-        {
           "bike_id": "KNZ0643",
           "status": "一時駐輪",
           "model_name": "グリッター・EB",
@@ -1304,13 +1368,13 @@ window.dashboardData = {
             "lv2": 25.3,
             "lv3": 26.4
           },
-          "at_time": "2026-06-03 13:14:45"
+          "at_time": "2026-06-03 13:20:45"
         },
         {
-          "bike_id": "KNZ0669",
+          "bike_id": "KNZ0654",
           "status": "利用中",
           "model_name": "グリッター・EB",
-          "voltage": 26.9,
+          "voltage": 28.4,
           "alert_level": 0,
           "alert_level_name": "正常",
           "thresholds": {
@@ -1320,13 +1384,13 @@ window.dashboardData = {
             "lv2": 25.3,
             "lv3": 26.4
           },
-          "at_time": "2026-06-03 13:15:39"
+          "at_time": "2026-06-03 13:21:27"
         },
         {
-          "bike_id": "KNZ0694",
+          "bike_id": "KNZ0685",
           "status": "利用中",
           "model_name": "グリッター・EB",
-          "voltage": 28.1,
+          "voltage": 28.6,
           "alert_level": 0,
           "alert_level_name": "正常",
           "thresholds": {
@@ -1336,7 +1400,7 @@ window.dashboardData = {
             "lv2": 25.3,
             "lv3": 26.4
           },
-          "at_time": "2026-06-03 13:14:19"
+          "at_time": "2026-06-03 13:20:23"
         },
         {
           "bike_id": "KNZ0702",
@@ -1352,7 +1416,23 @@ window.dashboardData = {
             "lv2": 25.3,
             "lv3": 26.4
           },
-          "at_time": "2026-06-03 13:15:56"
+          "at_time": "2026-06-03 13:21:56"
+        },
+        {
+          "bike_id": "KNZ0715",
+          "status": "利用中",
+          "model_name": "グリッター・EB",
+          "voltage": 26.1,
+          "alert_level": 1,
+          "alert_level_name": "Lv.3",
+          "thresholds": {
+            "at_error": 24.0,
+            "strong": 24.0,
+            "lv1": 24.6,
+            "lv2": 25.3,
+            "lv3": 26.4
+          },
+          "at_time": "2026-06-03 13:21:46"
         },
         {
           "bike_id": "KNZ10001",
@@ -2270,7 +2350,7 @@ window.dashboardData = {
           "bike_id": "UED008",
           "status": "一時駐輪",
           "model_name": "その他",
-          "voltage": 28.9,
+          "voltage": 28.8,
           "alert_level": 3,
           "alert_level_name": "Lv.1",
           "thresholds": {
@@ -2280,7 +2360,7 @@ window.dashboardData = {
             "lv2": 29.9,
             "lv3": 30.7
           },
-          "at_time": "2026-06-03 13:14:37"
+          "at_time": "2026-06-03 13:20:36"
         },
         {
           "bike_id": "UED046",
@@ -2318,7 +2398,7 @@ window.dashboardData = {
           "bike_id": "IZM013",
           "status": "一時駐輪",
           "model_name": "その他",
-          "voltage": 27.9,
+          "voltage": 28.0,
           "alert_level": 4,
           "alert_level_name": "電圧閾値",
           "thresholds": {
@@ -2328,7 +2408,7 @@ window.dashboardData = {
             "lv2": 29.4,
             "lv3": 30.2
           },
-          "at_time": "2026-06-03 13:14:55"
+          "at_time": "2026-06-03 13:20:55"
         },
         {
           "bike_id": "MTE018",
@@ -2350,7 +2430,7 @@ window.dashboardData = {
           "bike_id": "MTE025",
           "status": "利用中",
           "model_name": "その他",
-          "voltage": 27.7,
+          "voltage": 27.6,
           "alert_level": 4,
           "alert_level_name": "電圧閾値",
           "thresholds": {
@@ -2360,13 +2440,13 @@ window.dashboardData = {
             "lv2": 29.8,
             "lv3": 30.6
           },
-          "at_time": "2026-06-03 13:17:15"
+          "at_time": "2026-06-03 13:20:15"
         },
         {
           "bike_id": "MTE036",
           "status": "一時駐輪",
           "model_name": "その他",
-          "voltage": 26.7,
+          "voltage": 26.8,
           "alert_level": 4,
           "alert_level_name": "電圧閾値",
           "thresholds": {
@@ -2376,7 +2456,7 @@ window.dashboardData = {
             "lv2": 28.7,
             "lv3": 29.5
           },
-          "at_time": "2026-06-03 13:17:38"
+          "at_time": "2026-06-03 13:20:38"
         },
         {
           "bike_id": "MTE051",
@@ -3000,7 +3080,7 @@ window.dashboardData = {
             "lv2": 24.7,
             "lv3": 26.3
           },
-          "at_time": "2026-06-03 13:17:20"
+          "at_time": "2026-06-03 13:20:20"
         }
       ]
     },
@@ -3160,7 +3240,7 @@ window.dashboardData = {
           "bike_id": "FKI070",
           "status": "利用可能",
           "model_name": "その他",
-          "voltage": 27.4,
+          "voltage": 27.5,
           "alert_level": 4,
           "alert_level_name": "電圧閾値",
           "thresholds": {
@@ -3170,7 +3250,7 @@ window.dashboardData = {
             "lv2": 29.7,
             "lv3": 30.5
           },
-          "at_time": "2026-06-03 12:17:25"
+          "at_time": "2026-06-03 13:17:31"
         },
         {
           "bike_id": "FKI078",
@@ -3719,7 +3799,7 @@ window.dashboardData = {
             "lv2": 30.0,
             "lv3": 30.8
           },
-          "at_time": "2026-06-03 12:18:53"
+          "at_time": "2026-06-03 13:18:53"
         }
       ]
     },
@@ -3764,7 +3844,7 @@ window.dashboardData = {
             "lv2": 29.7,
             "lv3": 30.5
           },
-          "at_time": "2026-06-03 12:16:23"
+          "at_time": "2026-06-03 13:16:23"
         }
       ]
     },
@@ -4024,7 +4104,7 @@ window.dashboardData = {
             "lv2": 29.7,
             "lv3": 30.5
           },
-          "at_time": "2026-06-03 12:16:45"
+          "at_time": "2026-06-03 13:16:45"
         },
         {
           "bike_id": "FKI092",
@@ -4219,7 +4299,7 @@ window.dashboardData = {
       "lon": 136.218234,
       "has_gps": true,
       "total_bikes": 4,
-      "max_alert_level": 3,
+      "max_alert_level": 4,
       "alert_bikes_count": 4,
       "bikes": [
         {
@@ -4242,9 +4322,9 @@ window.dashboardData = {
           "bike_id": "FKI076",
           "status": "利用可能",
           "model_name": "その他",
-          "voltage": 28.7,
-          "alert_level": 3,
-          "alert_level_name": "Lv.1",
+          "voltage": 28.6,
+          "alert_level": 4,
+          "alert_level_name": "電圧閾値",
           "thresholds": {
             "at_error": 24.6,
             "strong": 28.6,
@@ -4252,7 +4332,7 @@ window.dashboardData = {
             "lv2": 29.8,
             "lv3": 30.6
           },
-          "at_time": "2026-06-03 12:18:48"
+          "at_time": "2026-06-03 13:18:48"
         },
         {
           "bike_id": "FKI079",
@@ -4351,7 +4431,7 @@ window.dashboardData = {
           "bike_id": "KMT050",
           "status": "利用可能",
           "model_name": "その他",
-          "voltage": 28.7,
+          "voltage": 28.9,
           "alert_level": 2,
           "alert_level_name": "Lv.2",
           "thresholds": {
@@ -4361,7 +4441,7 @@ window.dashboardData = {
             "lv2": 29.1,
             "lv3": 29.9
           },
-          "at_time": "2026-06-03 12:20:54"
+          "at_time": "2026-06-03 13:21:01"
         },
         {
           "bike_id": "KMT060",
@@ -4396,7 +4476,7 @@ window.dashboardData = {
           "bike_id": "KMT002",
           "status": "利用可能",
           "model_name": "その他",
-          "voltage": 28.7,
+          "voltage": 28.8,
           "alert_level": 1,
           "alert_level_name": "Lv.3",
           "thresholds": {
@@ -4406,7 +4486,7 @@ window.dashboardData = {
             "lv2": 28.2,
             "lv3": 29.0
           },
-          "at_time": "2026-06-03 12:17:27"
+          "at_time": "2026-06-03 13:17:33"
         },
         {
           "bike_id": "KMT012",
@@ -4653,7 +4733,7 @@ window.dashboardData = {
             "lv2": 28.9,
             "lv3": 29.7
           },
-          "at_time": "2026-06-03 12:16:30"
+          "at_time": "2026-06-03 13:16:30"
         },
         {
           "bike_id": "KMT047",
@@ -4730,7 +4810,7 @@ window.dashboardData = {
             "lv2": 27.9,
             "lv3": 28.7
           },
-          "at_time": "2026-06-03 12:18:53"
+          "at_time": "2026-06-03 13:18:54"
         },
         {
           "bike_id": "KMT067",
@@ -4807,7 +4887,7 @@ window.dashboardData = {
             "lv2": 29.6,
             "lv3": 30.4
           },
-          "at_time": "2026-06-03 12:17:40"
+          "at_time": "2026-06-03 13:17:40"
         },
         {
           "bike_id": "KMT020",
@@ -5050,7 +5130,7 @@ window.dashboardData = {
           "bike_id": "KMT038",
           "status": "利用可能",
           "model_name": "その他",
-          "voltage": 28.7,
+          "voltage": 28.8,
           "alert_level": 0,
           "alert_level_name": "正常",
           "thresholds": {
@@ -5060,7 +5140,7 @@ window.dashboardData = {
             "lv2": 26.6,
             "lv3": 27.4
           },
-          "at_time": "2026-06-03 12:19:56"
+          "at_time": "2026-06-03 13:19:56"
         },
         {
           "bike_id": "KMT040",
@@ -5452,7 +5532,7 @@ window.dashboardData = {
             "lv2": 27.4,
             "lv3": 28.2
           },
-          "at_time": "2026-06-03 12:17:13"
+          "at_time": "2026-06-03 13:17:13"
         },
         {
           "bike_id": "KMT055",
@@ -5770,7 +5850,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:21:12"
+          "at_time": "2026-06-03 13:21:13"
         },
         {
           "bike_id": "KNZ0330",
@@ -5949,7 +6029,7 @@ window.dashboardData = {
           "bike_id": "KNZ0094",
           "status": "利用可能",
           "model_name": "DD",
-          "voltage": 38.3,
+          "voltage": 38.2,
           "alert_level": 0,
           "alert_level_name": "正常",
           "thresholds": {
@@ -5959,7 +6039,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:19:19"
+          "at_time": "2026-06-03 13:19:19"
         },
         {
           "bike_id": "KNZ0168",
@@ -5975,7 +6055,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:18:48"
+          "at_time": "2026-06-03 13:18:48"
         },
         {
           "bike_id": "KNZ0274",
@@ -6084,7 +6164,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:20:59"
+          "at_time": "2026-06-03 13:21:00"
         },
         {
           "bike_id": "KNZ0354",
@@ -6100,7 +6180,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:21:01"
+          "at_time": "2026-06-03 13:21:01"
         },
         {
           "bike_id": "KNZ0378",
@@ -6116,7 +6196,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:21:00"
+          "at_time": "2026-06-03 13:20:59"
         },
         {
           "bike_id": "KNZ0518",
@@ -6132,7 +6212,7 @@ window.dashboardData = {
             "lv2": 25.3,
             "lv3": 26.4
           },
-          "at_time": "2026-06-03 12:21:20"
+          "at_time": "2026-06-03 13:21:20"
         },
         {
           "bike_id": "KNZ0662",
@@ -6213,9 +6293,9 @@ window.dashboardData = {
         },
         {
           "bike_id": "KNZ0114",
-          "status": "利用中",
+          "status": "利用可能",
           "model_name": "DD",
-          "voltage": 35.6,
+          "voltage": 35.5,
           "alert_level": 2,
           "alert_level_name": "Lv.2",
           "thresholds": {
@@ -6225,7 +6305,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 13:16:43"
+          "at_time": "2026-06-03 13:17:50"
         },
         {
           "bike_id": "KNZ0166",
@@ -6263,7 +6343,7 @@ window.dashboardData = {
           "bike_id": "KNZ0255",
           "status": "利用可能",
           "model_name": "DD",
-          "voltage": 36.5,
+          "voltage": 36.8,
           "alert_level": 1,
           "alert_level_name": "Lv.3",
           "thresholds": {
@@ -6273,7 +6353,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:20:56"
+          "at_time": "2026-06-03 13:21:02"
         },
         {
           "bike_id": "KNZ0312",
@@ -6295,9 +6375,9 @@ window.dashboardData = {
           "bike_id": "KNZ0359",
           "status": "利用可能",
           "model_name": "DD",
-          "voltage": 35.9,
-          "alert_level": 1,
-          "alert_level_name": "Lv.3",
+          "voltage": 35.8,
+          "alert_level": 2,
+          "alert_level_name": "Lv.2",
           "thresholds": {
             "at_error": 18.0,
             "strong": 24.5,
@@ -6305,7 +6385,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:21:00"
+          "at_time": "2026-06-03 13:21:00"
         },
         {
           "bike_id": "KNZ0388",
@@ -6689,7 +6769,7 @@ window.dashboardData = {
           "bike_id": "KNZ0519",
           "status": "利用可能",
           "model_name": "グリッター・EB",
-          "voltage": 28.8,
+          "voltage": 28.7,
           "alert_level": 0,
           "alert_level_name": "正常",
           "thresholds": {
@@ -6699,7 +6779,7 @@ window.dashboardData = {
             "lv2": 25.3,
             "lv3": 26.4
           },
-          "at_time": "2026-06-03 12:18:48"
+          "at_time": "2026-06-03 13:18:48"
         },
         {
           "bike_id": "KNZ0542",
@@ -7099,7 +7179,7 @@ window.dashboardData = {
           "bike_id": "KNZ0077",
           "status": "利用可能",
           "model_name": "DD",
-          "voltage": 39.1,
+          "voltage": 39.2,
           "alert_level": 0,
           "alert_level_name": "正常",
           "thresholds": {
@@ -7109,7 +7189,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:17:14"
+          "at_time": "2026-06-03 13:17:19"
         },
         {
           "bike_id": "KNZ0165",
@@ -7211,7 +7291,7 @@ window.dashboardData = {
           "bike_id": "KNZ0604",
           "status": "利用可能",
           "model_name": "グリッター・EB",
-          "voltage": 28.6,
+          "voltage": 28.7,
           "alert_level": 0,
           "alert_level_name": "正常",
           "thresholds": {
@@ -7221,7 +7301,7 @@ window.dashboardData = {
             "lv2": 25.3,
             "lv3": 26.4
           },
-          "at_time": "2026-06-03 12:17:12"
+          "at_time": "2026-06-03 13:17:19"
         },
         {
           "bike_id": "KNZ0640",
@@ -7394,7 +7474,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:17:08"
+          "at_time": "2026-06-03 13:17:08"
         },
         {
           "bike_id": "KNZ0362",
@@ -7509,7 +7589,7 @@ window.dashboardData = {
           "bike_id": "KNZ0053",
           "status": "利用可能",
           "model_name": "DD",
-          "voltage": 41.0,
+          "voltage": 41.1,
           "alert_level": 0,
           "alert_level_name": "正常",
           "thresholds": {
@@ -7519,7 +7599,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:21:46"
+          "at_time": "2026-06-03 13:21:51"
         },
         {
           "bike_id": "KNZ0220",
@@ -7711,7 +7791,7 @@ window.dashboardData = {
             "lv2": 25.3,
             "lv3": 26.4
           },
-          "at_time": "2026-06-03 12:18:47"
+          "at_time": "2026-06-03 13:18:46"
         },
         {
           "bike_id": "KNZ0606",
@@ -7852,7 +7932,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:19:31"
+          "at_time": "2026-06-03 13:19:32"
         }
       ]
     },
@@ -7871,7 +7951,7 @@ window.dashboardData = {
           "bike_id": "KNZ0014",
           "status": "利用可能",
           "model_name": "DD",
-          "voltage": 34.7,
+          "voltage": 34.8,
           "alert_level": 3,
           "alert_level_name": "Lv.1",
           "thresholds": {
@@ -7881,7 +7961,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:21:51"
+          "at_time": "2026-06-03 13:21:51"
         },
         {
           "bike_id": "KNZ0103",
@@ -7913,7 +7993,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:20:24"
+          "at_time": "2026-06-03 13:20:23"
         },
         {
           "bike_id": "KNZ0456",
@@ -8038,7 +8118,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:18:08"
+          "at_time": "2026-06-03 13:18:08"
         },
         {
           "bike_id": "KNZ0418",
@@ -8105,7 +8185,7 @@ window.dashboardData = {
           "bike_id": "KNZ0090",
           "status": "利用可能",
           "model_name": "DD",
-          "voltage": 39.4,
+          "voltage": 39.5,
           "alert_level": 0,
           "alert_level_name": "正常",
           "thresholds": {
@@ -8115,7 +8195,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:18:14"
+          "at_time": "2026-06-03 13:18:14"
         },
         {
           "bike_id": "KNZ0212",
@@ -8260,7 +8340,7 @@ window.dashboardData = {
         },
         {
           "bike_id": "KNZ0208",
-          "status": "利用可能",
+          "status": "予約中",
           "model_name": "DD",
           "voltage": 36.6,
           "alert_level": 1,
@@ -8283,9 +8363,9 @@ window.dashboardData = {
       "lat": 36.548589,
       "lon": 136.657386,
       "has_gps": true,
-      "total_bikes": 8,
+      "total_bikes": 7,
       "max_alert_level": 3,
-      "alert_bikes_count": 4,
+      "alert_bikes_count": 3,
       "bikes": [
         {
           "bike_id": "KNZ0020",
@@ -8334,22 +8414,6 @@ window.dashboardData = {
             "lv3": 37.5
           },
           "at_time": "2026-06-03 12:50:14"
-        },
-        {
-          "bike_id": "KNZ0384",
-          "status": "利用可能",
-          "model_name": "DD",
-          "voltage": 36.3,
-          "alert_level": 1,
-          "alert_level_name": "Lv.3",
-          "thresholds": {
-            "at_error": 18.0,
-            "strong": 24.5,
-            "lv1": 35.1,
-            "lv2": 35.8,
-            "lv3": 37.5
-          },
-          "at_time": "2026-06-03 12:53:43"
         },
         {
           "bike_id": "KNZ0610",
@@ -8458,7 +8522,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:20:04"
+          "at_time": "2026-06-03 13:20:04"
         },
         {
           "bike_id": "KNZ0070",
@@ -8661,9 +8725,9 @@ window.dashboardData = {
       "lat": 36.562908,
       "lon": 136.652382,
       "has_gps": true,
-      "total_bikes": 8,
+      "total_bikes": 7,
       "max_alert_level": 3,
-      "alert_bikes_count": 6,
+      "alert_bikes_count": 5,
       "bikes": [
         {
           "bike_id": "KNZ0023",
@@ -8712,22 +8776,6 @@ window.dashboardData = {
             "lv3": 37.5
           },
           "at_time": "2026-06-03 12:51:47"
-        },
-        {
-          "bike_id": "KNZ0203",
-          "status": "利用中",
-          "model_name": "DD",
-          "voltage": 36.9,
-          "alert_level": 1,
-          "alert_level_name": "Lv.3",
-          "thresholds": {
-            "at_error": 18.0,
-            "strong": 24.5,
-            "lv1": 35.1,
-            "lv2": 35.8,
-            "lv3": 37.5
-          },
-          "at_time": "2026-06-03 13:15:35"
         },
         {
           "bike_id": "KNZ0219",
@@ -8792,899 +8840,6 @@ window.dashboardData = {
             "lv3": 37.5
           },
           "at_time": "2026-06-03 12:57:47"
-        }
-      ]
-    },
-    {
-      "port_name": "01.金沢駅(県立音楽堂横）",
-      "area_name": "KNZ_金沢市公共シェアサイクルまちのり事務局",
-      "station_id": "00089001",
-      "lat": 36.577185,
-      "lon": 136.647628,
-      "has_gps": true,
-      "total_bikes": 55,
-      "max_alert_level": 5,
-      "alert_bikes_count": 31,
-      "bikes": [
-        {
-          "bike_id": "KNZ0025",
-          "status": "利用中",
-          "model_name": "DD",
-          "voltage": 36.9,
-          "alert_level": 1,
-          "alert_level_name": "Lv.3",
-          "thresholds": {
-            "at_error": 18.0,
-            "strong": 24.5,
-            "lv1": 35.1,
-            "lv2": 35.8,
-            "lv3": 37.5
-          },
-          "at_time": "2026-06-03 13:16:16"
-        },
-        {
-          "bike_id": "KNZ0030",
-          "status": "一時駐輪",
-          "model_name": "DD",
-          "voltage": 40.7,
-          "alert_level": 0,
-          "alert_level_name": "正常",
-          "thresholds": {
-            "at_error": 18.0,
-            "strong": 24.5,
-            "lv1": 35.1,
-            "lv2": 35.8,
-            "lv3": 37.5
-          },
-          "at_time": "2026-06-03 13:16:37"
-        },
-        {
-          "bike_id": "KNZ0072",
-          "status": "利用可能",
-          "model_name": "DD",
-          "voltage": 40.2,
-          "alert_level": 0,
-          "alert_level_name": "正常",
-          "thresholds": {
-            "at_error": 18.0,
-            "strong": 24.5,
-            "lv1": 35.1,
-            "lv2": 35.8,
-            "lv3": 37.5
-          },
-          "at_time": "2026-06-03 12:33:14"
-        },
-        {
-          "bike_id": "KNZ0078",
-          "status": "利用可能",
-          "model_name": "DD",
-          "voltage": 35.7,
-          "alert_level": 2,
-          "alert_level_name": "Lv.2",
-          "thresholds": {
-            "at_error": 18.0,
-            "strong": 24.5,
-            "lv1": 35.1,
-            "lv2": 35.8,
-            "lv3": 37.5
-          },
-          "at_time": "2026-06-03 13:01:25"
-        },
-        {
-          "bike_id": "KNZ0079",
-          "status": "利用可能",
-          "model_name": "DD",
-          "voltage": 36.1,
-          "alert_level": 1,
-          "alert_level_name": "Lv.3",
-          "thresholds": {
-            "at_error": 18.0,
-            "strong": 24.5,
-            "lv1": 35.1,
-            "lv2": 35.8,
-            "lv3": 37.5
-          },
-          "at_time": "2026-06-03 12:40:23"
-        },
-        {
-          "bike_id": "KNZ0096",
-          "status": "一時駐輪",
-          "model_name": "DD",
-          "voltage": 41.2,
-          "alert_level": 0,
-          "alert_level_name": "正常",
-          "thresholds": {
-            "at_error": 18.0,
-            "strong": 24.5,
-            "lv1": 35.1,
-            "lv2": 35.8,
-            "lv3": 37.5
-          },
-          "at_time": "2026-06-03 13:16:37"
-        },
-        {
-          "bike_id": "KNZ0122",
-          "status": "利用可能",
-          "model_name": "DD",
-          "voltage": 37.0,
-          "alert_level": 1,
-          "alert_level_name": "Lv.3",
-          "thresholds": {
-            "at_error": 18.0,
-            "strong": 24.5,
-            "lv1": 35.1,
-            "lv2": 35.8,
-            "lv3": 37.5
-          },
-          "at_time": "2026-06-03 12:41:44"
-        },
-        {
-          "bike_id": "KNZ0125",
-          "status": "利用可能",
-          "model_name": "DD",
-          "voltage": 41.2,
-          "alert_level": 0,
-          "alert_level_name": "正常",
-          "thresholds": {
-            "at_error": 18.0,
-            "strong": 24.5,
-            "lv1": 35.1,
-            "lv2": 35.8,
-            "lv3": 37.5
-          },
-          "at_time": "2026-06-03 12:38:37"
-        },
-        {
-          "bike_id": "KNZ0128",
-          "status": "利用可能",
-          "model_name": "DD",
-          "voltage": 36.3,
-          "alert_level": 1,
-          "alert_level_name": "Lv.3",
-          "thresholds": {
-            "at_error": 18.0,
-            "strong": 24.5,
-            "lv1": 35.1,
-            "lv2": 35.8,
-            "lv3": 37.5
-          },
-          "at_time": "2026-06-03 12:19:52"
-        },
-        {
-          "bike_id": "KNZ0135",
-          "status": "利用可能",
-          "model_name": "DD",
-          "voltage": 39.2,
-          "alert_level": 0,
-          "alert_level_name": "正常",
-          "thresholds": {
-            "at_error": 18.0,
-            "strong": 24.5,
-            "lv1": 35.1,
-            "lv2": 35.8,
-            "lv3": 37.5
-          },
-          "at_time": "2026-06-03 12:52:01"
-        },
-        {
-          "bike_id": "KNZ0138",
-          "status": "利用可能",
-          "model_name": "DD",
-          "voltage": 36.2,
-          "alert_level": 1,
-          "alert_level_name": "Lv.3",
-          "thresholds": {
-            "at_error": 18.0,
-            "strong": 24.5,
-            "lv1": 35.1,
-            "lv2": 35.8,
-            "lv3": 37.5
-          },
-          "at_time": "2026-06-03 12:42:05"
-        },
-        {
-          "bike_id": "KNZ0157",
-          "status": "利用可能",
-          "model_name": "DD",
-          "voltage": 35.8,
-          "alert_level": 2,
-          "alert_level_name": "Lv.2",
-          "thresholds": {
-            "at_error": 18.0,
-            "strong": 24.5,
-            "lv1": 35.1,
-            "lv2": 35.8,
-            "lv3": 37.5
-          },
-          "at_time": "2026-06-03 13:09:13"
-        },
-        {
-          "bike_id": "KNZ0163",
-          "status": "利用可能",
-          "model_name": "DD",
-          "voltage": 36.2,
-          "alert_level": 1,
-          "alert_level_name": "Lv.3",
-          "thresholds": {
-            "at_error": 18.0,
-            "strong": 24.5,
-            "lv1": 35.1,
-            "lv2": 35.8,
-            "lv3": 37.5
-          },
-          "at_time": "2026-06-03 13:15:07"
-        },
-        {
-          "bike_id": "KNZ0171",
-          "status": "利用可能",
-          "model_name": "DD",
-          "voltage": 37.0,
-          "alert_level": 1,
-          "alert_level_name": "Lv.3",
-          "thresholds": {
-            "at_error": 18.0,
-            "strong": 24.5,
-            "lv1": 35.1,
-            "lv2": 35.8,
-            "lv3": 37.5
-          },
-          "at_time": "2026-06-03 13:05:56"
-        },
-        {
-          "bike_id": "KNZ0183",
-          "status": "利用可能",
-          "model_name": "DD",
-          "voltage": 36.6,
-          "alert_level": 1,
-          "alert_level_name": "Lv.3",
-          "thresholds": {
-            "at_error": 18.0,
-            "strong": 24.5,
-            "lv1": 35.1,
-            "lv2": 35.8,
-            "lv3": 37.5
-          },
-          "at_time": "2026-06-03 12:18:15"
-        },
-        {
-          "bike_id": "KNZ0227",
-          "status": "利用可能",
-          "model_name": "DD",
-          "voltage": 41.0,
-          "alert_level": 0,
-          "alert_level_name": "正常",
-          "thresholds": {
-            "at_error": 18.0,
-            "strong": 24.5,
-            "lv1": 35.1,
-            "lv2": 35.8,
-            "lv3": 37.5
-          },
-          "at_time": "2026-06-03 12:28:04"
-        },
-        {
-          "bike_id": "KNZ0236",
-          "status": "利用可能",
-          "model_name": "DD",
-          "voltage": 36.6,
-          "alert_level": 1,
-          "alert_level_name": "Lv.3",
-          "thresholds": {
-            "at_error": 18.0,
-            "strong": 24.5,
-            "lv1": 35.1,
-            "lv2": 35.8,
-            "lv3": 37.5
-          },
-          "at_time": "2026-06-03 12:30:42"
-        },
-        {
-          "bike_id": "KNZ0239",
-          "status": "利用可能",
-          "model_name": "DD",
-          "voltage": 36.3,
-          "alert_level": 1,
-          "alert_level_name": "Lv.3",
-          "thresholds": {
-            "at_error": 18.0,
-            "strong": 24.5,
-            "lv1": 35.1,
-            "lv2": 35.8,
-            "lv3": 37.5
-          },
-          "at_time": "2026-06-03 13:04:53"
-        },
-        {
-          "bike_id": "KNZ0244",
-          "status": "利用可能",
-          "model_name": "DD",
-          "voltage": 36.1,
-          "alert_level": 1,
-          "alert_level_name": "Lv.3",
-          "thresholds": {
-            "at_error": 18.0,
-            "strong": 24.5,
-            "lv1": 35.1,
-            "lv2": 35.8,
-            "lv3": 37.5
-          },
-          "at_time": "2026-06-03 12:42:47"
-        },
-        {
-          "bike_id": "KNZ0254",
-          "status": "利用可能",
-          "model_name": "DD",
-          "voltage": 36.6,
-          "alert_level": 1,
-          "alert_level_name": "Lv.3",
-          "thresholds": {
-            "at_error": 18.0,
-            "strong": 24.5,
-            "lv1": 35.1,
-            "lv2": 35.8,
-            "lv3": 37.5
-          },
-          "at_time": "2026-06-03 12:20:47"
-        },
-        {
-          "bike_id": "KNZ0263",
-          "status": "利用可能",
-          "model_name": "DD",
-          "voltage": 36.6,
-          "alert_level": 1,
-          "alert_level_name": "Lv.3",
-          "thresholds": {
-            "at_error": 18.0,
-            "strong": 24.5,
-            "lv1": 35.1,
-            "lv2": 35.8,
-            "lv3": 37.5
-          },
-          "at_time": "2026-06-03 12:57:20"
-        },
-        {
-          "bike_id": "KNZ0286",
-          "status": "利用可能",
-          "model_name": "DD",
-          "voltage": 36.5,
-          "alert_level": 1,
-          "alert_level_name": "Lv.3",
-          "thresholds": {
-            "at_error": 18.0,
-            "strong": 24.5,
-            "lv1": 35.1,
-            "lv2": 35.8,
-            "lv3": 37.5
-          },
-          "at_time": "2026-06-03 12:42:32"
-        },
-        {
-          "bike_id": "KNZ0303",
-          "status": "利用可能",
-          "model_name": "DD",
-          "voltage": 37.6,
-          "alert_level": 0,
-          "alert_level_name": "正常",
-          "thresholds": {
-            "at_error": 18.0,
-            "strong": 24.5,
-            "lv1": 35.1,
-            "lv2": 35.8,
-            "lv3": 37.5
-          },
-          "at_time": "2026-06-03 12:34:51"
-        },
-        {
-          "bike_id": "KNZ0349",
-          "status": "利用中",
-          "model_name": "DD",
-          "voltage": 36.1,
-          "alert_level": 1,
-          "alert_level_name": "Lv.3",
-          "thresholds": {
-            "at_error": 18.0,
-            "strong": 24.5,
-            "lv1": 35.1,
-            "lv2": 35.8,
-            "lv3": 37.5
-          },
-          "at_time": "2026-06-03 13:16:45"
-        },
-        {
-          "bike_id": "KNZ0356",
-          "status": "利用可能",
-          "model_name": "DD",
-          "voltage": 36.3,
-          "alert_level": 1,
-          "alert_level_name": "Lv.3",
-          "thresholds": {
-            "at_error": 18.0,
-            "strong": 24.5,
-            "lv1": 35.1,
-            "lv2": 35.8,
-            "lv3": 37.5
-          },
-          "at_time": "2026-06-03 13:15:38"
-        },
-        {
-          "bike_id": "KNZ0367",
-          "status": "利用可能",
-          "model_name": "DD",
-          "voltage": 38.8,
-          "alert_level": 0,
-          "alert_level_name": "正常",
-          "thresholds": {
-            "at_error": 18.0,
-            "strong": 24.5,
-            "lv1": 35.1,
-            "lv2": 35.8,
-            "lv3": 37.5
-          },
-          "at_time": "2026-06-03 12:17:31"
-        },
-        {
-          "bike_id": "KNZ0368",
-          "status": "利用可能",
-          "model_name": "DD",
-          "voltage": 36.6,
-          "alert_level": 1,
-          "alert_level_name": "Lv.3",
-          "thresholds": {
-            "at_error": 18.0,
-            "strong": 24.5,
-            "lv1": 35.1,
-            "lv2": 35.8,
-            "lv3": 37.5
-          },
-          "at_time": "2026-06-03 13:06:27"
-        },
-        {
-          "bike_id": "KNZ0372",
-          "status": "利用可能",
-          "model_name": "DD",
-          "voltage": 36.6,
-          "alert_level": 1,
-          "alert_level_name": "Lv.3",
-          "thresholds": {
-            "at_error": 18.0,
-            "strong": 24.5,
-            "lv1": 35.1,
-            "lv2": 35.8,
-            "lv3": 37.5
-          },
-          "at_time": "2026-06-03 13:13:07"
-        },
-        {
-          "bike_id": "KNZ0383",
-          "status": "利用可能",
-          "model_name": "DD",
-          "voltage": 41.1,
-          "alert_level": 0,
-          "alert_level_name": "正常",
-          "thresholds": {
-            "at_error": 18.0,
-            "strong": 24.5,
-            "lv1": 35.1,
-            "lv2": 35.8,
-            "lv3": 37.5
-          },
-          "at_time": "2026-06-03 13:15:52"
-        },
-        {
-          "bike_id": "KNZ0394",
-          "status": "利用可能",
-          "model_name": "DD",
-          "voltage": 36.6,
-          "alert_level": 1,
-          "alert_level_name": "Lv.3",
-          "thresholds": {
-            "at_error": 18.0,
-            "strong": 24.5,
-            "lv1": 35.1,
-            "lv2": 35.8,
-            "lv3": 37.5
-          },
-          "at_time": "2026-06-03 12:27:08"
-        },
-        {
-          "bike_id": "KNZ0403",
-          "status": "利用可能",
-          "model_name": "DD",
-          "voltage": 36.0,
-          "alert_level": 1,
-          "alert_level_name": "Lv.3",
-          "thresholds": {
-            "at_error": 18.0,
-            "strong": 24.5,
-            "lv1": 35.1,
-            "lv2": 35.8,
-            "lv3": 37.5
-          },
-          "at_time": "2026-06-03 12:56:02"
-        },
-        {
-          "bike_id": "KNZ0404",
-          "status": "利用可能",
-          "model_name": "DD",
-          "voltage": 36.6,
-          "alert_level": 1,
-          "alert_level_name": "Lv.3",
-          "thresholds": {
-            "at_error": 18.0,
-            "strong": 24.5,
-            "lv1": 35.1,
-            "lv2": 35.8,
-            "lv3": 37.5
-          },
-          "at_time": "2026-06-03 13:05:35"
-        },
-        {
-          "bike_id": "KNZ0406",
-          "status": "利用可能",
-          "model_name": "DD",
-          "voltage": 36.4,
-          "alert_level": 1,
-          "alert_level_name": "Lv.3",
-          "thresholds": {
-            "at_error": 18.0,
-            "strong": 24.5,
-            "lv1": 35.1,
-            "lv2": 35.8,
-            "lv3": 37.5
-          },
-          "at_time": "2026-06-03 13:01:17"
-        },
-        {
-          "bike_id": "KNZ0416",
-          "status": "利用可能",
-          "model_name": "DD",
-          "voltage": 39.2,
-          "alert_level": 0,
-          "alert_level_name": "正常",
-          "thresholds": {
-            "at_error": 18.0,
-            "strong": 24.5,
-            "lv1": 35.1,
-            "lv2": 35.8,
-            "lv3": 37.5
-          },
-          "at_time": "2026-06-03 12:53:29"
-        },
-        {
-          "bike_id": "KNZ0422",
-          "status": "利用可能",
-          "model_name": "DD",
-          "voltage": 36.2,
-          "alert_level": 1,
-          "alert_level_name": "Lv.3",
-          "thresholds": {
-            "at_error": 18.0,
-            "strong": 24.5,
-            "lv1": 35.1,
-            "lv2": 35.8,
-            "lv3": 37.5
-          },
-          "at_time": "2026-06-03 12:51:01"
-        },
-        {
-          "bike_id": "KNZ0435",
-          "status": "利用可能",
-          "model_name": "DD",
-          "voltage": 36.7,
-          "alert_level": 1,
-          "alert_level_name": "Lv.3",
-          "thresholds": {
-            "at_error": 18.0,
-            "strong": 24.5,
-            "lv1": 35.1,
-            "lv2": 35.8,
-            "lv3": 37.5
-          },
-          "at_time": "2026-06-03 13:05:22"
-        },
-        {
-          "bike_id": "KNZ0447",
-          "status": "一時駐輪",
-          "model_name": "DD",
-          "voltage": 40.1,
-          "alert_level": 0,
-          "alert_level_name": "正常",
-          "thresholds": {
-            "at_error": 18.0,
-            "strong": 24.5,
-            "lv1": 35.1,
-            "lv2": 35.8,
-            "lv3": 37.5
-          },
-          "at_time": "2026-06-03 13:16:45"
-        },
-        {
-          "bike_id": "KNZ0469",
-          "status": "利用可能",
-          "model_name": "DD",
-          "voltage": 41.1,
-          "alert_level": 0,
-          "alert_level_name": "正常",
-          "thresholds": {
-            "at_error": 18.0,
-            "strong": 24.5,
-            "lv1": 35.1,
-            "lv2": 35.8,
-            "lv3": 37.5
-          },
-          "at_time": "2026-06-03 12:39:33"
-        },
-        {
-          "bike_id": "KNZ0470",
-          "status": "利用可能",
-          "model_name": "DD",
-          "voltage": 40.7,
-          "alert_level": 0,
-          "alert_level_name": "正常",
-          "thresholds": {
-            "at_error": 18.0,
-            "strong": 24.5,
-            "lv1": 35.1,
-            "lv2": 35.8,
-            "lv3": 37.5
-          },
-          "at_time": "2026-06-03 12:48:49"
-        },
-        {
-          "bike_id": "KNZ0473",
-          "status": "一時駐輪",
-          "model_name": "DD",
-          "voltage": 40.9,
-          "alert_level": 0,
-          "alert_level_name": "正常",
-          "thresholds": {
-            "at_error": 18.0,
-            "strong": 24.5,
-            "lv1": 35.1,
-            "lv2": 35.8,
-            "lv3": 37.5
-          },
-          "at_time": "2026-06-03 13:16:45"
-        },
-        {
-          "bike_id": "KNZ0476",
-          "status": "利用可能",
-          "model_name": "DD",
-          "voltage": 40.0,
-          "alert_level": 0,
-          "alert_level_name": "正常",
-          "thresholds": {
-            "at_error": 18.0,
-            "strong": 24.5,
-            "lv1": 35.1,
-            "lv2": 35.8,
-            "lv3": 37.5
-          },
-          "at_time": "2026-06-03 12:47:02"
-        },
-        {
-          "bike_id": "KNZ0491",
-          "status": "利用可能",
-          "model_name": "DD",
-          "voltage": 40.4,
-          "alert_level": 0,
-          "alert_level_name": "正常",
-          "thresholds": {
-            "at_error": 18.0,
-            "strong": 24.5,
-            "lv1": 35.1,
-            "lv2": 35.8,
-            "lv3": 37.5
-          },
-          "at_time": "2026-06-03 12:39:31"
-        },
-        {
-          "bike_id": "KNZ0501",
-          "status": "一時駐輪",
-          "model_name": "グリッター・EB",
-          "voltage": 28.8,
-          "alert_level": 0,
-          "alert_level_name": "正常",
-          "thresholds": {
-            "at_error": 24.0,
-            "strong": 24.0,
-            "lv1": 24.6,
-            "lv2": 25.3,
-            "lv3": 26.4
-          },
-          "at_time": "2026-06-03 13:16:57"
-        },
-        {
-          "bike_id": "KNZ0522",
-          "status": "利用可能",
-          "model_name": "グリッター・EB",
-          "voltage": 23.6,
-          "alert_level": 5,
-          "alert_level_name": "AT異常",
-          "thresholds": {
-            "at_error": 24.0,
-            "strong": 24.0,
-            "lv1": 24.6,
-            "lv2": 25.3,
-            "lv3": 26.4
-          },
-          "at_time": "2026-06-03 13:14:25"
-        },
-        {
-          "bike_id": "KNZ0523",
-          "status": "利用可能",
-          "model_name": "グリッター・EB",
-          "voltage": 29.0,
-          "alert_level": 0,
-          "alert_level_name": "正常",
-          "thresholds": {
-            "at_error": 24.0,
-            "strong": 24.0,
-            "lv1": 24.6,
-            "lv2": 25.3,
-            "lv3": 26.4
-          },
-          "at_time": "2026-06-03 12:45:21"
-        },
-        {
-          "bike_id": "KNZ0525",
-          "status": "利用可能",
-          "model_name": "グリッター・EB",
-          "voltage": 27.4,
-          "alert_level": 0,
-          "alert_level_name": "正常",
-          "thresholds": {
-            "at_error": 24.0,
-            "strong": 24.0,
-            "lv1": 24.6,
-            "lv2": 25.3,
-            "lv3": 26.4
-          },
-          "at_time": "2026-06-03 12:45:12"
-        },
-        {
-          "bike_id": "KNZ0534",
-          "status": "一時駐輪",
-          "model_name": "グリッター・EB",
-          "voltage": 28.7,
-          "alert_level": 0,
-          "alert_level_name": "正常",
-          "thresholds": {
-            "at_error": 24.0,
-            "strong": 24.0,
-            "lv1": 24.6,
-            "lv2": 25.3,
-            "lv3": 26.4
-          },
-          "at_time": "2026-06-03 13:16:52"
-        },
-        {
-          "bike_id": "KNZ0535",
-          "status": "一時駐輪",
-          "model_name": "グリッター・EB",
-          "voltage": 29.0,
-          "alert_level": 0,
-          "alert_level_name": "正常",
-          "thresholds": {
-            "at_error": 24.0,
-            "strong": 24.0,
-            "lv1": 24.6,
-            "lv2": 25.3,
-            "lv3": 26.4
-          },
-          "at_time": "2026-06-03 13:16:57"
-        },
-        {
-          "bike_id": "KNZ0631",
-          "status": "メンテナンス",
-          "model_name": "グリッター・EB",
-          "voltage": 24.0,
-          "alert_level": 5,
-          "alert_level_name": "AT異常",
-          "thresholds": {
-            "at_error": 24.0,
-            "strong": 24.0,
-            "lv1": 24.6,
-            "lv2": 25.3,
-            "lv3": 26.4
-          },
-          "at_time": "2026-06-03 13:00:07"
-        },
-        {
-          "bike_id": "KNZ0644",
-          "status": "利用可能",
-          "model_name": "グリッター・EB",
-          "voltage": 26.3,
-          "alert_level": 1,
-          "alert_level_name": "Lv.3",
-          "thresholds": {
-            "at_error": 24.0,
-            "strong": 24.0,
-            "lv1": 24.6,
-            "lv2": 25.3,
-            "lv3": 26.4
-          },
-          "at_time": "2026-06-03 12:57:09"
-        },
-        {
-          "bike_id": "KNZ0671",
-          "status": "利用可能",
-          "model_name": "グリッター・EB",
-          "voltage": 29.4,
-          "alert_level": 0,
-          "alert_level_name": "正常",
-          "thresholds": {
-            "at_error": 24.0,
-            "strong": 24.0,
-            "lv1": 24.6,
-            "lv2": 25.3,
-            "lv3": 26.4
-          },
-          "at_time": "2026-06-03 12:52:38"
-        },
-        {
-          "bike_id": "KNZ0677",
-          "status": "利用可能",
-          "model_name": "グリッター・EB",
-          "voltage": 25.9,
-          "alert_level": 1,
-          "alert_level_name": "Lv.3",
-          "thresholds": {
-            "at_error": 24.0,
-            "strong": 24.0,
-            "lv1": 24.6,
-            "lv2": 25.3,
-            "lv3": 26.4
-          },
-          "at_time": "2026-06-03 12:56:43"
-        },
-        {
-          "bike_id": "KNZ0685",
-          "status": "利用中",
-          "model_name": "グリッター・EB",
-          "voltage": 26.6,
-          "alert_level": 0,
-          "alert_level_name": "正常",
-          "thresholds": {
-            "at_error": 24.0,
-            "strong": 24.0,
-            "lv1": 24.6,
-            "lv2": 25.3,
-            "lv3": 26.4
-          },
-          "at_time": "2026-06-03 13:16:20"
-        },
-        {
-          "bike_id": "KNZ0691",
-          "status": "利用可能",
-          "model_name": "グリッター・EB",
-          "voltage": 26.9,
-          "alert_level": 0,
-          "alert_level_name": "正常",
-          "thresholds": {
-            "at_error": 24.0,
-            "strong": 24.0,
-            "lv1": 24.6,
-            "lv2": 25.3,
-            "lv3": 26.4
-          },
-          "at_time": "2026-06-03 13:12:39"
-        },
-        {
-          "bike_id": "KNZ0715",
-          "status": "利用可能",
-          "model_name": "グリッター・EB",
-          "voltage": 26.2,
-          "alert_level": 1,
-          "alert_level_name": "Lv.3",
-          "thresholds": {
-            "at_error": 24.0,
-            "strong": 24.0,
-            "lv1": 24.6,
-            "lv2": 25.3,
-            "lv3": 26.4
-          },
-          "at_time": "2026-06-03 13:01:42"
         }
       ]
     },
@@ -10107,7 +9262,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:19:17"
+          "at_time": "2026-06-03 13:19:17"
         },
         {
           "bike_id": "KNZ0246",
@@ -10184,7 +9339,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 13:15:47"
+          "at_time": "2026-06-03 13:21:47"
         },
         {
           "bike_id": "KNZ0589",
@@ -10201,6 +9356,835 @@ window.dashboardData = {
             "lv3": 26.4
           },
           "at_time": "2026-06-03 12:44:02"
+        }
+      ]
+    },
+    {
+      "port_name": "01.金沢駅(県立音楽堂横）",
+      "area_name": "KNZ_金沢市公共シェアサイクルまちのり事務局",
+      "station_id": "00089001",
+      "lat": 36.577185,
+      "lon": 136.647628,
+      "has_gps": true,
+      "total_bikes": 51,
+      "max_alert_level": 5,
+      "alert_bikes_count": 28,
+      "bikes": [
+        {
+          "bike_id": "KNZ0030",
+          "status": "一時駐輪",
+          "model_name": "DD",
+          "voltage": 40.5,
+          "alert_level": 0,
+          "alert_level_name": "正常",
+          "thresholds": {
+            "at_error": 18.0,
+            "strong": 24.5,
+            "lv1": 35.1,
+            "lv2": 35.8,
+            "lv3": 37.5
+          },
+          "at_time": "2026-06-03 13:21:53"
+        },
+        {
+          "bike_id": "KNZ0072",
+          "status": "利用可能",
+          "model_name": "DD",
+          "voltage": 40.2,
+          "alert_level": 0,
+          "alert_level_name": "正常",
+          "thresholds": {
+            "at_error": 18.0,
+            "strong": 24.5,
+            "lv1": 35.1,
+            "lv2": 35.8,
+            "lv3": 37.5
+          },
+          "at_time": "2026-06-03 12:33:14"
+        },
+        {
+          "bike_id": "KNZ0078",
+          "status": "利用可能",
+          "model_name": "DD",
+          "voltage": 35.7,
+          "alert_level": 2,
+          "alert_level_name": "Lv.2",
+          "thresholds": {
+            "at_error": 18.0,
+            "strong": 24.5,
+            "lv1": 35.1,
+            "lv2": 35.8,
+            "lv3": 37.5
+          },
+          "at_time": "2026-06-03 13:01:25"
+        },
+        {
+          "bike_id": "KNZ0079",
+          "status": "利用可能",
+          "model_name": "DD",
+          "voltage": 36.1,
+          "alert_level": 1,
+          "alert_level_name": "Lv.3",
+          "thresholds": {
+            "at_error": 18.0,
+            "strong": 24.5,
+            "lv1": 35.1,
+            "lv2": 35.8,
+            "lv3": 37.5
+          },
+          "at_time": "2026-06-03 12:40:23"
+        },
+        {
+          "bike_id": "KNZ0096",
+          "status": "一時駐輪",
+          "model_name": "DD",
+          "voltage": 41.1,
+          "alert_level": 0,
+          "alert_level_name": "正常",
+          "thresholds": {
+            "at_error": 18.0,
+            "strong": 24.5,
+            "lv1": 35.1,
+            "lv2": 35.8,
+            "lv3": 37.5
+          },
+          "at_time": "2026-06-03 13:21:48"
+        },
+        {
+          "bike_id": "KNZ0122",
+          "status": "利用可能",
+          "model_name": "DD",
+          "voltage": 37.0,
+          "alert_level": 1,
+          "alert_level_name": "Lv.3",
+          "thresholds": {
+            "at_error": 18.0,
+            "strong": 24.5,
+            "lv1": 35.1,
+            "lv2": 35.8,
+            "lv3": 37.5
+          },
+          "at_time": "2026-06-03 12:41:44"
+        },
+        {
+          "bike_id": "KNZ0125",
+          "status": "利用可能",
+          "model_name": "DD",
+          "voltage": 41.2,
+          "alert_level": 0,
+          "alert_level_name": "正常",
+          "thresholds": {
+            "at_error": 18.0,
+            "strong": 24.5,
+            "lv1": 35.1,
+            "lv2": 35.8,
+            "lv3": 37.5
+          },
+          "at_time": "2026-06-03 12:38:37"
+        },
+        {
+          "bike_id": "KNZ0128",
+          "status": "利用可能",
+          "model_name": "DD",
+          "voltage": 36.3,
+          "alert_level": 1,
+          "alert_level_name": "Lv.3",
+          "thresholds": {
+            "at_error": 18.0,
+            "strong": 24.5,
+            "lv1": 35.1,
+            "lv2": 35.8,
+            "lv3": 37.5
+          },
+          "at_time": "2026-06-03 13:19:52"
+        },
+        {
+          "bike_id": "KNZ0135",
+          "status": "利用可能",
+          "model_name": "DD",
+          "voltage": 39.2,
+          "alert_level": 0,
+          "alert_level_name": "正常",
+          "thresholds": {
+            "at_error": 18.0,
+            "strong": 24.5,
+            "lv1": 35.1,
+            "lv2": 35.8,
+            "lv3": 37.5
+          },
+          "at_time": "2026-06-03 12:52:01"
+        },
+        {
+          "bike_id": "KNZ0138",
+          "status": "利用可能",
+          "model_name": "DD",
+          "voltage": 36.2,
+          "alert_level": 1,
+          "alert_level_name": "Lv.3",
+          "thresholds": {
+            "at_error": 18.0,
+            "strong": 24.5,
+            "lv1": 35.1,
+            "lv2": 35.8,
+            "lv3": 37.5
+          },
+          "at_time": "2026-06-03 12:42:05"
+        },
+        {
+          "bike_id": "KNZ0157",
+          "status": "利用可能",
+          "model_name": "DD",
+          "voltage": 35.8,
+          "alert_level": 2,
+          "alert_level_name": "Lv.2",
+          "thresholds": {
+            "at_error": 18.0,
+            "strong": 24.5,
+            "lv1": 35.1,
+            "lv2": 35.8,
+            "lv3": 37.5
+          },
+          "at_time": "2026-06-03 13:09:13"
+        },
+        {
+          "bike_id": "KNZ0163",
+          "status": "利用可能",
+          "model_name": "DD",
+          "voltage": 36.2,
+          "alert_level": 1,
+          "alert_level_name": "Lv.3",
+          "thresholds": {
+            "at_error": 18.0,
+            "strong": 24.5,
+            "lv1": 35.1,
+            "lv2": 35.8,
+            "lv3": 37.5
+          },
+          "at_time": "2026-06-03 13:15:07"
+        },
+        {
+          "bike_id": "KNZ0171",
+          "status": "利用可能",
+          "model_name": "DD",
+          "voltage": 37.0,
+          "alert_level": 1,
+          "alert_level_name": "Lv.3",
+          "thresholds": {
+            "at_error": 18.0,
+            "strong": 24.5,
+            "lv1": 35.1,
+            "lv2": 35.8,
+            "lv3": 37.5
+          },
+          "at_time": "2026-06-03 13:05:56"
+        },
+        {
+          "bike_id": "KNZ0183",
+          "status": "利用可能",
+          "model_name": "DD",
+          "voltage": 36.6,
+          "alert_level": 1,
+          "alert_level_name": "Lv.3",
+          "thresholds": {
+            "at_error": 18.0,
+            "strong": 24.5,
+            "lv1": 35.1,
+            "lv2": 35.8,
+            "lv3": 37.5
+          },
+          "at_time": "2026-06-03 13:18:15"
+        },
+        {
+          "bike_id": "KNZ0227",
+          "status": "利用可能",
+          "model_name": "DD",
+          "voltage": 41.0,
+          "alert_level": 0,
+          "alert_level_name": "正常",
+          "thresholds": {
+            "at_error": 18.0,
+            "strong": 24.5,
+            "lv1": 35.1,
+            "lv2": 35.8,
+            "lv3": 37.5
+          },
+          "at_time": "2026-06-03 12:28:04"
+        },
+        {
+          "bike_id": "KNZ0236",
+          "status": "利用可能",
+          "model_name": "DD",
+          "voltage": 36.6,
+          "alert_level": 1,
+          "alert_level_name": "Lv.3",
+          "thresholds": {
+            "at_error": 18.0,
+            "strong": 24.5,
+            "lv1": 35.1,
+            "lv2": 35.8,
+            "lv3": 37.5
+          },
+          "at_time": "2026-06-03 12:30:42"
+        },
+        {
+          "bike_id": "KNZ0239",
+          "status": "利用可能",
+          "model_name": "DD",
+          "voltage": 36.3,
+          "alert_level": 1,
+          "alert_level_name": "Lv.3",
+          "thresholds": {
+            "at_error": 18.0,
+            "strong": 24.5,
+            "lv1": 35.1,
+            "lv2": 35.8,
+            "lv3": 37.5
+          },
+          "at_time": "2026-06-03 13:04:53"
+        },
+        {
+          "bike_id": "KNZ0244",
+          "status": "利用可能",
+          "model_name": "DD",
+          "voltage": 36.1,
+          "alert_level": 1,
+          "alert_level_name": "Lv.3",
+          "thresholds": {
+            "at_error": 18.0,
+            "strong": 24.5,
+            "lv1": 35.1,
+            "lv2": 35.8,
+            "lv3": 37.5
+          },
+          "at_time": "2026-06-03 12:42:47"
+        },
+        {
+          "bike_id": "KNZ0254",
+          "status": "利用可能",
+          "model_name": "DD",
+          "voltage": 36.7,
+          "alert_level": 1,
+          "alert_level_name": "Lv.3",
+          "thresholds": {
+            "at_error": 18.0,
+            "strong": 24.5,
+            "lv1": 35.1,
+            "lv2": 35.8,
+            "lv3": 37.5
+          },
+          "at_time": "2026-06-03 13:20:47"
+        },
+        {
+          "bike_id": "KNZ0263",
+          "status": "利用可能",
+          "model_name": "DD",
+          "voltage": 36.6,
+          "alert_level": 1,
+          "alert_level_name": "Lv.3",
+          "thresholds": {
+            "at_error": 18.0,
+            "strong": 24.5,
+            "lv1": 35.1,
+            "lv2": 35.8,
+            "lv3": 37.5
+          },
+          "at_time": "2026-06-03 12:57:20"
+        },
+        {
+          "bike_id": "KNZ0286",
+          "status": "利用可能",
+          "model_name": "DD",
+          "voltage": 36.5,
+          "alert_level": 1,
+          "alert_level_name": "Lv.3",
+          "thresholds": {
+            "at_error": 18.0,
+            "strong": 24.5,
+            "lv1": 35.1,
+            "lv2": 35.8,
+            "lv3": 37.5
+          },
+          "at_time": "2026-06-03 12:42:32"
+        },
+        {
+          "bike_id": "KNZ0303",
+          "status": "利用可能",
+          "model_name": "DD",
+          "voltage": 37.6,
+          "alert_level": 0,
+          "alert_level_name": "正常",
+          "thresholds": {
+            "at_error": 18.0,
+            "strong": 24.5,
+            "lv1": 35.1,
+            "lv2": 35.8,
+            "lv3": 37.5
+          },
+          "at_time": "2026-06-03 12:34:51"
+        },
+        {
+          "bike_id": "KNZ0356",
+          "status": "利用可能",
+          "model_name": "DD",
+          "voltage": 36.3,
+          "alert_level": 1,
+          "alert_level_name": "Lv.3",
+          "thresholds": {
+            "at_error": 18.0,
+            "strong": 24.5,
+            "lv1": 35.1,
+            "lv2": 35.8,
+            "lv3": 37.5
+          },
+          "at_time": "2026-06-03 13:15:38"
+        },
+        {
+          "bike_id": "KNZ0367",
+          "status": "利用可能",
+          "model_name": "DD",
+          "voltage": 38.8,
+          "alert_level": 0,
+          "alert_level_name": "正常",
+          "thresholds": {
+            "at_error": 18.0,
+            "strong": 24.5,
+            "lv1": 35.1,
+            "lv2": 35.8,
+            "lv3": 37.5
+          },
+          "at_time": "2026-06-03 13:17:32"
+        },
+        {
+          "bike_id": "KNZ0368",
+          "status": "利用可能",
+          "model_name": "DD",
+          "voltage": 36.6,
+          "alert_level": 1,
+          "alert_level_name": "Lv.3",
+          "thresholds": {
+            "at_error": 18.0,
+            "strong": 24.5,
+            "lv1": 35.1,
+            "lv2": 35.8,
+            "lv3": 37.5
+          },
+          "at_time": "2026-06-03 13:06:27"
+        },
+        {
+          "bike_id": "KNZ0372",
+          "status": "利用可能",
+          "model_name": "DD",
+          "voltage": 36.6,
+          "alert_level": 1,
+          "alert_level_name": "Lv.3",
+          "thresholds": {
+            "at_error": 18.0,
+            "strong": 24.5,
+            "lv1": 35.1,
+            "lv2": 35.8,
+            "lv3": 37.5
+          },
+          "at_time": "2026-06-03 13:13:07"
+        },
+        {
+          "bike_id": "KNZ0383",
+          "status": "利用可能",
+          "model_name": "DD",
+          "voltage": 41.1,
+          "alert_level": 0,
+          "alert_level_name": "正常",
+          "thresholds": {
+            "at_error": 18.0,
+            "strong": 24.5,
+            "lv1": 35.1,
+            "lv2": 35.8,
+            "lv3": 37.5
+          },
+          "at_time": "2026-06-03 13:15:52"
+        },
+        {
+          "bike_id": "KNZ0394",
+          "status": "利用可能",
+          "model_name": "DD",
+          "voltage": 36.6,
+          "alert_level": 1,
+          "alert_level_name": "Lv.3",
+          "thresholds": {
+            "at_error": 18.0,
+            "strong": 24.5,
+            "lv1": 35.1,
+            "lv2": 35.8,
+            "lv3": 37.5
+          },
+          "at_time": "2026-06-03 12:27:08"
+        },
+        {
+          "bike_id": "KNZ0403",
+          "status": "利用可能",
+          "model_name": "DD",
+          "voltage": 36.0,
+          "alert_level": 1,
+          "alert_level_name": "Lv.3",
+          "thresholds": {
+            "at_error": 18.0,
+            "strong": 24.5,
+            "lv1": 35.1,
+            "lv2": 35.8,
+            "lv3": 37.5
+          },
+          "at_time": "2026-06-03 12:56:02"
+        },
+        {
+          "bike_id": "KNZ0404",
+          "status": "利用可能",
+          "model_name": "DD",
+          "voltage": 36.6,
+          "alert_level": 1,
+          "alert_level_name": "Lv.3",
+          "thresholds": {
+            "at_error": 18.0,
+            "strong": 24.5,
+            "lv1": 35.1,
+            "lv2": 35.8,
+            "lv3": 37.5
+          },
+          "at_time": "2026-06-03 13:05:35"
+        },
+        {
+          "bike_id": "KNZ0406",
+          "status": "利用可能",
+          "model_name": "DD",
+          "voltage": 36.4,
+          "alert_level": 1,
+          "alert_level_name": "Lv.3",
+          "thresholds": {
+            "at_error": 18.0,
+            "strong": 24.5,
+            "lv1": 35.1,
+            "lv2": 35.8,
+            "lv3": 37.5
+          },
+          "at_time": "2026-06-03 13:01:17"
+        },
+        {
+          "bike_id": "KNZ0416",
+          "status": "利用可能",
+          "model_name": "DD",
+          "voltage": 39.2,
+          "alert_level": 0,
+          "alert_level_name": "正常",
+          "thresholds": {
+            "at_error": 18.0,
+            "strong": 24.5,
+            "lv1": 35.1,
+            "lv2": 35.8,
+            "lv3": 37.5
+          },
+          "at_time": "2026-06-03 12:53:29"
+        },
+        {
+          "bike_id": "KNZ0422",
+          "status": "利用可能",
+          "model_name": "DD",
+          "voltage": 36.2,
+          "alert_level": 1,
+          "alert_level_name": "Lv.3",
+          "thresholds": {
+            "at_error": 18.0,
+            "strong": 24.5,
+            "lv1": 35.1,
+            "lv2": 35.8,
+            "lv3": 37.5
+          },
+          "at_time": "2026-06-03 12:51:01"
+        },
+        {
+          "bike_id": "KNZ0435",
+          "status": "利用可能",
+          "model_name": "DD",
+          "voltage": 36.7,
+          "alert_level": 1,
+          "alert_level_name": "Lv.3",
+          "thresholds": {
+            "at_error": 18.0,
+            "strong": 24.5,
+            "lv1": 35.1,
+            "lv2": 35.8,
+            "lv3": 37.5
+          },
+          "at_time": "2026-06-03 13:05:22"
+        },
+        {
+          "bike_id": "KNZ0447",
+          "status": "一時駐輪",
+          "model_name": "DD",
+          "voltage": 40.0,
+          "alert_level": 0,
+          "alert_level_name": "正常",
+          "thresholds": {
+            "at_error": 18.0,
+            "strong": 24.5,
+            "lv1": 35.1,
+            "lv2": 35.8,
+            "lv3": 37.5
+          },
+          "at_time": "2026-06-03 13:21:56"
+        },
+        {
+          "bike_id": "KNZ0469",
+          "status": "利用可能",
+          "model_name": "DD",
+          "voltage": 41.1,
+          "alert_level": 0,
+          "alert_level_name": "正常",
+          "thresholds": {
+            "at_error": 18.0,
+            "strong": 24.5,
+            "lv1": 35.1,
+            "lv2": 35.8,
+            "lv3": 37.5
+          },
+          "at_time": "2026-06-03 12:39:33"
+        },
+        {
+          "bike_id": "KNZ0470",
+          "status": "利用可能",
+          "model_name": "DD",
+          "voltage": 40.7,
+          "alert_level": 0,
+          "alert_level_name": "正常",
+          "thresholds": {
+            "at_error": 18.0,
+            "strong": 24.5,
+            "lv1": 35.1,
+            "lv2": 35.8,
+            "lv3": 37.5
+          },
+          "at_time": "2026-06-03 12:48:49"
+        },
+        {
+          "bike_id": "KNZ0473",
+          "status": "一時駐輪",
+          "model_name": "DD",
+          "voltage": 40.9,
+          "alert_level": 0,
+          "alert_level_name": "正常",
+          "thresholds": {
+            "at_error": 18.0,
+            "strong": 24.5,
+            "lv1": 35.1,
+            "lv2": 35.8,
+            "lv3": 37.5
+          },
+          "at_time": "2026-06-03 13:21:53"
+        },
+        {
+          "bike_id": "KNZ0476",
+          "status": "利用可能",
+          "model_name": "DD",
+          "voltage": 40.0,
+          "alert_level": 0,
+          "alert_level_name": "正常",
+          "thresholds": {
+            "at_error": 18.0,
+            "strong": 24.5,
+            "lv1": 35.1,
+            "lv2": 35.8,
+            "lv3": 37.5
+          },
+          "at_time": "2026-06-03 12:47:02"
+        },
+        {
+          "bike_id": "KNZ0491",
+          "status": "利用可能",
+          "model_name": "DD",
+          "voltage": 40.4,
+          "alert_level": 0,
+          "alert_level_name": "正常",
+          "thresholds": {
+            "at_error": 18.0,
+            "strong": 24.5,
+            "lv1": 35.1,
+            "lv2": 35.8,
+            "lv3": 37.5
+          },
+          "at_time": "2026-06-03 12:39:31"
+        },
+        {
+          "bike_id": "KNZ0501",
+          "status": "一時駐輪",
+          "model_name": "グリッター・EB",
+          "voltage": 28.8,
+          "alert_level": 0,
+          "alert_level_name": "正常",
+          "thresholds": {
+            "at_error": 24.0,
+            "strong": 24.0,
+            "lv1": 24.6,
+            "lv2": 25.3,
+            "lv3": 26.4
+          },
+          "at_time": "2026-06-03 13:21:53"
+        },
+        {
+          "bike_id": "KNZ0522",
+          "status": "利用可能",
+          "model_name": "グリッター・EB",
+          "voltage": 23.6,
+          "alert_level": 5,
+          "alert_level_name": "AT異常",
+          "thresholds": {
+            "at_error": 24.0,
+            "strong": 24.0,
+            "lv1": 24.6,
+            "lv2": 25.3,
+            "lv3": 26.4
+          },
+          "at_time": "2026-06-03 13:14:25"
+        },
+        {
+          "bike_id": "KNZ0523",
+          "status": "利用可能",
+          "model_name": "グリッター・EB",
+          "voltage": 29.0,
+          "alert_level": 0,
+          "alert_level_name": "正常",
+          "thresholds": {
+            "at_error": 24.0,
+            "strong": 24.0,
+            "lv1": 24.6,
+            "lv2": 25.3,
+            "lv3": 26.4
+          },
+          "at_time": "2026-06-03 12:45:21"
+        },
+        {
+          "bike_id": "KNZ0525",
+          "status": "利用可能",
+          "model_name": "グリッター・EB",
+          "voltage": 27.4,
+          "alert_level": 0,
+          "alert_level_name": "正常",
+          "thresholds": {
+            "at_error": 24.0,
+            "strong": 24.0,
+            "lv1": 24.6,
+            "lv2": 25.3,
+            "lv3": 26.4
+          },
+          "at_time": "2026-06-03 12:45:12"
+        },
+        {
+          "bike_id": "KNZ0534",
+          "status": "一時駐輪",
+          "model_name": "グリッター・EB",
+          "voltage": 28.6,
+          "alert_level": 0,
+          "alert_level_name": "正常",
+          "thresholds": {
+            "at_error": 24.0,
+            "strong": 24.0,
+            "lv1": 24.6,
+            "lv2": 25.3,
+            "lv3": 26.4
+          },
+          "at_time": "2026-06-03 13:22:06"
+        },
+        {
+          "bike_id": "KNZ0535",
+          "status": "一時駐輪",
+          "model_name": "グリッター・EB",
+          "voltage": 29.0,
+          "alert_level": 0,
+          "alert_level_name": "正常",
+          "thresholds": {
+            "at_error": 24.0,
+            "strong": 24.0,
+            "lv1": 24.6,
+            "lv2": 25.3,
+            "lv3": 26.4
+          },
+          "at_time": "2026-06-03 13:22:05"
+        },
+        {
+          "bike_id": "KNZ0631",
+          "status": "メンテナンス",
+          "model_name": "グリッター・EB",
+          "voltage": 24.0,
+          "alert_level": 5,
+          "alert_level_name": "AT異常",
+          "thresholds": {
+            "at_error": 24.0,
+            "strong": 24.0,
+            "lv1": 24.6,
+            "lv2": 25.3,
+            "lv3": 26.4
+          },
+          "at_time": "2026-06-03 13:00:07"
+        },
+        {
+          "bike_id": "KNZ0644",
+          "status": "利用可能",
+          "model_name": "グリッター・EB",
+          "voltage": 26.3,
+          "alert_level": 1,
+          "alert_level_name": "Lv.3",
+          "thresholds": {
+            "at_error": 24.0,
+            "strong": 24.0,
+            "lv1": 24.6,
+            "lv2": 25.3,
+            "lv3": 26.4
+          },
+          "at_time": "2026-06-03 12:57:09"
+        },
+        {
+          "bike_id": "KNZ0671",
+          "status": "利用可能",
+          "model_name": "グリッター・EB",
+          "voltage": 29.4,
+          "alert_level": 0,
+          "alert_level_name": "正常",
+          "thresholds": {
+            "at_error": 24.0,
+            "strong": 24.0,
+            "lv1": 24.6,
+            "lv2": 25.3,
+            "lv3": 26.4
+          },
+          "at_time": "2026-06-03 12:52:38"
+        },
+        {
+          "bike_id": "KNZ0677",
+          "status": "利用可能",
+          "model_name": "グリッター・EB",
+          "voltage": 25.9,
+          "alert_level": 1,
+          "alert_level_name": "Lv.3",
+          "thresholds": {
+            "at_error": 24.0,
+            "strong": 24.0,
+            "lv1": 24.6,
+            "lv2": 25.3,
+            "lv3": 26.4
+          },
+          "at_time": "2026-06-03 12:56:43"
+        },
+        {
+          "bike_id": "KNZ0691",
+          "status": "利用可能",
+          "model_name": "グリッター・EB",
+          "voltage": 26.9,
+          "alert_level": 0,
+          "alert_level_name": "正常",
+          "thresholds": {
+            "at_error": 24.0,
+            "strong": 24.0,
+            "lv1": 24.6,
+            "lv2": 25.3,
+            "lv3": 26.4
+          },
+          "at_time": "2026-06-03 13:12:39"
         }
       ]
     },
@@ -10442,7 +10426,7 @@ window.dashboardData = {
       "lat": 36.566517,
       "lon": 136.65187,
       "has_gps": true,
-      "total_bikes": 12,
+      "total_bikes": 13,
       "max_alert_level": 5,
       "alert_bikes_count": 4,
       "bikes": [
@@ -10576,9 +10560,9 @@ window.dashboardData = {
         },
         {
           "bike_id": "KNZ0410",
-          "status": "利用可能",
+          "status": "利用中",
           "model_name": "DD",
-          "voltage": 40.0,
+          "voltage": 39.9,
           "alert_level": 0,
           "alert_level_name": "正常",
           "thresholds": {
@@ -10588,7 +10572,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:47:20"
+          "at_time": "2026-06-03 13:20:21"
         },
         {
           "bike_id": "KNZ0445",
@@ -10621,6 +10605,22 @@ window.dashboardData = {
             "lv3": 26.4
           },
           "at_time": "2026-06-03 12:30:56"
+        },
+        {
+          "bike_id": "KNZ0694",
+          "status": "利用可能",
+          "model_name": "グリッター・EB",
+          "voltage": 28.3,
+          "alert_level": 0,
+          "alert_level_name": "正常",
+          "thresholds": {
+            "at_error": 24.0,
+            "strong": 24.0,
+            "lv1": 24.6,
+            "lv2": 25.3,
+            "lv3": 26.4
+          },
+          "at_time": "2026-06-03 13:20:13"
         },
         {
           "bike_id": "KNZ0707",
@@ -10835,7 +10835,7 @@ window.dashboardData = {
       "has_gps": true,
       "total_bikes": 17,
       "max_alert_level": 2,
-      "alert_bikes_count": 8,
+      "alert_bikes_count": 7,
       "bikes": [
         {
           "bike_id": "KNZ0039",
@@ -10851,13 +10851,13 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:20:33"
+          "at_time": "2026-06-03 13:20:33"
         },
         {
           "bike_id": "KNZ0041",
           "status": "利用可能",
           "model_name": "DD",
-          "voltage": 38.7,
+          "voltage": 38.6,
           "alert_level": 0,
           "alert_level_name": "正常",
           "thresholds": {
@@ -10867,13 +10867,13 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:21:02"
+          "at_time": "2026-06-03 13:21:02"
         },
         {
           "bike_id": "KNZ0046",
           "status": "利用可能",
           "model_name": "DD",
-          "voltage": 36.5,
+          "voltage": 36.4,
           "alert_level": 1,
           "alert_level_name": "Lv.3",
           "thresholds": {
@@ -10883,13 +10883,13 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:20:35"
+          "at_time": "2026-06-03 13:20:35"
         },
         {
           "bike_id": "KNZ0068",
           "status": "利用可能",
           "model_name": "DD",
-          "voltage": 40.6,
+          "voltage": 40.7,
           "alert_level": 0,
           "alert_level_name": "正常",
           "thresholds": {
@@ -10899,7 +10899,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:20:57"
+          "at_time": "2026-06-03 13:20:57"
         },
         {
           "bike_id": "KNZ0069",
@@ -10915,13 +10915,13 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:20:50"
+          "at_time": "2026-06-03 13:20:50"
         },
         {
           "bike_id": "KNZ0172",
           "status": "利用可能",
           "model_name": "DD",
-          "voltage": 39.2,
+          "voltage": 39.3,
           "alert_level": 0,
           "alert_level_name": "正常",
           "thresholds": {
@@ -10931,13 +10931,13 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:20:52"
+          "at_time": "2026-06-03 13:20:52"
         },
         {
           "bike_id": "KNZ0214",
           "status": "利用可能",
           "model_name": "DD",
-          "voltage": 40.5,
+          "voltage": 40.6,
           "alert_level": 0,
           "alert_level_name": "正常",
           "thresholds": {
@@ -10947,7 +10947,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:20:39"
+          "at_time": "2026-06-03 13:20:38"
         },
         {
           "bike_id": "KNZ0245",
@@ -10963,15 +10963,15 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:20:55"
+          "at_time": "2026-06-03 13:20:55"
         },
         {
           "bike_id": "KNZ0249",
           "status": "利用可能",
           "model_name": "DD",
-          "voltage": 37.5,
-          "alert_level": 1,
-          "alert_level_name": "Lv.3",
+          "voltage": 37.6,
+          "alert_level": 0,
+          "alert_level_name": "正常",
           "thresholds": {
             "at_error": 18.0,
             "strong": 24.5,
@@ -10979,7 +10979,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:20:58"
+          "at_time": "2026-06-03 13:20:58"
         },
         {
           "bike_id": "KNZ0300",
@@ -10995,7 +10995,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:20:56"
+          "at_time": "2026-06-03 13:20:56"
         },
         {
           "bike_id": "KNZ0321",
@@ -11011,7 +11011,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:20:51"
+          "at_time": "2026-06-03 13:20:50"
         },
         {
           "bike_id": "KNZ0331",
@@ -11027,7 +11027,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:20:49"
+          "at_time": "2026-06-03 13:20:48"
         },
         {
           "bike_id": "KNZ0332",
@@ -11043,7 +11043,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:21:00"
+          "at_time": "2026-06-03 13:21:00"
         },
         {
           "bike_id": "KNZ0434",
@@ -11059,13 +11059,13 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:20:54"
+          "at_time": "2026-06-03 13:20:53"
         },
         {
           "bike_id": "KNZ0498",
           "status": "利用可能",
           "model_name": "DD",
-          "voltage": 41.5,
+          "voltage": 41.4,
           "alert_level": 0,
           "alert_level_name": "正常",
           "thresholds": {
@@ -11075,7 +11075,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:18:36"
+          "at_time": "2026-06-03 13:18:35"
         },
         {
           "bike_id": "KNZ0553",
@@ -11293,7 +11293,7 @@ window.dashboardData = {
             "lv2": 25.3,
             "lv3": 26.4
           },
-          "at_time": "2026-06-03 12:19:11"
+          "at_time": "2026-06-03 13:19:10"
         }
       ]
     },
@@ -11644,7 +11644,7 @@ window.dashboardData = {
       "lat": 36.569659,
       "lon": 136.660728,
       "has_gps": true,
-      "total_bikes": 7,
+      "total_bikes": 6,
       "max_alert_level": 3,
       "alert_bikes_count": 3,
       "bikes": [
@@ -11679,22 +11679,6 @@ window.dashboardData = {
             "lv3": 37.5
           },
           "at_time": "2026-06-03 12:49:03"
-        },
-        {
-          "bike_id": "KNZ0205",
-          "status": "利用中",
-          "model_name": "DD",
-          "voltage": 39.9,
-          "alert_level": 0,
-          "alert_level_name": "正常",
-          "thresholds": {
-            "at_error": 18.0,
-            "strong": 24.5,
-            "lv1": 35.1,
-            "lv2": 35.8,
-            "lv3": 37.5
-          },
-          "at_time": "2026-06-03 13:15:36"
         },
         {
           "bike_id": "KNZ0299",
@@ -11992,7 +11976,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:17:40"
+          "at_time": "2026-06-03 13:17:39"
         },
         {
           "bike_id": "KNZ0488",
@@ -12019,9 +12003,9 @@ window.dashboardData = {
       "lat": 36.564989,
       "lon": 136.646554,
       "has_gps": true,
-      "total_bikes": 3,
+      "total_bikes": 2,
       "max_alert_level": 3,
-      "alert_bikes_count": 3,
+      "alert_bikes_count": 2,
       "bikes": [
         {
           "bike_id": "KNZ0060",
@@ -12054,22 +12038,6 @@ window.dashboardData = {
             "lv3": 37.5
           },
           "at_time": "2026-06-03 12:24:34"
-        },
-        {
-          "bike_id": "KNZ0616",
-          "status": "利用中",
-          "model_name": "グリッター・EB",
-          "voltage": 26.0,
-          "alert_level": 1,
-          "alert_level_name": "Lv.3",
-          "thresholds": {
-            "at_error": 24.0,
-            "strong": 24.0,
-            "lv1": 24.6,
-            "lv2": 25.3,
-            "lv3": 26.4
-          },
-          "at_time": "2026-06-03 13:15:00"
         }
       ]
     },
@@ -12515,13 +12483,13 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:20:56"
+          "at_time": "2026-06-03 13:20:56"
         },
         {
           "bike_id": "KNZ0083",
           "status": "利用可能",
           "model_name": "DD",
-          "voltage": 37.2,
+          "voltage": 37.3,
           "alert_level": 1,
           "alert_level_name": "Lv.3",
           "thresholds": {
@@ -12531,7 +12499,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:17:53"
+          "at_time": "2026-06-03 13:17:54"
         },
         {
           "bike_id": "KNZ0102",
@@ -12585,7 +12553,7 @@ window.dashboardData = {
           "bike_id": "KNZ0381",
           "status": "利用可能",
           "model_name": "DD",
-          "voltage": 39.5,
+          "voltage": 39.6,
           "alert_level": 0,
           "alert_level_name": "正常",
           "thresholds": {
@@ -12595,7 +12563,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:17:56"
+          "at_time": "2026-06-03 13:17:56"
         },
         {
           "bike_id": "KNZ0393",
@@ -13005,7 +12973,7 @@ window.dashboardData = {
           "bike_id": "KNZ0085",
           "status": "一時駐輪",
           "model_name": "DD",
-          "voltage": 37.1,
+          "voltage": 37.0,
           "alert_level": 1,
           "alert_level_name": "Lv.3",
           "thresholds": {
@@ -13015,7 +12983,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 13:15:52"
+          "at_time": "2026-06-03 13:21:38"
         },
         {
           "bike_id": "KNZ0302",
@@ -13095,7 +13063,7 @@ window.dashboardData = {
             "lv2": 25.3,
             "lv3": 26.4
           },
-          "at_time": "2026-06-03 13:16:38"
+          "at_time": "2026-06-03 13:22:00"
         }
       ]
     },
@@ -13944,7 +13912,7 @@ window.dashboardData = {
           "bike_id": "KNZ0232",
           "status": "利用可能",
           "model_name": "DD",
-          "voltage": 35.3,
+          "voltage": 35.4,
           "alert_level": 2,
           "alert_level_name": "Lv.2",
           "thresholds": {
@@ -13954,7 +13922,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:19:52"
+          "at_time": "2026-06-03 13:19:58"
         },
         {
           "bike_id": "KNZ0268",
@@ -14118,7 +14086,7 @@ window.dashboardData = {
         },
         {
           "bike_id": "KNZ0548",
-          "status": "利用中",
+          "status": "利用可能",
           "model_name": "グリッター・EB",
           "voltage": 26.8,
           "alert_level": 0,
@@ -14130,7 +14098,7 @@ window.dashboardData = {
             "lv2": 25.3,
             "lv3": 26.4
           },
-          "at_time": "2026-06-03 13:16:43"
+          "at_time": "2026-06-03 13:17:14"
         },
         {
           "bike_id": "KNZ0574",
@@ -14338,7 +14306,7 @@ window.dashboardData = {
           "bike_id": "KNZ0118",
           "status": "利用可能",
           "model_name": "DD",
-          "voltage": 36.2,
+          "voltage": 36.3,
           "alert_level": 1,
           "alert_level_name": "Lv.3",
           "thresholds": {
@@ -14348,7 +14316,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:18:35"
+          "at_time": "2026-06-03 13:18:34"
         },
         {
           "bike_id": "KNZ0131",
@@ -14841,7 +14809,7 @@ window.dashboardData = {
           "bike_id": "KNZ0551",
           "status": "利用可能",
           "model_name": "グリッター・EB",
-          "voltage": 26.0,
+          "voltage": 26.1,
           "alert_level": 1,
           "alert_level_name": "Lv.3",
           "thresholds": {
@@ -14851,7 +14819,7 @@ window.dashboardData = {
             "lv2": 25.3,
             "lv3": 26.4
           },
-          "at_time": "2026-06-03 12:17:51"
+          "at_time": "2026-06-03 13:17:52"
         },
         {
           "bike_id": "KNZ0592",
@@ -14894,15 +14862,15 @@ window.dashboardData = {
       "lat": 36.563219,
       "lon": 136.654692,
       "has_gps": true,
-      "total_bikes": 16,
-      "max_alert_level": 3,
-      "alert_bikes_count": 7,
+      "total_bikes": 18,
+      "max_alert_level": 5,
+      "alert_bikes_count": 5,
       "bikes": [
         {
           "bike_id": "KNZ0115",
-          "status": "回収中",
+          "status": "利用可能",
           "model_name": "DD",
-          "voltage": 40.7,
+          "voltage": 40.0,
           "alert_level": 0,
           "alert_level_name": "正常",
           "thresholds": {
@@ -14912,15 +14880,15 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 13:15:34"
+          "at_time": "2026-06-03 13:21:11"
         },
         {
           "bike_id": "KNZ0119",
           "status": "利用可能",
           "model_name": "DD",
-          "voltage": 35.5,
-          "alert_level": 2,
-          "alert_level_name": "Lv.2",
+          "voltage": 41.2,
+          "alert_level": 0,
+          "alert_level_name": "正常",
           "thresholds": {
             "at_error": 18.0,
             "strong": 24.5,
@@ -14928,11 +14896,11 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:39:48"
+          "at_time": "2026-06-03 13:19:31"
         },
         {
           "bike_id": "KNZ0164",
-          "status": "回収中",
+          "status": "利用可能",
           "model_name": "DD",
           "voltage": 40.6,
           "alert_level": 0,
@@ -14944,13 +14912,13 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 13:16:23"
+          "at_time": "2026-06-03 13:18:08"
         },
         {
           "bike_id": "KNZ0196",
-          "status": "回収中",
+          "status": "利用可能",
           "model_name": "DD",
-          "voltage": 38.8,
+          "voltage": 38.9,
           "alert_level": 0,
           "alert_level_name": "正常",
           "thresholds": {
@@ -14960,7 +14928,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 13:16:10"
+          "at_time": "2026-06-03 13:18:15"
         },
         {
           "bike_id": "KNZ0216",
@@ -14980,7 +14948,7 @@ window.dashboardData = {
         },
         {
           "bike_id": "KNZ0280",
-          "status": "回収中",
+          "status": "利用可能",
           "model_name": "DD",
           "voltage": 35.1,
           "alert_level": 3,
@@ -14992,15 +14960,15 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 13:16:47"
+          "at_time": "2026-06-03 13:21:09"
         },
         {
           "bike_id": "KNZ0319",
           "status": "利用可能",
           "model_name": "DD",
-          "voltage": 34.3,
-          "alert_level": 3,
-          "alert_level_name": "Lv.1",
+          "voltage": 40.6,
+          "alert_level": 0,
+          "alert_level_name": "正常",
           "thresholds": {
             "at_error": 18.0,
             "strong": 24.5,
@@ -15008,15 +14976,15 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:19:26"
+          "at_time": "2026-06-03 13:19:23"
         },
         {
           "bike_id": "KNZ0333",
           "status": "利用可能",
           "model_name": "DD",
-          "voltage": 35.1,
-          "alert_level": 3,
-          "alert_level_name": "Lv.1",
+          "voltage": 40.7,
+          "alert_level": 0,
+          "alert_level_name": "正常",
           "thresholds": {
             "at_error": 18.0,
             "strong": 24.5,
@@ -15024,7 +14992,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:43:41"
+          "at_time": "2026-06-03 13:19:31"
         },
         {
           "bike_id": "KNZ0355",
@@ -15043,8 +15011,24 @@ window.dashboardData = {
           "at_time": "2026-06-03 12:29:03"
         },
         {
+          "bike_id": "KNZ0357",
+          "status": "利用中",
+          "model_name": "DD",
+          "voltage": 39.8,
+          "alert_level": 0,
+          "alert_level_name": "正常",
+          "thresholds": {
+            "at_error": 18.0,
+            "strong": 24.5,
+            "lv1": 35.1,
+            "lv2": 35.8,
+            "lv3": 37.5
+          },
+          "at_time": "2026-06-03 13:21:24"
+        },
+        {
           "bike_id": "KNZ0387",
-          "status": "回収中",
+          "status": "利用可能",
           "model_name": "DD",
           "voltage": 38.6,
           "alert_level": 0,
@@ -15056,13 +15040,13 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 13:16:23"
+          "at_time": "2026-06-03 13:17:41"
         },
         {
           "bike_id": "KNZ0425",
-          "status": "回収中",
+          "status": "利用可能",
           "model_name": "DD",
-          "voltage": 38.8,
+          "voltage": 38.7,
           "alert_level": 0,
           "alert_level_name": "正常",
           "thresholds": {
@@ -15072,11 +15056,11 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 13:16:30"
+          "at_time": "2026-06-03 13:18:12"
         },
         {
           "bike_id": "KNZ0497",
-          "status": "回収中",
+          "status": "利用可能",
           "model_name": "DD",
           "voltage": 40.7,
           "alert_level": 0,
@@ -15088,13 +15072,13 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 13:16:19"
+          "at_time": "2026-06-03 13:17:54"
         },
         {
           "bike_id": "KNZ0585",
-          "status": "回収中",
+          "status": "利用可能",
           "model_name": "グリッター・EB",
-          "voltage": 29.1,
+          "voltage": 29.0,
           "alert_level": 0,
           "alert_level_name": "正常",
           "thresholds": {
@@ -15104,11 +15088,11 @@ window.dashboardData = {
             "lv2": 25.3,
             "lv3": 26.4
           },
-          "at_time": "2026-06-03 13:16:53"
+          "at_time": "2026-06-03 13:18:05"
         },
         {
           "bike_id": "KNZ0611",
-          "status": "回収中",
+          "status": "利用可能",
           "model_name": "グリッター・EB",
           "voltage": 28.3,
           "alert_level": 0,
@@ -15120,11 +15104,27 @@ window.dashboardData = {
             "lv2": 25.3,
             "lv3": 26.4
           },
-          "at_time": "2026-06-03 13:16:26"
+          "at_time": "2026-06-03 13:18:13"
+        },
+        {
+          "bike_id": "KNZ0635",
+          "status": "利用中",
+          "model_name": "グリッター・EB",
+          "voltage": 23.7,
+          "alert_level": 5,
+          "alert_level_name": "AT異常",
+          "thresholds": {
+            "at_error": 24.0,
+            "strong": 24.0,
+            "lv1": 24.6,
+            "lv2": 25.3,
+            "lv3": 26.4
+          },
+          "at_time": "2026-06-03 13:21:24"
         },
         {
           "bike_id": "KNZ0645",
-          "status": "回収中",
+          "status": "利用可能",
           "model_name": "グリッター・EB",
           "voltage": 26.8,
           "alert_level": 0,
@@ -15136,13 +15136,13 @@ window.dashboardData = {
             "lv2": 25.3,
             "lv3": 26.4
           },
-          "at_time": "2026-06-03 13:16:48"
+          "at_time": "2026-06-03 13:21:20"
         },
         {
           "bike_id": "KNZ0670",
-          "status": "回収中",
+          "status": "利用可能",
           "model_name": "グリッター・EB",
-          "voltage": 25.1,
+          "voltage": 25.2,
           "alert_level": 2,
           "alert_level_name": "Lv.2",
           "thresholds": {
@@ -15152,7 +15152,7 @@ window.dashboardData = {
             "lv2": 25.3,
             "lv3": 26.4
           },
-          "at_time": "2026-06-03 13:16:59"
+          "at_time": "2026-06-03 13:18:19"
         }
       ]
     },
@@ -15399,7 +15399,7 @@ window.dashboardData = {
             "lv2": 25.3,
             "lv3": 26.4
           },
-          "at_time": "2026-06-03 12:17:44"
+          "at_time": "2026-06-03 13:17:45"
         },
         {
           "bike_id": "KNZ0629",
@@ -15575,7 +15575,7 @@ window.dashboardData = {
           "bike_id": "KNZ0500",
           "status": "利用可能",
           "model_name": "DD",
-          "voltage": 36.2,
+          "voltage": 36.1,
           "alert_level": 1,
           "alert_level_name": "Lv.3",
           "thresholds": {
@@ -15585,7 +15585,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:18:01"
+          "at_time": "2026-06-03 13:18:01"
         },
         {
           "bike_id": "KNZ0508",
@@ -15666,7 +15666,7 @@ window.dashboardData = {
       "bikes": [
         {
           "bike_id": "KNZ0158",
-          "status": "利用可能",
+          "status": "予約中",
           "model_name": "DD",
           "voltage": 35.3,
           "alert_level": 2,
@@ -15729,9 +15729,9 @@ window.dashboardData = {
           "bike_id": "KNZ0419",
           "status": "利用可能",
           "model_name": "DD",
-          "voltage": 35.8,
-          "alert_level": 2,
-          "alert_level_name": "Lv.2",
+          "voltage": 35.9,
+          "alert_level": 1,
+          "alert_level_name": "Lv.3",
           "thresholds": {
             "at_error": 18.0,
             "strong": 24.5,
@@ -15739,7 +15739,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:18:47"
+          "at_time": "2026-06-03 13:18:52"
         },
         {
           "bike_id": "KNZ0421",
@@ -15941,7 +15941,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:17:21"
+          "at_time": "2026-06-03 13:17:21"
         },
         {
           "bike_id": "KNZ0509",
@@ -16124,7 +16124,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:18:42"
+          "at_time": "2026-06-03 13:18:42"
         },
         {
           "bike_id": "KNZ0390",
@@ -16391,7 +16391,7 @@ window.dashboardData = {
         },
         {
           "bike_id": "KNZ0575",
-          "status": "利用可能",
+          "status": "予約中",
           "model_name": "グリッター・EB",
           "voltage": 28.3,
           "alert_level": 0,
@@ -16403,7 +16403,7 @@ window.dashboardData = {
             "lv2": 25.3,
             "lv3": 26.4
           },
-          "at_time": "2026-06-03 12:19:55"
+          "at_time": "2026-06-03 13:19:55"
         }
       ]
     },
@@ -16415,8 +16415,8 @@ window.dashboardData = {
       "lon": 136.6265,
       "has_gps": true,
       "total_bikes": 5,
-      "max_alert_level": 2,
-      "alert_bikes_count": 2,
+      "max_alert_level": 1,
+      "alert_bikes_count": 1,
       "bikes": [
         {
           "bike_id": "KNZ0240",
@@ -16454,9 +16454,9 @@ window.dashboardData = {
           "bike_id": "KNZ0335",
           "status": "利用可能",
           "model_name": "DD",
-          "voltage": 35.4,
-          "alert_level": 2,
-          "alert_level_name": "Lv.2",
+          "voltage": 40.7,
+          "alert_level": 0,
+          "alert_level_name": "正常",
           "thresholds": {
             "at_error": 18.0,
             "strong": 24.5,
@@ -16464,7 +16464,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:21:29"
+          "at_time": "2026-06-03 13:21:29"
         },
         {
           "bike_id": "KNZ0374",
@@ -16638,7 +16638,7 @@ window.dashboardData = {
       "bikes": [
         {
           "bike_id": "KNZ0250",
-          "status": "配置中",
+          "status": "利用可能",
           "model_name": "DD",
           "voltage": 36.2,
           "alert_level": 1,
@@ -16650,7 +16650,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:20:23"
+          "at_time": "2026-06-03 13:20:27"
         }
       ]
     },
@@ -16968,7 +16968,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:21:10"
+          "at_time": "2026-06-03 13:21:10"
         },
         {
           "bike_id": "KNZ0396",
@@ -16990,7 +16990,7 @@ window.dashboardData = {
           "bike_id": "KNZ0630",
           "status": "利用可能",
           "model_name": "グリッター・EB",
-          "voltage": 28.5,
+          "voltage": 28.6,
           "alert_level": 0,
           "alert_level_name": "正常",
           "thresholds": {
@@ -17000,7 +17000,7 @@ window.dashboardData = {
             "lv2": 25.3,
             "lv3": 26.4
           },
-          "at_time": "2026-06-03 12:17:09"
+          "at_time": "2026-06-03 13:17:09"
         },
         {
           "bike_id": "KNZ0683",
@@ -17064,7 +17064,7 @@ window.dashboardData = {
           "bike_id": "KNZ0323",
           "status": "利用可能",
           "model_name": "DD",
-          "voltage": 40.7,
+          "voltage": 40.8,
           "alert_level": 0,
           "alert_level_name": "正常",
           "thresholds": {
@@ -17074,7 +17074,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:17:12"
+          "at_time": "2026-06-03 13:17:12"
         },
         {
           "bike_id": "KNZ0475",
@@ -17138,7 +17138,7 @@ window.dashboardData = {
             "lv2": 25.3,
             "lv3": 26.4
           },
-          "at_time": "2026-06-03 12:18:09"
+          "at_time": "2026-06-03 13:18:09"
         }
       ]
     },
@@ -17194,7 +17194,7 @@ window.dashboardData = {
       "lat": 36.579723,
       "lon": 136.649338,
       "has_gps": true,
-      "total_bikes": 6,
+      "total_bikes": 5,
       "max_alert_level": 5,
       "alert_bikes_count": 3,
       "bikes": [
@@ -17213,22 +17213,6 @@ window.dashboardData = {
             "lv3": 37.5
           },
           "at_time": "2026-06-03 12:37:50"
-        },
-        {
-          "bike_id": "KNZ0400",
-          "status": "利用可能",
-          "model_name": "DD",
-          "voltage": 39.9,
-          "alert_level": 0,
-          "alert_level_name": "正常",
-          "thresholds": {
-            "at_error": 18.0,
-            "strong": 24.5,
-            "lv1": 35.1,
-            "lv2": 35.8,
-            "lv3": 37.5
-          },
-          "at_time": "2026-06-03 12:56:18"
         },
         {
           "bike_id": "KNZ0577",
@@ -17264,7 +17248,7 @@ window.dashboardData = {
         },
         {
           "bike_id": "KNZ0652",
-          "status": "利用可能",
+          "status": "予約中",
           "model_name": "グリッター・EB",
           "voltage": 28.6,
           "alert_level": 0,
@@ -17366,7 +17350,7 @@ window.dashboardData = {
             "lv2": 35.8,
             "lv3": 37.5
           },
-          "at_time": "2026-06-03 12:20:38"
+          "at_time": "2026-06-03 13:20:38"
         }
       ]
     },
@@ -17631,7 +17615,7 @@ window.dashboardData = {
       "lat": 36.581424,
       "lon": 136.632034,
       "has_gps": true,
-      "total_bikes": 3,
+      "total_bikes": 2,
       "max_alert_level": 0,
       "alert_bikes_count": 0,
       "bikes": [
@@ -17650,22 +17634,6 @@ window.dashboardData = {
             "lv3": 26.4
           },
           "at_time": "2026-06-03 12:23:55"
-        },
-        {
-          "bike_id": "KNZ0654",
-          "status": "利用可能",
-          "model_name": "グリッター・EB",
-          "voltage": 28.8,
-          "alert_level": 0,
-          "alert_level_name": "正常",
-          "thresholds": {
-            "at_error": 24.0,
-            "strong": 24.0,
-            "lv1": 24.6,
-            "lv2": 25.3,
-            "lv3": 26.4
-          },
-          "at_time": "2026-06-03 12:53:58"
         },
         {
           "bike_id": "KNZ0687",
@@ -17898,6 +17866,67 @@ window.dashboardData = {
       ]
     },
     {
+      "port_name": "E13_臨時 角間キャンパス北地区駐車場",
+      "area_name": "KNZ_金沢市公共シェアサイクルまちのり事務局",
+      "station_id": "00001685",
+      "lat": 36.55118,
+      "lon": 136.71219,
+      "has_gps": true,
+      "total_bikes": 3,
+      "max_alert_level": 5,
+      "alert_bikes_count": 1,
+      "bikes": [
+        {
+          "bike_id": "KNZ0559",
+          "status": "利用可能",
+          "model_name": "グリッター・EB",
+          "voltage": 23.2,
+          "alert_level": 5,
+          "alert_level_name": "AT異常",
+          "thresholds": {
+            "at_error": 24.0,
+            "strong": 24.0,
+            "lv1": 24.6,
+            "lv2": 25.3,
+            "lv3": 26.4
+          },
+          "at_time": "2026-06-03 13:20:53"
+        },
+        {
+          "bike_id": "KNZ0576",
+          "status": "利用可能",
+          "model_name": "グリッター・EB",
+          "voltage": 28.1,
+          "alert_level": 0,
+          "alert_level_name": "正常",
+          "thresholds": {
+            "at_error": 24.0,
+            "strong": 24.0,
+            "lv1": 24.6,
+            "lv2": 25.3,
+            "lv3": 26.4
+          },
+          "at_time": "2026-06-03 12:58:07"
+        },
+        {
+          "bike_id": "KNZ0669",
+          "status": "利用可能",
+          "model_name": "グリッター・EB",
+          "voltage": 27.1,
+          "alert_level": 0,
+          "alert_level_name": "正常",
+          "thresholds": {
+            "at_error": 24.0,
+            "strong": 24.0,
+            "lv1": 24.6,
+            "lv2": 25.3,
+            "lv3": 26.4
+          },
+          "at_time": "2026-06-03 13:22:00"
+        }
+      ]
+    },
+    {
       "port_name": "82.片町・新天地商店街",
       "area_name": "KNZ_金沢市公共シェアサイクルまちのり事務局",
       "station_id": "00004103",
@@ -17939,35 +17968,6 @@ window.dashboardData = {
             "lv3": 26.4
           },
           "at_time": "2026-06-03 12:34:23"
-        }
-      ]
-    },
-    {
-      "port_name": "E13_臨時 角間キャンパス北地区駐車場",
-      "area_name": "KNZ_金沢市公共シェアサイクルまちのり事務局",
-      "station_id": "00001685",
-      "lat": 36.55118,
-      "lon": 136.71219,
-      "has_gps": true,
-      "total_bikes": 1,
-      "max_alert_level": 0,
-      "alert_bikes_count": 0,
-      "bikes": [
-        {
-          "bike_id": "KNZ0576",
-          "status": "利用可能",
-          "model_name": "グリッター・EB",
-          "voltage": 28.1,
-          "alert_level": 0,
-          "alert_level_name": "正常",
-          "thresholds": {
-            "at_error": 24.0,
-            "strong": 24.0,
-            "lv1": 24.6,
-            "lv2": 25.3,
-            "lv3": 26.4
-          },
-          "at_time": "2026-06-03 12:58:07"
         }
       ]
     },
@@ -18670,9 +18670,9 @@ window.dashboardData = {
           "bike_id": "CKM011",
           "status": "利用可能",
           "model_name": "その他",
-          "voltage": 29.3,
-          "alert_level": 3,
-          "alert_level_name": "Lv.1",
+          "voltage": 28.7,
+          "alert_level": 4,
+          "alert_level_name": "電圧閾値",
           "thresholds": {
             "at_error": 24.8,
             "strong": 28.8,
@@ -18680,13 +18680,13 @@ window.dashboardData = {
             "lv2": 30.0,
             "lv3": 30.8
           },
-          "at_time": "2026-06-03 12:19:34"
+          "at_time": "2026-06-03 13:19:34"
         },
         {
           "bike_id": "CKM020",
           "status": "利用可能",
           "model_name": "その他",
-          "voltage": 28.4,
+          "voltage": 28.5,
           "alert_level": 3,
           "alert_level_name": "Lv.1",
           "thresholds": {
@@ -18696,7 +18696,7 @@ window.dashboardData = {
             "lv2": 29.5,
             "lv3": 30.3
           },
-          "at_time": "2026-06-03 12:22:17"
+          "at_time": "2026-06-03 13:22:17"
         },
         {
           "bike_id": "CKM024",
@@ -19347,13 +19347,13 @@ window.dashboardData = {
             "lv2": 29.0,
             "lv3": 29.8
           },
-          "at_time": "2026-06-03 12:17:41"
+          "at_time": "2026-06-03 13:17:41"
         },
         {
           "bike_id": "UED024",
           "status": "利用可能",
           "model_name": "その他",
-          "voltage": 28.5,
+          "voltage": 28.6,
           "alert_level": 4,
           "alert_level_name": "電圧閾値",
           "thresholds": {
@@ -19363,7 +19363,7 @@ window.dashboardData = {
             "lv2": 29.8,
             "lv3": 30.6
           },
-          "at_time": "2026-06-03 12:20:23"
+          "at_time": "2026-06-03 13:20:23"
         },
         {
           "bike_id": "UED026",
@@ -19415,9 +19415,9 @@ window.dashboardData = {
         },
         {
           "bike_id": "UED035",
-          "status": "一時駐輪",
+          "status": "利用可能",
           "model_name": "その他",
-          "voltage": 28.3,
+          "voltage": 28.2,
           "alert_level": 4,
           "alert_level_name": "電圧閾値",
           "thresholds": {
@@ -19427,13 +19427,13 @@ window.dashboardData = {
             "lv2": 29.5,
             "lv3": 30.3
           },
-          "at_time": "2026-06-03 13:16:53"
+          "at_time": "2026-06-03 13:20:40"
         },
         {
           "bike_id": "UED036",
           "status": "利用可能",
           "model_name": "その他",
-          "voltage": 27.3,
+          "voltage": 27.2,
           "alert_level": 4,
           "alert_level_name": "電圧閾値",
           "thresholds": {
@@ -19443,7 +19443,7 @@ window.dashboardData = {
             "lv2": 29.2,
             "lv3": 30.0
           },
-          "at_time": "2026-06-03 12:20:55"
+          "at_time": "2026-06-03 13:20:55"
         },
         {
           "bike_id": "UED042",
@@ -19491,13 +19491,13 @@ window.dashboardData = {
             "lv2": 29.7,
             "lv3": 30.5
           },
-          "at_time": "2026-06-03 12:17:42"
+          "at_time": "2026-06-03 13:17:42"
         },
         {
           "bike_id": "UED056",
           "status": "利用可能",
           "model_name": "その他",
-          "voltage": 28.2,
+          "voltage": 28.3,
           "alert_level": 4,
           "alert_level_name": "電圧閾値",
           "thresholds": {
@@ -19507,7 +19507,7 @@ window.dashboardData = {
             "lv2": 29.7,
             "lv3": 30.5
           },
-          "at_time": "2026-06-03 12:19:47"
+          "at_time": "2026-06-03 13:19:47"
         },
         {
           "bike_id": "UED057",
@@ -19924,7 +19924,7 @@ window.dashboardData = {
             "lv2": 30.2,
             "lv3": 31.0
           },
-          "at_time": "2026-06-03 12:22:16"
+          "at_time": "2026-06-03 13:22:15"
         }
       ]
     },
@@ -19969,7 +19969,7 @@ window.dashboardData = {
             "lv2": 30.4,
             "lv3": 31.2
           },
-          "at_time": "2026-06-03 12:20:10"
+          "at_time": "2026-06-03 13:20:10"
         }
       ]
     },
@@ -19998,7 +19998,7 @@ window.dashboardData = {
             "lv2": 30.1,
             "lv3": 30.9
           },
-          "at_time": "2026-06-03 12:21:53"
+          "at_time": "2026-06-03 13:21:53"
         }
       ]
     },
@@ -20687,9 +20687,9 @@ window.dashboardData = {
       "lat": 36.39827,
       "lon": 138.2458,
       "has_gps": true,
-      "total_bikes": 1,
+      "total_bikes": 2,
       "max_alert_level": 4,
-      "alert_bikes_count": 1,
+      "alert_bikes_count": 2,
       "bikes": [
         {
           "bike_id": "UED086",
@@ -20706,25 +20706,12 @@ window.dashboardData = {
             "lv3": 30.6
           },
           "at_time": "2026-06-03 13:04:51"
-        }
-      ]
-    },
-    {
-      "port_name": "U-09.イオンスタイル上田",
-      "area_name": "SNN_上田市千曲市広域シェアサイクル",
-      "station_id": "00000811",
-      "lat": 36.39241,
-      "lon": 138.25809,
-      "has_gps": true,
-      "total_bikes": 1,
-      "max_alert_level": 4,
-      "alert_bikes_count": 1,
-      "bikes": [
+        },
         {
           "bike_id": "UED088",
           "status": "利用中",
           "model_name": "その他",
-          "voltage": 28.8,
+          "voltage": 28.5,
           "alert_level": 4,
           "alert_level_name": "電圧閾値",
           "thresholds": {
@@ -20734,7 +20721,7 @@ window.dashboardData = {
             "lv2": 30.0,
             "lv3": 30.8
           },
-          "at_time": "2026-06-03 13:14:33"
+          "at_time": "2026-06-03 13:22:23"
         }
       ]
     },
@@ -20981,7 +20968,7 @@ window.dashboardData = {
           "bike_id": "IZM014",
           "status": "利用可能",
           "model_name": "その他",
-          "voltage": 28.3,
+          "voltage": 28.4,
           "alert_level": 4,
           "alert_level_name": "電圧閾値",
           "thresholds": {
@@ -20991,7 +20978,7 @@ window.dashboardData = {
             "lv2": 29.7,
             "lv3": 30.5
           },
-          "at_time": "2026-06-03 12:21:28"
+          "at_time": "2026-06-03 13:21:28"
         },
         {
           "bike_id": "IZM020",
@@ -21286,7 +21273,7 @@ window.dashboardData = {
           "bike_id": "MTE039",
           "status": "利用可能",
           "model_name": "その他",
-          "voltage": 28.1,
+          "voltage": 28.0,
           "alert_level": 4,
           "alert_level_name": "電圧閾値",
           "thresholds": {
@@ -21296,7 +21283,7 @@ window.dashboardData = {
             "lv2": 29.4,
             "lv3": 30.2
           },
-          "at_time": "2026-06-03 12:20:46"
+          "at_time": "2026-06-03 13:20:46"
         },
         {
           "bike_id": "MTE050",
@@ -21347,7 +21334,7 @@ window.dashboardData = {
           "bike_id": "MTE009",
           "status": "利用可能",
           "model_name": "その他",
-          "voltage": 28.3,
+          "voltage": 28.4,
           "alert_level": 4,
           "alert_level_name": "電圧閾値",
           "thresholds": {
@@ -21357,7 +21344,7 @@ window.dashboardData = {
             "lv2": 29.8,
             "lv3": 30.6
           },
-          "at_time": "2026-06-03 12:18:06"
+          "at_time": "2026-06-03 13:18:07"
         },
         {
           "bike_id": "MTE019",
@@ -21389,13 +21376,13 @@ window.dashboardData = {
             "lv2": 27.3,
             "lv3": 28.1
           },
-          "at_time": "2026-06-03 12:18:25"
+          "at_time": "2026-06-03 13:18:25"
         },
         {
           "bike_id": "MTE031",
           "status": "利用可能",
           "model_name": "その他",
-          "voltage": 29.1,
+          "voltage": 29.2,
           "alert_level": 3,
           "alert_level_name": "Lv.1",
           "thresholds": {
@@ -21405,7 +21392,7 @@ window.dashboardData = {
             "lv2": 30.1,
             "lv3": 30.9
           },
-          "at_time": "2026-06-03 12:17:52"
+          "at_time": "2026-06-03 13:17:52"
         }
       ]
     },
@@ -21501,9 +21488,9 @@ window.dashboardData = {
           "bike_id": "MTE005",
           "status": "利用可能",
           "model_name": "その他",
-          "voltage": 28.4,
-          "alert_level": 4,
-          "alert_level_name": "電圧閾値",
+          "voltage": 28.5,
+          "alert_level": 3,
+          "alert_level_name": "Lv.1",
           "thresholds": {
             "at_error": 24.4,
             "strong": 28.4,
@@ -21511,13 +21498,13 @@ window.dashboardData = {
             "lv2": 29.6,
             "lv3": 30.4
           },
-          "at_time": "2026-06-03 12:20:58"
+          "at_time": "2026-06-03 13:20:58"
         },
         {
           "bike_id": "MTE017",
           "status": "利用可能",
           "model_name": "その他",
-          "voltage": 28.2,
+          "voltage": 28.1,
           "alert_level": 4,
           "alert_level_name": "電圧閾値",
           "thresholds": {
@@ -21527,7 +21514,7 @@ window.dashboardData = {
             "lv2": 29.6,
             "lv3": 30.4
           },
-          "at_time": "2026-06-03 12:22:40"
+          "at_time": "2026-06-03 13:22:41"
         },
         {
           "bike_id": "MTE035",
@@ -22671,7 +22658,7 @@ window.dashboardData = {
             "lv2": 24.7,
             "lv3": 26.3
           },
-          "at_time": "2026-06-03 12:19:38"
+          "at_time": "2026-06-03 13:19:38"
         },
         {
           "bike_id": "TRG083",
@@ -22767,7 +22754,7 @@ window.dashboardData = {
             "lv2": 24.7,
             "lv3": 26.3
           },
-          "at_time": "2026-06-03 12:20:38"
+          "at_time": "2026-06-03 13:20:39"
         },
         {
           "bike_id": "TRG093",
@@ -23228,7 +23215,7 @@ window.dashboardData = {
           "bike_id": "TRG070",
           "status": "回収中",
           "model_name": "グリッター・EB",
-          "voltage": 26.6,
+          "voltage": 26.7,
           "alert_level": 0,
           "alert_level_name": "正常",
           "thresholds": {
@@ -23238,7 +23225,7 @@ window.dashboardData = {
             "lv2": 24.7,
             "lv3": 26.3
           },
-          "at_time": "2026-06-03 13:18:04"
+          "at_time": "2026-06-03 13:22:24"
         },
         {
           "bike_id": "TRG090",
