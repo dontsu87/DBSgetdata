@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>バッテリー低下車両マップ - 使い方マニュアル</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #007aff;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --border-color: #334155;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-red: #ef4444;
+            --accent-purple: #8b5cf6;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        section {
+            background-color: var(--bg-card);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        section h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            border-left: 5px solid var(--primary);
+            padding-left: 12px;
+            margin-bottom: 20px;
+            color: #ffffff;
+        }
+
+        h3 {
+            font-size: 1.15rem;
+            margin: 20px 0 10px 0;
+            color: #60a5fa;
+        }
+
+        p {
+            margin-bottom: 16px;
+            font-size: 1rem;
+            color: #cbd5e1;
+        }
+
+        ul, ol {
+            margin-left: 20px;
+            margin-bottom: 20px;
+            color: #cbd5e1;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .app-image-container {
+            text-align: center;
+            margin: 24px 0;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            background-color: #020617;
+        }
+
+        .app-image {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .image-caption {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            padding: 10px;
+            background-color: rgba(15, 23, 42, 0.6);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .grid-legend {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .legend-card {
+            background-color: rgba(15, 23, 42, 0.4);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .color-indicator {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid #ffffff;
+            flex-shrink: 0;
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+        }
+
+        .legend-info h4 {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #ffffff;
+        }
+
+        .legend-info p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .highlight-box {
+            background-color: rgba(59, 130, 246, 0.1);
+            border-left: 4px solid var(--primary);
+            padding: 16px;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0;
+        }
+
+        .highlight-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 6px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            border-radius: 4px;
+            color: #ffffff;
+        }
+
+        .table-params {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.95rem;
+        }
+
+        .table-params th, .table-params td {
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            text-align: left;
+        }
+
+        .table-params th {
+            background-color: rgba(15, 23, 42, 0.6);
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        .table-params td strong {
+            color: #60a5fa;
+        }
+
+        /* 管理者用パラメータ説明は初期状態で非表示 */
+        #url-params {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 10px;
+            }
+
+            header {
+                margin-bottom: 30px;
+            }
+
+            header h1 {
+                font-size: 1.8rem;
+            }
+
+            section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔋 バッテリー低下車両マップ</h1>
+            <p>作業員用システム 使い方マニュアル</p>
+        </header>
+
+        <section id="introduction">
+            <h2>1. システム概要</h2>
+            <p>本システムは、シェアサイクルポート内のバッテリーが低下している車両（交換対象車両）をリアルタイムにマップ上で可視化し、現場作業員のバッテリー交換業務を効率化するためのツールです。</p>
+            <div class="highlight-box">
+                <p><strong>💡 主な特徴:</strong></p>
+                <ul>
+                    <li>深刻度に応じた色付きのピンでポートを表示。</li>
+                    <li>バッテリー低下車両を多く含むポートを視覚的に優先判別可能。</li>
+                    <li>現場の作業に適した大ぶりのタッチインターフェース。</li>
+                    <li>スマートフォンの画面サイズに合わせた自動レイアウト切り替えに対応。</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="screen-view">
+            <h2>2. 画面の見方</h2>
+            <p>アプリの基本画面構成は以下の通りです。</p>
+            <div class="app-image-container">
+                <img src="images/manual_app_screen.png" alt="メイン画面キャプチャ" class="app-image">
+                <div class="image-caption">図：バッテリー低下車両マップのメイン画面</div>
+            </div>
+            <ul>
+                <li><strong>ヘッダー:</strong> アプリタイトルとデータ最終更新時間が表示されます。「❓ ヘルプ」ボタンからこのマニュアルをいつでも確認できます。</li>
+                <li><strong>エリア選択タブ:</strong> 担当するエリアを選択して、表示するポートを切り替えます。
+                    <br><small style="color: var(--text-muted);">※管理者用の表示モードでのみ表示されます。</small>
+                </li>
+                <li><strong>サマリーパネル:</strong> 選択中エリア内の「交換対象ポート数」「交換必要車両台数」および、車種と警告レベルごとのマトリクス表が表示されます。</li>
+                <li><strong>マップ:</strong> ポートの位置にピンが表示されます。ピン内の数字は、現在適用されているフィルターで抽出された「バッテリー交換対象の車両台数」を示します。</li>
+            </ul>
+        </section>
+
+        <section id="layout-types">
+            <h2>3. レイアウトの自動切り替え (スマホ対応)</h2>
+            <p>本システムはレスポンシブデザインを採用しており、使用している端末の画面サイズに応じて最適な表示へ自動的に切り替わります。</p>
+            
+            <h3>💻 PC・タブレット表示 (デスクトップレイアウト)</h3>
+            <p>画面の左右に「サマリーパネル」「凡例（フィルター）」「車両状態フィルター」「ベースマップ切り替えパネル」が常時配置され、広いマップと同時に多くの情報を一度に確認できます。</p>
+
+            <h3>📱 スマートフォン表示 (モバイルレイアウト)</h3>
+            <p>画面サイズ（横幅768px以下）を検知すると、現場で片手でも操作しやすい専用 of モバイルUIに自動で切り替わります。</p>
+            <ul>
+                <li>マップを広く見せるため、<strong>「サマリーパネル」「凡例」「各種フィルター」は初期状態で画面外へ折りたたまれています。</strong></li>
+                <li>画面下部に配置される「📊 サマリー」「🔋 バッテリー」「🚲 車両状態」「🗺️ 地図」の各ボタンをタップすることで、下からスライドするドロワー形式で各機能が展開されます。</li>
+                <li>ドロワー右上にある「✕」ボタンをタップすると、再び折りたたまれます。</li>
+            </ul>
+        </section>
+
+        <section id="battery-levels">
+            <h2>4. バッテリー深刻度（凡例）</h2>
+            <p>ピンの色は、そのポート内で「最も深刻なバッテリー状態の車両」のレベルに基づいています。</p>
+            <div class="grid-legend">
+                <div class="legend-card">
+                    <div class="color-indicator" style="background-color: #4c1d95;"></div>
+                    <div class="legend-info">
+                        <h4>極低 (黒紫)</h4>
+                        <p>AT異常など、極めて重大なエラーまたは最優先の交換対象車両です。</p>
+                    </div>
+                </div>
+                <div class="legend-card">
+                    <div class="color-indicator" style="background-color: #ef4444;"></div>
+                    <div class="legend-info">
+                        <h4>低 (赤系統)</h4>
+                        <p>電圧閾値を下回っており、速やかな交換が必要な車両です。</p>
+                    </div>
+                </div>
+                <div class="legend-card">
+                    <div class="color-indicator" style="background-color: #f97316;"></div>
+                    <div class="legend-info">
+                        <h4>Lv.1 (橙系統)</h4>
+                        <p>バッテリー容量が低下している車両です。</p>
+                    </div>
+                </div>
+                <div class="legend-card">
+                    <div class="color-indicator" style="background-color: #eab308;"></div>
+                    <div class="legend-info">
+                        <h4>Lv.2 (黄系統)</h4>
+                        <p>注意が必要なレベルの車両です。</p>
+                    </div>
+                </div>
+                <div class="legend-card">
+                    <div class="color-indicator" style="background-color: #22c55e;"></div>
+                    <div class="legend-info">
+                        <h4>Lv.3 (薄緑系統)</h4>
+                        <p>交換基準の初期段階にある車両です。</p>
+                    </div>
+                </div>
+                <div class="legend-card">
+                    <div class="color-indicator" style="background-color: #94a3b8;"></div>
+                    <div class="legend-info">
+                        <h4>正常 (グレー)</h4>
+                        <p>バッテリーが十分にある状態の車両です。</p>
+                    </div>
+                </div>
+                <div class="legend-card">
+                    <div class="color-indicator" style="background-color: #f8fafc; border: 1.5px dashed #cbd5e1;"></div>
+                    <div class="legend-info">
+                        <h4>自転車0台 (薄グレー)</h4>
+                        <p>ポート内に車両が1台も存在しない状態です。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="popup-detail">
+            <h2>5. ポート詳細ポップアップ</h2>
+            <p>マップ上のピンをクリック（タップ）すると、対象ポートの車両情報が詳細カードとして表示されます。</p>
+            <div class="app-image-container">
+                <img src="images/manual_popup_detail.png" alt="ポップアップ詳細キャプチャ" class="app-image">
+                <div class="image-caption">図：ピンをクリックしたときに表示されるポート詳細</div>
+            </div>
+            <p>詳細ポップアップには以下の情報が表示されます：</p>
+            <ol>
+                <li><strong>ポート名と総駐輪台数:</strong> ポートの正式名称と現在駐輪されている全車両の台数。</li>
+                <li><strong>対象車両リスト:</strong> バッテリーが低下している車両の「自転車ID」「状態（利用可能 / ロック中など）」「車種名」、および現在の「電圧(V)」が一覧表示されます。</li>
+            </ol>
+        </section>
+
+        <section id="filters">
+            <h2>6. フィルター機能と便利な操作</h2>
+            <p>現場での効率的な作業をサポートするため、各種フィルターとマップ補助機能が搭載されています。</p>
+            <ul>
+                <li><strong>凡例（深刻度）フィルター:</strong> 画面左下の凡例パネルにあるチェックボックスを切り替えることで、特定の深刻度を持つポートのみをマップ上に抽出できます。</li>
+                <li id="help-status-filter"><strong>車両状態フィルター:</strong>
+                    <br>画面右上（スマホは下部メニューの「車両状態」ボタン）の「🚲 車両状態 (フィルター)」を展開し、車両状態（利用可能、利用中、ロック中など）で絞り込めます。
+                    <br><small style="color: var(--text-muted);">※管理者モード(kanriall)またはエリア指定モード(area=...)のときに表示・操作可能です。それ以外のモードでは「利用可能」状態のみに固定され、フィルター設定は非表示になります。</small>
+                </li>
+                <li><strong>ベースマップの切り替え:</strong> Googleマップ（道路/衛星写真）、国土地理院地図（標準/淡色）を自由に切り替えて、周辺の建物や道路環境を確認できます。</li>
+                <li><strong>GPS現在地表示:</strong> 画面右下の「現在地」ボタンを押すことで、現在自分のいる位置を中心にマップが移動します（位置情報の許可が必要です）。</li>
+            </ul>
+        </section>
+
+        <section id="notes">
+            <h2>7. 注意事項</h2>
+            <div class="highlight-box" style="border-left-color: var(--accent-purple);">
+                <p><strong>⚠️ データの更新間隔について:</strong></p>
+                <p>マップに表示される元データは、タスクスケジューラにより<strong>5分間隔</strong>で自動アップロードされています。アプリ自体は2分ごとに最新のキャッシュファイルを読み込みに行きますが、元データの更新タイミングにより最大で約5分間のタイムラグが発生する可能性があります。ヘッダーの「最終更新」時刻をご確認の上、現場での最終確認を行ってください。</p>
+                
+                <p><strong>🔄 自動描画更新の一時保留制御:</strong></p>
+                <p>アプリはバックグラウンドで定期的にデータ読み込みを行いますが、ユーザーが「地図をスクロール・ズーム操作している間」や、「ピンの詳細ポップアップを開いている間」は、作業を妨げないようにマップの自動再描画を一時的に保留します。操作を終えて約5秒後に保留されていた最新のデータが適用されます。</p>
+            </div>
+        </section>
+
+        <!-- 管理者用(kanriall)パラメータ時のみ動的に表示 -->
+        <section id="url-params">
+            <h2>8. URLパラメータによる表示切り替え（システム全体仕様）</h2>
+            <p>本システムは、アクセスするURLの末尾に付与するパラメータ（<code>?area=...</code> など）によって、表示モードや機能が自動的に切り替わります。</p>
+            
+            <table class="table-params">
+                <thead>
+                    <tr>
+                        <th style="width: 25%;">モード</th>
+                        <th style="width: 35%;">URLパラメータの例</th>
+                        <th style="width: 40%;">表示と動作の仕様</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>パラメータ無し</strong></td>
+                        <td><code>index.html</code></td>
+                        <td>データは読み込まれず、空のマップが表示されます。必ずパラメータを付与してアクセスしてください。</td>
+                    </tr>
+                    <tr>
+                        <td><strong>エリア制限モード</strong></td>
+                        <td><code>index.html?area=KNZ</code></td>
+                        <td>指定されたエリア（例：金沢）のピンのみを表示します。画面上部のエリア選択タブは非表示になりますが、右上の車両状態フィルターは利用可能です。</td>
+                    </tr>
+                    <tr>
+                        <td><strong>金沢大学サポーターモード</strong></td>
+                        <td><code>index.html?kindai</code></td>
+                        <td>金沢大学エリアに強制固定され、対象となる特定の8ポートのみが表示されます。車両フィルタは「利用可能」に固定されます。</td>
+                    </tr>
+                    <tr>
+                        <td><strong>車両状態制限モード</strong></td>
+                        <td><code>index.html?status=available</code></td>
+                        <td>車両状態フィルターが非表示となり、自動的に「利用可能」状態の車両のみに制限されてマップ上にピンが表示されます。</td>
+                    </tr>
+                    <tr>
+                        <td><strong>管理者モード (kanriall)</strong></td>
+                        <td><code>index.html?kanriall</code></td>
+                        <td><strong>すべての機能が解放されます。</strong> 画面上部にエリア選択タブが表示され、自由に表示エリアを切り替えられます。また、右上の車両状態フィルターも利用可能です。</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const params = new URLSearchParams(window.location.search);
+            
+            // URLに ?kanriall を含む場合のみパラメータ詳細セクションを表示する
+            if (params.has('kanriall')) {
+                const urlParamsSection = document.getElementById('url-params');
+                if (urlParamsSection) {
+                    urlParamsSection.style.display = 'block';
+                }
+            }
+            
+            // 車両状態フィルターが使えない（無効）モードの場合は、説明項目自体を非表示にする
+            if (!params.has('kanriall') && !params.has('area')) {
+                const statusFilterHelp = document.getElementById('help-status-filter');
+                if (statusFilterHelp) {
+                    statusFilterHelp.style.display = 'none';
+                }
+            }
+        });
+    </script>
+</body>
+</html>

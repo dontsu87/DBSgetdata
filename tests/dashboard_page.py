@@ -21,8 +21,18 @@ class MapDashboardPage:
         self.status_filter_panel = page.locator("#status-filter-panel")
         self.status_checkboxes = page.locator(".status-filter")
         
+        # モバイル表示用要素セレクター
+        self.legend_panel = page.locator("#map-legend-panel")
+        self.basemap_panel = page.locator("#basemap-panel")
+        self.mobile_control_bar = page.locator("#mobile-control-bar")
+        self.btn_summary_mobile = page.locator(".btn-summary")
+        self.btn_legend_mobile = page.locator(".btn-legend")
+        self.btn_status_mobile = page.locator(".btn-status")
+        self.btn_basemap_mobile = page.locator(".btn-basemap")
+        
         # LeafletのDivIconマーカー (カスタムHTML要素として描画されます)
         self.markers = page.locator(".port-marker-level1, .port-marker-level2, .port-marker-level3, .port-marker-level4, .port-marker-level5, .port-marker-normal")
+
 
     def navigate(self, url: str):
         """ページへアクセスし、ローディング画面が消えるまで待機します"""
@@ -54,10 +64,10 @@ class MapDashboardPage:
         """最初のピンをクリックし、ポップアップ（吹き出し）が開き、情報が表示されるか検証します"""
         if self.markers.count() > 0:
             first_marker = self.markers.nth(0)
-            
-            # アニメーション遅延等に備え、少し待機してから強制クリックを送信
+            # アニメーション遅延等に備え、少し待機してから直接clickイベントをディスパッチします
+            # これにより、凡例パネル等で要素が覆われていても確実にクリックイベントがトリガーされます
             self.page.wait_for_timeout(500)
-            first_marker.click(force=True)
+            first_marker.dispatch_event("click")
             
             # ポップアップが表示されるのを待機
             popup = self.page.locator(".leaflet-popup-content")

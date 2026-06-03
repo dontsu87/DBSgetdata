@@ -1,0 +1,811 @@
+/* タブレット用の全画面・高視認性スタイル */
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: #f3f4f6;
+    overflow: hidden;
+}
+
+#app-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+}
+
+/* 現場での読みやすさを重視した高コントラストヘッダー */
+header {
+    background-color: #1e293b;
+    color: #ffffff;
+    padding: 10px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.update-time {
+    font-size: 14px;
+    font-weight: bold;
+    color: #f8fafc;
+    background-color: #334155;
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid #475569;
+    text-align: right;
+    line-height: 1.3;
+}
+.update-note {
+    font-size: 9px;
+    color: #94a3b8;
+    font-weight: normal;
+    display: block;
+    margin-top: 2px;
+}
+
+/* 高機能更新ボタンのスタイル */
+.refresh-button {
+    background-color: #007aff;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    transition: all 0.2s;
+    touch-action: manipulation;
+}
+.refresh-button:active {
+    background-color: #0056b3;
+    transform: scale(0.95);
+}
+.refresh-button svg {
+    transition: transform 0.5s ease;
+}
+.refresh-button.spinning svg {
+    transform: rotate(360deg);
+}
+
+#main-content {
+    flex: 1;
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+/* 地図を画面いっぱいに広げる */
+#map {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+/* 現場でグローブをしていても押しやすい、超巨大GPSボタン */
+.gps-button {
+    position: absolute;
+    bottom: 30px;
+    right: 20px;
+    background-color: #007aff;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    width: 70px;
+    height: 70px;
+    font-size: 14px;
+    font-weight: bold;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    touch-action: manipulation;
+    transition: background-color 0.2s;
+}
+
+.gps-button:active {
+    background-color: #0056b3;
+}
+
+.gps-button svg {
+    width: 24px;
+    height: 24px;
+    margin-bottom: 2px;
+    fill: currentColor;
+}
+
+/* アラート状況サマリーパネル */
+.summary-panel {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background-color: rgba(30, 41, 59, 0.95);
+    color: white;
+    padding: 14px 18px;
+    border-radius: 8px;
+    font-size: 14px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+    z-index: 1000;
+    pointer-events: auto;
+    border-left: 5px solid #ef4444;
+    min-width: 360px;
+}
+
+/* サマリーマトリクス表のスタイル */
+.summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+    font-size: 11px;
+    color: #e2e8f0;
+    border: 1px solid #475569;
+}
+.summary-table th, .summary-table td {
+    border: 1px solid #475569;
+    padding: 6px 4px;
+    text-align: center;
+}
+.summary-table th {
+    background-color: #334155;
+    font-weight: bold;
+    color: #cbd5e1;
+}
+.summary-table td.count-cell {
+    font-weight: bold;
+}
+.summary-table td.has-count {
+    background-color: rgba(0, 122, 255, 0.25);
+    color: #60a5fa;
+}
+
+.summary-panel div {
+    margin-bottom: 4px;
+}
+.summary-panel div:last-child {
+    margin-bottom: 0;
+}
+
+.summary-panel .count {
+    font-size: 20px;
+    font-weight: bold;
+    color: #f87171;
+}
+
+/* タブレットで見やすいようにポップアップのフォントとサイズを巨大化 */
+.leaflet-popup-content-wrapper {
+    font-size: 16px;
+    border-radius: 12px;
+    box-shadow: 0 3px 14px rgba(0,0,0,0.4);
+    padding: 4px;
+}
+
+.leaflet-popup-content {
+    margin: 12px 14px;
+    line-height: 1.4;
+}
+
+.popup-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #1e293b;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 6px;
+    margin-bottom: 8px;
+}
+
+.popup-desc {
+    font-size: 14px;
+    color: #64748b;
+    margin-bottom: 6px;
+}
+
+/* ポップアップ内の警告車両リストスタイル */
+.popup-bike-list {
+    margin-top: 8px;
+    max-height: 150px;
+    overflow-y: auto;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 0;
+    list-style: none;
+}
+
+.popup-bike-item {
+    padding: 8px 10px;
+    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.popup-bike-item:last-child {
+    border-bottom: none;
+}
+
+.popup-bike-id {
+    font-weight: bold;
+    color: #0f172a;
+}
+
+.popup-bike-volt {
+    color: #ef4444;
+    font-weight: bold;
+    background-color: #fee2e2;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+/* 通信中のローディング */
+#loader {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.9);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.spinner {
+    border: 6px solid #e2e8f0;
+    border-top: 6px solid #007aff;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin-bottom: 15px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* エラー表示 */
+#error-screen {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #fee2e2;
+    color: #991b1b;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    padding: 20px;
+    text-align: center;
+}
+
+/* ========================================== */
+/* 新しいカスタムマーカー（DivIcon）用スタイル */
+/* ========================================== */
+
+/* 共通マーカー設定 */
+.port-marker-base {
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    line-height: 1;
+}
+
+/* 正常なポート（グレー、数字あり） */
+.port-marker-normal {
+    background-color: #94a3b8;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    width: 28px !important;
+    height: 28px !important;
+    box-shadow: 0 3px 6px rgba(148, 163, 184, 0.5), 0 1px 3px rgba(0,0,0,0.2);
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* 自転車0台のポート（正常より目立たない薄グレー、中身が白抜き、数字0を表示） */
+.port-marker-empty {
+    background-color: #f8fafc; /* 非常に薄いグレー */
+    border: 1.5px dashed #cbd5e1; /* 薄い点線 */
+    border-radius: 50%;
+    width: 20px !important;
+    height: 20px !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    color: #94a3b8; /* 薄い文字色 */
+    font-size: 10px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* レベル5: AT異常 (黒紫系統、最大) */
+.port-marker-level5 {
+    background-color: #4c1d95; /* 濃い黒紫 */
+    border: 2.5px solid #ffffff;
+    border-radius: 50%;
+    width: 32px !important;
+    height: 32px !important;
+    box-shadow: 0 4px 8px rgba(76, 29, 149, 0.6), 0 2px 4px rgba(0,0,0,0.3);
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 900;
+    animation: pulse-border-purple 2s infinite;
+}
+
+/* レベル4: 電圧閾値/画面強調 (赤系統) */
+.port-marker-level4 {
+    background-color: #ef4444; /* 赤 */
+    border: 2.5px solid #ffffff;
+    border-radius: 50%;
+    width: 32px !important;
+    height: 32px !important;
+    box-shadow: 0 4px 8px rgba(239, 68, 68, 0.6), 0 2px 4px rgba(0,0,0,0.3);
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 900;
+    animation: pulse-border-red 2s infinite;
+}
+
+/* レベル3: Lv.1 (橙系統) */
+.port-marker-level3 {
+    background-color: #f97316; /* 橙 */
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    width: 28px !important;
+    height: 28px !important;
+    box-shadow: 0 3px 6px rgba(249, 115, 22, 0.5), 0 1px 3px rgba(0,0,0,0.2);
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* レベル2: Lv.2 (黄系統) */
+.port-marker-level2 {
+    background-color: #eab308; /* 黄 */
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    width: 28px !important;
+    height: 28px !important;
+    box-shadow: 0 3px 6px rgba(234, 179, 8, 0.5), 0 1px 3px rgba(0,0,0,0.2);
+    color: #000000;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* レベル1: Lv.3 (薄緑系統) */
+.port-marker-level1 {
+    background-color: #22c55e; /* 薄緑 */
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    width: 28px !important;
+    height: 28px !important;
+    box-shadow: 0 3px 6px rgba(34, 197, 94, 0.5), 0 1px 3px rgba(0,0,0,0.2);
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* パルスアニメーション (黒紫用) */
+@keyframes pulse-border-purple {
+    0% { box-shadow: 0 0 0 0 rgba(76, 29, 149, 0.8), 0 2px 4px rgba(0,0,0,0.3); }
+    70% { box-shadow: 0 0 0 10px rgba(76, 29, 149, 0), 0 2px 4px rgba(0,0,0,0.3); }
+    100% { box-shadow: 0 0 0 0 rgba(76, 29, 149, 0), 0 2px 4px rgba(0,0,0,0.3); }
+}
+
+/* パルスアニメーション (赤用) */
+@keyframes pulse-border-red {
+    0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.8), 0 2px 4px rgba(0,0,0,0.3); }
+    70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0), 0 2px 4px rgba(0,0,0,0.3); }
+    100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0), 0 2px 4px rgba(0,0,0,0.3); }
+}
+
+/* 警告度バッジ用スタイル (ポップアップ内) */
+.badge {
+    font-size: 11px;
+    font-weight: bold;
+    padding: 3px 6px;
+    border-radius: 4px;
+    color: #ffffff;
+    margin-left: 5px;
+}
+.badge-level5 { background-color: #4c1d95; }
+.badge-level4 { background-color: #ef4444; }
+.badge-level3 { background-color: #f97316; }
+.badge-level2 { background-color: #eab308; color: #000000; }
+.badge-level1 { background-color: #22c55e; }
+
+/* 地図上の凡例 (Legend) パネル */
+.map-legend {
+    position: absolute;
+    bottom: 25px;
+    left: 15px;
+    background-color: rgba(30, 41, 59, 0.95);
+    color: #ffffff;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    z-index: 1000;
+    border: 1px solid #475569;
+    min-width: 250px;
+}
+
+.map-legend-title {
+    font-weight: bold;
+    font-size: 13px;
+    border-bottom: 1px solid #475569;
+    padding-bottom: 6px;
+    margin-bottom: 8px;
+    color: #e2e8f0;
+}
+
+.map-legend-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    cursor: pointer;
+    user-select: none;
+    padding: 4px 0;
+}
+.map-legend-item:last-child {
+    margin-bottom: 0;
+}
+
+.map-legend-color {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    margin-right: 8px;
+    border: 1px solid #ffffff;
+}
+
+/* 大きめのタップしやすいチェックボックス */
+.legend-filter {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    accent-color: #007aff;
+    margin-left: 12px;
+}
+
+/* 地図上の車両状態 (Status) フィルターパネル */
+.status-filter-panel {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background-color: rgba(30, 41, 59, 0.95);
+    color: #ffffff;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    z-index: 1000;
+    border: 1px solid #475569;
+    min-width: 200px;
+}
+
+/* 地図上のベースマップ選択パネル */
+.basemap-panel {
+    position: absolute;
+    top: 15px;
+    right: 230px; /* status-filter-panel の左側に並ぶように調整 */
+    background-color: rgba(30, 41, 59, 0.95);
+    color: #ffffff;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    z-index: 1000;
+    border: 1px solid #475569;
+    min-width: 200px;
+}
+
+.basemap-title, .status-filter-title {
+    font-weight: bold;
+    font-size: 13px;
+    color: #e2e8f0;
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: color 0.2s;
+}
+
+.basemap-title:hover, .status-filter-title:hover {
+    color: #ffffff;
+}
+
+.panel-arrow {
+    font-size: 10px;
+    transition: transform 0.3s ease;
+    color: #94a3b8;
+}
+
+.basemap-options-container, .status-options-container {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+}
+
+.basemap-options {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding-top: 8px;
+    border-top: 1px solid #475569;
+    margin-top: 8px;
+}
+
+.status-filter-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    cursor: pointer;
+    user-select: none;
+    padding: 4px 0;
+}
+.status-filter-item:last-child {
+    margin-bottom: 0;
+}
+
+/* 大きめのタップしやすいチェックボックス */
+.status-filter {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    accent-color: #007aff;
+    margin-left: 12px;
+}
+
+/* エリア選択タブ用スタイル */
+.area-tabs-container {
+    background-color: #1e293b;
+    border-top: 1px solid #334155;
+    padding: 8px 16px;
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    white-space: nowrap;
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    /* スクロールバー非表示 */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+.area-tabs-container::-webkit-scrollbar {
+    display: none;
+}
+
+.area-tab {
+    background-color: #334155;
+    color: #cbd5e1;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+    touch-action: manipulation;
+}
+
+.area-tab.active {
+    background-color: #007aff;
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(0, 122, 255, 0.4);
+}
+
+/* モバイル対応：通常時は非表示、スマホ画面幅のときだけ有効になるスタイル */
+.panel-header-mobile {
+    display: none; /* デフォルト（PC）では非表示 */
+}
+
+.mobile-only-controls {
+    display: none;
+}
+
+/* 📱 スマホサイズ（画面幅768px以下）のスタイル定義 */
+@media screen and (max-width: 768px) {
+    /* ヘッダーの文字を小さくして収まりを良くする */
+    header h1 {
+        font-size: 15px;
+    }
+    .update-time {
+        font-size: 10px;
+    }
+
+    /* エリア切り替えタブのサイズ調整 */
+    .area-tab {
+        padding: 8px 14px;
+        font-size: 12px;
+    }
+
+    /* 1. 凡例・サマリー・ベースマップパネルを画面下のスライド式ドロワーに変更 */
+    .map-legend, .summary-panel, .status-filter-panel, .basemap-panel {
+        display: none !important; /* 初期表示は完全に非表示 */
+        position: fixed;
+        bottom: -400px; /* 初期状態は画面外に隠す */
+        left: 0;
+        right: 0;
+        width: 100%;
+        min-width: 100%;
+        max-height: 80vh;
+        overflow-y: auto;
+        border-radius: 16px 16px 0 0;
+        margin: 0;
+        padding: 16px 20px 30px 20px;
+        box-sizing: border-box;
+        transition: bottom 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        border-top: 2px solid #475569;
+        border-left: none;
+        border-right: none;
+        border-bottom: none;
+        background-color: rgba(30, 41, 59, 0.98);
+        z-index: 2001;
+    }
+
+    .map-legend.show-mobile-drawer, .summary-panel.show-mobile-drawer, .status-filter-panel.show-mobile-drawer, .basemap-panel.show-mobile-drawer {
+        display: block !important; /* トグルの時だけ表示 */
+        bottom: 0px; /* 画面内にスライドイン */
+    }
+
+    /* スマホのドロワー内ではアコーディオンを全展開する */
+    .basemap-options-container, .status-options-container {
+        max-height: none !important;
+        overflow: visible !important;
+    }
+    .panel-arrow {
+        display: none !important; /* スマホでは矢印非表示 */
+    }
+    .basemap-title, .status-filter-title {
+        cursor: default !important;
+        color: #cbd5e1 !important;
+        border-bottom: 1px solid #475569 !important;
+        padding-bottom: 8px !important;
+        margin-top: 0 !important;
+        margin-bottom: 12px !important;
+    }
+
+    .map-legend-title {
+        display: none; /* スマホ用タイトルがあるので従来のものは非表示 */
+    }
+
+    /* モバイル用ドロワーヘッダー（閉じるボタン付き）の有効化 */
+    .panel-header-mobile {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #475569;
+        padding-bottom: 8px;
+        margin-bottom: 12px;
+        color: #cbd5e1;
+        font-size: 14px;
+    }
+
+    .close-panel-btn {
+        background: none;
+        border: none;
+        color: #94a3b8;
+        font-size: 20px;
+        font-weight: bold;
+        cursor: pointer;
+        padding: 4px 8px;
+    }
+
+    /* 3. スマホ下部に浮かぶ、フローティング操作ボタンバー */
+    .mobile-only-controls {
+        display: flex;
+        position: absolute;
+        bottom: 20px;
+        left: 15px;
+        gap: 10px;
+        z-index: 1001; /* Leafletより上 */
+        pointer-events: auto;
+    }
+
+    .mobile-toggle-btn {
+        background-color: #1e293b;
+        color: #ffffff;
+        border: 1px solid #475569;
+        padding: 10px 14px;
+        border-radius: 30px;
+        font-size: 13px;
+        font-weight: bold;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .mobile-toggle-btn:active {
+        background-color: #334155;
+    }
+    
+    /* GPSボタンの位置調整 (フローティングバーと重ならないように上に上げる) */
+    .gps-button {
+        bottom: 85px;
+        right: 15px;
+        width: 55px;
+        height: 55px;
+        font-size: 11px;
+    }
+    .gps-button svg {
+        width: 20px;
+        height: 20px;
+    }
+    
+    /* スマホ画面でのヘルプボタン微調整 */
+    .help-button {
+        padding: 6px 10px;
+        font-size: 11px;
+    }
+}
+
+/* ヘルプボタンの基本スタイル */
+.help-button {
+    background-color: #334155;
+    color: #ffffff;
+    text-decoration: none;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    transition: all 0.2s;
+    white-space: nowrap;
+    user-select: none;
+}
+
+.help-button:hover {
+    background-color: #475569;
+    border-color: #64748b;
+}
+
+.help-button:active {
+    background-color: #1e293b;
+    transform: scale(0.95);
+}
+
+/* ポップアップが凡例やサマリーパネルの下に入り込まないよう、最前面に表示 */
+.leaflet-popup-pane {
+    z-index: 1100 !important;
+}

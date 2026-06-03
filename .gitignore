@@ -30,3 +30,7 @@ venv/
 
 # Reference scripts (prevent upload)
 refference/
+
+# Temporary test scripts
+keep_alive_tester.py
+keep_alive_profile/

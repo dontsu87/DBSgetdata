@@ -22,9 +22,10 @@ def start_server():
     
     # 既にポートが使われている場合の安全対策
     socketserver.TCPServer.allow_reuse_address = True
-    with socketserver.TCPServer(("", PORT), Handler) as httpd:
+    with socketserver.ThreadingTCPServer(("", PORT), Handler) as httpd:
         print(f"Server started on http://localhost:{PORT}")
         httpd.serve_forever()
+
 
 def run_test():
     # 1. 簡易サーバーを別スレッドでバックグラウンド起動
@@ -60,7 +61,8 @@ def run_test():
             dashboard = MapDashboardPage(page)
             
             # テストサーバーのトップページ（index.html）へアクセス
-            url = f"http://localhost:{PORT}/index.html"
+            url = f"http://localhost:{PORT}/index.html?area=FKI_%E3%81%B5%E3%81%8F%E3%83%81%E3%83%A3%E3%83%AA"
+
             print(f"Accessing URL: {url}")
             dashboard.navigate(url)
             
@@ -119,8 +121,106 @@ def run_test():
             else:
                 print("⚠️ 車両状態フィルターが見つかりませんでした")
             
+            # 自動更新保留ロジックの動作検証
+            print("Step 7: 自動更新保留ロジックの動作検証...")
+            
+            # マーカーをクリックしてポップアップを開く
+            print("ポップアップを開きます...")
+            dashboard.click_first_marker_and_verify_popup()
+            
+            # ポップアップが開いている = ユーザー操作中であることを確認
+            is_interacting = page.evaluate("window._testInterface.isUserInteracting()")
+            assert is_interacting == True, "ポップアップ表示中は isUserInteracting() が True であるべきです"
+            
+            # ダミーの更新データを設定して保留フラグを立てる
+            print("保留アップデートを注入します...")
+            page.evaluate("""() => {
+                const currentData = window._testInterface.getCachedDashboardData();
+                const dummyData = JSON.parse(JSON.stringify(currentData));
+                
+                // 特定のポートの自転車を1台削除するダミーデータを生成
+                if (dummyData.ports.length > 0 && dummyData.ports[0].bikes.length > 0) {
+                    dummyData.ports[0].bikes.pop();
+                }
+                
+                // 保留状態にする
+                window._testInterface.setPendingUpdateData(dummyData);
+                window._testInterface.setIsPendingUpdate(true);
+            }""")
+            
+            # ポップアップが開いているため、保留フラグが True のままであることを確認
+            is_pending = page.evaluate("window._testInterface.getIsPendingUpdate()")
+            assert is_pending == True, "ユーザー操作中はアップデートが保留（isPendingUpdateがTrue）されるべきです"
+            
+            # ポップアップを閉じる
+            print("ポップアップを閉じます...")
+            page.locator(".leaflet-popup-close-button").dispatch_event("click")
+            
+            # ポップアップが閉じて isUserInteracting が False になるまで待機 (最大5秒)
+            page.wait_for_function("window._testInterface.isUserInteracting() === false", timeout=5000)
+            print("✅ ポップアップが正常に閉じられました。")
+
+            
+            # 5秒のアイドル待機をシミュレート（タイムアウト時間経過後、保留更新が自動適用される）
+            print("アイドル適用待機中（6秒）...")
+            page.wait_for_timeout(6000)
+            
+            # 保留フラグが自動適用され、False にクリアされたことを確認
+            is_pending_after_idle = page.evaluate("window._testInterface.getIsPendingUpdate()")
+            assert is_pending_after_idle == False, "アイドル状態検出後、保留更新が自動適用され isPendingUpdate が False になるべきです"
+            print("✅ 自動更新保留およびアイドル適用ロジックは正常に機能しています。")
+            
+            # --- モバイルレイアウト（スマホ）の検証を開始します ---
+            print("\n--- モバイルレイアウト（スマホ）の検証を開始します ---")
+            mobile_context = browser.new_context(
+                viewport={"width": 375, "height": 812},
+                is_mobile=True,
+                has_touch=True,
+                permissions=["geolocation"]
+            )
+            mobile_context.set_geolocation({"latitude": 36.577, "longitude": 136.647, "accuracy": 100})
+            
+            mobile_page = mobile_context.new_page()
+            mobile_dashboard = MapDashboardPage(mobile_page)
+            
+            print(f"Accessing URL on mobile: {url}")
+            mobile_dashboard.navigate(url)
+            
+            # 1. モバイル用コントロールバーが表示されていることを確認
+            print("Step M1: モバイル専用コントロールバーの表示確認...")
+            expect(mobile_dashboard.mobile_control_bar).to_be_visible()
+            
+            # 2. 初期状態で、デスクトップ用パネル類（フィルター、凡例等）が画面外か非表示（hidden）であることを確認
+            print("Step M2: デスクトップ用パネルが非表示（スライドアウト状態）であることを確認...")
+            expect(mobile_dashboard.summary_panel).to_be_hidden()
+            expect(mobile_dashboard.status_filter_panel).to_be_hidden()
+            
+            # 3. 「サマリー」ボタンをタップしてサマリードロワーが開くことを確認
+            print("Step M3: サマリーボタンタップによるドロワー開閉の検証...")
+            mobile_dashboard.btn_summary_mobile.click()
+            expect(mobile_dashboard.summary_panel).to_be_visible(timeout=5000)
+            
+            # ドロワー内の「✕（閉じる）」ボタンをクリック
+            mobile_dashboard.summary_panel.locator(".close-panel-btn").click()
+            expect(mobile_dashboard.summary_panel).to_be_hidden(timeout=5000)
+            print("✅ サマリードロワーのトグル動作は正常です。")
+            
+            # 4. 「バッテリー」ボタンをタップして凡例ドロワーが開くことを確認
+            print("Step M4: バッテリー凡例ボタンタップによるドロワー開閉の検証...")
+            mobile_dashboard.btn_legend_mobile.click()
+            expect(mobile_dashboard.legend_panel).to_be_visible(timeout=5000)
+            
+            mobile_dashboard.legend_panel.locator(".close-panel-btn").click()
+            expect(mobile_dashboard.legend_panel).to_be_hidden(timeout=5000)
+            print("✅ バッテリー凡例ドロワーのトグル動作は正常です。")
+            
+            mobile_context.close()
+            print("🎉 【検証成功】モバイルレイアウトの表示およびドロワー操作テストに合格しました！")
+            
             # 成功フラグ
             success = True
+
+
             
         except Exception as e:
             print(f"❌ テスト検証中に不具合を検出しました: {e}")
