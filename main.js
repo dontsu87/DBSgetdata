@@ -34,7 +34,9 @@ document.addEventListener("DOMContentLoaded", function() {
         zoomSnap: 0        // 完全に滑らかな無段階ズームを可能にする
     }).setView([36.568, 136.648], 13);
 
-    // ダブルタップ＋ドラッグズームの自前実装 (Android/Chrome等のブラウザジェスチャー競合回避用)
+    // 【実験的機能 / 未完全】ダブルタップ＋ドラッグズームの自前実装 (Android/Chrome等のブラウザジェスチャー競合回避用)
+    // ※環境（Android Chrome等）によってはブラウザ側の標準動作と競合し、正常に機能しない場合があります。
+    // ※通常のドラッグや2本指ピンチズーム等の基本操作への悪影響はありません。
     (function() {
         let lastTapTime = 0;
         let isDoubleTapDragging = false;
