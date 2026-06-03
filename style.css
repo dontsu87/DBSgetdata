@@ -809,3 +809,47 @@ header h1 {
 .leaflet-popup-pane {
     z-index: 1100 !important;
 }
+
+/* 未施錠未返却のポートピン用スタイル（バッテリーレベル色を保ちながらマゼンタ枠を追加） */
+.port-marker-has-unlocked {
+    border: 3.5px solid #db2777 !important; /* 目立つマゼンタピンクの外枠 */
+    animation: pulse-unlocked-border 2.0s infinite !important;
+}
+
+/* ピン右上の未施錠未返却警告アイコン (⚠️絵文字) */
+.unlocked-dot {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    font-size: 13px;
+    z-index: 100;
+    line-height: 1;
+    /* 白いフチ取りを付けることで、背景の赤色に埋もれないようにします */
+    text-shadow: 
+        1px 1px 0 #fff, -1px -1px 0 #fff,
+        1px -1px 0 #fff, -1px 1px 0 #fff,
+        0 1px 0 #fff, 0 -1px 0 #fff,
+        1px 0 0 #fff, -1px 0 0 #fff,
+        0 0 4px #fff;
+}
+
+/* 未施錠未返却のバッジ（ポップアップ内） */
+.badge-unlocked {
+    background-color: #db2777;
+    color: #ffffff;
+    border: 1px solid #ffffff;
+}
+
+/* 外枠のパルスアニメーション */
+@keyframes pulse-unlocked-border {
+    0% { box-shadow: 0 0 0 0 rgba(219, 39, 119, 0.9), 0 2px 4px rgba(0,0,0,0.3); }
+    70% { box-shadow: 0 0 0 10px rgba(219, 39, 119, 0), 0 2px 4px rgba(0,0,0,0.3); }
+    100% { box-shadow: 0 0 0 0 rgba(219, 39, 119, 0), 0 2px 4px rgba(0,0,0,0.3); }
+}
+
+/* 閾値数値入力フォームのスタイル微調整 */
+#unlocked-threshold-input:focus {
+    outline: none;
+    border-color: #007aff;
+    box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.2);
+}

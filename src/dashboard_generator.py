@@ -392,6 +392,14 @@ def generate_dashboard_json(latest_vehicle_path: str = None) -> str:
             if not ports_data[port_name].get("station_id") and s_id_str:
                 ports_data[port_name]["station_id"] = s_id_str
             
+        # CSVから安全に「連続利用開始日時」と「同一ポート継続利用時間(秒)」をロード
+        unlocked_started_at = str(row.get('連続利用開始日時', '')).strip() if '連続利用開始日時' in df_merged.columns and not pd.isna(row.get('連続利用開始日時')) else ""
+        
+        try:
+            consecutive_use_duration = int(row.get('同一ポート継続利用時間(秒)', 0)) if '同一ポート継続利用時間(秒)' in df_merged.columns and not pd.isna(row.get('同一ポート継続利用時間(秒)')) and str(row.get('同一ポート継続利用時間(秒)')).strip() != "" else 0
+        except Exception:
+            consecutive_use_duration = 0
+
         bike_info = {
             "bike_id": bike_id,
             "status": status,
@@ -407,7 +415,9 @@ def generate_dashboard_json(latest_vehicle_path: str = None) -> str:
                 "lv2": float(row['閾値_Lv2']),
                 "lv3": float(row['閾値_Lv3']) if pd.notna(row['閾値_Lv3']) else None
             },
-            "at_time": at_time
+            "at_time": at_time,
+            "unlocked_started_at": unlocked_started_at,
+            "consecutive_use_duration": consecutive_use_duration
         }
         
         ports_data[port_name]["bikes"].append(bike_info)

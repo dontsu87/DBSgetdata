@@ -170,6 +170,88 @@ def run_test():
             assert is_pending_after_idle == False, "アイドル状態検出後、保留更新が自動適用され isPendingUpdate が False になるべきです"
             print("✅ 自動更新保留およびアイドル適用ロジックは正常に機能しています。")
             
+            # --- 未施錠未返却フィルターと閾値の動作検証 ---
+            print("\nStep 7.5: 未施錠未返却フィルターと閾値の動作検証...")
+            
+            # テスト用のデータを注入
+            page.evaluate("""() => {
+                const currentData = window._testInterface.getCachedDashboardData();
+                const testData = JSON.parse(JSON.stringify(currentData));
+                
+                // 最初のポートにダミー自転車を追加
+                if (testData.ports.length > 0) {
+                    testData.ports[0].bikes = [
+                        {
+                            "bike_id": "TEST-BIKE-1.5H",
+                            "status": "利用中",
+                            "model_name": "DD",
+                            "voltage": 38.5,
+                            "alert_level": 0,
+                            "alert_level_name": "最高",
+                            "is_unregistered": false,
+                            "thresholds": {"at_error": 34.8, "strong": 35.9, "lv1": 36.5, "lv2": 38.4, "lv3": null},
+                            "at_time": "2026-06-03 20:00:00",
+                            "unlocked_started_at": "2026-06-03 18:30:00",
+                            "consecutive_use_duration": 5400  // 1.5時間
+                        },
+                        {
+                            "bike_id": "TEST-BIKE-2.5H",
+                            "status": "利用中",
+                            "model_name": "DD",
+                            "voltage": 38.5,
+                            "alert_level": 0,
+                            "alert_level_name": "最高",
+                            "is_unregistered": false,
+                            "thresholds": {"at_error": 34.8, "strong": 35.9, "lv1": 36.5, "lv2": 38.4, "lv3": null},
+                            "at_time": "2026-06-03 20:00:00",
+                            "unlocked_started_at": "2026-06-03 17:30:00",
+                            "consecutive_use_duration": 9000  // 2.5時間
+                        }
+                    ];
+                    // 総駐輪台数も2台に設定
+                    testData.ports[0].total_bikes = 2;
+                }
+                
+                window._testInterface.setCachedDashboardData(testData);
+                // 描画更新
+                window._testInterface.updateFilterAndRender(false);
+            }""")
+            
+            page.wait_for_timeout(1000)
+            
+            # デフォルトの閾値 2.0 で最初のピンをクリックしてポップアップを表示
+            dashboard.click_first_marker_and_verify_popup()
+            
+            # 2.5時間の自転車はバッジ（badge-unlocked）が表示されているが、1.5時間のは表示されていないことを確認
+            expect(page.locator("li:has-text('TEST-BIKE-2.5H') .badge-unlocked")).to_be_visible()
+            expect(page.locator("li:has-text('TEST-BIKE-1.5H') .badge-unlocked")).to_be_hidden()
+            print("✅ デフォルト閾値 2.0時間 での判定が正常であることを確認しました。")
+            
+            # ポップアップを閉じる
+            page.locator(".leaflet-popup-close-button").dispatch_event("click")
+            page.wait_for_timeout(500)
+            
+            # 閾値を 1.0 に変更
+            print("閾値を 1.0時間 に変更します...")
+            page.evaluate("window._testInterface.setUnlockedThresholdHours(1.0)")
+            page.wait_for_timeout(1000)
+            
+            # フィルターの表示ラベルが更新されたことを確認
+            filter_label_text = page.locator("#unlocked-filter-label").inner_text()
+            assert "1.0時間以上" in filter_label_text, f"フィルターラベルが更新されていません: {filter_label_text}"
+            
+            # 再度最初のピンをクリック
+            dashboard.click_first_marker_and_verify_popup()
+            
+            # 1.5時間の自転車も 2.5時間の自転車もバッジ（badge-unlocked）が表示されていることを確認
+            expect(page.locator("li:has-text('TEST-BIKE-2.5H') .badge-unlocked")).to_be_visible()
+            expect(page.locator("li:has-text('TEST-BIKE-1.5H') .badge-unlocked")).to_be_visible()
+            print("✅ 閾値 1.0時間 への変更後に、1.5時間の自転車も未施錠未返却と判定されたことを確認しました。")
+            
+            # ポップアップを閉じる
+            page.locator(".leaflet-popup-close-button").dispatch_event("click")
+            page.wait_for_timeout(500)
+            
             # --- モバイルレイアウト（スマホ）の検証を開始します ---
             print("\n--- モバイルレイアウト（スマホ）の検証を開始します ---")
             mobile_context = browser.new_context(

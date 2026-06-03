@@ -14,7 +14,45 @@ document.addEventListener("DOMContentLoaded", function() {
     let markerGroup;
     let selectedArea = ""; // 選択中のエリア名
     let checkedStatuses = []; // 選択中の車両状態フィルターの配列
+    let unlockedThresholdHours = 2.0; // 未施錠未返却の判定閾値（時間）
     
+    // 未施錠未返却フィルターと閾値入力要素の取得・リスナー設定
+    const unlockedThresholdInput = document.getElementById('unlocked-threshold-input');
+    const unlockedFilterCheckbox = document.getElementById('unlocked-filter-checkbox');
+    const unlockedFilterLabel = document.getElementById('unlocked-filter-label');
+
+    if (unlockedThresholdInput) {
+        unlockedThresholdInput.addEventListener('change', function() {
+            let val = parseFloat(unlockedThresholdInput.value);
+            if (isNaN(val) || val <= 0) {
+                val = 2.0;
+                unlockedThresholdInput.value = "2.0";
+            }
+            unlockedThresholdHours = val;
+            if (unlockedFilterLabel) {
+                unlockedFilterLabel.innerText = `⚠️ 未施錠未返却 (${unlockedThresholdHours.toFixed(1)}時間以上)`;
+            }
+            updateFilterAndRender(false);
+        });
+        
+        unlockedThresholdInput.addEventListener('input', function() {
+            let val = parseFloat(unlockedThresholdInput.value);
+            if (!isNaN(val) && val > 0) {
+                unlockedThresholdHours = val;
+                if (unlockedFilterLabel) {
+                    unlockedFilterLabel.innerText = `⚠️ 未施錠未返却 (${unlockedThresholdHours.toFixed(1)}時間以上)`;
+                }
+                updateFilterAndRender(false);
+            }
+        });
+    }
+
+    if (unlockedFilterCheckbox) {
+        unlockedFilterCheckbox.addEventListener('change', function() {
+            updateFilterAndRender(false);
+        });
+    }
+
     // 自動更新保留用の制御状態
     let prevStatusesStr = ""; // 前回のステータス一覧の文字列
     let prevAreasStr = ""; // 前回のエリア一覧の文字列
@@ -656,10 +694,19 @@ document.addEventListener("DOMContentLoaded", function() {
             const isEmptyPort = (parseInt(port.total_bikes) === 0 || !port.bikes || port.bikes.length === 0);
 
             // 2. 警告レベルフィルター ＆ 車両状態フィルターを適用：合致する自転車のみを抽出
-            const matchingBikes = isEmptyPort ? [] : port.bikes.filter(bike => 
-                checkedLevels.includes(bike.alert_level) && 
-                (bike.status ? targetStatuses.includes(bike.status.trim()) : false)
-            );
+            const isUnlockedFilterChecked = unlockedFilterCheckbox ? unlockedFilterCheckbox.checked : true;
+            const thresholdSec = unlockedThresholdHours * 3600;
+
+            const matchingBikes = isEmptyPort ? [] : port.bikes.filter(bike => {
+                const isUnlocked = bike.consecutive_use_duration >= thresholdSec;
+                const isLevelMatch = checkedLevels.includes(bike.alert_level);
+                const isStatusMatch = bike.status ? targetStatuses.includes(bike.status.trim()) : false;
+                
+                // 表示対象かどうかの判定：
+                // (バッテリー深刻度の警告対象である OR (未施錠未返却である AND 未施錠未返却フィルターがON))
+                // かつ、車両状態フィルターに合致していること
+                return (isLevelMatch || (isUnlocked && isUnlockedFilterChecked)) && isStatusMatch;
+            });
 
             // 描画判定
             // 自転車が0台のポートは凡例のチェック(-1)が入っている時のみ表示。それ以外はフィルターに合致する自転車が1台以上いる場合のみ表示
@@ -686,6 +733,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
             let markerIcon;
             let zIndexOrder = 100;
+            const hasUnlockedBike = matchingBikes.some(bike => bike.consecutive_use_duration >= thresholdSec);
             
             if (isActuallyEmpty) {
                 // 自転車0台：正常より目立たない薄いグレー、中に「0」を薄く表示、サイズ[20,20]
@@ -723,10 +771,15 @@ document.addEventListener("DOMContentLoaded", function() {
                     zIndexOrder = 500 + bikeCountOffset;   // fallback
                 }
 
+                if (hasUnlockedBike) {
+                    className += ' port-marker-has-unlocked';
+                    zIndexOrder += 30000; // 最前面に出す
+                }
+
                 // 正常(0)も含むすべてのレベルで台数を表示するように統一
                 markerIcon = L.divIcon({
                     className: className,
-                    html: `<div>${matchingBikes.length}</div>`,
+                    html: `<div>${matchingBikes.length}${hasUnlockedBike ? '<span class="unlocked-dot">⚠️</span>' : ''}</div>`,
                     iconSize: maxLevel >= 4 ? [32, 32] : [28, 28],
                     iconAnchor: maxLevel >= 4 ? [16, 16] : [14, 14]
                 });
@@ -785,12 +838,23 @@ document.addEventListener("DOMContentLoaded", function() {
                         badgeClass = 'badge-level1';
                     }
                     
+                    // 未施錠未返却の判定とバッジ
+                    const isUnlocked = bike.consecutive_use_duration >= thresholdSec;
+                    let unlockedBadge = '';
+                    if (isUnlocked) {
+                        const hours = Math.floor(bike.consecutive_use_duration / 3600);
+                        const mins = Math.floor((bike.consecutive_use_duration % 3600) / 60);
+                        const durationStr = hours > 0 ? `${hours}時間${mins}分` : `${mins}分`;
+                        unlockedBadge = `<span class="badge badge-unlocked" style="background-color:#db2777; color:#ffffff; margin-left:4px;">⚠️未施錠未返却 (${durationStr})</span>`;
+                    }
+                    
                     popupContent += `
                         <li class="popup-bike-item" style="align-items: flex-start;">
                             <div>
                                 <span class="popup-bike-id">${bike.bike_id}</span>
                                 <span class="popup-desc" style="font-size:11px; margin-left:5px; color: #0284c7; font-weight: bold;">[${bike.status}]</span>
                                 <span class="badge ${badgeClass}">${badgeName}</span>
+                                ${unlockedBadge}
                                 ${unregisteredBadge}
                                 <div class="popup-desc" style="font-size:10px; margin: 2px 0 0 0; color: #64748b;">車種: ${bike.model_name}</div>
                             </div>
@@ -813,32 +877,60 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         });
 
+        // 未施錠未返却車両の集計
+        let unlockedBikesCount = 0;
+        const thresholdSec = unlockedThresholdHours * 3600;
+        allFilteredBikes.forEach(bike => {
+            if (bike.consecutive_use_duration >= thresholdSec) {
+                unlockedBikesCount++;
+            }
+        });
+
         // サマリー値のリアルタイム連動更新 (選択されたエリア内での合計値になります)
         document.getElementById('alert-ports-count').innerText = filteredPortsCount;
         document.getElementById('alert-bikes-count').innerText = filteredBikesCount;
 
+        const unlockedSummaryContainer = document.getElementById('unlocked-summary-container');
+        if (unlockedSummaryContainer) {
+            const isUnlockedFilterChecked = unlockedFilterCheckbox ? unlockedFilterCheckbox.checked : true;
+            if (isUnlockedFilterChecked) {
+                document.getElementById('unlocked-bikes-count').innerText = unlockedBikesCount;
+                unlockedSummaryContainer.style.display = 'block';
+            } else {
+                unlockedSummaryContainer.style.display = 'none';
+            }
+        }
+
         // --- 車種名 × 警告レベル(閾値) マトリクス表の動的生成 ---
         const tableContainer = document.getElementById('summary-table-container');
         if (allFilteredBikes.length > 0) {
+            const isUnlockedFilterChecked = unlockedFilterCheckbox ? unlockedFilterCheckbox.checked : true;
             // ユニークな車種リストをソートして抽出 (例: ['DD', 'PasCityC', 'その他'])
             const uniqueModels = Array.from(new Set(allFilteredBikes.map(b => b.model_name))).sort();
             
             // マトリクスデータの初期化
             const matrix = {};
             uniqueModels.forEach(m => {
-                matrix[m] = { 5: 0, 4: 0, 3: 0, 2: 0, 0: 0 };
+                matrix[m] = { 5: 0, 4: 0, 3: 0, 2: 0, 0: 0, "unlocked": 0 };
             });
             
             // 集計実行
             allFilteredBikes.forEach(bike => {
                 if (matrix[bike.model_name]) {
                     matrix[bike.model_name][bike.alert_level]++;
+                    if (bike.consecutive_use_duration >= thresholdSec) {
+                        matrix[bike.model_name]["unlocked"]++;
+                    }
                 }
             });
             
             // マトリクス表のHTML構築
             let tableHtml = '<table class="summary-table">';
-            tableHtml += '<thead><tr><th>車種</th><th>最低</th><th>低</th><th>中</th><th>高</th><th>最高</th></tr></thead><tbody>';
+            tableHtml += '<thead><tr><th>車種</th><th>最低</th><th>低</th><th>中</th><th>高</th><th>最高</th>';
+            if (isUnlockedFilterChecked) {
+                tableHtml += '<th style="color: #f472b6;">未施錠</th>';
+            }
+            tableHtml += '</tr></thead><tbody>';
             
             uniqueModels.forEach(model => {
                 tableHtml += `<tr><td><b>${model}</b></td>`;
@@ -850,6 +942,11 @@ document.addEventListener("DOMContentLoaded", function() {
                     const styleStr = !isChecked ? ' style="opacity: 0.4;"' : '';
                     tableHtml += `<td${hasCountClass}${styleStr}>${count}</td>`;
                 });
+                if (isUnlockedFilterChecked) {
+                    const count = matrix[model]["unlocked"];
+                    const hasCountClass = count > 0 ? ' class="count-cell has-count" style="background-color: rgba(219, 39, 119, 0.25); color: #f472b6;"' : '';
+                    tableHtml += `<td${hasCountClass}>${count}</td>`;
+                }
                 tableHtml += '</tr>';
             });
             
@@ -968,7 +1065,16 @@ document.addEventListener("DOMContentLoaded", function() {
         setIsPendingUpdate: (val) => { isPendingUpdate = val; },
         setPendingUpdateData: (val) => { pendingUpdateData = val; },
         getCachedDashboardData: () => cachedDashboardData,
-        setCachedDashboardData: (val) => { cachedDashboardData = val; }
+        setCachedDashboardData: (val) => { cachedDashboardData = val; },
+        getUnlockedThresholdHours: () => unlockedThresholdHours,
+        setUnlockedThresholdHours: (val) => {
+            unlockedThresholdHours = val;
+            if (unlockedThresholdInput) {
+                unlockedThresholdInput.value = val;
+                unlockedThresholdInput.dispatchEvent(new Event('change'));
+            }
+        },
+        updateFilterAndRender: updateFilterAndRender
     };
 });
 

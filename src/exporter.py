@@ -55,8 +55,70 @@ def export_to_onedrive(df_list: list[pd.DataFrame]) -> str:
         combined_df['lat'] = ""
         combined_df['lon'] = ""
 
-    # カラム順序を整理 (新しく追加した station_id, lat, lon, AT種別 も含める)
-    columns_order = ['エリア名', '識別番号', '車両状態', 'ポート名', 'station_id', 'lat', 'lon', '電圧', 'AT通知受信日時', 'AT種別']
+    # --- 同一ポート継続利用時間の計算処理 ---
+    import json
+    from src.config import ROOT_DIR
+    json_path = os.path.join(str(ROOT_DIR), "dashboard_data.json")
+    prev_unlocked = {}
+    if os.path.exists(json_path):
+        try:
+            with open(json_path, "r", encoding="utf-8") as f:
+                prev_data = json.load(f)
+            for port in prev_data.get("ports", []):
+                p_name = port.get("port_name", "").strip()
+                for bike in port.get("bikes", []):
+                    b_id = bike.get("bike_id", "").strip()
+                    started_at = bike.get("unlocked_started_at", "")
+                    status = bike.get("status", "").strip()
+                    if b_id:
+                        prev_unlocked[b_id] = {
+                            "port_name": p_name,
+                            "unlocked_started_at": started_at,
+                            "status": status
+                        }
+        except Exception as e:
+            print(f"Warning: 前回の dashboard_data.json の読み込みに失敗しました: {e}")
+
+    now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    unlocked_started_list = []
+    consecutive_duration_list = []
+
+    for idx, row in combined_df.iterrows():
+        b_id = str(row['識別番号']).strip()
+        p_name = str(row['ポート名']).strip()
+        status = str(row['車両状態']).strip()
+        
+        started_at = ""
+        duration = 0
+        
+        if status == "利用中":
+            if b_id in prev_unlocked:
+                prev = prev_unlocked[b_id]
+                if prev["port_name"] == p_name and prev["status"] == "利用中":
+                    started_at = prev["unlocked_started_at"]
+                    if not started_at:
+                        started_at = now_str
+                    try:
+                        started_dt = datetime.strptime(started_at, "%Y-%m-%d %H:%M:%S")
+                        now_dt = datetime.now()
+                        duration = int((now_dt - started_dt).total_seconds())
+                    except Exception:
+                        duration = 0
+                else:
+                    started_at = now_str
+                    duration = 0
+            else:
+                started_at = now_str
+                duration = 0
+        
+        unlocked_started_list.append(started_at)
+        consecutive_duration_list.append(duration if duration > 0 else "")
+
+    combined_df['連続利用開始日時'] = unlocked_started_list
+    combined_df['同一ポート継続利用時間(秒)'] = consecutive_duration_list
+
+    # カラム順序を整理 (新しく追加した station_id, lat, lon, AT種別, 連続利用開始日時, 同一ポート継続利用時間(秒) も含める)
+    columns_order = ['エリア名', '識別番号', '車両状態', 'ポート名', 'station_id', 'lat', 'lon', '電圧', 'AT通知受信日時', 'AT種別', '連続利用開始日時', '同一ポート継続利用時間(秒)']
     # 存在するカラムのみで再配置
     columns_order = [col for col in columns_order if col in combined_df.columns]
     combined_df = combined_df[columns_order]

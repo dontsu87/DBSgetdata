@@ -43,6 +43,7 @@
                 </div>
                 <div>交換対象ポート数: <span id="alert-ports-count" class="count">0</span> 箇所</div>
                 <div>交換必要車両: <span id="alert-bikes-count" class="count">0</span> 台</div>
+                <div id="unlocked-summary-container" style="display: none;">未施錠未返却車両: <span id="unlocked-bikes-count" class="count" style="color: #db2777;">0</span> 台</div>
                 <div id="summary-table-container"></div>
             </div>
 
@@ -140,6 +141,22 @@
                     <span class="panel-arrow">▼</span>
                 </div>
                 <div class="status-options-container" id="status-options-container">
+                    <!-- 未施錠未返却の判定閾値設定とフィルター -->
+                    <div style="padding: 8px 12px 0 12px; border-bottom: 1px solid #475569; padding-bottom: 8px; display: flex; flex-direction: column; gap: 6px;">
+                        <label style="font-size: 11px; font-weight: bold; color: #cbd5e1; display: flex; align-items: center; justify-content: space-between;">
+                            <span>⚠️ 未施錠判定閾値</span>
+                            <div style="display: flex; align-items: center; gap: 4px;">
+                                <input type="number" id="unlocked-threshold-input" value="2.0" step="0.5" min="0.1" style="width: 50px; padding: 2px 4px; font-size: 11px; border: 1px solid #cbd5e1; border-radius: 4px; text-align: center; color: #0f172a; background-color: #ffffff;">
+                                <span style="font-weight: normal; color: #cbd5e1;">時間</span>
+                            </div>
+                        </label>
+                        <label class="status-filter-item" style="padding: 4px 0; border: none; margin: 0; cursor: pointer; display: flex; align-items: center; justify-content: space-between;">
+                            <div style="display: flex; align-items: center;">
+                                <span id="unlocked-filter-label" style="font-weight: bold; color: #db2777;">⚠️ 未施錠未返却 (2.0時間以上)</span>
+                            </div>
+                            <input type="checkbox" id="unlocked-filter-checkbox" value="unlocked" checked>
+                        </label>
+                    </div>
                     <div id="status-checkboxes-container" style="padding-top: 8px;">
                         <!-- JavaScriptで動的生成 -->
                     </div>
