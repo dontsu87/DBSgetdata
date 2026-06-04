@@ -10,6 +10,7 @@
 !images/*.svg
 *.log
 *.json
+!manifest.json
 dashboard_data.json
 dashboard_data.js
 output/
