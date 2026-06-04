@@ -1,4 +1,32 @@
 document.addEventListener("DOMContentLoaded", function() {
+    // PWA用のmanifestを動的に生成してURLパラメータを維持
+    (function() {
+        const params = window.location.search;
+        const manifest = {
+            "name": "バッテリー低下車両マップ",
+            "short_name": "残量マップ",
+            "icons": [
+                {
+                    "src": "images/icon.svg",
+                    "sizes": "any",
+                    "type": "image/svg+xml"
+                }
+            ],
+            "start_url": "index.html" + params,
+            "display": "standalone",
+            "background_color": "#181d20",
+            "theme_color": "#7af916"
+        };
+        const stringManifest = JSON.stringify(manifest);
+        const blob = new Blob([stringManifest], {type: 'application/json'});
+        const manifestURL = URL.createObjectURL(blob);
+        
+        const link = document.createElement('link');
+        link.rel = 'manifest';
+        link.href = manifestURL;
+        document.head.appendChild(link);
+    })();
+
     // ヘルプマニュアルのリンクに、親アプリのURLパラメータを引き継ぐ
     const helpBtn = document.querySelector('.help-button');
     if (helpBtn && window.location.search) {
