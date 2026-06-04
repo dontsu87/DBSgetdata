@@ -53,7 +53,7 @@ class TestExporter(unittest.TestCase):
         self.assertEqual(len(loaded_df), 2)
         
         # カラム順序の検証
-        expected_columns = ['エリア名', '識別番号', '車両状態', 'ポート名', 'station_id', 'lat', 'lon', '電圧', 'AT通知受信日時']
+        expected_columns = ['エリア名', '識別番号', '車両状態', 'ポート名', 'station_id', 'lat', 'lon', '電圧', 'AT通知受信日時', '連続利用開始日時', '同一ポート継続利用時間(秒)']
         self.assertEqual(list(loaded_df.columns), expected_columns)
 
         # 内容の検証

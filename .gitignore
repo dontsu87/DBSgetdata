@@ -6,6 +6,8 @@
 *.xlsx
 *.png
 !docs/images/*.png
+!images/*.png
+!images/*.svg
 *.log
 *.json
 dashboard_data.json

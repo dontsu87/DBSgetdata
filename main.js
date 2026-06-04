@@ -427,10 +427,10 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // 初期ロードの実行
     if (isKindaiMode()) {
-        // kindaiモード時は凡例フィルタをサポーター用に設定 (5,4,3のみON、他はOFF)
+        // kindaiモード時は凡例フィルタをサポーター用に設定 (5,4のみON、他はOFF)
         document.querySelectorAll('.legend-filter').forEach(el => {
             const val = parseInt(el.value);
-            if (val === 5 || val === 4 || val === 3) {
+            if (val === 5 || val === 4) {
                 el.checked = true;
             } else {
                 el.checked = false;
