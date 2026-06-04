@@ -1,36 +1,18 @@
 document.addEventListener("DOMContentLoaded", function() {
-    // PWA用のmanifestを動的に生成してURLパラメータを維持
-    (function() {
-        const params = window.location.search;
-        const manifest = {
-            "name": "バッテリー低下車両マップ",
-            "short_name": "残量マップ",
-            "icons": [
-                {
-                    "src": "images/icon.svg",
-                    "sizes": "any",
-                    "type": "image/svg+xml"
-                }
-            ],
-            "start_url": "index.html" + params,
-            "display": "standalone",
-            "background_color": "#181d20",
-            "theme_color": "#7af916"
-        };
-        const stringManifest = JSON.stringify(manifest);
-        const blob = new Blob([stringManifest], {type: 'application/json'});
-        const manifestURL = URL.createObjectURL(blob);
-        
-        const link = document.createElement('link');
-        link.rel = 'manifest';
-        link.href = manifestURL;
-        document.head.appendChild(link);
-    })();
+    // URLパラメータの取得・保存・復元処理
+    let searchQuery = window.location.search;
+    if (searchQuery) {
+        // パラメータが存在する場合は保存する
+        localStorage.setItem('pwa_search_query', searchQuery);
+    } else {
+        // パラメータがない（PWA起動など）場合はlocalStorageから復元する
+        searchQuery = localStorage.getItem('pwa_search_query') || "";
+    }
 
     // ヘルプマニュアルのリンクに、親アプリのURLパラメータを引き継ぐ
     const helpBtn = document.querySelector('.help-button');
-    if (helpBtn && window.location.search) {
-        helpBtn.href = 'docs/manual.html' + window.location.search;
+    if (helpBtn && searchQuery) {
+        helpBtn.href = 'docs/manual.html' + searchQuery;
     }
 
     let map;
@@ -331,7 +313,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     function loadDashboardData(isAutoUpdate = false) {
-        const params = new URLSearchParams(window.location.search);
+        const params = new URLSearchParams(searchQuery);
         
         // 許可されている有効なパラメータがあるかチェック
         const hasKanriall = params.has('kanriall');
@@ -436,7 +418,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // 金沢大学サポーター用の設定と判定
     function isKindaiMode() {
-        const params = new URLSearchParams(window.location.search);
+        const params = new URLSearchParams(searchQuery);
         return params.has('kindai');
     }
 
@@ -475,7 +457,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // URLパラメータから制限エリアを取得
     function getRestrictedArea() {
-        const params = new URLSearchParams(window.location.search);
+        const params = new URLSearchParams(searchQuery);
         // kanriallモードのときは制限なし
         if (params.has('kanriall')) {
             return null;
@@ -561,7 +543,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // URLパラメータから制限する車両状態を取得
     function getRestrictedStatus() {
-        const params = new URLSearchParams(window.location.search);
+        const params = new URLSearchParams(searchQuery);
         // kanriallモード、またはarea指定モードのときは制限なし
         if (params.has('kanriall') || params.has('area')) {
             return null;
