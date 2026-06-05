@@ -1,4 +1,16 @@
 document.addEventListener("DOMContentLoaded", function() {
+    // iOS/iPadOSの判定とPWA挙動の制御
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    if (isIOS) {
+        // iOS/iPadOSの場合、PWA用のmanifestを削除することで、パラメータ付きの通常Webショートカットとしてホーム画面に追加させる
+        // (index.htmlに記述されたapple-mobile-web-appメタタグにより、全画面起動は維持されます)
+        const manifestLink = document.querySelector('link[rel="manifest"]');
+        if (manifestLink) {
+            manifestLink.remove();
+        }
+    }
+
     // URLパラメータの取得・保存・復元処理
     let searchQuery = window.location.search;
     if (searchQuery) {
