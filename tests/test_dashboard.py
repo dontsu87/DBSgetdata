@@ -55,7 +55,7 @@ def run_test():
         page = context.new_page()
         
         # コンソールエラー（JavaScriptのエラーなど）をキャッチして表示
-        page.on("console", lambda msg: print(f"[Browser Console] {msg.type}: {msg.text}") if msg.type == "error" else None)
+        page.on("console", lambda msg: print(f"[Browser Console] {msg.type}: {msg.text}"))
         
         try:
             dashboard = MapDashboardPage(page)
@@ -372,7 +372,67 @@ def run_test():
             page.wait_for_timeout(500)
             print("✅ ポート選択サマリーモードのトグル、選択、サマリー連動、カード表示、削除、ポップアップ抑止はすべて正常に動作しています。")
 
+            # --- キャッシュによる表示状態の保存・復元の検証 ---
+            print("\nStep 7.7: キャッシュによる表示状態の保存・復元の検証...")
             
+            # 動的にポート名を取得
+            test_port_name = page.evaluate("window._testInterface.getCachedDashboardData().ports[0].port_name")
+            
+            # 各種設定値を変更
+            print("状態を変更します...")
+            page.evaluate("window._testInterface.setUnlockedThresholdHours(3.5)")
+            page.evaluate("window._testInterface.setIsPortSelectionMode(true)")
+            page.evaluate(f"window._testInterface.setSelectedPortNames(['{test_port_name}'])")
+            page.evaluate("map.setView([35.681, 139.767], 15)")
+            page.locator("#basemap-header-btn").click()
+            page.wait_for_timeout(500)
+            page.locator("input[name='basemap-select'][value='googleSatellite']").click()
+            
+            # 少し待って保存を確実にする
+            page.wait_for_timeout(1000)
+            
+            # 保存されているlocalStorageの値を取得して出力
+            ls_values = page.evaluate("() => ({ ...localStorage })")
+            print(f"DEBUG - リロード前のlocalStorageの値: {ls_values}")
+            
+            # ページをリロード（再読み込み）
+            print("ページをリロードします...")
+            page.reload()
+            page.wait_for_timeout(2000) # 読み込みと描画の待機
+            
+            ls_values_after = page.evaluate("() => ({ ...localStorage })")
+            print(f"DEBUG - リロード後のlocalStorageの値: {ls_values_after}")
+            
+            # 状態が復元されているか検証
+            print("再読み込み後の状態を検証します...")
+            
+            # 1. 閾値
+            restored_threshold = page.evaluate("window._testInterface.getUnlockedThresholdHours()")
+            assert restored_threshold == 3.5, f"閾値が復元されていません: {restored_threshold}"
+            
+            # 2. ポート選択モード
+            restored_mode = page.evaluate("window._testInterface.getIsPortSelectionMode()")
+            assert restored_mode == True, "ポート選択モードが復元されていません"
+            
+            # 3. 選択されたポートリスト
+            restored_ports = page.evaluate("window._testInterface.getSelectedPortNames()")
+            assert test_port_name in restored_ports, f"選択されたポート名が復元されていません: {restored_ports}"
+            
+            # 4. 地図の位置・ズーム
+            restored_center = page.evaluate("() => [map.getCenter().lat, map.getCenter().lng]")
+            restored_zoom = page.evaluate("() => map.getZoom()")
+            assert abs(restored_center[0] - 35.681) < 0.01, f"緯度が復元されていません: {restored_center[0]}"
+            assert abs(restored_center[1] - 139.767) < 0.01, f"経度が復元されていません: {restored_center[1]}"
+            assert abs(restored_zoom - 15) < 0.1, f"ズームが復元されていません: {restored_zoom}"
+            
+            # 5. ベースマップ
+            page.locator("#basemap-header-btn").click()
+            page.wait_for_timeout(500)
+            basemap_checked = page.locator("input[name='basemap-select'][value='googleSatellite']").is_checked()
+            assert basemap_checked == True, "ベースマップのチェックが復元されていません"
+            
+            print("✅ キャッシュによる表示状態の保存・復元テストに完全合格しました！")
+
             # --- モバイルレイアウト（スマホ）の検証を開始します ---
             print("\n--- モバイルレイアウト（スマホ）の検証を開始します ---")
             mobile_context = browser.new_context(

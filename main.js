@@ -11,6 +11,30 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
+    // キャッシュ保存・読込用ヘルパー関数
+    function saveToCache(key, value) {
+        try {
+            localStorage.setItem(key, typeof value === 'object' ? JSON.stringify(value) : value);
+        } catch (e) {
+            console.warn('Failed to save to localStorage:', e);
+        }
+    }
+
+    function loadFromCache(key, defaultValue) {
+        try {
+            const value = localStorage.getItem(key);
+            if (value === null) return defaultValue;
+            try {
+                return JSON.parse(value);
+            } catch (e) {
+                return value;
+            }
+        } catch (e) {
+            console.warn('Failed to load from localStorage:', e);
+            return defaultValue;
+        }
+    }
+
     // URLパラメータの取得・保存・復元処理
     let searchQuery = window.location.search;
     if (searchQuery) {
@@ -34,13 +58,13 @@ document.addEventListener("DOMContentLoaded", function() {
     // データキャッシュ、マーカーレイヤーグループ、選択されたエリア、選択された車両状態の定義
     let cachedDashboardData = null;
     let markerGroup;
-    let selectedArea = ""; // 選択中のエリア名
-    let checkedStatuses = []; // 選択中の車両状態フィルターの配列
-    let unlockedThresholdHours = 2.0; // 未施錠未返却の判定閾値（時間）
+    let selectedArea = ""; // 選択中のエリア名（initAreaTabsでキャッシュ適用）
+    let checkedStatuses = []; // 選択中の車両状態フィルターの配列（initStatusFilterでキャッシュ適用）
+    let unlockedThresholdHours = loadFromCache('unlocked_threshold_hours', 2.0); // 未施錠未返却の判定閾値（時間）
 
     // ポート選択サマリーモード用状態
-    let isPortSelectionMode = false;
-    let selectedPortNames = []; // 選択されたポート名の配列
+    let isPortSelectionMode = loadFromCache('is_port_selection_mode', false);
+    let selectedPortNames = loadFromCache('selected_port_names', []); // 選択されたポート名の配列
 
     
     // 未施錠未返却フィルターと閾値入力要素の取得・リスナー設定
@@ -49,6 +73,8 @@ document.addEventListener("DOMContentLoaded", function() {
     const unlockedFilterLabel = document.getElementById('unlocked-filter-label');
 
     if (unlockedThresholdInput) {
+        unlockedThresholdInput.value = unlockedThresholdHours.toFixed(1);
+        
         unlockedThresholdInput.addEventListener('change', function() {
             let val = parseFloat(unlockedThresholdInput.value);
             if (isNaN(val) || val <= 0) {
@@ -56,6 +82,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 unlockedThresholdInput.value = "2.0";
             }
             unlockedThresholdHours = val;
+            saveToCache('unlocked_threshold_hours', val);
             if (unlockedFilterLabel) {
                 unlockedFilterLabel.innerText = `⚠️ 未施錠未返却 (${unlockedThresholdHours.toFixed(1)}時間以上)`;
             }
@@ -66,6 +93,7 @@ document.addEventListener("DOMContentLoaded", function() {
             let val = parseFloat(unlockedThresholdInput.value);
             if (!isNaN(val) && val > 0) {
                 unlockedThresholdHours = val;
+                saveToCache('unlocked_threshold_hours', val);
                 if (unlockedFilterLabel) {
                     unlockedFilterLabel.innerText = `⚠️ 未施錠未返却 (${unlockedThresholdHours.toFixed(1)}時間以上)`;
                 }
@@ -75,9 +103,17 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     if (unlockedFilterCheckbox) {
+        const isUnlockedFilterChecked = loadFromCache('unlocked_filter_enabled', true);
+        unlockedFilterCheckbox.checked = isUnlockedFilterChecked;
+
         unlockedFilterCheckbox.addEventListener('change', function() {
+            saveToCache('unlocked_filter_enabled', unlockedFilterCheckbox.checked);
             updateFilterAndRender(false);
         });
+    }
+
+    if (unlockedFilterLabel) {
+        unlockedFilterLabel.innerText = `⚠️ 未施錠未返却 (${unlockedThresholdHours.toFixed(1)}時間以上)`;
     }
 
     // 自動更新保留用の制御状態
@@ -92,12 +128,16 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
     // 1. 地図の初期設定 (デフォルト表示位置は金沢)
+    const cachedLat = loadFromCache('map_center_lat', 36.568);
+    const cachedLng = loadFromCache('map_center_lng', 136.648);
+    const cachedZoom = loadFromCache('map_zoom', 13);
     map = L.map('map', {
         zoomControl: false, // タブレットで邪魔にならないようズームボタンを非表示（ピンチ操作可能）
         tap: true,          // タッチ端末のクリックラグ解消
         doubleClickZoom: false, // ダブルクリックズームを無効化（ダブルタップドラッグと競合するため）
         zoomSnap: 0        // 完全に滑らかな無段階ズームを可能にする
-    }).setView([36.568, 136.648], 13);
+    }).setView([cachedLat, cachedLng], cachedZoom);
+    window.map = map;
 
     // 【実験的機能 / 未完全】ダブルタップ＋ドラッグズームの自前実装 (Android/Chrome等のブラウザジェスチャー競合回避用)
     // ※環境（Android Chrome等）によってはブラウザ側の標準動作と競合し、正常に機能しない場合があります。
@@ -177,18 +217,27 @@ document.addEventListener("DOMContentLoaded", function() {
         })
     };
 
-    // デフォルトでGoogleマップ（道路）を表示
-    let currentBaseLayer = baseMaps.googleRoad;
+    // キャッシュされたベースマップがあれば設定、なければデフォルトでGoogleマップ（道路）を表示
+    const cachedBasemap = loadFromCache('selected_basemap', 'googleRoad');
+    let currentBaseLayer = baseMaps[cachedBasemap] || baseMaps.googleRoad;
     currentBaseLayer.addTo(map);
+
+    // ラジオボタンの選択状態もキャッシュに合わせる
+    const selectedRadio = document.querySelector(`input[name="basemap-select"][value="${cachedBasemap}"]`);
+    if (selectedRadio) {
+        selectedRadio.checked = true;
+    }
 
     // ベースマップの切り替えイベントリスナー登録
     document.querySelectorAll('input[name="basemap-select"]').forEach(radio => {
         radio.addEventListener('change', function(e) {
             const selectedVal = e.target.value;
+            console.log("DEBUG - basemap change event triggered:", selectedVal);
             if (baseMaps[selectedVal]) {
                 map.removeLayer(currentBaseLayer);
                 currentBaseLayer = baseMaps[selectedVal];
                 currentBaseLayer.addTo(map);
+                saveToCache('selected_basemap', selectedVal);
             }
         });
     });
@@ -270,8 +319,14 @@ document.addEventListener("DOMContentLoaded", function() {
     const selectionToggleText = document.querySelector('.selection-toggle-text');
 
     if (selectionModeCheckbox) {
+        selectionModeCheckbox.checked = isPortSelectionMode;
+        if (selectionToggleText) {
+            selectionToggleText.innerText = isPortSelectionMode ? '選択モード ON' : '選択モード OFF';
+        }
+
         selectionModeCheckbox.addEventListener('change', function() {
             isPortSelectionMode = selectionModeCheckbox.checked;
+            saveToCache('is_port_selection_mode', isPortSelectionMode);
             if (selectionToggleText) {
                 selectionToggleText.innerText = isPortSelectionMode ? '選択モード ON' : '選択モード OFF';
             }
@@ -280,6 +335,7 @@ document.addEventListener("DOMContentLoaded", function() {
             // モードOFFになった場合は選択リストをクリアする
             if (!isPortSelectionMode) {
                 selectedPortNames = [];
+                saveToCache('selected_port_names', selectedPortNames);
                 const selectedContainer = document.getElementById('selected-ports-container');
                 if (selectedContainer) {
                     selectedContainer.style.display = 'none';
@@ -328,6 +384,11 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     map.on('moveend', function() {
+        const center = map.getCenter();
+        saveToCache('map_center_lat', center.lat);
+        saveToCache('map_center_lng', center.lng);
+        saveToCache('map_zoom', map.getZoom());
+
         // 操作終了後、5秒待ってから保留中の更新があれば適用
         if (mapInteractionTimer) clearTimeout(mapInteractionTimer);
         mapInteractionTimer = setTimeout(function() {
@@ -418,8 +479,9 @@ document.addEventListener("DOMContentLoaded", function() {
                 initAreaTabs(cachedDashboardData);
                 initStatusFilter(cachedDashboardData);
                 
-                // 自動更新（isAutoUpdate=true）の時はズーム・位置を動かさない（維持する）
-                const shouldFitBounds = !isAutoUpdate && isFirstLoad;
+                // 自動更新（isAutoUpdate=true）の時、またはキャッシュされた位置情報がある場合は初回ロードでもズーム位置を維持する
+                const hasCachedPosition = localStorage.getItem('map_center_lat') !== null;
+                const shouldFitBounds = !isAutoUpdate && isFirstLoad && !hasCachedPosition;
                 updateFilterAndRender(shouldFitBounds);
                 
                 isFirstLoad = false;
@@ -448,7 +510,8 @@ document.addEventListener("DOMContentLoaded", function() {
                     initAreaTabs(cachedDashboardData);
                     initStatusFilter(cachedDashboardData);
                     
-                    const shouldFitBounds = !isAutoUpdate && isFirstLoad;
+                    const hasCachedPosition = localStorage.getItem('map_center_lat') !== null;
+                    const shouldFitBounds = !isAutoUpdate && isFirstLoad && !hasCachedPosition;
                     updateFilterAndRender(shouldFitBounds);
                     
                     isFirstLoad = false;
@@ -536,7 +599,15 @@ document.addEventListener("DOMContentLoaded", function() {
         
         // デフォルトは金沢エリア（KNZを含むもの）を最優先、なければ最初のエリア
         if (!selectedArea) {
-            selectedArea = areas.find(a => a.includes("KNZ")) || areas[0] || "";
+            if (!limitAreaParam && !isKindaiMode()) {
+                const cachedArea = loadFromCache('selected_area', '');
+                if (cachedArea && areas.includes(cachedArea)) {
+                    selectedArea = cachedArea;
+                }
+            }
+            if (!selectedArea) {
+                selectedArea = areas.find(a => a.includes("KNZ")) || areas[0] || "";
+            }
         }
 
         const currentAreasStr = areas.sort().join(',');
@@ -578,6 +649,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 document.querySelectorAll('.area-tab').forEach(t => t.classList.remove('active'));
                 btn.classList.add('active');
                 selectedArea = area;
+                saveToCache('selected_area', area);
                 updateFilterAndRender();
             });
             
@@ -630,9 +702,17 @@ document.addEventListener("DOMContentLoaded", function() {
         const sortedStatuses = Array.from(statuses).sort();
         const currentStatusesStr = sortedStatuses.join(',');
 
-        // 初回ロード時、または checkedStatuses が空のときはすべて選択状態にする
+        // 初回ロード時、または checkedStatuses が空のときはキャッシュから復元、無ければすべて選択状態にする
         if (checkedStatuses.length === 0) {
-            checkedStatuses = [...sortedStatuses];
+            const cachedStatuses = loadFromCache('checked_statuses', null);
+            if (Array.isArray(cachedStatuses)) {
+                checkedStatuses = cachedStatuses.filter(s => sortedStatuses.includes(s));
+                if (checkedStatuses.length === 0) {
+                    checkedStatuses = [...sortedStatuses];
+                }
+            } else {
+                checkedStatuses = [...sortedStatuses];
+            }
         } else {
             // 以前選択されていたステータスのうち、現在も存在するものだけを維持
             // かつ、もし新しいステータスがデータ内に出現した場合は、デフォルトでONにする
@@ -677,6 +757,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 } else {
                     checkedStatuses = checkedStatuses.filter(s => s !== status);
                 }
+                saveToCache('checked_statuses', checkedStatuses);
                 updateFilterAndRender();
             });
 
@@ -997,6 +1078,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         selectedPortNames.push(port.port_name);
                     }
                     console.log("Selected Ports:", selectedPortNames);
+                    saveToCache('selected_port_names', selectedPortNames);
                     
                     // サマリーとカードリストの再描画
                     updateFilterAndRender(false);
@@ -1040,6 +1122,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         L.DomEvent.stopPropagation(e);
                         const targetName = this.getAttribute('data-port');
                         selectedPortNames = selectedPortNames.filter(name => name !== targetName);
+                        saveToCache('selected_port_names', selectedPortNames);
                         updateFilterAndRender(false);
                     });
                     
@@ -1294,6 +1377,7 @@ document.addEventListener("DOMContentLoaded", function() {
         getSelectedPortNames: () => selectedPortNames,
         setSelectedPortNames: (val) => {
             selectedPortNames = val;
+            saveToCache('selected_port_names', selectedPortNames);
             updateFilterAndRender(false);
         }
     };
