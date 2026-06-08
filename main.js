@@ -1090,6 +1090,12 @@ document.addEventListener("DOMContentLoaded", function() {
                     } else {
                         // 選択
                         selectedPortNames.push(port.port_name);
+                        
+                        // ポートが新しく選択された時はサマリーパネルを自動的に表示する
+                        const summaryPanel = document.getElementById('summary-panel');
+                        if (summaryPanel && window.innerWidth <= 768) {
+                            summaryPanel.classList.add('show-mobile-drawer');
+                        }
                     }
                     console.log("Selected Ports:", selectedPortNames);
                     saveToCache('selected_port_names', selectedPortNames);

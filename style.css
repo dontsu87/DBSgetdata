@@ -1152,7 +1152,7 @@ header h1 {
 /* モバイル表示で選択モードON時のコンパクトなサマリー表示スタイル */
 @media screen and (max-width: 768px) {
     .summary-panel.selection-active-mobile {
-        display: block !important;
+        display: none !important; /* 通常は非表示 */
         position: fixed;
         top: auto !important; /* 元の top: 15px を打ち消す */
         bottom: 80px; /* フローティングバーの上に配置 */
@@ -1169,9 +1169,13 @@ header h1 {
         z-index: 2000;
         transition: none; /* スライドインはさせずにその場に浮かせる */
     }
+
+    .summary-panel.selection-active-mobile.show-mobile-drawer {
+        display: block !important; /* トグルの時だけ表示 */
+    }
     
-    /* 選択モードONで表示中のときは、GPSボタンをさらに上に上げる */
-    .selection-active-mode-layout .gps-button {
+    /* 選択モードONで表示中のときは、GPSボタンをさらに上に上げる（ただしサマリーが表示されているときのみ） */
+    .selection-active-mode-layout:has(.summary-panel.show-mobile-drawer) .gps-button {
         bottom: calc(40vh + 95px) !important;
     }
     
@@ -1194,47 +1198,10 @@ header h1 {
         font-size: 10px;
     }
     .summary-panel.selection-active-mobile .panel-header-mobile {
-        display: flex !important; /* ヘッダーを表示して折りたためるようにする */
-        border-bottom: none;
-        margin-bottom: 0;
-        padding-bottom: 0;
-    }
-    .summary-panel.selection-active-mobile .panel-header-mobile .close-panel-btn {
-        display: none; /* 選択モード時は閉じるボタン非表示 */
-    }
-}
-
-/* ========================================== */
-/* サマリーパネルの折りたたみ（最小化）スタイル */
-/* ========================================== */
-.summary-panel.collapsed #selected-ports-container,
-.summary-panel.collapsed > div:not(.panel-header-mobile),
-.summary-panel.collapsed #summary-table-container {
-    display: none !important;
-}
-
-.summary-panel.collapsed {
-    padding-bottom: 8px !important;
-    max-height: 42px !important;
-    min-height: auto !important;
-    overflow: hidden !important;
-}
-
-.summary-panel .summary-toggle-arrow {
-    display: inline-block;
-    transition: transform 0.2s ease;
-    margin-left: 6px;
-    font-size: 10px;
-}
-
-.summary-panel.collapsed .summary-toggle-arrow {
-    transform: rotate(-90deg);
-}
-
-@media screen and (max-width: 768px) {
-    /* 選択モードONでサマリーが折りたたまれているとき、GPSボタンの位置を調整 */
-    .selection-active-mode-layout.summary-collapsed .gps-button {
-        bottom: 145px !important;
+        display: flex !important; /* 選択モード時でもヘッダーと閉じるボタンを表示 */
+        border-bottom: 1px solid #475569;
+        margin-bottom: 8px;
+        padding-bottom: 4px;
     }
 }
 

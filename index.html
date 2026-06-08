@@ -260,31 +260,11 @@
 
             // すべてのドロワーの「閉じる」ボタンイベント設定
             document.querySelectorAll('.close-panel-btn').forEach(btn => {
-                btn.addEventListener('click', function(e) {
-                    e.stopPropagation(); // 折りたたみイベントが発火するのを防ぐ
+                btn.addEventListener('click', function() {
                     const drawer = btn.closest('.show-mobile-drawer');
                     if (drawer) drawer.classList.remove('show-mobile-drawer');
                 });
             });
-
-            // サマリーパネルの折りたたみトグル
-            const summaryHeaderMobile = document.getElementById('summary-header-mobile');
-            const summaryPanel = document.getElementById('summary-panel');
-            if (summaryHeaderMobile && summaryPanel) {
-                summaryHeaderMobile.addEventListener('click', function(e) {
-                    // ✕ボタンがクリックされた時は折りたたまない
-                    if (e.target.classList.contains('close-panel-btn')) return;
-                    
-                    summaryPanel.classList.toggle('collapsed');
-                    
-                    // GPSボタンの位置調整用クラスをbodyにトグル
-                    if (summaryPanel.classList.contains('collapsed')) {
-                        document.body.classList.add('summary-collapsed');
-                    } else {
-                        document.body.classList.remove('summary-collapsed');
-                    }
-                });
-            }
         });
     </script>
 </body>
