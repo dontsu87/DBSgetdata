@@ -63,8 +63,55 @@ def run_test():
             # テストサーバーのトップページ（index.html）へアクセス
             url = f"http://localhost:{PORT}/index.html?area=FKI_%E3%81%B5%E3%81%8F%E3%83%81%E3%83%A3%E3%83%AA"
 
+            # 外部APIのFetchをモック化してローカルの dashboardData が常に使われるようにする
+            # ページ読み込み時に最初から適用されるように init_script で追加します
+            page.add_init_script("""() => {
+                window.fetch = async (url) => {
+                    if (url.includes('dashboard_data.json')) {
+                        return {
+                            ok: true,
+                            json: async () => window.dashboardData
+                        };
+                    }
+                    throw new Error('Not found in mock fetch');
+                };
+            }""")
+
             print(f"Accessing URL: {url}")
             dashboard.navigate(url)
+            page.wait_for_timeout(1000)
+
+            # E2Eテストが実データの内容に依存して落ちるのを防ぐため、初期警告車両（レベル5）をモックデータに注入して再描画
+            print("テスト用の初期警告車両（レベル5）を注入します...")
+            page.evaluate("""() => {
+                const currentData = window._testInterface.getCachedDashboardData();
+                if (currentData && currentData.ports && currentData.ports.length > 0) {
+                    const testData = JSON.parse(JSON.stringify(currentData));
+                    // 最初のポートに確実にレベル5の車両が存在するように改変する
+                    testData.ports[0].bikes = [
+                        {
+                            "bike_id": "TEST-BIKE-LV5",
+                            "status": "利用可能",
+                            "model_name": "DD",
+                            "voltage": 33.5,
+                            "alert_level": 5,
+                            "alert_level_name": "最低",
+                            "is_unregistered": false,
+                            "thresholds": {"at_error": 34.8, "strong": 35.9, "lv1": 36.5, "lv2": 38.4, "lv3": null},
+                            "at_time": "2026-06-08 11:30:00",
+                            "unlocked_started_at": "",
+                            "consecutive_use_duration": 0
+                        }
+                    ];
+                    testData.ports[0].total_bikes = 1;
+                    window._testInterface.setCachedDashboardData(testData);
+                    window._testInterface.updateFilterAndRender(true);
+                }
+            }""")
+            page.wait_for_timeout(1000)
+
+
+
             
             # 基本的な要素の存在チェック
             print("Step 1: 基本要素の表示検証...")
@@ -251,6 +298,80 @@ def run_test():
             # ポップアップを閉じる
             page.locator(".leaflet-popup-close-button").dispatch_event("click")
             page.wait_for_timeout(500)
+            
+            # --- ポート選択サマリーモードの動作検証 ---
+            print("\nStep 7.6: ポート選択サマリーモードの動作検証...")
+            
+            # モードトグル用のチェックボックスとテキストを取得
+            selection_checkbox = page.locator("#selection-mode-checkbox")
+            selection_text = page.locator(".selection-toggle-text")
+            
+            # 初期状態はOFFであることを確認
+            expect(selection_checkbox).not_to_be_checked()
+            expect(selection_text).to_have_text("選択モード OFF")
+            
+            # 選択モードをONにする
+            print("選択モードを ON にします...")
+            page.evaluate("window._testInterface.setIsPortSelectionMode(true)")
+            page.wait_for_timeout(500)
+            expect(selection_checkbox).to_be_checked()
+            expect(selection_text).to_have_text("選択モード ON")
+            
+            # この状態での初期サマリー数を記録
+            sel_initial_ports, sel_initial_bikes = dashboard.get_summary_data()
+            print(f"選択モード初期サマリー - ポート: {sel_initial_ports} / 車両: {sel_initial_bikes}")
+            
+            # 最初のマーカーをクリックして選択（通常ポップアップは開かない）
+            print("最初のマーカーをクリックして選択します...")
+            dashboard.markers.nth(0).dispatch_event("click")
+            page.wait_for_timeout(500)
+            
+            # ポップアップが開いていないことを確認
+            popup = page.locator(".leaflet-popup-content")
+            expect(popup).to_be_hidden()
+            
+            # 選択されたポートリストのカードコンテナが表示され、カードが1つ存在することを確認
+            selected_container = page.locator("#selected-ports-container")
+            selected_cards = page.locator(".selected-port-card")
+            expect(selected_container).to_be_visible()
+            expect(selected_cards).to_have_count(1)
+            
+            # サマリー集計が選択されたポートの値に絞り込まれていることを確認（交換対象ポート数が1になっているはず）
+            sel_filtered_ports, sel_filtered_bikes = dashboard.get_summary_data()
+            print(f"1個選択後サマリー - ポート: {sel_filtered_ports} / 車両: {sel_filtered_bikes}")
+            assert sel_filtered_ports == "1", f"選択したポート数に絞り込まれていません: {sel_filtered_ports}"
+            
+            # 個別カードの✕ボタンをクリックして選択解除する動作の確認
+            print("カードの ✕ ボタンをクリックして選択を解除します...")
+            page.locator(".selected-port-card-remove").first.click()
+            page.wait_for_timeout(500)
+            
+            # リストが空になり、コンテナが非表示になることを確認
+            expect(selected_container).to_be_hidden()
+            expect(selected_cards).to_have_count(0)
+            
+            # サマリーがエリア全体の初期値に復元されたことを確認
+            sel_restored_ports, sel_restored_bikes = dashboard.get_summary_data()
+            print(f"選択解除後サマリー - ポート: {sel_restored_ports} / 車両: {sel_restored_bikes}")
+            assert sel_restored_ports == sel_initial_ports, "選択解除後にポート数が初期値に戻りませんでした"
+            
+            # 選択モードをOFFにする
+            print("選択モードを OFF に戻します...")
+            page.evaluate("window._testInterface.setIsPortSelectionMode(false)")
+            page.wait_for_timeout(500)
+            expect(selection_checkbox).not_to_be_checked()
+            expect(selection_text).to_have_text("選択モード OFF")
+            
+            # 再びマーカーをクリックすると通常通りポップアップが開くことを確認
+            print("通常モード復帰後にマーカーをクリックしてポップアップ確認...")
+            dashboard.click_first_marker_and_verify_popup()
+            expect(popup).to_be_visible()
+            
+            # ポップアップを閉じる
+            page.locator(".leaflet-popup-close-button").dispatch_event("click")
+            page.wait_for_timeout(500)
+            print("✅ ポート選択サマリーモードのトグル、選択、サマリー連動、カード表示、削除、ポップアップ抑止はすべて正常に動作しています。")
+
             
             # --- モバイルレイアウト（スマホ）の検証を開始します ---
             print("\n--- モバイルレイアウト（スマホ）の検証を開始します ---")

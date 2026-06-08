@@ -25,12 +25,22 @@
         <header>
             <h1 style="display: flex; align-items: center; gap: 8px;">🔋 バッテリー低下車両マップ</h1>
             <div style="display: flex; align-items: center; gap: 12px;">
+                <!-- ポート選択モードトグルスイッチ -->
+                <div class="selection-mode-toggle-container">
+                    <label class="selection-toggle-label" for="selection-mode-checkbox">
+                        <input type="checkbox" id="selection-mode-checkbox">
+                        <span class="selection-toggle-button">
+                            <span class="selection-toggle-icon">📌</span>
+                            <span class="selection-toggle-text">選択モード OFF</span>
+                        </span>
+                    </label>
+                </div>
                 <div id="update-time" class="update-time">
                     データ取得中...
                     <span class="update-note">リアルタイムではないため、数分前の情報が表示されている可能性があります</span>
                 </div>
                 <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 2px;">
-                    <span style="font-size: 9px; color: #64748b; font-family: monospace; font-weight: bold; line-height: 1;">ver.20260608113500</span>
+                    <span style="font-size: 9px; color: #64748b; font-family: monospace; font-weight: bold; line-height: 1;">ver.20260608114000</span>
                     <a href="docs/manual.html" target="_blank" class="help-button" title="使い方マニュアルを開く">❓ ヘルプ</a>
                 </div>
             </div>
@@ -48,6 +58,11 @@
                 <div class="panel-header-mobile">
                     <span style="font-weight:bold;">📊 エリア状況サマリー</span>
                     <button class="close-panel-btn">✕</button>
+                </div>
+                <!-- 選択されたポート一覧カード表示用コンテナ -->
+                <div id="selected-ports-container" class="selected-ports-container" style="display: none;">
+                    <div class="selected-ports-title">📌 選択中のポート</div>
+                    <div id="selected-ports-list" class="selected-ports-list"></div>
                 </div>
                 <div>交換対象ポート数: <span id="alert-ports-count" class="count">0</span> 箇所</div>
                 <div>交換必要車両: <span id="alert-bikes-count" class="count">0</span> 台</div>

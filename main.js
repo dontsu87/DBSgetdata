@@ -37,6 +37,11 @@ document.addEventListener("DOMContentLoaded", function() {
     let selectedArea = ""; // 選択中のエリア名
     let checkedStatuses = []; // 選択中の車両状態フィルターの配列
     let unlockedThresholdHours = 2.0; // 未施錠未返却の判定閾値（時間）
+
+    // ポート選択サマリーモード用状態
+    let isPortSelectionMode = false;
+    let selectedPortNames = []; // 選択されたポート名の配列
+
     
     // 未施錠未返却フィルターと閾値入力要素の取得・リスナー設定
     const unlockedThresholdInput = document.getElementById('unlocked-threshold-input');
@@ -259,6 +264,33 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // ズームコントロールを手動で左上に小さく追加 (右上の状態フィルタと重ならないように調整)
     L.control.zoom({ position: 'topleft' }).addTo(map);
+
+    // --- ポート選択モード トグルスイッチ制御 ---
+    const selectionModeCheckbox = document.getElementById('selection-mode-checkbox');
+    const selectionToggleText = document.querySelector('.selection-toggle-text');
+
+    if (selectionModeCheckbox) {
+        selectionModeCheckbox.addEventListener('change', function() {
+            isPortSelectionMode = selectionModeCheckbox.checked;
+            if (selectionToggleText) {
+                selectionToggleText.innerText = isPortSelectionMode ? '選択モード ON' : '選択モード OFF';
+            }
+            console.log("Port Selection Mode:", isPortSelectionMode);
+            
+            // モードOFFになった場合は選択リストをクリアする
+            if (!isPortSelectionMode) {
+                selectedPortNames = [];
+                const selectedContainer = document.getElementById('selected-ports-container');
+                if (selectedContainer) {
+                    selectedContainer.style.display = 'none';
+                }
+            }
+            
+            // 状態切り替え後に再描画
+            updateFilterAndRender(false);
+        });
+    }
+
     
     // マーカーレイヤーグループを初期化して地図に追加
     markerGroup = L.layerGroup().addTo(map);
@@ -692,6 +724,14 @@ document.addEventListener("DOMContentLoaded", function() {
         let allFilteredBikes = []; // フィルターに合致した全自転車を蓄積
         let activePopupMarker = null; // 現在開いていたポート名に一致する新しいマーカー
 
+        // 選択されたポートがあるかどうか
+        const hasSelectedPorts = isPortSelectionMode && selectedPortNames.length > 0;
+
+        // まず各ポートについて、マッチする自転車や描画条件を評価する
+        const evaluatedPorts = [];
+        const thresholdSec = unlockedThresholdHours * 3600;
+        const isUnlockedFilterChecked = unlockedFilterCheckbox ? unlockedFilterCheckbox.checked : true;
+
         data.ports.forEach(port => {
             const lat = parseFloat(port.lat);
             const lon = parseFloat(port.lon);
@@ -716,9 +756,6 @@ document.addEventListener("DOMContentLoaded", function() {
             const isEmptyPort = (parseInt(port.total_bikes) === 0 || !port.bikes || port.bikes.length === 0);
 
             // 2. 警告レベルフィルター ＆ 車両状態フィルターを適用：合致する自転車のみを抽出
-            const isUnlockedFilterChecked = unlockedFilterCheckbox ? unlockedFilterCheckbox.checked : true;
-            const thresholdSec = unlockedThresholdHours * 3600;
-
             const matchingBikes = isEmptyPort ? [] : port.bikes.filter(bike => {
                 const isUnlocked = bike.consecutive_use_duration >= thresholdSec;
                 const isLevelMatch = checkedLevels.includes(bike.alert_level);
@@ -743,15 +780,40 @@ document.addEventListener("DOMContentLoaded", function() {
                 return; // 該当する自転車がいないポートは描画しない
             }
 
-            // 合致した自転車を全体バッファに蓄積
-            allFilteredBikes.push(...matchingBikes);
+            // 評価結果を格納
+            evaluatedPorts.push({
+                port: port,
+                lat: lat,
+                lon: lon,
+                isEmptyPort: isEmptyPort,
+                isActuallyEmpty: isEmptyPort || matchingBikes.length === 0,
+                matchingBikes: matchingBikes
+            });
+        });
 
-            validCoordinates.push([lat, lon]);
-            filteredPortsCount++;
-            filteredBikesCount += matchingBikes.length;
+        // 選択されたポートがある場合は、サマリー用のallFilteredBikesには選択ポートのものだけを含める
+        evaluatedPorts.forEach(item => {
+            const isSelected = selectedPortNames.includes(item.port.port_name);
+            
+            // サマリー集計に含める条件：
+            // ポート選択モードではない、もしくは選択ポートが0個のときはすべて集計。
+            // 選択されたポートがあるときは、選択されたポートのみを集計。
+            if (!hasSelectedPorts || isSelected) {
+                allFilteredBikes.push(...item.matchingBikes);
+                filteredPortsCount++;
+                filteredBikesCount += item.matchingBikes.length;
+                validCoordinates.push([item.lat, item.lon]);
+            }
+        });
 
-            // 表示対象の自転車が0台かどうかのフラグ
-            const isActuallyEmpty = isEmptyPort || matchingBikes.length === 0;
+        // マーカーの生成と地図への追加
+        evaluatedPorts.forEach(item => {
+            const port = item.port;
+            const lat = item.lat;
+            const lon = item.lon;
+            const isActuallyEmpty = item.isActuallyEmpty;
+            const matchingBikes = item.matchingBikes;
+            const isSelected = selectedPortNames.includes(port.port_name);
 
             let markerIcon;
             let zIndexOrder = 100;
@@ -759,8 +821,12 @@ document.addEventListener("DOMContentLoaded", function() {
             
             if (isActuallyEmpty) {
                 // 自転車0台：正常より目立たない薄いグレー、中に「0」を薄く表示、サイズ[20,20]
+                let className = 'port-marker-empty';
+                if (isSelected) {
+                    className += ' port-marker-selected';
+                }
                 markerIcon = L.divIcon({
-                    className: 'port-marker-empty',
+                    className: className,
                     html: '<div>0</div>',
                     iconSize: [20, 20],
                     iconAnchor: [10, 10]
@@ -798,6 +864,12 @@ document.addEventListener("DOMContentLoaded", function() {
                     zIndexOrder += 30000; // 最前面に出す
                 }
 
+                // ポートが選択状態の場合のCSSクラス追加
+                if (isSelected) {
+                    className += ' port-marker-selected';
+                    zIndexOrder += 50000; // 選択されたマーカーは最前面に
+                }
+
                 // 正常(0)も含むすべてのレベルで台数を表示するように統一
                 markerIcon = L.divIcon({
                     className: className,
@@ -813,17 +885,13 @@ document.addEventListener("DOMContentLoaded", function() {
                 riseOnHover: true
             }).addTo(markerGroup);
 
-            // Leafletの「緯度ベースY座標 + zIndexOffset」による自動z-index計算を上書き
-            // デフォルトでは南側ポートほどz-indexが高くなり、台数差を上回る場合がある
-            // _updateZIndex をオーバーライドして「深刻度→台数」の純粋な優先順序を保証する
-            // riseOnHover の offset引数（デフォルト250）はそのまま残してホバー動作を維持
+            // Leafletの自動z-index計算を上書き
             const fixedZIndex = zIndexOrder;
             marker._updateZIndex = function(offset) {
                 if (this._icon) {
                     this._icon.style.zIndex = fixedZIndex + (offset || 0);
                 }
             };
-            // addTo直後（markerGroupがmapに既に追加済みの場合）に即時適用
             if (marker._icon) {
                 marker._icon.style.zIndex = fixedZIndex;
             }
@@ -906,21 +974,92 @@ document.addEventListener("DOMContentLoaded", function() {
                 popupContent += `</ul>`;
             }
 
+            // ポップアップの設定
             marker.bindPopup(popupContent, {
                 maxWidth: 320,
                 autoPan: true,
                 autoPanPadding: L.point(50, 50)
             });
 
-            // もしこのポート名が、さきほど開いていたポート名と一致すれば記憶する
-            if (openPortName && port.port_name === openPortName) {
+            // クリックイベントのカスタマイズ（選択モード時はトグル）
+            marker.off('click'); // 既定のクリックイベントクリア
+            marker.on('click', function(e) {
+                if (isPortSelectionMode) {
+                    // ポップアップが開くのを抑止
+                    L.DomEvent.stopPropagation(e);
+                    
+                    const index = selectedPortNames.indexOf(port.port_name);
+                    if (index > -1) {
+                        // 選択解除
+                        selectedPortNames.splice(index, 1);
+                    } else {
+                        // 選択
+                        selectedPortNames.push(port.port_name);
+                    }
+                    console.log("Selected Ports:", selectedPortNames);
+                    
+                    // サマリーとカードリストの再描画
+                    updateFilterAndRender(false);
+                } else {
+                    // 通常モード時はポップアップを開く
+                    marker.openPopup();
+                }
+            });
+
+            // もしこのポート名が、さきほど開いていたポート名と一致すれば記憶する（選択モード時はポップアップを復旧しない）
+            if (!isPortSelectionMode && openPortName && port.port_name === openPortName) {
                 activePopupMarker = marker;
             }
         });
 
+        // 選択されたポート一覧カードのUI描画
+        const selectedPortsContainer = document.getElementById('selected-ports-container');
+        const selectedPortsList = document.getElementById('selected-ports-list');
+        if (selectedPortsContainer && selectedPortsList) {
+            if (isPortSelectionMode && selectedPortNames.length > 0) {
+                selectedPortsContainer.style.display = 'block';
+                selectedPortsList.innerHTML = '';
+                
+                selectedPortNames.forEach(portName => {
+                    // このポートに含まれる警告車両台数を調べる
+                    const portItem = evaluatedPorts.find(item => item.port.port_name === portName);
+                    const bikeCount = portItem ? portItem.matchingBikes.length : 0;
+                    
+                    const card = document.createElement('div');
+                    card.className = 'selected-port-card';
+                    card.innerHTML = `
+                        <div class="selected-port-card-info" title="${portName}">
+                            <span class="selected-port-card-name">${portName}</span>
+                            ${bikeCount > 0 ? `<span class="selected-port-card-badge">${bikeCount}台</span>` : ''}
+                        </div>
+                        <button class="selected-port-card-remove" data-port="${portName}">✕</button>
+                    `;
+                    
+                    // カードの✕ボタンで個別に削除
+                    card.querySelector('.selected-port-card-remove').addEventListener('click', function(e) {
+                        L.DomEvent.stopPropagation(e);
+                        const targetName = this.getAttribute('data-port');
+                        selectedPortNames = selectedPortNames.filter(name => name !== targetName);
+                        updateFilterAndRender(false);
+                    });
+                    
+                    // カードをクリックした時にそのポートへ地図を移動させる機能
+                    card.addEventListener('click', function() {
+                        if (portItem) {
+                            map.panTo([portItem.lat, portItem.lon]);
+                        }
+                    });
+
+                    selectedPortsList.appendChild(card);
+                });
+            } else {
+                selectedPortsContainer.style.display = 'none';
+                selectedPortsList.innerHTML = '';
+            }
+        }
+
         // 未施錠未返却車両の集計
         let unlockedBikesCount = 0;
-        const thresholdSec = unlockedThresholdHours * 3600;
         allFilteredBikes.forEach(bike => {
             if (bike.consecutive_use_duration >= thresholdSec) {
                 unlockedBikesCount++;
@@ -965,9 +1104,30 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
             });
             
+            // レベル値とラベルの対応マッピング
+            const allLevels = [
+                { val: 5, label: "最低" },
+                { val: 4, label: "低" },
+                { val: 3, label: "中" },
+                { val: 2, label: "高" },
+                { val: 0, label: "最高" }
+            ];
+            
+            // チェックされている（表示されている）レベルのみをフィルタリング
+            const activeLevels = allLevels.filter(lvl => checkedLevels.includes(lvl.val));
+            
             // マトリクス表のHTML構築
             let tableHtml = '<table class="summary-table">';
-            tableHtml += '<thead><tr><th>車種</th><th>最低</th><th>低</th><th>中</th><th>高</th><th>最高</th>';
+            tableHtml += '<thead><tr><th>車種</th>';
+            
+            // 表示対象の警告レベル列のみヘッダーを作成
+            activeLevels.forEach(lvl => {
+                tableHtml += `<th>${lvl.label}</th>`;
+            });
+            
+            // バッテリー交換合計列の追加
+            tableHtml += '<th>合計</th>';
+            
             if (isUnlockedFilterChecked) {
                 tableHtml += '<th style="color: #f472b6;">未施錠</th>';
             }
@@ -975,14 +1135,21 @@ document.addEventListener("DOMContentLoaded", function() {
             
             uniqueModels.forEach(model => {
                 tableHtml += `<tr><td><b>${model}</b></td>`;
-                [5, 4, 3, 2, 0].forEach(lvl => {
-                    const count = matrix[model][lvl];
-                    const isChecked = checkedLevels.includes(lvl);
-                    const hasCountClass = count > 0 && isChecked ? ' class="count-cell has-count"' : '';
-                    // フィルターされていないレベルの列は少しグレーアウトする
-                    const styleStr = !isChecked ? ' style="opacity: 0.4;"' : '';
-                    tableHtml += `<td${hasCountClass}${styleStr}>${count}</td>`;
+                
+                let batteryTotal = 0; // 表示されている交換対象レベルの合計
+                
+                // 表示対象の警告レベルのみ値をセル出力
+                activeLevels.forEach(lvl => {
+                    const count = matrix[model][lvl.val];
+                    batteryTotal += count;
+                    const hasCountClass = count > 0 ? ' class="count-cell has-count"' : '';
+                    tableHtml += `<td${hasCountClass}>${count}</td>`;
                 });
+                
+                // 合計列の出力
+                const hasTotalCountClass = batteryTotal > 0 ? ' class="count-cell has-count" style="background-color: rgba(0, 122, 255, 0.35); color: #93c5fd;"' : '';
+                tableHtml += `<td${hasTotalCountClass}>${batteryTotal}</td>`;
+                
                 if (isUnlockedFilterChecked) {
                     const count = matrix[model]["unlocked"];
                     const hasCountClass = count > 0 ? ' class="count-cell has-count" style="background-color: rgba(219, 39, 119, 0.25); color: #f472b6;"' : '';
@@ -1115,8 +1282,22 @@ document.addEventListener("DOMContentLoaded", function() {
                 unlockedThresholdInput.dispatchEvent(new Event('change'));
             }
         },
-        updateFilterAndRender: updateFilterAndRender
+        updateFilterAndRender: updateFilterAndRender,
+        getIsPortSelectionMode: () => isPortSelectionMode,
+        setIsPortSelectionMode: (val) => {
+            isPortSelectionMode = val;
+            if (selectionModeCheckbox) {
+                selectionModeCheckbox.checked = val;
+                selectionModeCheckbox.dispatchEvent(new Event('change'));
+            }
+        },
+        getSelectedPortNames: () => selectedPortNames,
+        setSelectedPortNames: (val) => {
+            selectedPortNames = val;
+            updateFilterAndRender(false);
+        }
     };
+
 });
 
 // モバイル用ドロワーの開閉トグル関数 (グローバルスコープ)

@@ -899,3 +899,153 @@ header h1 {
     border-color: #007aff;
     box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.2);
 }
+
+/* ========================================== */
+/* ポート選択サマリーモード用スタイル         */
+/* ========================================== */
+
+/* トグルスイッチ */
+.selection-mode-toggle-container {
+    display: flex;
+    align-items: center;
+}
+
+.selection-toggle-label {
+    cursor: pointer;
+    user-select: none;
+}
+
+.selection-toggle-label input[type="checkbox"] {
+    display: none;
+}
+
+.selection-toggle-button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background-color: #334155;
+    color: #cbd5e1;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.selection-toggle-label input[type="checkbox"]:checked + .selection-toggle-button {
+    background-color: #007aff;
+    color: #ffffff;
+    border-color: #0056b3;
+    box-shadow: 0 2px 8px rgba(0, 122, 255, 0.4);
+}
+
+.selection-toggle-button:active {
+    transform: scale(0.95);
+}
+
+/* 選択されたマーカーの強調表示 */
+.port-marker-selected {
+    outline: 4px solid #007aff !important;
+    outline-offset: 2px;
+    box-shadow: 0 0 15px rgba(0, 122, 255, 0.8) !important;
+    animation: pulse-selected-marker 1.5s infinite !important;
+    z-index: 99999 !important; /* 最前面 */
+}
+
+@keyframes pulse-selected-marker {
+    0% { outline-color: rgba(0, 122, 255, 1); }
+    50% { outline-color: rgba(0, 122, 255, 0.4); }
+    100% { outline-color: rgba(0, 122, 255, 1); }
+}
+
+/* 選択ポート一覧カードコンテナ */
+.selected-ports-container {
+    background-color: rgba(15, 23, 42, 0.6);
+    border: 1px solid #334155;
+    border-radius: 6px;
+    padding: 10px;
+    margin-bottom: 12px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.selected-ports-title {
+    font-size: 11px;
+    font-weight: bold;
+    color: #94a3b8;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #334155;
+    padding-bottom: 4px;
+}
+
+.selected-ports-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* 選択ポートの個別カード */
+.selected-port-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #1e293b;
+    border: 1px solid #475569;
+    border-radius: 4px;
+    padding: 6px 10px;
+    font-size: 12px;
+    color: #f8fafc;
+    transition: all 0.2s;
+}
+
+.selected-port-card:hover {
+    border-color: #007aff;
+    background-color: #0f172a;
+}
+
+.selected-port-card-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+}
+
+.selected-port-card-name {
+    font-weight: bold;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.selected-port-card-badge {
+    background-color: #ef4444;
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 1px 5px;
+    border-radius: 10px;
+    flex-shrink: 0;
+}
+
+.selected-port-card-remove {
+    background: none;
+    border: none;
+    color: #94a3b8;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 0 4px;
+    margin-left: 6px;
+    transition: color 0.2s;
+}
+
+.selected-port-card-remove:hover {
+    color: #ef4444;
+}
+
