@@ -387,6 +387,7 @@ def run_test():
             page.locator("#basemap-header-btn").click()
             page.wait_for_timeout(500)
             page.locator("input[name='basemap-select'][value='googleSatellite']").click()
+            page.locator(".legend-filter[value='3']").click(force=True)
             
             # 少し待って保存を確実にする
             page.wait_for_timeout(1000)
@@ -430,6 +431,10 @@ def run_test():
             page.wait_for_timeout(500)
             basemap_checked = page.locator("input[name='basemap-select'][value='googleSatellite']").is_checked()
             assert basemap_checked == True, "ベースマップのチェックが復元されていません"
+            
+            # 6. バッテリー深刻度フィルター
+            legend_checked = page.locator(".legend-filter[value='3']").is_checked()
+            assert legend_checked == True, "バッテリー深刻度（中）のチェックが復元されていません"
             
             print("✅ キャッシュによる表示状態の保存・復元テストに完全合格しました！")
 

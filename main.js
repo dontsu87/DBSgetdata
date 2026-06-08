@@ -553,6 +553,15 @@ document.addEventListener("DOMContentLoaded", function() {
                 el.checked = false;
             }
         });
+    } else {
+        // キャッシュされたバッテリー深刻度（凡例フィルター）の選択状態を復元
+        const cachedLevels = loadFromCache('checked_legend_levels', null);
+        if (Array.isArray(cachedLevels)) {
+            document.querySelectorAll('.legend-filter').forEach(el => {
+                const val = parseInt(el.value);
+                el.checked = cachedLevels.includes(val);
+            });
+        }
     }
     loadDashboardData(false);
 
@@ -778,7 +787,12 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // 凡例のチェックボックス変更時に再描画を連動 (この時はマップ範囲をフィットさせる)
     document.querySelectorAll('.legend-filter').forEach(checkbox => {
-        checkbox.addEventListener('change', () => updateFilterAndRender(true));
+        checkbox.addEventListener('change', () => {
+            const checkedLevels = Array.from(document.querySelectorAll('.legend-filter:checked'))
+                                       .map(el => parseInt(el.value));
+            saveToCache('checked_legend_levels', checkedLevels);
+            updateFilterAndRender(true);
+        });
     });
 
     // 5. フィルター（警告レベル ＆ 車両状態 ＆ 選択エリア）適用済みのダッシュボード描画関数
