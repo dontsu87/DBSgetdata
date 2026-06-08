@@ -834,19 +834,38 @@ document.addEventListener("DOMContentLoaded", function() {
             // ポップアップの構成（空ポートと自転車ありポートで分岐）
             let popupContent = `
                 <div class="popup-title">${port.port_name}</div>
-                <div class="popup-desc">総駐輪台数: ${port.total_bikes}台</div>
             `;
 
             if (isActuallyEmpty) {
                 popupContent += `
+                    <div class="popup-desc">総駐輪台数: ${port.total_bikes}台</div>
                     <div class="popup-desc" style="font-weight:bold; color:#64748b; margin-top: 8px;">
                         表示対象の利用可能車両はありません。
                     </div>
                 `;
             } else {
+                // 車種ごとの台数を集計
+                const modelCounts = {};
+                matchingBikes.forEach(bike => {
+                    const model = bike.model_name || "その他";
+                    modelCounts[model] = (modelCounts[model] || 0) + 1;
+                });
+                const modelCountsStr = Object.entries(modelCounts)
+                    .map(([model, count]) => `<span class="popup-model-count-item"><span class="popup-model-name">${model}</span><span class="popup-model-count-num">${count}</span></span>`)
+                    .join("");
+
                 popupContent += `
-                    <div class="popup-desc" style="font-weight:bold; color:#ef4444">
-                        表示対象車両: ${matchingBikes.length}台
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; gap: 8px;">
+                        <div style="display: flex; flex-direction: column; gap: 4px;">
+                            <div class="popup-desc" style="margin: 0;">総駐輪台数: ${port.total_bikes}台</div>
+                            <div class="popup-desc" style="font-weight:bold; color:#ef4444; margin: 0;">表示対象車両: ${matchingBikes.length}台</div>
+                        </div>
+                        <div style="display: flex; flex-direction: column; align-items: center; gap: 2px;">
+                            <div style="font-size: 8px; font-weight: bold; color: #ef4444; line-height: 1;">表示対象車両（車種別）</div>
+                            <div class="popup-model-counts-container">
+                                ${modelCountsStr}
+                            </div>
+                        </div>
                     </div>
                     <ul class="popup-bike-list">
                 `;
