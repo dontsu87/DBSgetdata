@@ -1396,6 +1396,24 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     };
 
+    // ビューの初期状態リセット処理
+    const resetViewBtn = document.getElementById('reset-view-btn');
+    if (resetViewBtn) {
+        resetViewBtn.addEventListener('click', function() {
+            if (confirm('表示状態（フィルターや地図位置など）を初期状態に戻しますか？')) {
+                const keysToRemove = [
+                    'map_center_lat', 'map_center_lng', 'map_zoom',
+                    'selected_basemap', 'selected_area', 'checked_statuses',
+                    'unlocked_threshold_hours', 'unlocked_filter_enabled',
+                    'is_port_selection_mode', 'selected_port_names',
+                    'checked_legend_levels'
+                ];
+                keysToRemove.forEach(key => localStorage.removeItem(key));
+                window.location.reload();
+            }
+        });
+    }
+
 });
 
 // モバイル用ドロワーの開閉トグル関数 (グローバルスコープ)

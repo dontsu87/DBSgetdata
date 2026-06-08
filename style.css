@@ -946,6 +946,35 @@ header h1 {
     transform: scale(0.95);
 }
 
+/* ビュー初期化ボタン */
+.reset-view-button {
+    background-color: #334155;
+    color: #cbd5e1;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.reset-view-button:hover {
+    background-color: #475569;
+    border-color: #64748b;
+    color: #ffffff;
+}
+
+.reset-view-button:active {
+    background-color: #1e293b;
+    transform: scale(0.95);
+}
+
 /* 選択されたマーカーの強調表示 */
 .port-marker-selected {
     outline: 4px solid #007aff !important;

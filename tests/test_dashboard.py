@@ -438,6 +438,31 @@ def run_test():
             
             print("✅ キャッシュによる表示状態の保存・復元テストに完全合格しました！")
 
+            # --- 初期状態リセットボタンの検証 ---
+            print("\nStep 7.8: ビュー初期状態リセットボタンの動作検証...")
+            
+            # ダイアログハンドラーを設定（自動で承認）
+            page.on("dialog", lambda dialog: dialog.accept())
+            
+            # リセットボタンをクリック
+            page.locator("#reset-view-btn").click()
+            page.wait_for_timeout(2000) # リロード待ち
+            
+            # 各値がデフォルト（初期値）にリセットされていることをアサーション
+            # 1. 閾値 (2.0)
+            reset_threshold = page.evaluate("window._testInterface.getUnlockedThresholdHours()")
+            assert reset_threshold == 2.0, f"リセット後に閾値が2.0に戻っていません: {reset_threshold}"
+            
+            # 2. ポート選択モード (False)
+            reset_mode = page.evaluate("window._testInterface.getIsPortSelectionMode()")
+            assert reset_mode == False, "リセット後に選択モードがOFFになっていません"
+            
+            # 3. 選択ポート (空)
+            reset_ports = page.evaluate("window._testInterface.getSelectedPortNames()")
+            assert len(reset_ports) == 0, f"リセット後に選択ポートが空になっていません: {reset_ports}"
+            
+            print("✅ リセットボタンにより表示状態が正常にクリアされ、初期状態に復元されることを確認しました！")
+
             # --- モバイルレイアウト（スマホ）の検証を開始します ---
             print("\n--- モバイルレイアウト（スマホ）の検証を開始します ---")
             mobile_context = browser.new_context(
