@@ -810,7 +810,7 @@ document.addEventListener("DOMContentLoaded", function() {
         // 更新日時の反映
         document.getElementById('update-time').innerHTML = `
             最終更新: ${data.updated_at || "不明"}
-            <span class="update-note">リアルタイムではないため、数分前の情報が表示されている可能性があります</span>
+            <span class="update-note">数分前の情報が表示されている可能性があります</span>
         `;
 
         let validCoordinates = [];
@@ -1264,7 +1264,18 @@ document.addEventListener("DOMContentLoaded", function() {
         }
 
         // スマホ表示でオーバーレイされないよう、inline styleのdisplay:noneをクリアし、CSSクラス制御に委ねます。
-        document.getElementById('summary-panel').style.display = '';
+        const summaryPanel = document.getElementById('summary-panel');
+        if (summaryPanel) {
+            summaryPanel.style.display = '';
+            const isMobile = window.innerWidth <= 768;
+            if (isMobile && isPortSelectionMode && selectedPortNames.length > 0) {
+                summaryPanel.classList.add('selection-active-mobile');
+                document.body.classList.add('selection-active-mode-layout');
+            } else {
+                summaryPanel.classList.remove('selection-active-mobile');
+                document.body.classList.remove('selection-active-mode-layout');
+            }
+        }
         
         const restrictedStatus = getRestrictedStatus();
         if (restrictedStatus) {
