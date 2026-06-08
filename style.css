@@ -1194,7 +1194,47 @@ header h1 {
         font-size: 10px;
     }
     .summary-panel.selection-active-mobile .panel-header-mobile {
-        display: none; /* ドロワー用ヘッダーは不要 */
+        display: flex !important; /* ヘッダーを表示して折りたためるようにする */
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+    .summary-panel.selection-active-mobile .panel-header-mobile .close-panel-btn {
+        display: none; /* 選択モード時は閉じるボタン非表示 */
+    }
+}
+
+/* ========================================== */
+/* サマリーパネルの折りたたみ（最小化）スタイル */
+/* ========================================== */
+.summary-panel.collapsed #selected-ports-container,
+.summary-panel.collapsed > div:not(.panel-header-mobile),
+.summary-panel.collapsed #summary-table-container {
+    display: none !important;
+}
+
+.summary-panel.collapsed {
+    padding-bottom: 8px !important;
+    max-height: 42px !important;
+    min-height: auto !important;
+    overflow: hidden !important;
+}
+
+.summary-panel .summary-toggle-arrow {
+    display: inline-block;
+    transition: transform 0.2s ease;
+    margin-left: 6px;
+    font-size: 10px;
+}
+
+.summary-panel.collapsed .summary-toggle-arrow {
+    transform: rotate(-90deg);
+}
+
+@media screen and (max-width: 768px) {
+    /* 選択モードONでサマリーが折りたたまれているとき、GPSボタンの位置を調整 */
+    .selection-active-mode-layout.summary-collapsed .gps-button {
+        bottom: 145px !important;
     }
 }
 

@@ -61,8 +61,8 @@
 
             <!-- サマリー情報 -->
             <div id="summary-panel" class="summary-panel" style="display: none;">
-                <div class="panel-header-mobile">
-                    <span style="font-weight:bold;">📊 エリア状況サマリー</span>
+                <div class="panel-header-mobile" id="summary-header-mobile" style="cursor: pointer; user-select: none;">
+                    <span style="font-weight:bold;">📊 エリア状況サマリー <span class="summary-toggle-arrow">▼</span></span>
                     <button class="close-panel-btn">✕</button>
                 </div>
                 <!-- 選択されたポート一覧カード表示用コンテナ -->
@@ -260,11 +260,31 @@
 
             // すべてのドロワーの「閉じる」ボタンイベント設定
             document.querySelectorAll('.close-panel-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation(); // 折りたたみイベントが発火するのを防ぐ
                     const drawer = btn.closest('.show-mobile-drawer');
                     if (drawer) drawer.classList.remove('show-mobile-drawer');
                 });
             });
+
+            // サマリーパネルの折りたたみトグル
+            const summaryHeaderMobile = document.getElementById('summary-header-mobile');
+            const summaryPanel = document.getElementById('summary-panel');
+            if (summaryHeaderMobile && summaryPanel) {
+                summaryHeaderMobile.addEventListener('click', function(e) {
+                    // ✕ボタンがクリックされた時は折りたたまない
+                    if (e.target.classList.contains('close-panel-btn')) return;
+                    
+                    summaryPanel.classList.toggle('collapsed');
+                    
+                    // GPSボタンの位置調整用クラスをbodyにトグル
+                    if (summaryPanel.classList.contains('collapsed')) {
+                        document.body.classList.add('summary-collapsed');
+                    } else {
+                        document.body.classList.remove('summary-collapsed');
+                    }
+                });
+            }
         });
     </script>
 </body>
