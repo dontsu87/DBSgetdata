@@ -28,6 +28,25 @@ header {
     z-index: 2200;
 }
 
+.header-top {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.header-bottom {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.header-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+}
+
 header h1 {
     margin: 0;
     font-size: 18px;
@@ -689,12 +708,61 @@ header h1 {
 
 /* 📱 スマホサイズ（画面幅768px以下）のスタイル定義 */
 @media screen and (max-width: 768px) {
+    header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 6px;
+        padding: 6px 12px;
+    }
+
+    .header-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        gap: 8px;
+    }
+
     /* ヘッダーの文字を小さくして収まりを良くする */
     header h1 {
         font-size: 15px;
+        white-space: nowrap;
     }
+
     .update-time {
         font-size: 10px;
+        padding: 2px 8px;
+        line-height: 1.2;
+        text-align: right;
+    }
+
+    .update-note {
+        display: none; /* スマホでは詳細テキストを隠してすっきりさせる */
+    }
+
+    .header-bottom {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        gap: 6px;
+    }
+
+    .header-meta {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .version-label {
+        display: none !important; /* スマホではバージョンを非表示 */
+    }
+
+    /* ボタン類を小さくして1行に収まりやすくする */
+    .selection-toggle-button, .reset-view-button, .help-button {
+        padding: 6px 10px;
+        font-size: 11px;
     }
 
     /* エリア切り替えタブのサイズ調整 */
