@@ -10,7 +10,39 @@ app = Flask(__name__)
 # すべてのオリジンからのCORSリクエストを許可
 CORS(app)
 
+import urllib.request
+
 LOCATIONS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "worker_locations.json")
+
+def restore_locations_from_r2():
+    """
+    R2から既存の worker_locations.json をダウンロードし、ローカルに復元する。
+    """
+    public_url = os.getenv("R2_PUBLIC_URL")
+    if not public_url:
+        print("[RESTORE] R2_PUBLIC_URL is not set. Skipping restore.")
+        return
+
+    url = f"{public_url.rstrip('/')}/worker_locations.json"
+    print(f"[RESTORE] Trying to restore locations from {url}")
+    try:
+        req = urllib.request.Request(
+            url, 
+            headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
+        )
+        with urllib.request.urlopen(req, timeout=5) as response:
+            if response.status == 200:
+                data = json.loads(response.read().decode('utf-8'))
+                with open(LOCATIONS_FILE, 'w', encoding='utf-8') as f:
+                    json.dump(data, f, ensure_ascii=False, indent=2)
+                print(f"[RESTORE] Successfully restored locations file: {len(data)} workers")
+            else:
+                print(f"[RESTORE] R2 file not found or status: {response.status}")
+    except Exception as e:
+        print(f"[RESTORE] Could not restore from R2 (this is normal on first deploy): {e}")
+
+# 起動時にデータを復元
+restore_locations_from_r2()
 
 @app.route('/api/owntracks', methods=['POST'])
 def receive_location():
