@@ -186,7 +186,7 @@ function initUIComponents() {
                     'selected_basemap', 'selected_area', 'checked_statuses', 'checked_highlight_statuses',
                     'unlocked_threshold_hours', 'unlocked_filter_enabled',
                     'is_port_selection_mode', 'selected_port_names',
-                    'checked_legend_levels'
+                    'checked_legend_levels', 'selected_worker_mode'
                 ];
                 keysToRemove.forEach(key => localStorage.removeItem(key));
                 window.location.reload();
