@@ -670,44 +670,67 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
     }
 
     let unlockedBikesCount = 0;
+    const highlightCounts = {};
+    checkedHighlightStatuses.forEach(status => {
+        highlightCounts[status] = 0;
+    });
+
     allFilteredBikes.forEach(bike => {
         if (bike.consecutive_use_duration >= thresholdSec) {
             unlockedBikesCount++;
+        }
+        if (bike.status) {
+            const trimmedStatus = bike.status.trim();
+            if (trimmedStatus in highlightCounts) {
+                highlightCounts[trimmedStatus]++;
+            }
         }
     });
 
     document.getElementById('alert-ports-count').innerText = filteredPortsCount;
     document.getElementById('alert-bikes-count').innerText = filteredBikesCount;
 
-    const unlockedSummaryContainer = document.getElementById('unlocked-summary-container');
-    if (unlockedSummaryContainer) {
+    const highlightSummaryContainer = document.getElementById('highlight-summary-container');
+    if (highlightSummaryContainer) {
+        const activeItems = [];
+
+        // 未施錠未返却フィルターがONかつ、1台以上ある場合にバッジを追加
         const unlockedFilterCheckbox = document.getElementById('unlocked-filter-checkbox');
         const isUnlockedFilterChecked = unlockedFilterCheckbox ? unlockedFilterCheckbox.checked : true;
-        if (isUnlockedFilterChecked) {
-            document.getElementById('unlocked-bikes-count').innerText = unlockedBikesCount;
-            unlockedSummaryContainer.style.display = 'block';
+        if (isUnlockedFilterChecked && unlockedBikesCount > 0) {
+            activeItems.push(`<span class="highlight-summary-item-unlocked">🔑 未施錠未返却: <span class="count" style="color: #db2777; font-size: 15px; margin-left: 2px;">${unlockedBikesCount}</span> 台</span>`);
+        }
+
+        // 強調アラートで1台以上ある項目をバッジとして追加
+        Object.entries(highlightCounts)
+            .filter(([_, count]) => count > 0)
+            .forEach(([status, count]) => {
+                activeItems.push(`<span class="highlight-summary-item">⚠️ ${status}: <span class="count" style="color: #c084fc; font-size: 15px; margin-left: 2px;">${count}</span> 台</span>`);
+            });
+
+        if (activeItems.length > 0) {
+            highlightSummaryContainer.innerHTML = activeItems.join('');
+            highlightSummaryContainer.style.display = 'flex';
         } else {
-            unlockedSummaryContainer.style.display = 'none';
+            highlightSummaryContainer.innerHTML = '';
+            highlightSummaryContainer.style.display = 'none';
         }
     }
 
     // 車種マトリクス表の生成
     const tableContainer = document.getElementById('summary-table-container');
     if (allFilteredBikes.length > 0) {
-        const unlockedFilterCheckbox = document.getElementById('unlocked-filter-checkbox');
-        const isUnlockedFilterChecked = unlockedFilterCheckbox ? unlockedFilterCheckbox.checked : true;
         const uniqueModels = Array.from(new Set(allFilteredBikes.map(b => b.model_name))).sort();
         
         const matrix = {};
         uniqueModels.forEach(m => {
-            matrix[m] = { 5: 0, 4: 0, 3: 0, 2: 0, 0: 0, "unlocked": 0 };
+            matrix[m] = { 5: 0, 4: 0, 3: 0, 2: 0, 0: 0 };
         });
         
         allFilteredBikes.forEach(bike => {
             if (matrix[bike.model_name]) {
-                matrix[bike.model_name][bike.alert_level]++;
-                if (bike.consecutive_use_duration >= thresholdSec) {
-                    matrix[bike.model_name]["unlocked"]++;
+                if (bike.alert_level in matrix[bike.model_name]) {
+                    matrix[bike.model_name][bike.alert_level]++;
                 }
             }
         });
@@ -730,10 +753,6 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
         });
         
         tableHtml += '<th>合計</th>';
-        
-        if (isUnlockedFilterChecked) {
-            tableHtml += '<th style="color: #f472b6;">未施錠</th>';
-        }
         tableHtml += '</tr></thead><tbody>';
         
         uniqueModels.forEach(model => {
@@ -748,12 +767,6 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
             
             const hasTotalCountClass = batteryTotal > 0 ? ' class="count-cell has-count" style="background-color: rgba(0, 122, 255, 0.35); color: #93c5fd;"' : '';
             tableHtml += `<td${hasTotalCountClass}>${batteryTotal}</td>`;
-            
-            if (isUnlockedFilterChecked) {
-                const count = matrix[model]["unlocked"];
-                const hasCountClass = count > 0 ? ' class="count-cell has-count" style="background-color: rgba(219, 39, 119, 0.25); color: #f472b6;"' : '';
-                tableHtml += `<td${hasCountClass}>${count}</td>`;
-            }
             tableHtml += '</tr>';
         });
         

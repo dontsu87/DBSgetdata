@@ -171,6 +171,43 @@ header h1 {
     pointer-events: auto;
     border-left: 5px solid #ef4444;
     min-width: 360px;
+    max-width: 420px;
+}
+
+/* 強調アラートサマリのコンテナとバッジ */
+.highlight-summary-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 10px;
+    margin-bottom: 6px;
+    padding: 6px 10px;
+    background-color: rgba(15, 23, 42, 0.6); /* バッジを引き立たせるため少し暗めの背景 */
+    border-radius: 6px;
+    border: 1px solid rgba(71, 85, 105, 0.5);
+}
+.highlight-summary-item {
+    font-size: 12px;
+    font-weight: bold;
+    color: #6b21a8; /* 濃い紫 */
+    background-color: #faf5ff; /* 非常に薄い紫 */
+    border: 1px solid #e9d5ff; /* 明瞭な紫の境界線 */
+    padding: 2px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+}
+.highlight-summary-item-unlocked {
+    font-size: 12px;
+    font-weight: bold;
+    color: #9d174d; /* 濃いピンク */
+    background-color: #fdf2f8; /* 非常に薄いピンク */
+    border: 1px solid #fbcfe8; /* 明瞭なピンクの境界線 */
+    padding: 2px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
 }
 
 /* サマリーマトリクス表のスタイル */
@@ -811,12 +848,12 @@ header h1 {
     .map-legend, .summary-panel, .status-filter-panel, .basemap-panel {
         display: none !important; /* 初期表示は完全に非表示 */
         position: fixed;
-        bottom: -400px; /* 初期状態は画面外に隠す */
+        bottom: -600px; /* 初期状態は画面外に隠す */
         left: 0;
         right: 0;
         width: 100%;
         min-width: 100%;
-        max-height: 80vh;
+        max-height: calc(100% - 110px); /* 上部ヘッダー（約105px）と被らない最大高さ */
         overflow-y: auto;
         border-radius: 16px 16px 0 0;
         margin: 0;
@@ -828,7 +865,7 @@ header h1 {
         border-right: none;
         border-bottom: none;
         background-color: rgba(30, 41, 59, 0.98);
-        z-index: 2001;
+        z-index: 2500; /* ヘッダー(2200)やタブ(2190)より前面に表示 */
     }
 
     .map-legend.show-mobile-drawer, .summary-panel.show-mobile-drawer, .status-filter-panel.show-mobile-drawer, .basemap-panel.show-mobile-drawer {
@@ -1230,7 +1267,7 @@ header h1 {
         border: 1px solid #475569;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
         background-color: rgba(30, 41, 59, 0.95);
-        z-index: 2000;
+        z-index: 2500;
         transition: none; /* スライドインはさせずにその場に浮かせる */
     }
 
