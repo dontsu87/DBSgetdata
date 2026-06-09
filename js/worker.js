@@ -70,9 +70,9 @@
                             window.location.protocol === 'file:';
         
         const fetchUrl = isLocalTest ? `${LOCAL_WORKER_LOCATIONS_URL}?t=${timestamp}` : `${R2_WORKER_LOCATIONS_URL}?t=${timestamp}`;
-
+ 
         console.log(`🌐 作業員位置情報をフェッチ中: ${fetchUrl}`);
-
+ 
         fetch(fetchUrl)
             .then(response => {
                 if (!response.ok) {
@@ -84,11 +84,22 @@
                 plotWorkers(data);
             })
             .catch(error => {
-                console.log("Warning: 作業員位置情報のフェッチに失敗しました。ローカルAPIへの接続を試みます...", error);
-                // R2接続に失敗した場合のローカルAPIへのフォールバック
-                if (fetchUrl !== LOCAL_WORKER_LOCATIONS_URL) {
+                if (fetchUrl === LOCAL_WORKER_LOCATIONS_URL) {
+                    console.log("Warning: ローカルAPIからのフェッチに失敗しました。クラウド(R2)への接続を試みます...", error);
+                    fetch(`${R2_WORKER_LOCATIONS_URL}?t=${timestamp}`)
+                        .then(res => {
+                            if (!res.ok) throw new Error("Cloud fetch failed");
+                            return res.json();
+                        })
+                        .then(data => plotWorkers(data))
+                        .catch(err => console.error("Error: クラウド(R2)への接続も失敗しました:", err));
+                } else {
+                    console.log("Warning: クラウド(R2)からのフェッチに失敗しました。ローカルAPIへの接続を試みます...", error);
                     fetch(`${LOCAL_WORKER_LOCATIONS_URL}?t=${timestamp}`)
-                        .then(res => res.json())
+                        .then(res => {
+                            if (!res.ok) throw new Error("Local fetch failed");
+                            return res.json();
+                        })
                         .then(data => plotWorkers(data))
                         .catch(err => console.error("Error: ローカルAPIへの接続も失敗しました:", err));
                 }
