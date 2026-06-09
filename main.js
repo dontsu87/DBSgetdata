@@ -83,6 +83,8 @@ document.addEventListener("DOMContentLoaded", function() {
     // ポート選択サマリーモード用状態
     let isPortSelectionMode = loadFromCache('is_port_selection_mode', false);
     let selectedPortNames = loadFromCache('selected_port_names', []); // 選択されたポート名の配列
+    // 交換済表示モード（交換済考慮）用状態（デフォルトは真：ON）
+    let isReplacedModeEnabled = loadFromCache('is_replaced_mode_enabled', true);
 
     
     // 未施錠未返却フィルターと閾値入力要素の取得・リスナー設定
@@ -106,6 +108,34 @@ document.addEventListener("DOMContentLoaded", function() {
             }
             updateFilterAndRender(false);
         });
+
+        // --- 交換済表示モード (交換済考慮) トグルスイッチ制御 ---
+        isReplacedModeEnabled = loadFromCache('is_replaced_mode_enabled', true);
+        const replacedModeCheckbox = document.getElementById('replaced-mode-checkbox');
+        const replacedToggleLabel = document.querySelector('.replaced-toggle-label');
+        const replacedToggleText = document.querySelector('.replaced-toggle-text');
+
+        if (replacedModeCheckbox) {
+            replacedModeCheckbox.checked = isReplacedModeEnabled;
+            updateReplacedToggleUI(isReplacedModeEnabled);
+
+            replacedModeCheckbox.addEventListener('change', function() {
+                isReplacedModeEnabled = replacedModeCheckbox.checked;
+                saveToCache('is_replaced_mode_enabled', isReplacedModeEnabled);
+                updateReplacedToggleUI(isReplacedModeEnabled);
+                console.log("Replaced Mode Enabled:", isReplacedModeEnabled);
+                updateFilterAndRender(false);
+            });
+        }
+
+        function updateReplacedToggleUI(enabled) {
+            if (replacedToggleText) {
+                replacedToggleText.innerText = enabled ? '交換済考慮 ON' : '交換済考慮 OFF';
+            }
+            if (replacedToggleLabel) {
+                replacedToggleLabel.style.backgroundColor = enabled ? '#10b981' : '#64748b';
+            }
+        }
         
         unlockedThresholdInput.addEventListener('input', function() {
             let val = parseFloat(unlockedThresholdInput.value);
@@ -474,6 +504,22 @@ document.addEventListener("DOMContentLoaded", function() {
         }
         errorScreen.style.display = 'none';
         
+        // テストモード時は R2 への fetch をスキップしてローカルの dashboard_data_test.js を使用
+        if (window.isTestMode && window.dashboardData) {
+            console.log("🧪 テストモード: ローカルの dashboard_data_test.js を使用します。");
+            cachedDashboardData = window.dashboardData;
+            initAreaTabs(cachedDashboardData);
+            initStatusFilter(cachedDashboardData);
+            const hasCachedPosition = localStorage.getItem('map_center_lat') !== null;
+            const shouldFitBounds = !isAutoUpdate && isFirstLoad && !hasCachedPosition;
+            updateFilterAndRender(shouldFitBounds);
+            isFirstLoad = false;
+            setTimeout(() => {
+                loader.style.display = 'none';
+            }, 500);
+            return;
+        }
+
         // サーバー上（GitHub Pages等）での実行時は、動的にタイムスタンプを付与してキャッシュを強制バイパスして最新JSONを取得します
         fetch('https://pub-1c068f2df9ab42a0b9dcc5d112078269.r2.dev/dashboard_data.json?t=' + timestamp)
             .then(response => {
@@ -945,14 +991,54 @@ document.addEventListener("DOMContentLoaded", function() {
             // 2. 警告レベルフィルター ＆ 車両状態フィルターを適用：合致する自転車のみを抽出
             const matchingBikes = isEmptyPort ? [] : port.bikes.filter(bike => {
                 const isUnlocked = bike.consecutive_use_duration >= thresholdSec;
-                const isLevelMatch = checkedLevels.includes(bike.alert_level);
+                
+                // バッテリー交換済みの場合は、交換前電圧（replace_original_volt）をもとにしたalert_levelで表示判定を行う（交換済考慮がオンのときのみ）
+                let evalAlertLevel = bike.alert_level;
+                if (isReplacedModeEnabled && bike.replaced_at && bike.replace_original_volt !== null && bike.replace_original_volt !== undefined && bike.replace_original_volt !== "") {
+                    const origV = parseFloat(bike.replace_original_volt);
+                    const th = bike.thresholds;
+                    if (!isNaN(origV) && th) {
+                        if (origV <= th.at_error) {
+                            evalAlertLevel = 5; // 最低
+                        } else if (origV <= th.strong) {
+                            evalAlertLevel = 4; // 低
+                        } else if (th.lv1 && origV <= th.lv1) {
+                            evalAlertLevel = 3; // 中
+                        } else if (th.lv2 && origV <= th.lv2) {
+                            evalAlertLevel = 2; // 高
+                        } else {
+                            evalAlertLevel = 0; // 最高
+                        }
+                    }
+                }
+                
+                const isLevelMatch = checkedLevels.includes(evalAlertLevel);
                 const isStatusMatch = bike.status ? targetStatuses.includes(bike.status.trim()) : false;
                 const isHighlighted = bike.status ? checkedHighlightStatuses.includes(bike.status.trim()) : false;
                 
+                // 交換済考慮がONかつ交換済み車両は、バッテリー凡例フィルターを無視して常に表示対象とする
+                // ただし、2時間以内に実施されたもののみとする。
+                let isReplaced = false;
+                if (isReplacedModeEnabled && bike.replaced_at) {
+                    try {
+                        const replacedDate = new Date(bike.replaced_at.replace(/-/g, '/'));
+                        const now = new Date();
+                        if (!isNaN(replacedDate.getTime())) {
+                            const diffMs = now - replacedDate;
+                            // 2時間 (2 * 60 * 60 * 1000 = 7200000 ミリ秒) 以内、かつ未来の日時でない
+                            if (diffMs >= 0 && diffMs <= 7200000) {
+                                isReplaced = true;
+                            }
+                        }
+                    } catch (e) {
+                        isReplaced = false;
+                    }
+                }
+                
                 // 表示対象かどうかの判定：
-                // (バッテリー深刻度の警告対象である OR (未施錠未返却である AND 未施錠未返却フィルターがON) OR 強調対象の車両状態である)
+                // (交換済み車両である OR バッテリー深刻度の警告対象である OR (未施錠未返却である AND 未施錠未返却フィルターがON) OR 強調対象の車両状態である)
                 // かつ、車両状態フィルターに合致していること
-                return (isLevelMatch || (isUnlocked && isUnlockedFilterChecked) || isHighlighted) && isStatusMatch;
+                return (isReplaced || isLevelMatch || (isUnlocked && isUnlockedFilterChecked) || isHighlighted) && isStatusMatch;
             });
 
             // 描画判定
@@ -1102,8 +1188,12 @@ document.addEventListener("DOMContentLoaded", function() {
             marker.portName = port.port_name;
 
             // ポップアップの構成（空ポートと自転車ありポートで分岐）
+            const legendHtml = isReplacedModeEnabled ? `<span style="font-size: 11px; font-weight: normal; color: #64748b; margin-left: auto;">✅: 交換済み</span>` : '';
             let popupContent = `
-                <div class="popup-title">${port.port_name}</div>
+                <div class="popup-title" style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+                    <span>${port.port_name}</span>
+                    ${legendHtml}
+                </div>
             `;
 
             if (isActuallyEmpty) {
@@ -1140,6 +1230,9 @@ document.addEventListener("DOMContentLoaded", function() {
                     <ul class="popup-bike-list">
                 `;
                 matchingBikes.forEach(bike => {
+                    // バッジは常に「現在の電圧レベル」で表示する
+                    // （フィルター判定は交換前電圧で行うが、バッジは現在の状態を表示）
+                    // 交換済みであることは「交換済み」バッジで別途表示されるため、バッジレベルの変更は不要
                     let badgeClass = `badge-level${bike.alert_level}`;
                     let badgeName = bike.alert_level_name;
                     let unregisteredBadge = bike.is_unregistered ? '<span class="badge" style="background-color:#dc2626; margin-left:4px;">⚠️未登録（要CSV追加）</span>' : '';
@@ -1159,21 +1252,57 @@ document.addEventListener("DOMContentLoaded", function() {
                         bikeUnlockedBadge = `<span style="font-size: 12px; margin-right: 2px; display: inline-flex; align-items: center;" title="未施錠未返却 (${durationStr})">${EMOJI_UNLOCKED}</span>`;
                     }
                     
-                    // 車種名を最大4文字で切り出し
-                    const displayModel = (bike.model_name || '').substring(0, 4);
+                    // 車種名を最大2文字で切り出し
+                    const displayModel = (bike.model_name || '').substring(0, 2);
 
                     // 強調対象の車両かどうかを判定してバッジを作成
                     const bikeStatusTrimmed = bike.status ? bike.status.trim() : '';
                     const isBikeHighlighted = checkedHighlightStatuses.includes(bikeStatusTrimmed);
                     const bikeHighlightBadge = isBikeHighlighted ? `<span style="font-size: 12px; margin-right: 2px; display: inline-flex; align-items: center;">${EMOJI_HIGHLIGHT}</span>` : '';
                     
+                    // バッテリー交換済み情報の取得
+                    let replacementInfo = '';
+                    if (bike.replaced_at) {
+                        let isWithin2Hours = false;
+                        try {
+                            const replacedDate = new Date(bike.replaced_at.replace(/-/g, '/'));
+                            const now = new Date();
+                            if (!isNaN(replacedDate.getTime())) {
+                                const diffMs = now - replacedDate;
+                                if (diffMs >= 0 && diffMs <= 7200000) {
+                                    isWithin2Hours = true;
+                                }
+                            }
+                        } catch (e) {
+                            isWithin2Hours = false;
+                        }
+
+                        if (isWithin2Hours) {
+                            let displayTime = bike.replaced_at;
+                            try {
+                                const parts = bike.replaced_at.split(' ');
+                                if (parts.length >= 2) {
+                                    const dateParts = parts[0].split('-');
+                                    const timeParts = parts[1].split(':');
+                                    if (dateParts.length >= 3 && timeParts.length >= 2) {
+                                        displayTime = `${dateParts[1]}-${dateParts[2]} ${timeParts[0]}:${timeParts[1]}`;
+                                    }
+                                }
+                            } catch (e) {
+                                displayTime = bike.replaced_at;
+                            }
+                            const tooltipStr = `交換前: ${bike.replace_original_volt}V -> 交換後: ${bike.replace_increased_volt}V (交換日時: ${bike.replaced_at})`;
+                            replacementInfo = `<span style="margin-left: 4px; font-size: 14px; cursor: help; display: inline-block; width: 18px; text-align: center;" title="${tooltipStr}">✅</span>`;
+                        }
+                    }
+
                     popupContent += `
                         <li class="popup-bike-item">
                             <div class="popup-bike-col-id">
                                 <span class="popup-bike-id">${bike.bike_id}</span>
                             </div>
                             <div class="popup-bike-col-model">
-                                <span class="popup-bike-model-tag">【${displayModel}】</span>
+                                <span class="popup-bike-model-tag">${displayModel}</span>
                             </div>
                             <div class="popup-bike-col-status">
                                 <span class="popup-bike-status">[${bike.status}]</span>
@@ -1182,6 +1311,7 @@ document.addEventListener("DOMContentLoaded", function() {
                                 ${bikeHighlightBadge}
                                 ${bikeUnlockedBadge}
                                 <span class="badge ${badgeClass}">${badgeName}</span>
+                                ${replacementInfo}
                                 ${unregisteredBadge}
                             </div>
                         </li>
