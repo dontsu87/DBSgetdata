@@ -42,12 +42,12 @@
                     </label>
                 </div>
                 <!-- 交換済表示モードトグルスイッチ -->
-                <div class="replaced-mode-toggle-container" style="margin-left: 8px;">
-                    <label class="replaced-toggle-label" for="replaced-mode-checkbox" style="cursor: pointer; display: inline-flex; align-items: center; background-color: #10b981; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; color: #ffffff; user-select: none; transition: background-color 0.2s, color 0.2s;">
+                <div class="replaced-mode-toggle-container">
+                    <label class="replaced-toggle-label" for="replaced-mode-checkbox">
                         <input type="checkbox" id="replaced-mode-checkbox" checked style="display: none;">
-                        <span class="replaced-toggle-button" style="display: flex; align-items: center; gap: 4px;">
+                        <span class="replaced-toggle-button">
                             <span class="replaced-toggle-icon">♻️</span>
-                            <span class="replaced-toggle-text">交換済考慮 ON</span>
+                            <span class="replaced-toggle-text">交換済 ON</span>
                         </span>
                     </label>
                 </div>
@@ -55,10 +55,8 @@
                 <button id="reset-view-btn" class="reset-view-button" title="表示状態（フィルターや地図位置など）を初期状態に戻します">
                     🔄 リセット
                 </button>
-                <div class="header-meta">
-                    <span class="version-label" style="font-size: 9px; color: #64748b; font-family: monospace; font-weight: bold; line-height: 1;">ver.20260609135900</span>
-                    <a href="docs/manual.html" target="_blank" class="help-button" title="使い方マニュアルを開く">❓ ヘルプ</a>
-                </div>
+                <!-- ヘルプボタン -->
+                <a href="docs/manual.html" target="_blank" class="help-button" title="使い方マニュアルを開く">❓ ヘルプ</a>
             </div>
         </header>
 

@@ -130,10 +130,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         function updateReplacedToggleUI(enabled) {
             if (replacedToggleText) {
-                replacedToggleText.innerText = enabled ? '交換済考慮 ON' : '交換済考慮 OFF';
-            }
-            if (replacedToggleLabel) {
-                replacedToggleLabel.style.backgroundColor = enabled ? '#10b981' : '#64748b';
+                replacedToggleText.innerText = enabled ? '交換済 ON' : '交換済 OFF';
             }
         }
         

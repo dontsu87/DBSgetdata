@@ -772,29 +772,33 @@ header h1 {
         display: none; /* スマホでは詳細テキストを隠してすっきりさせる */
     }
 
+    /* ボタン類を小さくして1行に収まりやすくする */
+    .selection-toggle-button, .reset-view-button, .help-button {
+        padding: 5px 8px;
+        font-size: 11px;
+    }
+
     .header-bottom {
         display: flex;
-        justify-content: space-between;
+        justify-content: flex-start;
         align-items: center;
         width: 100%;
         gap: 6px;
+        overflow-x: auto;
+        white-space: nowrap;
+        padding-bottom: 2px;
+        /* スクロールバー非表示 */
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    .header-bottom::-webkit-scrollbar {
+        display: none;
     }
 
-    .header-meta {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        gap: 6px;
-    }
-
-    .version-label {
-        display: none !important; /* スマホではバージョンを非表示 */
-    }
-
-    /* ボタン類を小さくして1行に収まりやすくする */
-    .selection-toggle-button, .reset-view-button, .help-button {
-        padding: 6px 10px;
-        font-size: 11px;
+    .header-bottom > div,
+    .header-bottom > button,
+    .header-bottom > a {
+        flex-shrink: 0;
     }
 
     /* エリア切り替えタブのサイズ調整 */
@@ -919,8 +923,6 @@ header h1 {
     
     /* スマホ画面でのヘルプボタン微調整 */
     .help-button {
-        padding: 6px 10px;
-        font-size: 11px;
     }
 }
 
@@ -1038,11 +1040,13 @@ header h1 {
     user-select: none;
 }
 
-.selection-toggle-label input[type="checkbox"] {
+.selection-toggle-label input[type="checkbox"],
+.replaced-toggle-label input[type="checkbox"] {
     display: none;
 }
 
-.selection-toggle-button {
+.selection-toggle-button,
+.replaced-toggle-button {
     display: flex;
     align-items: center;
     gap: 6px;
@@ -1065,7 +1069,15 @@ header h1 {
     box-shadow: 0 2px 8px rgba(0, 122, 255, 0.4);
 }
 
-.selection-toggle-button:active {
+.replaced-toggle-label input[type="checkbox"]:checked + .replaced-toggle-button {
+    background-color: #10b981;
+    color: #ffffff;
+    border-color: #047857;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+}
+
+.selection-toggle-button:active,
+.replaced-toggle-button:active {
     transform: scale(0.95);
 }
 
