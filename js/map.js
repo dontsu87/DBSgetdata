@@ -565,7 +565,7 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
                 const bikeHighlightBadge = isBikeHighlighted ? `<span style="font-size: 12px; margin-right: 2px; display: inline-flex; align-items: center;">${EMOJI_HIGHLIGHT}</span>` : '';
                 
                 let replacementInfo = '';
-                if (bike.replaced_at) {
+                if (isReplacedModeEnabled && bike.replaced_at) {
                     let isWithin2Hours = false;
                     try {
                         const replacedDate = new Date(bike.replaced_at.replace(/-/g, '/'));
