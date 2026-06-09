@@ -217,10 +217,35 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
 
     markerGroup.clearLayers();
 
-    document.getElementById('update-time').innerHTML = `
-        最終更新: ${data.updated_at || "不明"}
-        <span class="update-note">数分前の情報が表示されている可能性があります</span>
-    `;
+    let alertHtml = '';
+    let alertClass = '';
+    if (data.updated_at) {
+        try {
+            const updateDate = new Date(data.updated_at.replace(/-/g, '/'));
+            const now = new Date();
+            const diffMs = now - updateDate;
+            const diffMins = Math.floor(diffMs / 60000);
+            if (diffMins >= 30) {
+                alertHtml = ` <span class="update-delay-alert" style="color: #ef4444; font-weight: bold; background-color: rgba(239, 68, 68, 0.1); padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(239, 68, 68, 0.3); display: inline-flex; align-items: center; gap: 4px; margin-left: 4px;">⚠️ 更新遅延 (${diffMins}分経過)</span>`;
+                alertClass = 'has-update-delay';
+            }
+        } catch (e) {
+            console.error("Error parsing update time:", e);
+        }
+    }
+
+    const updateTimeEl = document.getElementById('update-time');
+    if (updateTimeEl) {
+        if (alertClass) {
+            updateTimeEl.classList.add(alertClass);
+        } else {
+            updateTimeEl.classList.remove('has-update-delay');
+        }
+        updateTimeEl.innerHTML = `
+            最終更新: ${data.updated_at || "不明"}${alertHtml}
+            <span class="update-note">数分前の情報が表示されている可能性があります</span>
+        `;
+    }
 
     let validCoordinates = [];
     let filteredPortsCount = 0;

@@ -257,6 +257,45 @@ def run_scraping(is_worker=False):
     else:
         print("\n❌ データを一件も取得できませんでした。")
 
+def check_and_run_daily_gbfs():
+    """
+    前回のGBFSデータ取得から日付が変わっている場合、
+    自動的にGBFSデータ取得とOneDriveへのアップロードを実行します。
+    """
+    import os
+    from datetime import datetime
+    from src.gbfs_station_retriever import retrieve_gbfs_stations
+    from src.exporter import upload_to_onedrive_web
+
+    last_run_file = "last_gbfs_run.txt"
+    today_str = datetime.now().strftime("%Y-%m-%d")
+    
+    # 前回実行日の読み込み
+    last_run_date = ""
+    if os.path.exists(last_run_file):
+        try:
+            with open(last_run_file, "r", encoding="utf-8") as f:
+                last_run_date = f.read().strip()
+        except Exception as e:
+            print(f"Warning: 前回実行日の読み込みに失敗しました: {e}")
+
+    # 日付が変わっていれば実行
+    if today_str != last_run_date:
+        print("\n[Daily GBFS] 日付が変わったため、GBFSポート情報を取得します...")
+        try:
+            json_path, csv_path = retrieve_gbfs_stations()
+            if csv_path:
+                upload_to_onedrive_web(csv_path)
+            if json_path:
+                upload_to_onedrive_web(json_path)
+            
+            # 実行日記録を更新
+            with open(last_run_file, "w", encoding="utf-8") as f:
+                f.write(today_str)
+            print("[Daily GBFS] 完了しました。")
+        except Exception as e:
+            print(f"[Daily GBFS] 処理中にエラーが発生しました: {e}")
+
 def main():
     parser = argparse.ArgumentParser(description="ドコモ・バイクシェア 車両情報取得ツール")
     parser.add_argument(
@@ -309,11 +348,13 @@ def main():
             inspect_worker_login_page()
         else:
             run_scraping(is_worker=True)
+            check_and_run_daily_gbfs()
     else:
         if args.inspect:
             inspect_area_page()
         else:
             run_scraping(is_worker=False)
+            check_and_run_daily_gbfs()
 
 if __name__ == "__main__":
     main()
