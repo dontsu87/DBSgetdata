@@ -992,22 +992,38 @@ document.addEventListener("DOMContentLoaded", function() {
             const matchingBikes = isEmptyPort ? [] : port.bikes.filter(bike => {
                 const isUnlocked = bike.consecutive_use_duration >= thresholdSec;
                 
-                // バッテリー交換済みの場合は、交換前電圧（replace_original_volt）をもとにしたalert_levelで表示判定を行う（交換済考慮がオンのときのみ）
+                // バッテリー交換済みの場合は、交換前電圧（replace_original_volt）をもとにしたalert_levelで表示判定を行う（交換済考慮がオンかつ2時間以内のときのみ）
                 let evalAlertLevel = bike.alert_level;
                 if (isReplacedModeEnabled && bike.replaced_at && bike.replace_original_volt !== null && bike.replace_original_volt !== undefined && bike.replace_original_volt !== "") {
-                    const origV = parseFloat(bike.replace_original_volt);
-                    const th = bike.thresholds;
-                    if (!isNaN(origV) && th) {
-                        if (origV <= th.at_error) {
-                            evalAlertLevel = 5; // 最低
-                        } else if (origV <= th.strong) {
-                            evalAlertLevel = 4; // 低
-                        } else if (th.lv1 && origV <= th.lv1) {
-                            evalAlertLevel = 3; // 中
-                        } else if (th.lv2 && origV <= th.lv2) {
-                            evalAlertLevel = 2; // 高
-                        } else {
-                            evalAlertLevel = 0; // 最高
+                    let isWithin2Hours = false;
+                    try {
+                        const replacedDate = new Date(bike.replaced_at.replace(/-/g, '/'));
+                        const now = new Date();
+                        if (!isNaN(replacedDate.getTime())) {
+                            const diffMs = now - replacedDate;
+                            if (diffMs >= 0 && diffMs <= 7200000) {
+                                isWithin2Hours = true;
+                            }
+                        }
+                    } catch (e) {
+                        isWithin2Hours = false;
+                    }
+
+                    if (isWithin2Hours) {
+                        const origV = parseFloat(bike.replace_original_volt);
+                        const th = bike.thresholds;
+                        if (!isNaN(origV) && th) {
+                            if (origV <= th.at_error) {
+                                evalAlertLevel = 5; // 最低
+                            } else if (origV <= th.strong) {
+                                evalAlertLevel = 4; // 低
+                            } else if (th.lv1 && origV <= th.lv1) {
+                                evalAlertLevel = 3; // 中
+                            } else if (th.lv2 && origV <= th.lv2) {
+                                evalAlertLevel = 2; // 高
+                            } else {
+                                evalAlertLevel = 0; // 最高
+                            }
                         }
                     }
                 }
