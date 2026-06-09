@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import json
+import threading
 from datetime import datetime, timezone, timedelta
 from flask import Flask, request, jsonify
 from flask_cors import CORS
@@ -13,6 +14,10 @@ CORS(app)
 import urllib.request
 
 LOCATIONS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "worker_locations.json")
+
+# ファイル書き込み時の排他制御用ロック
+file_lock = threading.Lock()
+
 
 def restore_locations_from_r2():
     """
@@ -74,34 +79,36 @@ def receive_location():
                 updated_at = datetime.now(JST).strftime('%Y-%m-%d %H:%M:%S')
 
 
-            # 既存のデータを読み込み
-            locations = {}
-            if os.path.exists(LOCATIONS_FILE):
+            # データの読み書き〜R2アップロードをスレッドロックで保護
+            with file_lock:
+                # 既存のデータを読み込み
+                locations = {}
+                if os.path.exists(LOCATIONS_FILE):
+                    try:
+                        with open(LOCATIONS_FILE, 'r', encoding='utf-8') as f:
+                            locations = json.load(f)
+                    except Exception as e:
+                        print(f"Warning: Failed to load existing locations file: {e}")
+                        locations = {}
+
+                # データを更新
+                locations[tid] = {
+                    "tid": tid,
+                    "lat": lat,
+                    "lon": lon,
+                    "updated_at": updated_at
+                }
+
+                # ファイルに保存
+                with open(LOCATIONS_FILE, 'w', encoding='utf-8') as f:
+                    json.dump(locations, f, ensure_ascii=False, indent=2)
+
+                # Cloudflare R2 へアップロード (バックグラウンド同期)
+                upload_success = False
                 try:
-                    with open(LOCATIONS_FILE, 'r', encoding='utf-8') as f:
-                        locations = json.load(f)
+                    upload_success = upload_file_to_r2(LOCATIONS_FILE, "worker_locations.json")
                 except Exception as e:
-                    print(f"Warning: Failed to load existing locations file: {e}")
-                    locations = {}
-
-            # データを更新
-            locations[tid] = {
-                "tid": tid,
-                "lat": lat,
-                "lon": lon,
-                "updated_at": updated_at
-            }
-
-            # ファイルに保存
-            with open(LOCATIONS_FILE, 'w', encoding='utf-8') as f:
-                json.dump(locations, f, ensure_ascii=False, indent=2)
-
-            # Cloudflare R2 へアップロード (バックグラウンド同期)
-            upload_success = False
-            try:
-                upload_success = upload_file_to_r2(LOCATIONS_FILE, "worker_locations.json")
-            except Exception as e:
-                print(f"Error uploading to R2: {e}")
+                    print(f"Error uploading to R2: {e}")
 
             return jsonify([]), 200
 
