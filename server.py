@@ -99,18 +99,14 @@ def receive_location():
             except Exception as e:
                 print(f"Error uploading to R2: {e}")
 
-            return jsonify({
-                "status": "ok",
-                "message": "Location updated successfully",
-                "r2_uploaded": upload_success,
-                "data": locations[tid]
-            }), 200
+            return jsonify([]), 200
 
-        return jsonify({"status": "ignored", "message": "Not a location message type"}), 200
+        return jsonify([]), 200
 
     except Exception as e:
         print(f"Error processing location: {e}")
-        return jsonify({"status": "error", "message": str(e)}), 500
+        # 例外時も確実に JSON を返す
+        return jsonify({"status": "error", "message": str(e)}), 200
 
 @app.route('/api/worker-locations', methods=['GET'])
 def get_locations():

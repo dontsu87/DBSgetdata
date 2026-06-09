@@ -41,10 +41,7 @@ def test_receive_location_success(mock_upload, client):
     response = client.post('/api/owntracks', json=payload)
     assert response.status_code == 200
     res_data = json.loads(response.data.decode('utf-8'))
-    assert res_data["status"] == "ok"
-    assert res_data["data"]["tid"] == "WA"
-    assert res_data["data"]["lat"] == 35.6812
-    assert res_data["data"]["lon"] == 139.7671
+    assert res_data == []
 
     # R2アップロードが呼び出されたことを検証
     mock_upload.assert_called_once_with(LOCATIONS_FILE, "worker_locations.json")
@@ -76,7 +73,7 @@ def test_receive_location_invalid_type(client):
     response = client.post('/api/owntracks', json=payload)
     assert response.status_code == 200
     res_data = json.loads(response.data.decode('utf-8'))
-    assert res_data["status"] == "ignored"
+    assert res_data == []
 
 def test_get_locations_empty(client):
     response = client.get('/api/worker-locations')
