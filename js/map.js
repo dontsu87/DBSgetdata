@@ -520,7 +520,7 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
                 .join("");
 
             const statusDesc = item.isRentalEmpty
-                ? `<div class="popup-desc" style="font-weight:bold; color:#64748b; margin: 0;">レンタル可能車両: 0台（車両あり）</div>`
+                ? `<div class="popup-desc" style="font-weight:bold; color:#0ea5e9; margin: 0;">利用可能：0台</div>`
                 : `<div class="popup-desc" style="font-weight:bold; color:#ef4444; margin: 0;">表示対象車両: ${matchingBikes.length}台</div>`;
 
             const sectionTitle = item.isRentalEmpty ? "車両内訳（車種別）" : "表示対象車両（車種別）";
