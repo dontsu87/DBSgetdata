@@ -19,8 +19,18 @@ class TestBikeTypeIntegration(unittest.TestCase):
         self.dummy_bike_types_csv = os.path.join(Config.OUTPUT_DIR, "bike_types.csv")
         self.dummy_master_csv = os.path.join(Config.OUTPUT_DIR, "vehicle_type_master.csv")
         
-        # バックアップ用の辞書
-        self.exists_backup = {}
+        from src.config import ROOT_DIR
+        import shutil
+        self.json_path = os.path.join(str(ROOT_DIR), "dashboard_data.json")
+        self.js_path = os.path.join(str(ROOT_DIR), "dashboard_data.js")
+        self.json_backup = os.path.join(str(ROOT_DIR), "dashboard_data_backup_int.json")
+        self.js_backup = os.path.join(str(ROOT_DIR), "dashboard_data_backup_int.js")
+        
+        # バックアップ退避
+        if os.path.exists(self.json_path):
+            shutil.copy2(self.json_path, self.json_backup)
+        if os.path.exists(self.js_path):
+            shutil.copy2(self.js_path, self.js_backup)
         
     def tearDown(self):
         # 生成されたダミーファイルのクリーンアップ
@@ -30,6 +40,18 @@ class TestBikeTypeIntegration(unittest.TestCase):
                     os.remove(path)
                 except Exception:
                     pass
+        
+        # バックアップ復元
+        import shutil
+        if os.path.exists(self.json_path):
+            os.remove(self.json_path)
+        if os.path.exists(self.json_backup):
+            shutil.move(self.json_backup, self.json_path)
+            
+        if os.path.exists(self.js_path):
+            os.remove(self.js_path)
+        if os.path.exists(self.js_backup):
+            shutil.move(self.js_backup, self.js_path)
 
     def test_dashboard_generator_dynamic_merge(self):
         """
