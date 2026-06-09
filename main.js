@@ -25,12 +25,13 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     } else {
         const cachedLevels = loadFromCache('checked_legend_levels', null);
-        if (Array.isArray(cachedLevels)) {
-            document.querySelectorAll('.legend-filter').forEach(el => {
-                const val = parseInt(el.value);
-                el.checked = cachedLevels.includes(val);
-            });
-        }
+        // デフォルト（キャッシュなし・リセット後）: 最低(5)・低(4)・自転車0台 物理(-1)・利用可能0台(-2) の4つのみON
+        const defaultLevels = [5, 4, -1, -2];
+        const activeLevels = Array.isArray(cachedLevels) ? cachedLevels : defaultLevels;
+        document.querySelectorAll('.legend-filter').forEach(el => {
+            const val = parseInt(el.value);
+            el.checked = activeLevels.includes(val);
+        });
     }
 
     loadDashboardData(false);

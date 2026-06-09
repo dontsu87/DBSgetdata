@@ -278,6 +278,9 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
         }
 
         const isEmptyPort = (parseInt(port.total_bikes) === 0 || !port.bikes || port.bikes.length === 0);
+        const hasBikes = !isEmptyPort;
+        const availableBikes = hasBikes ? port.bikes.filter(bike => bike.status && bike.status.trim() === '利用可能') : [];
+        const isRentalEmpty = hasBikes && availableBikes.length === 0;
 
         const matchingBikes = isEmptyPort ? [] : port.bikes.filter(bike => {
             const isUnlocked = bike.consecutive_use_duration >= thresholdSec;
@@ -340,7 +343,12 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
             return (isReplaced || isLevelMatch || (isUnlocked && isUnlockedFilterChecked) || isHighlighted) && isStatusMatch;
         });
 
-        let isDrawPort = (isEmptyPort && checkedLevels.includes(-1)) || (!isEmptyPort && matchingBikes.length > 0);
+        // バッテリー警告対象が1台でもいれば、利用可能0台より警告マーカーを優先する
+        const showAsRentalEmpty = isRentalEmpty && matchingBikes.length === 0;
+
+        let isDrawPort = (isEmptyPort && checkedLevels.includes(-1)) || 
+                         (showAsRentalEmpty && checkedLevels.includes(-2)) ||
+                         (!isEmptyPort && matchingBikes.length > 0);
 
         if (isKindaiMode()) {
             isDrawPort = true;
@@ -355,7 +363,9 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
             lat: lat,
             lon: lon,
             isEmptyPort: isEmptyPort,
-            isActuallyEmpty: isEmptyPort || matchingBikes.length === 0,
+            // 利用可能0台として表示するのは、matchingBikesが0台のときだけ
+            isRentalEmpty: showAsRentalEmpty,
+            isActuallyEmpty: isEmptyPort || (showAsRentalEmpty),
             matchingBikes: matchingBikes
         });
     });
@@ -384,7 +394,19 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
         const hasUnlockedBike = matchingBikes.some(bike => bike.consecutive_use_duration >= thresholdSec);
         const hasHighlightedBike = matchingBikes.some(bike => bike.status && checkedHighlightStatuses.includes(bike.status.trim()));
         
-        if (isActuallyEmpty) {
+        if (item.isRentalEmpty) {
+            let className = 'port-marker-rental-empty';
+            if (isSelected) {
+                className += ' port-marker-selected';
+            }
+            markerIcon = L.divIcon({
+                className: className,
+                html: '<div>0</div>',
+                iconSize: [28, 28],
+                iconAnchor: [14, 14]
+            });
+            zIndexOrder = 11; 
+        } else if (item.isEmptyPort) {
             let className = 'port-marker-empty';
             if (isSelected) {
                 className += ' port-marker-selected';
@@ -477,7 +499,7 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
             </div>
         `;
 
-        if (isActuallyEmpty) {
+        if (item.isEmptyPort) {
             popupContent += `
                 <div class="popup-desc">総駐輪台数: ${port.total_bikes}台</div>
                 <div class="popup-desc" style="font-weight:bold; color:#64748b; margin-top: 8px;">
@@ -485,8 +507,11 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
                 </div>
             `;
         } else {
+            // 表示対象の自転車リスト。表示対象(matchingBikes)があればそれを、なければそのポートにあるすべての自転車(port.bikes)を表示
+            const displayBikes = (matchingBikes.length > 0) ? matchingBikes : port.bikes;
+
             const modelCounts = {};
-            matchingBikes.forEach(bike => {
+            displayBikes.forEach(bike => {
                 const model = bike.model_name || "その他";
                 modelCounts[model] = (modelCounts[model] || 0) + 1;
             });
@@ -494,14 +519,20 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
                 .map(([model, count]) => `<span class="popup-model-count-item"><span class="popup-model-name">${model}</span><span class="popup-model-count-num">${count}</span></span>`)
                 .join("");
 
+            const statusDesc = item.isRentalEmpty
+                ? `<div class="popup-desc" style="font-weight:bold; color:#64748b; margin: 0;">レンタル可能車両: 0台（車両あり）</div>`
+                : `<div class="popup-desc" style="font-weight:bold; color:#ef4444; margin: 0;">表示対象車両: ${matchingBikes.length}台</div>`;
+
+            const sectionTitle = item.isRentalEmpty ? "車両内訳（車種別）" : "表示対象車両（車種別）";
+
             popupContent += `
                 <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; gap: 8px;">
                     <div style="display: flex; flex-direction: column; gap: 4px;">
                         <div class="popup-desc" style="margin: 0;">総駐輪台数: ${port.total_bikes}台</div>
-                        <div class="popup-desc" style="font-weight:bold; color:#ef4444; margin: 0;">表示対象車両: ${matchingBikes.length}台</div>
+                        ${statusDesc}
                     </div>
                     <div style="display: flex; flex-direction: column; align-items: center; gap: 2px;">
-                        <div style="font-size: 8px; font-weight: bold; color: #ef4444; line-height: 1;">表示対象車両（車種別）</div>
+                        <div style="font-size: 8px; font-weight: bold; color: #ef4444; line-height: 1;">${sectionTitle}</div>
                         <div class="popup-model-counts-container">
                             ${modelCountsStr}
                         </div>
@@ -509,7 +540,7 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
                 </div>
                 <ul class="popup-bike-list">
             `;
-            matchingBikes.forEach(bike => {
+            displayBikes.forEach(bike => {
                 let badgeClass = `badge-level${bike.alert_level}`;
                 let badgeName = bike.alert_level_name;
                 let unregisteredBadge = bike.is_unregistered ? '<span class="badge" style="background-color:#dc2626; margin-left:4px;">⚠️未登録（要CSV追加）</span>' : '';

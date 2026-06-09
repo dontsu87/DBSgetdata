@@ -486,6 +486,23 @@ header h1 {
     align-items: center;
 }
 
+/* レンタル可能0台のポート（白背景・青枠・青文字）補充が必要なポート */
+.port-marker-rental-empty {
+    background-color: #ffffff; /* 白 */
+    border: 2px solid #0ea5e9; /* 青の実線枠 */
+    border-radius: 50%;
+    width: 28px !important;
+    height: 28px !important;
+    box-shadow: 0 2px 4px rgba(14, 165, 233, 0.25);
+    color: #0ea5e9; /* 青文字 */
+    font-size: 12px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
 /* レベル5: AT異常 (黒紫系統、最大) */
 .port-marker-level5 {
     background-color: #4c1d95; /* 濃い黒紫 */
