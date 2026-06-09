@@ -400,6 +400,21 @@ def generate_dashboard_json(latest_vehicle_path: str = None) -> str:
         except Exception:
             consecutive_use_duration = 0
 
+        # CSVから安全にバッテリー交換情報をロード
+        replace_original_volt = row.get('交換前電圧')
+        replace_increased_volt = row.get('交換後電圧')
+        replaced_at = str(row.get('交換日時', '')).strip() if '交換日時' in df_merged.columns and not pd.isna(row.get('交換日時')) else ""
+        
+        try:
+            replace_orig_val = float(replace_original_volt) if replace_original_volt is not None and not pd.isna(replace_original_volt) and str(replace_original_volt).strip() != "" else None
+        except Exception:
+            replace_orig_val = None
+            
+        try:
+            replace_incr_val = float(replace_increased_volt) if replace_increased_volt is not None and not pd.isna(replace_increased_volt) and str(replace_increased_volt).strip() != "" else None
+        except Exception:
+            replace_incr_val = None
+
         bike_info = {
             "bike_id": bike_id,
             "status": status,
@@ -417,7 +432,10 @@ def generate_dashboard_json(latest_vehicle_path: str = None) -> str:
             },
             "at_time": at_time,
             "unlocked_started_at": unlocked_started_at,
-            "consecutive_use_duration": consecutive_use_duration
+            "consecutive_use_duration": consecutive_use_duration,
+            "replace_original_volt": replace_orig_val,
+            "replace_increased_volt": replace_incr_val,
+            "replaced_at": replaced_at
         }
         
         ports_data[port_name]["bikes"].append(bike_info)

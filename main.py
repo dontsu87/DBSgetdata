@@ -21,6 +21,8 @@ def run_scraping(is_worker=False):
     """
     Config.validate(is_worker=is_worker)
 
+
+
     # 0. OneDrive から最新の『車両閾値設定.csv』をダウンロードしてローカル同期する処理は廃止し、
     #    ワークスペース上に保存された『車両閾値設定.csv』を直接読み込む方式としました。
     

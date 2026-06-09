@@ -41,6 +41,16 @@
                         </span>
                     </label>
                 </div>
+                <!-- 交換済表示モードトグルスイッチ -->
+                <div class="replaced-mode-toggle-container" style="margin-left: 8px;">
+                    <label class="replaced-toggle-label" for="replaced-mode-checkbox" style="cursor: pointer; display: inline-flex; align-items: center; background-color: #10b981; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; color: #ffffff; user-select: none; transition: background-color 0.2s, color 0.2s;">
+                        <input type="checkbox" id="replaced-mode-checkbox" checked style="display: none;">
+                        <span class="replaced-toggle-button" style="display: flex; align-items: center; gap: 4px;">
+                            <span class="replaced-toggle-icon">♻️</span>
+                            <span class="replaced-toggle-text">交換済考慮 ON</span>
+                        </span>
+                    </label>
+                </div>
                 <!-- ビューの初期状態リセットボタン -->
                 <button id="reset-view-btn" class="reset-view-button" title="表示状態（フィルターや地図位置など）を初期状態に戻します">
                     🔄 リセット

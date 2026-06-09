@@ -55,11 +55,12 @@ def export_to_onedrive(df_list: list[pd.DataFrame]) -> str:
         combined_df['lat'] = ""
         combined_df['lon'] = ""
 
-    # --- 同一ポート継続利用時間の計算処理 ---
+    # --- 同一ポート継続利用時間の計算処理 ＆ バッテリー交換検知 ---
     import json
     from src.config import ROOT_DIR
     json_path = os.path.join(str(ROOT_DIR), "dashboard_data.json")
     prev_unlocked = {}
+    prev_battery_info = {} # bike_id -> { voltage, replace_original_volt, replace_increased_volt, replaced_at }
     if os.path.exists(json_path):
         try:
             with open(json_path, "r", encoding="utf-8") as f:
@@ -70,11 +71,29 @@ def export_to_onedrive(df_list: list[pd.DataFrame]) -> str:
                     b_id = bike.get("bike_id", "").strip()
                     started_at = bike.get("unlocked_started_at", "")
                     status = bike.get("status", "").strip()
+                    volt = bike.get("voltage")
+                    orig_v = bike.get("replace_original_volt")
+                    incr_v = bike.get("replace_increased_volt")
+                    rep_at = bike.get("replaced_at", "")
+                    
                     if b_id:
                         prev_unlocked[b_id] = {
                             "port_name": p_name,
                             "unlocked_started_at": started_at,
                             "status": status
+                        }
+                        
+                        try:
+                            v_float = float(volt) if volt is not None else None
+                        except (ValueError, TypeError):
+                            v_float = None
+                            
+                        prev_battery_info[b_id] = {
+                            "voltage": v_float,
+                            "replace_original_volt": orig_v if orig_v is not None else "",
+                            "replace_increased_volt": incr_v if incr_v is not None else "",
+                            "replaced_at": rep_at,
+                            "thresholds": bike.get("thresholds", {})
                         }
         except Exception as e:
             print(f"Warning: 前回の dashboard_data.json の読み込みに失敗しました: {e}")
@@ -82,12 +101,26 @@ def export_to_onedrive(df_list: list[pd.DataFrame]) -> str:
     now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     unlocked_started_list = []
     consecutive_duration_list = []
+    
+    # バッテリー交換用リスト
+    replace_orig_list = []
+    replace_incr_list = []
+    replace_time_list = []
+    
+    THRESHOLD_RISE = 1.5
 
     for idx, row in combined_df.iterrows():
         b_id = str(row['識別番号']).strip()
         p_name = str(row['ポート名']).strip()
         status = str(row['車両状態']).strip()
         
+        # 電圧の取得
+        try:
+            curr_volt = float(row['電圧'])
+        except (ValueError, TypeError):
+            curr_volt = None
+        
+        # 1. 継続利用時間の計算
         started_at = ""
         duration = 0
         
@@ -113,12 +146,66 @@ def export_to_onedrive(df_list: list[pd.DataFrame]) -> str:
         
         unlocked_started_list.append(started_at)
         consecutive_duration_list.append(duration if duration > 0 else "")
+        
+        # 2. バッテリー交換の検知
+        orig_v = ""
+        incr_v = ""
+        rep_time = ""
+        
+        if b_id in prev_battery_info:
+            prev_info = prev_battery_info[b_id]
+            prev_volt = prev_info["voltage"]
+            
+            # 前回の交換情報を引き継ぐ
+            if prev_info.get("replaced_at"):
+                orig_v = prev_info.get("replace_original_volt", "")
+                incr_v = prev_info.get("replace_increased_volt", "")
+                rep_time = prev_info.get("replaced_at", "")
+            
+            # 電圧上昇の検知 (動的閾値 ＆ 交換後高電圧判定)
+            if curr_volt is not None and prev_volt is not None:
+                # thresholds から画面強調（strong）とLv1（lv1）の閾値を取得
+                thresholds = prev_info.get("thresholds", {})
+                strong_th = thresholds.get("strong")
+                lv1_th = thresholds.get("lv1")
+                
+                # 閾値が取得できない場合のフォールバック値
+                if strong_th is None or lv1_th is None:
+                    if prev_volt >= 30.0:
+                        strong_th = strong_th if strong_th is not None else 35.9
+                        lv1_th = lv1_th if lv1_th is not None else 36.5
+                    else:
+                        strong_th = strong_th if strong_th is not None else 25.2
+                        lv1_th = lv1_th if lv1_th is not None else 25.9
+                
+                # 交換前の電圧に基づき、必要な電圧上昇幅を決定
+                if prev_volt > strong_th:
+                    required_rise = 3.0
+                else:
+                    required_rise = 1.5
+                
+                # 上昇幅を満たし、かつ交換後の電圧が「高」以上（lv1超）であること
+                if (curr_volt - prev_volt >= required_rise) and (curr_volt > lv1_th):
+                    # 交換検知：情報をオーバーライド
+                    orig_v = prev_volt
+                    incr_v = curr_volt
+                    rep_time = now_str
+                    
+        replace_orig_list.append(orig_v)
+        replace_incr_list.append(incr_v)
+        replace_time_list.append(rep_time)
 
     combined_df['連続利用開始日時'] = unlocked_started_list
     combined_df['同一ポート継続利用時間(秒)'] = consecutive_duration_list
+    
+    # バッテリー交換情報をDataFrameへ追加
+    combined_df['交換前電圧'] = replace_orig_list
+    combined_df['交換後電圧'] = replace_incr_list
+    combined_df['交換日時'] = replace_time_list
 
-    # カラム順序を整理 (新しく追加した station_id, lat, lon, AT種別, 連続利用開始日時, 同一ポート継続利用時間(秒) も含める)
-    columns_order = ['エリア名', '識別番号', '車両状態', 'ポート名', 'station_id', 'lat', 'lon', '電圧', 'AT通知受信日時', 'AT種別', '連続利用開始日時', '同一ポート継続利用時間(秒)']
+    # カラム順序を整理 (新しく追加した station_id, lat, lon, AT種別, 連続利用開始日時, 同一ポート継続利用時間(秒), 交換前電圧, 交換後電圧, 交換日時 も含める)
+    columns_order = ['エリア名', '識別番号', '車両状態', 'ポート名', 'station_id', 'lat', 'lon', '電圧', 'AT通知受信日時', 'AT種別', '連続利用開始日時', '同一ポート継続利用時間(秒)', '交換前電圧', '交換後電圧', '交換日時']
+
     # 存在するカラムのみで再配置
     columns_order = [col for col in columns_order if col in combined_df.columns]
     combined_df = combined_df[columns_order]
