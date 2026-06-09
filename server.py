@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import json
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from src.upload_to_r2 import upload_file_to_r2
@@ -64,11 +64,15 @@ def receive_location():
             if lat is None or lon is None:
                 return jsonify({"status": "error", "message": "Missing coordinates"}), 400
 
-            # タイムスタンプを日時に変換
+            # 日本時間 (JST = UTC+9) の設定
+            JST = timezone(timedelta(hours=9))
+
+            # タイムスタンプを日本時間に変換
             if tst:
-                updated_at = datetime.fromtimestamp(tst).strftime('%Y-%m-%d %H:%M:%S')
+                updated_at = datetime.fromtimestamp(tst, JST).strftime('%Y-%m-%d %H:%M:%S')
             else:
-                updated_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                updated_at = datetime.now(JST).strftime('%Y-%m-%d %H:%M:%S')
+
 
             # 既存のデータを読み込み
             locations = {}
