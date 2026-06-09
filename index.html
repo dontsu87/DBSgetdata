@@ -46,7 +46,7 @@
                     🔄 リセット
                 </button>
                 <div class="header-meta">
-                    <span class="version-label" style="font-size: 9px; color: #64748b; font-family: monospace; font-weight: bold; line-height: 1;">ver.20260608131500</span>
+                    <span class="version-label" style="font-size: 9px; color: #64748b; font-family: monospace; font-weight: bold; line-height: 1;">ver.20260609135900</span>
                     <a href="docs/manual.html" target="_blank" class="help-button" title="使い方マニュアルを開く">❓ ヘルプ</a>
                 </div>
             </div>
@@ -123,8 +123,8 @@
                 </label>
                 <label class="map-legend-item">
                     <div style="display: flex; align-items: center;">
-                        <div class="map-legend-color" style="background-color: #f8fafc; border: 1.5px dashed #cbd5e1;"></div>
-                        <span><b>自転車0台</b> (薄グレー)</span>
+                        <div class="map-legend-color" style="background-color: #ffffff; border: 2px solid #64748b; color: #ef4444; font-size: 10px; font-weight: bold; display: flex; align-items: center; justify-content: center; line-height: 1;">0</div>
+                        <span><b>自転車0台</b></span>
                     </div>
                     <input type="checkbox" class="legend-filter" value="-1">
                 </label>
@@ -176,7 +176,7 @@
                     <!-- 未施錠未返却の判定閾値設定とフィルター -->
                     <div style="padding: 8px 12px 0 12px; border-bottom: 1px solid #475569; padding-bottom: 8px; display: flex; flex-direction: column; gap: 6px;">
                         <label style="font-size: 11px; font-weight: bold; color: #cbd5e1; display: flex; align-items: center; justify-content: space-between;">
-                            <span>⚠️ 未施錠判定閾値</span>
+                            <span>未施錠判定閾値</span>
                             <div style="display: flex; align-items: center; gap: 4px;">
                                 <input type="number" id="unlocked-threshold-input" value="2.0" step="0.5" min="0.1" style="width: 50px; padding: 2px 4px; font-size: 11px; border: 1px solid #cbd5e1; border-radius: 4px; text-align: center; color: #0f172a; background-color: #ffffff;">
                                 <span style="font-weight: normal; color: #cbd5e1;">時間</span>
@@ -184,10 +184,15 @@
                         </label>
                         <label class="status-filter-item" style="padding: 4px 0; border: none; margin: 0; cursor: pointer; display: flex; align-items: center; justify-content: space-between;">
                             <div style="display: flex; align-items: center;">
-                                <span id="unlocked-filter-label" style="font-weight: bold; color: #db2777;">⚠️ 未施錠未返却 (2.0時間以上)</span>
+                                <span id="unlocked-filter-label" style="font-weight: bold; color: #db2777;">🔑 未施錠未返却 (2.0時間以上)</span>
                             </div>
                             <input type="checkbox" id="unlocked-filter-checkbox" value="unlocked" checked>
                         </label>
+                    </div>
+                    <!-- 一括選択・解除項目 -->
+                    <div style="padding: 8px 12px; display: flex; gap: 8px; border-bottom: 1px dashed #475569;">
+                        <button type="button" id="status-select-all" style="flex: 1; background-color: #007aff; border: none; color: #ffffff; border-radius: 4px; padding: 8px 0; font-weight: bold; cursor: pointer; font-size: 12px; transition: background-color 0.2s;">すべて選択</button>
+                        <button type="button" id="status-deselect-all" style="flex: 1; background-color: #475569; border: none; color: #cbd5e1; border-radius: 4px; padding: 8px 0; font-weight: bold; cursor: pointer; font-size: 12px; transition: background-color 0.2s;">すべて解除</button>
                     </div>
                     <div id="status-checkboxes-container" style="padding-top: 8px;">
                         <!-- JavaScriptで動的生成 -->

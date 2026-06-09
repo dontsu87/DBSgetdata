@@ -290,7 +290,7 @@ header h1 {
 /* ポップアップ内の警告車両リストスタイル */
 .popup-bike-list {
     margin-top: 8px;
-    max-height: 150px;
+    max-height: 350px; /* 150px から 350px に拡張 */
     overflow-y: auto;
     border: 1px solid #e2e8f0;
     border-radius: 6px;
@@ -299,11 +299,12 @@ header h1 {
 }
 
 .popup-bike-item {
-    padding: 8px 10px;
+    padding: 6px 10px; /* 縦幅スペース縮小のため、やや狭めに設定 */
     border-bottom: 1px solid #f1f5f9;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 8px;
 }
 
 .popup-bike-item:last-child {
@@ -313,15 +314,46 @@ header h1 {
 .popup-bike-id {
     font-weight: bold;
     color: #0f172a;
+    font-size: 16px;
 }
 
-.popup-bike-volt {
-    color: #ef4444;
+.popup-bike-col-id {
+    flex: 0 0 auto;
+}
+
+.popup-bike-col-model {
+    flex: 0 0 auto;
+}
+
+.popup-bike-model-tag {
+    font-size: 11px;
+    color: #64748b;
     font-weight: bold;
-    background-color: #fee2e2;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-size: 13px;
+    white-space: nowrap;
+}
+
+.popup-bike-col-status {
+    flex: 1 1 0%;
+    min-width: 0;
+}
+
+.popup-bike-status {
+    font-size: 11px;
+    color: #0284c7;
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+}
+
+.popup-bike-col-badges {
+    flex: 0 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 4px;
+    max-width: 120px;
 }
 
 /* 通信中のローディング */
@@ -401,16 +433,16 @@ header h1 {
     font-weight: bold;
 }
 
-/* 自転車0台のポート（正常より目立たない薄グレー、中身が白抜き、数字0を表示） */
+/* 自転車0台のポート（白背景に濃いめの灰色ふちどり・赤文字） */
 .port-marker-empty {
-    background-color: #f8fafc; /* 非常に薄いグレー */
-    border: 1.5px dashed #cbd5e1; /* 薄い点線 */
+    background-color: #ffffff; /* 白 */
+    border: 2px solid #64748b; /* 濃いめの灰色ふちどり */
     border-radius: 50%;
-    width: 20px !important;
-    height: 20px !important;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    color: #94a3b8; /* 薄い文字色 */
-    font-size: 10px;
+    width: 28px !important;
+    height: 28px !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    color: #ef4444; /* 赤文字 */
+    font-size: 12px;
     font-weight: bold;
     display: flex;
     justify-content: center;
@@ -933,7 +965,28 @@ header h1 {
     animation: pulse-unlocked-border 2.0s infinite !important;
 }
 
-/* ピン右上の未施錠未返却警告アイコン (⚠️絵文字) */
+/* ピン右上の警告バッジ用コンテナ（⚠️と⭐などが横に並ぶようにする） */
+.marker-badges-container {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    display: flex;
+    gap: 1px;
+    z-index: 100;
+    line-height: 1;
+}
+
+.marker-badge-item {
+    font-size: 13px;
+    text-shadow: 
+        1px 1px 0 #fff, -1px -1px 0 #fff,
+        1px -1px 0 #fff, -1px 1px 0 #fff,
+        0 1px 0 #fff, 0 -1px 0 #fff,
+        1px 0 0 #fff, -1px 0 0 #fff,
+        0 0 4px #fff;
+}
+
+/* ピン右上の未施錠未返却警告アイコン (⚠️絵文字) - 互換性維持のため残す */
 .unlocked-dot {
     position: absolute;
     top: -8px;
@@ -941,7 +994,6 @@ header h1 {
     font-size: 13px;
     z-index: 100;
     line-height: 1;
-    /* 白いフチ取りを付けることで、背景の赤色に埋もれないようにします */
     text-shadow: 
         1px 1px 0 #fff, -1px -1px 0 #fff,
         1px -1px 0 #fff, -1px 1px 0 #fff,

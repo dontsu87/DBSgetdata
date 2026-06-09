@@ -56,10 +56,28 @@ document.addEventListener("DOMContentLoaded", function() {
     let currentPositionCircle;
     
     // データキャッシュ、マーカーレイヤーグループ、選択されたエリア、選択された車両状態の定義
+    // 絵文字アイコンの一元管理用定数
+    const EMOJI_UNLOCKED = '🔑';
+    const EMOJI_HIGHLIGHT = '⚠️';
+
     let cachedDashboardData = null;
     let markerGroup;
     let selectedArea = ""; // 選択中のエリア名（initAreaTabsでキャッシュ適用）
     let checkedStatuses = []; // 選択中の車両状態フィルターの配列（initStatusFilterでキャッシュ適用）
+    let checkedHighlightStatuses = []; // 強調表示対象の車両状態配列（initStatusFilterでキャッシュ適用）
+    
+    // 強調表示のキャッシュ復元（初回ロード時のデフォルトは 'AT異常(AT通知受信なし)', 'AT異常(電池なし)' をONにする）
+    const cachedHighlight = loadFromCache('checked_highlight_statuses', null);
+    if (cachedHighlight === null) {
+        checkedHighlightStatuses = ['AT異常(AT通知受信なし)', 'AT異常(電池なし)', 'AT異常（AT受信通知なし）', 'AT異常（電池なし）'];
+        saveToCache('checked_highlight_statuses', checkedHighlightStatuses);
+    } else {
+        if (Array.isArray(cachedHighlight)) {
+            checkedHighlightStatuses = cachedHighlight;
+        } else {
+            checkedHighlightStatuses = [];
+        }
+    }
     let unlockedThresholdHours = loadFromCache('unlocked_threshold_hours', 2.0); // 未施錠未返却の判定閾値（時間）
 
     // ポート選択サマリーモード用状態
@@ -84,7 +102,7 @@ document.addEventListener("DOMContentLoaded", function() {
             unlockedThresholdHours = val;
             saveToCache('unlocked_threshold_hours', val);
             if (unlockedFilterLabel) {
-                unlockedFilterLabel.innerText = `⚠️ 未施錠未返却 (${unlockedThresholdHours.toFixed(1)}時間以上)`;
+                unlockedFilterLabel.innerText = `${EMOJI_UNLOCKED} 未施錠未返却 (${unlockedThresholdHours.toFixed(1)}時間以上)`;
             }
             updateFilterAndRender(false);
         });
@@ -95,7 +113,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 unlockedThresholdHours = val;
                 saveToCache('unlocked_threshold_hours', val);
                 if (unlockedFilterLabel) {
-                    unlockedFilterLabel.innerText = `⚠️ 未施錠未返却 (${unlockedThresholdHours.toFixed(1)}時間以上)`;
+                    unlockedFilterLabel.innerText = `${EMOJI_UNLOCKED} 未施錠未返却 (${unlockedThresholdHours.toFixed(1)}時間以上)`;
                 }
                 updateFilterAndRender(false);
             }
@@ -113,7 +131,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     if (unlockedFilterLabel) {
-        unlockedFilterLabel.innerText = `⚠️ 未施錠未返却 (${unlockedThresholdHours.toFixed(1)}時間以上)`;
+        unlockedFilterLabel.innerText = `${EMOJI_UNLOCKED} 未施錠未返却 (${unlockedThresholdHours.toFixed(1)}時間以上)`;
     }
 
     // 自動更新保留用の制御状態
@@ -711,6 +729,35 @@ document.addEventListener("DOMContentLoaded", function() {
         const sortedStatuses = Array.from(statuses).sort();
         const currentStatusesStr = sortedStatuses.join(',');
 
+        // 一括選択・一括解除ボタンのイベント登録 (未施錠判定は除く)
+        const selectAllBtn = document.getElementById('status-select-all');
+        if (selectAllBtn) {
+            selectAllBtn.onclick = function() {
+                checkedStatuses = [...sortedStatuses];
+                document.querySelectorAll('.status-filter').forEach(cb => {
+                    cb.checked = true;
+                });
+                saveToCache('checked_statuses', checkedStatuses);
+                updateFilterAndRender();
+            };
+        }
+        const deselectAllBtn = document.getElementById('status-deselect-all');
+        if (deselectAllBtn) {
+            deselectAllBtn.onclick = function() {
+                checkedStatuses = [];
+                checkedHighlightStatuses = [];
+                document.querySelectorAll('.status-filter').forEach(cb => {
+                    cb.checked = false;
+                });
+                document.querySelectorAll('.status-highlight').forEach(cb => {
+                    cb.checked = false;
+                });
+                saveToCache('checked_statuses', checkedStatuses);
+                saveToCache('checked_highlight_statuses', checkedHighlightStatuses);
+                updateFilterAndRender();
+            };
+        }
+
         // 初回ロード時、または checkedStatuses が空のときはキャッシュから復元、無ければすべて選択状態にする
         if (checkedStatuses.length === 0) {
             const cachedStatuses = loadFromCache('checked_statuses', null);
@@ -729,6 +776,7 @@ document.addEventListener("DOMContentLoaded", function() {
             checkedStatuses = checkedStatuses.filter(s => sortedStatuses.includes(s)).concat(newStatuses);
         }
 
+
         // ステータスの種類に変化がない場合は、DOMの再生成をスキップしてチェック状態のみを同期
         if (currentStatusesStr === prevStatusesStr) {
             const container = document.getElementById('status-checkboxes-container');
@@ -736,6 +784,10 @@ document.addEventListener("DOMContentLoaded", function() {
                 const checkboxes = container.querySelectorAll('.status-filter');
                 checkboxes.forEach(cb => {
                     cb.checked = checkedStatuses.includes(cb.value);
+                });
+                const highlights = container.querySelectorAll('.status-highlight');
+                highlights.forEach(cb => {
+                    cb.checked = checkedHighlightStatuses.includes(cb.value);
                 });
             }
             return;
@@ -746,18 +798,27 @@ document.addEventListener("DOMContentLoaded", function() {
         container.innerHTML = '';
 
         sortedStatuses.forEach(status => {
-            const label = document.createElement('label');
-            label.className = 'status-filter-item';
+            const wrapper = document.createElement('div');
+            wrapper.className = 'status-filter-item-wrapper';
+            wrapper.style.display = 'flex';
+            wrapper.style.justifyContent = 'space-between';
+            wrapper.style.alignItems = 'center';
+            wrapper.style.padding = '4px 12px';
             
             const isChecked = checkedStatuses.includes(status);
-            label.innerHTML = `
-                <div style="display: flex; align-items: center;">
+            const isHighlighted = checkedHighlightStatuses.includes(status);
+            wrapper.innerHTML = `
+                <label style="display: flex; align-items: center; gap: 8px; margin: 0; cursor: pointer; flex: 1;">
+                    <input type="checkbox" class="status-filter" value="${status}" ${isChecked ? 'checked' : ''}>
                     <span><b>${status}</b></span>
-                </div>
-                <input type="checkbox" class="status-filter" value="${status}" ${isChecked ? 'checked' : ''}>
+                </label>
+                <label style="display: flex; align-items: center; gap: 4px; font-size: 11px; color: #cbd5e1; cursor: pointer; margin: 0; user-select: none;">
+                    <input type="checkbox" class="status-highlight" value="${status}" ${isHighlighted ? 'checked' : ''}>
+                    <span>強調 (${EMOJI_HIGHLIGHT})</span>
+                </label>
             `;
 
-            const checkbox = label.querySelector('input');
+            const checkbox = wrapper.querySelector('.status-filter');
             checkbox.addEventListener('change', function() {
                 if (checkbox.checked) {
                     if (!checkedStatuses.includes(status)) {
@@ -765,12 +826,43 @@ document.addEventListener("DOMContentLoaded", function() {
                     }
                 } else {
                     checkedStatuses = checkedStatuses.filter(s => s !== status);
+                    // フィルターがOFFになった際、もし強調がONなら自動的にOFFにする
+                    if (checkedHighlightStatuses.includes(status)) {
+                        checkedHighlightStatuses = checkedHighlightStatuses.filter(s => s !== status);
+                        saveToCache('checked_highlight_statuses', checkedHighlightStatuses);
+                        const highlightCheckbox = wrapper.querySelector('.status-highlight');
+                        if (highlightCheckbox) {
+                            highlightCheckbox.checked = false;
+                        }
+                    }
                 }
                 saveToCache('checked_statuses', checkedStatuses);
                 updateFilterAndRender();
             });
 
-            container.appendChild(label);
+            const highlightCheckbox = wrapper.querySelector('.status-highlight');
+            highlightCheckbox.addEventListener('change', function() {
+                if (highlightCheckbox.checked) {
+                    if (!checkedHighlightStatuses.includes(status)) {
+                        checkedHighlightStatuses.push(status);
+                    }
+                    // 強調がONになった際、もしフィルターがOFFなら自動的にONにする
+                    if (!checkedStatuses.includes(status)) {
+                        checkedStatuses.push(status);
+                        saveToCache('checked_statuses', checkedStatuses);
+                        const filterCheckbox = wrapper.querySelector('.status-filter');
+                        if (filterCheckbox) {
+                            filterCheckbox.checked = true;
+                        }
+                    }
+                } else {
+                    checkedHighlightStatuses = checkedHighlightStatuses.filter(s => s !== status);
+                }
+                saveToCache('checked_highlight_statuses', checkedHighlightStatuses);
+                updateFilterAndRender();
+            });
+
+            container.appendChild(wrapper);
         });
     }
 
@@ -855,11 +947,12 @@ document.addEventListener("DOMContentLoaded", function() {
                 const isUnlocked = bike.consecutive_use_duration >= thresholdSec;
                 const isLevelMatch = checkedLevels.includes(bike.alert_level);
                 const isStatusMatch = bike.status ? targetStatuses.includes(bike.status.trim()) : false;
+                const isHighlighted = bike.status ? checkedHighlightStatuses.includes(bike.status.trim()) : false;
                 
                 // 表示対象かどうかの判定：
-                // (バッテリー深刻度の警告対象である OR (未施錠未返却である AND 未施錠未返却フィルターがON))
+                // (バッテリー深刻度の警告対象である OR (未施錠未返却である AND 未施錠未返却フィルターがON) OR 強調対象の車両状態である)
                 // かつ、車両状態フィルターに合致していること
-                return (isLevelMatch || (isUnlocked && isUnlockedFilterChecked)) && isStatusMatch;
+                return (isLevelMatch || (isUnlocked && isUnlockedFilterChecked) || isHighlighted) && isStatusMatch;
             });
 
             // 描画判定
@@ -913,6 +1006,7 @@ document.addEventListener("DOMContentLoaded", function() {
             let markerIcon;
             let zIndexOrder = 100;
             const hasUnlockedBike = matchingBikes.some(bike => bike.consecutive_use_duration >= thresholdSec);
+            const hasHighlightedBike = matchingBikes.some(bike => bike.status && checkedHighlightStatuses.includes(bike.status.trim()));
             
             if (isActuallyEmpty) {
                 // 自転車0台：正常より目立たない薄いグレー、中に「0」を薄く表示、サイズ[20,20]
@@ -923,8 +1017,8 @@ document.addEventListener("DOMContentLoaded", function() {
                 markerIcon = L.divIcon({
                     className: className,
                     html: '<div>0</div>',
-                    iconSize: [20, 20],
-                    iconAnchor: [10, 10]
+                    iconSize: [28, 28],
+                    iconAnchor: [14, 14]
                 });
                 zIndexOrder = 10; // 最背面
             } else {
@@ -965,10 +1059,23 @@ document.addEventListener("DOMContentLoaded", function() {
                     zIndexOrder += 50000; // 選択されたマーカーは最前面に
                 }
 
+                // バッジ用のコンテナHTMLを作成
+                let badgesHtml = '';
+                if (hasUnlockedBike || hasHighlightedBike) {
+                    badgesHtml += '<div class="marker-badges-container">';
+                    if (hasUnlockedBike) {
+                        badgesHtml += `<span class="marker-badge-item">${EMOJI_UNLOCKED}</span>`;
+                    }
+                    if (hasHighlightedBike) {
+                        badgesHtml += `<span class="marker-badge-item">${EMOJI_HIGHLIGHT}</span>`;
+                    }
+                    badgesHtml += '</div>';
+                }
+
                 // 正常(0)も含むすべてのレベルで台数を表示するように統一
                 markerIcon = L.divIcon({
                     className: className,
-                    html: `<div>${matchingBikes.length}${hasUnlockedBike ? '<span class="unlocked-dot">⚠️</span>' : ''}</div>`,
+                    html: `<div>${matchingBikes.length}${badgesHtml}</div>`,
                     iconSize: maxLevel >= 4 ? [32, 32] : [28, 28],
                     iconAnchor: maxLevel >= 4 ? [16, 16] : [14, 14]
                 });
@@ -1042,27 +1149,41 @@ document.addEventListener("DOMContentLoaded", function() {
                         badgeClass = 'badge-level1';
                     }
                     
-                    // 未施錠未返却の判定とバッジ
+                    // 未施錠未返却の判定とバッジ (アイコンのみ、ホバーで時間をツールチップ表示)
                     const isUnlocked = bike.consecutive_use_duration >= thresholdSec;
-                    let unlockedBadge = '';
+                    let bikeUnlockedBadge = '';
                     if (isUnlocked) {
                         const hours = Math.floor(bike.consecutive_use_duration / 3600);
                         const mins = Math.floor((bike.consecutive_use_duration % 3600) / 60);
                         const durationStr = hours > 0 ? `${hours}時間${mins}分` : `${mins}分`;
-                        unlockedBadge = `<span class="badge badge-unlocked" style="background-color:#db2777; color:#ffffff; margin-left:4px;">⚠️未施錠未返却 (${durationStr})</span>`;
+                        bikeUnlockedBadge = `<span style="font-size: 12px; margin-right: 2px; display: inline-flex; align-items: center;" title="未施錠未返却 (${durationStr})">${EMOJI_UNLOCKED}</span>`;
                     }
                     
+                    // 車種名を最大4文字で切り出し
+                    const displayModel = (bike.model_name || '').substring(0, 4);
+
+                    // 強調対象の車両かどうかを判定してバッジを作成
+                    const bikeStatusTrimmed = bike.status ? bike.status.trim() : '';
+                    const isBikeHighlighted = checkedHighlightStatuses.includes(bikeStatusTrimmed);
+                    const bikeHighlightBadge = isBikeHighlighted ? `<span style="font-size: 12px; margin-right: 2px; display: inline-flex; align-items: center;">${EMOJI_HIGHLIGHT}</span>` : '';
+                    
                     popupContent += `
-                        <li class="popup-bike-item" style="align-items: flex-start;">
-                            <div>
+                        <li class="popup-bike-item">
+                            <div class="popup-bike-col-id">
                                 <span class="popup-bike-id">${bike.bike_id}</span>
-                                <span class="popup-desc" style="font-size:11px; margin-left:5px; color: #0284c7; font-weight: bold;">[${bike.status}]</span>
-                                <span class="badge ${badgeClass}">${badgeName}</span>
-                                ${unlockedBadge}
-                                ${unregisteredBadge}
-                                <div class="popup-desc" style="font-size:10px; margin: 2px 0 0 0; color: #64748b;">車種: ${bike.model_name}</div>
                             </div>
-                            <span class="popup-bike-volt" style="margin-top: 2px;">${bike.voltage}V</span>
+                            <div class="popup-bike-col-model">
+                                <span class="popup-bike-model-tag">【${displayModel}】</span>
+                            </div>
+                            <div class="popup-bike-col-status">
+                                <span class="popup-bike-status">[${bike.status}]</span>
+                            </div>
+                            <div class="popup-bike-col-badges">
+                                ${bikeHighlightBadge}
+                                ${bikeUnlockedBadge}
+                                <span class="badge ${badgeClass}">${badgeName}</span>
+                                ${unregisteredBadge}
+                            </div>
                         </li>
                     `;
                 });
@@ -1420,7 +1541,7 @@ document.addEventListener("DOMContentLoaded", function() {
             if (confirm('表示状態（フィルターや地図位置など）を初期状態に戻しますか？')) {
                 const keysToRemove = [
                     'map_center_lat', 'map_center_lng', 'map_zoom',
-                    'selected_basemap', 'selected_area', 'checked_statuses',
+                    'selected_basemap', 'selected_area', 'checked_statuses', 'checked_highlight_statuses',
                     'unlocked_threshold_hours', 'unlocked_filter_enabled',
                     'is_port_selection_mode', 'selected_port_names',
                     'checked_legend_levels'
