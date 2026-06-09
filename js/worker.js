@@ -20,8 +20,16 @@
 
         const workerSelect = document.getElementById("worker-select");
         if (workerSelect) {
+            // キャッシュから前回の選択状態を読み込み適用
+            const cachedMode = typeof loadFromCache === "function" ? loadFromCache("selected_worker_mode", "none") : "none";
+            workerSelect.value = cachedMode;
+            handleWorkerModeChange(cachedMode);
+
             workerSelect.addEventListener("change", function(e) {
                 const mode = e.target.value;
+                if (typeof saveToCache === "function") {
+                    saveToCache("selected_worker_mode", mode);
+                }
                 handleWorkerModeChange(mode);
             });
         }
