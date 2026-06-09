@@ -637,34 +637,42 @@ header h1 {
     margin-left: 12px;
 }
 
-/* 地図上の車両状態 (Status) フィルターパネル */
-.status-filter-panel {
+/* 右上のマップコントロール横並びコンテナ */
+.map-top-right-controls {
     position: absolute;
     top: 15px;
     right: 15px;
+    display: flex;
+    flex-direction: row-reverse; /* 右から順に並べる */
+    align-items: flex-start; /* 引き伸ばしを防ぎ、各々の高さを維持する */
+    gap: 12px;
+    z-index: 1000;
+    pointer-events: none;
+}
+.map-top-right-controls > div {
+    pointer-events: auto;
+}
+
+/* 地図上の車両状態 (Status) フィルターパネル */
+.status-filter-panel {
     background-color: rgba(30, 41, 59, 0.95);
     color: #ffffff;
     padding: 12px 16px;
     border-radius: 8px;
     font-size: 13px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-    z-index: 1000;
     border: 1px solid #475569;
     min-width: 200px;
 }
 
 /* 地図上のベースマップ選択パネル */
 .basemap-panel {
-    position: absolute;
-    top: 15px;
-    right: 230px; /* status-filter-panel の左側に並ぶように調整 */
     background-color: rgba(30, 41, 59, 0.95);
     color: #ffffff;
     padding: 12px 16px;
     border-radius: 8px;
     font-size: 13px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-    z-index: 1000;
     border: 1px solid #475569;
     min-width: 200px;
 }
@@ -842,6 +850,10 @@ header h1 {
     .area-tab {
         padding: 8px 14px;
         font-size: 12px;
+    }
+
+    .map-top-right-controls {
+        display: contents;
     }
 
     /* 1. 凡例・サマリー・ベースマップパネルを画面下のスライド式ドロワーに変更 */

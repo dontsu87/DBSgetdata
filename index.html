@@ -149,72 +149,75 @@
                 </label>
             </div>
 
-            <!-- 右上のベースマップ選択パネル -->
-            <div class="basemap-panel" id="basemap-panel">
-                <div class="panel-header-mobile">
-                    <span style="font-weight:bold;">🗺️ 地図の切り替え</span>
-                    <button class="close-panel-btn">✕</button>
-                </div>
-                <div class="basemap-title" id="basemap-header-btn">
-                    <span>🗺️ 地図の切り替え</span>
-                    <span class="panel-arrow">▼</span>
-                </div>
-                <div class="basemap-options-container" id="basemap-options-container">
-                    <div class="basemap-options">
-                        <label class="basemap-item">
-                            <input type="radio" name="basemap-select" value="googleRoad" autocomplete="off" checked>
-                            <span>Google マップ (道路)</span>
-                        </label>
-                        <label class="basemap-item">
-                            <input type="radio" name="basemap-select" value="googleSatellite" autocomplete="off">
-                            <span>Google マップ (衛星画像)</span>
-                        </label>
-                        <label class="basemap-item">
-                            <input type="radio" name="basemap-select" value="gsiStd" autocomplete="off">
-                            <span>地理院地図 (標準)</span>
-                        </label>
-                        <label class="basemap-item">
-                            <input type="radio" name="basemap-select" value="gsiPale" autocomplete="off">
-                            <span>地理院地図 (淡色)</span>
-                        </label>
+            <!-- 右上のマップコントロール（横並び用コンテナ） -->
+            <div class="map-top-right-controls">
+                <!-- 右上の車両状態 (Status) フィルターパネル -->
+                <div class="status-filter-panel" id="status-filter-panel">
+                    <div class="panel-header-mobile">
+                        <span style="font-weight:bold;">🚲 車両状態フィルター</span>
+                        <button class="close-panel-btn">✕</button>
+                    </div>
+                    <div class="status-filter-title" id="status-header-btn">
+                        <span>🚲 車両状態 (フィルター)</span>
+                        <span class="panel-arrow">▼</span>
+                    </div>
+                    <div class="status-options-container" id="status-options-container">
+                        <!-- 未施錠未返却の判定閾値設定とフィルター -->
+                        <div style="padding: 8px 12px 0 12px; border-bottom: 1px solid #475569; padding-bottom: 8px; display: flex; flex-direction: column; gap: 6px;">
+                            <label style="font-size: 11px; font-weight: bold; color: #cbd5e1; display: flex; align-items: center; justify-content: space-between;">
+                                <span>未施錠判定閾値</span>
+                                <div style="display: flex; align-items: center; gap: 4px;">
+                                    <input type="number" id="unlocked-threshold-input" value="2.0" step="0.5" min="0.1" style="width: 50px; padding: 2px 4px; font-size: 11px; border: 1px solid #cbd5e1; border-radius: 4px; text-align: center; color: #0f172a; background-color: #ffffff;">
+                                    <span style="font-weight: normal; color: #cbd5e1;">時間</span>
+                                </div>
+                            </label>
+                            <label class="status-filter-item" style="padding: 4px 0; border: none; margin: 0; cursor: pointer; display: flex; align-items: center; justify-content: space-between;">
+                                <div style="display: flex; align-items: center;">
+                                    <span id="unlocked-filter-label" style="font-weight: bold; color: #db2777;">🔑 未施錠未返却 (2.0時間以上)</span>
+                                </div>
+                                <input type="checkbox" id="unlocked-filter-checkbox" value="unlocked" checked>
+                            </label>
+                        </div>
+                        <!-- 一括選択・解除項目 -->
+                        <div style="padding: 8px 12px; display: flex; gap: 8px; border-bottom: 1px dashed #475569;">
+                            <button type="button" id="status-select-all" style="flex: 1; background-color: #007aff; border: none; color: #ffffff; border-radius: 4px; padding: 8px 0; font-weight: bold; cursor: pointer; font-size: 12px; transition: background-color 0.2s;">すべて選択</button>
+                            <button type="button" id="status-deselect-all" style="flex: 1; background-color: #475569; border: none; color: #cbd5e1; border-radius: 4px; padding: 8px 0; font-weight: bold; cursor: pointer; font-size: 12px; transition: background-color 0.2s;">すべて解除</button>
+                        </div>
+                        <div id="status-checkboxes-container" style="padding-top: 8px;">
+                            <!-- JavaScriptで動的生成 -->
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- 右上の車両状態 (Status) フィルターパネル -->
-            <div class="status-filter-panel" id="status-filter-panel">
-                <div class="panel-header-mobile">
-                    <span style="font-weight:bold;">🚲 車両状態フィルター</span>
-                    <button class="close-panel-btn">✕</button>
-                </div>
-                <div class="status-filter-title" id="status-header-btn">
-                    <span>🚲 車両状態 (フィルター)</span>
-                    <span class="panel-arrow">▼</span>
-                </div>
-                <div class="status-options-container" id="status-options-container">
-                    <!-- 未施錠未返却の判定閾値設定とフィルター -->
-                    <div style="padding: 8px 12px 0 12px; border-bottom: 1px solid #475569; padding-bottom: 8px; display: flex; flex-direction: column; gap: 6px;">
-                        <label style="font-size: 11px; font-weight: bold; color: #cbd5e1; display: flex; align-items: center; justify-content: space-between;">
-                            <span>未施錠判定閾値</span>
-                            <div style="display: flex; align-items: center; gap: 4px;">
-                                <input type="number" id="unlocked-threshold-input" value="2.0" step="0.5" min="0.1" style="width: 50px; padding: 2px 4px; font-size: 11px; border: 1px solid #cbd5e1; border-radius: 4px; text-align: center; color: #0f172a; background-color: #ffffff;">
-                                <span style="font-weight: normal; color: #cbd5e1;">時間</span>
-                            </div>
-                        </label>
-                        <label class="status-filter-item" style="padding: 4px 0; border: none; margin: 0; cursor: pointer; display: flex; align-items: center; justify-content: space-between;">
-                            <div style="display: flex; align-items: center;">
-                                <span id="unlocked-filter-label" style="font-weight: bold; color: #db2777;">🔑 未施錠未返却 (2.0時間以上)</span>
-                            </div>
-                            <input type="checkbox" id="unlocked-filter-checkbox" value="unlocked" checked>
-                        </label>
+                <!-- 右上のベースマップ選択パネル -->
+                <div class="basemap-panel" id="basemap-panel">
+                    <div class="panel-header-mobile">
+                        <span style="font-weight:bold;">🗺️ 地図の切り替え</span>
+                        <button class="close-panel-btn">✕</button>
                     </div>
-                    <!-- 一括選択・解除項目 -->
-                    <div style="padding: 8px 12px; display: flex; gap: 8px; border-bottom: 1px dashed #475569;">
-                        <button type="button" id="status-select-all" style="flex: 1; background-color: #007aff; border: none; color: #ffffff; border-radius: 4px; padding: 8px 0; font-weight: bold; cursor: pointer; font-size: 12px; transition: background-color 0.2s;">すべて選択</button>
-                        <button type="button" id="status-deselect-all" style="flex: 1; background-color: #475569; border: none; color: #cbd5e1; border-radius: 4px; padding: 8px 0; font-weight: bold; cursor: pointer; font-size: 12px; transition: background-color 0.2s;">すべて解除</button>
+                    <div class="basemap-title" id="basemap-header-btn">
+                        <span>🗺️ 地図の切り替え</span>
+                        <span class="panel-arrow">▼</span>
                     </div>
-                    <div id="status-checkboxes-container" style="padding-top: 8px;">
-                        <!-- JavaScriptで動的生成 -->
+                    <div class="basemap-options-container" id="basemap-options-container">
+                        <div class="basemap-options">
+                            <label class="basemap-item">
+                                <input type="radio" name="basemap-select" value="googleRoad" autocomplete="off" checked>
+                                <span>Google マップ (道路)</span>
+                            </label>
+                            <label class="basemap-item">
+                                <input type="radio" name="basemap-select" value="googleSatellite" autocomplete="off">
+                                <span>Google マップ (衛星画像)</span>
+                            </label>
+                            <label class="basemap-item">
+                                <input type="radio" name="basemap-select" value="gsiStd" autocomplete="off">
+                                <span>地理院地図 (標準)</span>
+                            </label>
+                            <label class="basemap-item">
+                                <input type="radio" name="basemap-select" value="gsiPale" autocomplete="off">
+                                <span>地理院地図 (淡色)</span>
+                            </label>
+                        </div>
                     </div>
                 </div>
             </div>

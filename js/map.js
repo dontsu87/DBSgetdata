@@ -794,12 +794,10 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
     const restrictedStatus = getRestrictedStatus();
     if (restrictedStatus) {
         document.getElementById('status-filter-panel').style.display = 'none';
-        document.getElementById('basemap-panel').style.right = '15px';
         const statusBtn = document.querySelector('.btn-status');
         if (statusBtn) statusBtn.style.display = 'none';
     } else {
         document.getElementById('status-filter-panel').style.display = '';
-        document.getElementById('basemap-panel').style.right = '';
     }
 
     if (shouldFitBounds) {
