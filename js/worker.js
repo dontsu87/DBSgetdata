@@ -9,6 +9,15 @@
 
     // ドキュメント読み込み完了時にセレクトボックスのリスナーを設定
     document.addEventListener("DOMContentLoaded", function() {
+        // kindaiモード判定
+        if (typeof isKindaiMode === "function" && isKindaiMode()) {
+            const container = document.querySelector(".worker-select-container");
+            if (container) {
+                container.style.display = "none";
+            }
+            return;
+        }
+
         const workerSelect = document.getElementById("worker-select");
         if (workerSelect) {
             workerSelect.addEventListener("change", function(e) {
