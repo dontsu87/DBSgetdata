@@ -21,85 +21,20 @@ class TestBatteryReplacement(unittest.TestCase):
         os.makedirs(self.test_output_dir, exist_ok=True)
         Config.OUTPUT_DIR = self.test_output_dir
         
-        # テスト用の dashboard_data.json パス
-        self.json_path = os.path.join(str(ROOT_DIR), "dashboard_data.json")
-        self.json_backup_path = os.path.join(str(ROOT_DIR), "dashboard_data_backup.json")
-        
-        # 既存の dashboard_data.json があればバックアップ退避
-        if os.path.exists(self.json_path):
-            shutil.copy2(self.json_path, self.json_backup_path)
-            
-        # テスト用のダミーの「前回のデータ」を作成して保存
-        self.prev_data = {
-            "ports": [
-                {
-                    "port_name": "ポートA",
-                    "bikes": [
-                        {
-                            "bike_id": "KNZ0001",
-                            "voltage": 24.0,  # 低 (<= 25.2)
-                            "replace_original_volt": "",
-                            "replace_increased_volt": "",
-                            "replaced_at": "",
-                            "status": "利用可能",
-                            "thresholds": {
-                                "strong": 25.2,
-                                "lv1": 25.9
-                            }
-                        },
-                        {
-                            "bike_id": "KNZ0002",
-                            "voltage": 24.0,  # 低 (<= 25.2)
-                            "replace_original_volt": "",
-                            "replace_increased_volt": "",
-                            "replaced_at": "",
-                            "status": "利用可能",
-                            "thresholds": {
-                                "strong": 25.2,
-                                "lv1": 25.9
-                            }
-                        },
-                        {
-                            "bike_id": "KNZ0003",
-                            "voltage": 26.0,  # 中 (> 25.2)
-                            "replace_original_volt": "",
-                            "replace_increased_volt": "",
-                            "replaced_at": "",
-                            "status": "利用可能",
-                            "thresholds": {
-                                "strong": 25.2,
-                                "lv1": 25.9
-                            }
-                        },
-                        {
-                            "bike_id": "KNZ0004",
-                            "voltage": 26.0,  # 中 (> 25.2)
-                            "replace_original_volt": "",
-                            "replace_increased_volt": "",
-                            "replaced_at": "",
-                            "status": "利用可能",
-                            "thresholds": {
-                                "strong": 25.2,
-                                "lv1": 25.9
-                            }
-                        }
-                    ]
-                }
-            ]
-        }
-        with open(self.json_path, "w", encoding="utf-8") as f:
-            json.dump(self.prev_data, f, ensure_ascii=False, indent=2)
+        # テスト用のダミーの「前回の車両情報CSV」を作成して保存
+        prev_df = pd.DataFrame([
+            {"識別番号": "KNZ0001", "電圧": 24.0, "エリア名": "金沢", "車両状態": "利用可能", "ポート名": "ポートA"},
+            {"識別番号": "KNZ0002", "電圧": 24.0, "エリア名": "金沢", "車両状態": "利用可能", "ポート名": "ポートA"},
+            {"識別番号": "KNZ0003", "電圧": 26.0, "エリア名": "金沢", "車両状態": "利用可能", "ポート名": "ポートA"},
+            {"識別番号": "KNZ0004", "電圧": 26.0, "エリア名": "金沢", "車両状態": "利用可能", "ポート名": "ポートA"},
+        ])
+        prev_csv_path = os.path.join(self.test_output_dir, "車両情報_20260609_090000.csv")
+        prev_df.to_csv(prev_csv_path, index=False, encoding="utf-8-sig")
 
     def tearDown(self):
         # テンポラリ出力ディレクトリの削除
         if os.path.exists(self.test_output_dir):
             shutil.rmtree(self.test_output_dir)
-            
-        # テスト用 JSON ファイルのクリーアップとバックアップ復元
-        if os.path.exists(self.json_path):
-            os.remove(self.json_path)
-        if os.path.exists(self.json_backup_path):
-            shutil.move(self.json_backup_path, self.json_path)
             
         # 設定の復元
         Config.OUTPUT_DIR = self.original_output_dir
@@ -179,6 +114,21 @@ class TestBatteryReplacement(unittest.TestCase):
         self.assertEqual(float(bike_4["交換前電圧"]), 26.0)
         self.assertEqual(float(bike_4["交換後電圧"]), 29.5)
         self.assertIsNotNone(bike_4["交換日時"])
+
+        # battery_replacements.json の検証
+        repl_json_path = os.path.join(self.test_output_dir, "battery_replacements.json")
+        self.assertTrue(os.path.exists(repl_json_path))
+        with open(repl_json_path, "r", encoding="utf-8") as f:
+            replacements = json.load(f)
+        
+        # 検知された車両が履歴に入っていることを確認
+        self.assertIn("KNZ0002", replacements)
+        self.assertIn("KNZ0004", replacements)
+        self.assertNotIn("KNZ0001", replacements)
+        self.assertNotIn("KNZ0003", replacements)
+        
+        self.assertEqual(replacements["KNZ0002"]["replace_original_volt"], 24.0)
+        self.assertEqual(replacements["KNZ0002"]["replace_increased_volt"], 26.0)
 
 if __name__ == "__main__":
     unittest.main()

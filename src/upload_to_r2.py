@@ -87,6 +87,66 @@ def upload_dashboard_data() -> bool:
         return False
 
 
+def upload_file_to_r2(local_path: str, r2_key: str) -> bool:
+    """
+    指定されたファイルを Cloudflare R2 にアップロードする。
+    """
+    try:
+        import boto3
+        from botocore.exceptions import ClientError, NoCredentialsError
+    except ImportError:
+        print("[ERROR] boto3 がインストールされていません。")
+        return False
+
+    account_id = os.getenv("R2_ACCOUNT_ID")
+    access_key_id = os.getenv("R2_ACCESS_KEY_ID")
+    secret_access_key = os.getenv("R2_SECRET_ACCESS_KEY")
+    bucket_name = os.getenv("R2_BUCKET_NAME")
+    public_url = os.getenv("R2_PUBLIC_URL")
+
+    missing = [k for k, v in {
+        "R2_ACCOUNT_ID": account_id,
+        "R2_ACCESS_KEY_ID": access_key_id,
+        "R2_SECRET_ACCESS_KEY": secret_access_key,
+        "R2_BUCKET_NAME": bucket_name,
+    }.items() if not v]
+
+    if missing:
+        print(f"[ERROR] R2の設定が不足しています: {', '.join(missing)}")
+        return False
+
+    if not os.path.exists(local_path):
+        print(f"[ERROR] ファイルが存在しません: {local_path}")
+        return False
+
+    try:
+        s3 = boto3.client(
+            "s3",
+            endpoint_url=f"https://{account_id}.r2.cloudflarestorage.com",
+            aws_access_key_id=access_key_id,
+            aws_secret_access_key=secret_access_key,
+            region_name="auto",
+        )
+
+        content_type = "application/json" if local_path.endswith(".json") else "binary/octet-stream"
+
+        s3.upload_file(
+            local_path,
+            bucket_name,
+            r2_key,
+            ExtraArgs={
+                "ContentType": content_type,
+                "CacheControl": "no-cache, max-age=0",
+            }
+        )
+        print(f"[OK] R2 upload completed: {public_url}/{r2_key}")
+        return True
+    except Exception as e:
+        print(f"[ERROR] R2 アップロードエラー ({r2_key}): {e}")
+        return False
+
+
 if __name__ == "__main__":
     success = upload_dashboard_data()
     sys.exit(0 if success else 1)
+

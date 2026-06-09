@@ -1269,4 +1269,94 @@ header h1 {
     }
 }
 
+/* ========================================== */
+/* 作業選択・位置情報表示用スタイル           */
+/* ========================================== */
+
+.worker-select-container {
+    display: flex;
+    align-items: center;
+}
+
+.worker-select-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background-color: #334155;
+    color: #cbd5e1;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 13px;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.worker-select-box {
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: bold;
+    outline: none;
+    cursor: pointer;
+    padding-right: 5px;
+}
+
+.worker-select-box option {
+    background-color: #1e293b;
+    color: #ffffff;
+}
+
+/* マップ上の作業員マーカーのスタイル */
+.worker-map-marker {
+    background-color: #007aff;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    width: 32px !important;
+    height: 32px !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+}
+
+.worker-map-marker::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 11px;
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 6px solid #007aff;
+}
+
+.worker-marker-pulse {
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    width: 32px;
+    height: 32px;
+    border: 2px solid #007aff;
+    border-radius: 50%;
+    animation: worker-pulse-anim 2s infinite ease-out;
+    pointer-events: none;
+    box-sizing: content-box;
+}
+
+@keyframes worker-pulse-anim {
+    0% { transform: scale(0.9); opacity: 0.8; }
+    100% { transform: scale(1.6); opacity: 0; }
+}
+
+
 

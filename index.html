@@ -32,6 +32,16 @@
                 </div>
             </div>
             <div class="header-bottom">
+                <!-- 作業選択セレクトボックス -->
+                <div class="worker-select-container">
+                    <label class="worker-select-label" for="worker-select">
+                        <span class="worker-select-icon">👤</span>
+                        <select id="worker-select" class="worker-select-box">
+                            <option value="none">作業選択: 未選択</option>
+                            <option value="admin">管理者モード (位置表示)</option>
+                        </select>
+                    </label>
+                </div>
                 <!-- ポート選択モードトグルスイッチ -->
                 <div class="selection-mode-toggle-container">
                     <label class="selection-toggle-label" for="selection-mode-checkbox">
@@ -262,6 +272,7 @@
     <script src="js/map.js"></script>
     <script src="js/api.js"></script>
     <script src="js/ui.js"></script>
+    <script src="js/worker.js"></script>
     <script src="main.js"></script>
     <script>
         // スマホ画面のパネル制御ボタンのハンドラー設定（グローバル関数のためHTML側にインライン配置）

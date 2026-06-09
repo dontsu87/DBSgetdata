@@ -58,9 +58,10 @@ def export_to_onedrive(df_list: list[pd.DataFrame]) -> str:
     # --- 同一ポート継続利用時間の計算処理 ＆ バッテリー交換検知 ---
     import json
     from src.config import ROOT_DIR
+    
+    # 継続利用時間用の前回データ取得 (従来通り dashboard_data.json から)
     json_path = os.path.join(str(ROOT_DIR), "dashboard_data.json")
     prev_unlocked = {}
-    prev_battery_info = {} # bike_id -> { voltage, replace_original_volt, replace_increased_volt, replaced_at }
     if os.path.exists(json_path):
         try:
             with open(json_path, "r", encoding="utf-8") as f:
@@ -71,32 +72,66 @@ def export_to_onedrive(df_list: list[pd.DataFrame]) -> str:
                     b_id = bike.get("bike_id", "").strip()
                     started_at = bike.get("unlocked_started_at", "")
                     status = bike.get("status", "").strip()
-                    volt = bike.get("voltage")
-                    orig_v = bike.get("replace_original_volt")
-                    incr_v = bike.get("replace_increased_volt")
-                    rep_at = bike.get("replaced_at", "")
-                    
                     if b_id:
                         prev_unlocked[b_id] = {
                             "port_name": p_name,
                             "unlocked_started_at": started_at,
                             "status": status
                         }
-                        
-                        try:
-                            v_float = float(volt) if volt is not None else None
-                        except (ValueError, TypeError):
-                            v_float = None
-                            
+        except Exception as e:
+            print(f"Warning: 前回の dashboard_data.json の読み込みに失敗しました (継続利用時間はリセットされます): {e}")
+
+    # 対策1: 最新の「車両情報_*.csv」を探索して前回電圧を取得
+    prev_battery_info = {} # bike_id -> { "voltage": float_or_none }
+    csv_files = sorted(glob.glob(os.path.join(Config.OUTPUT_DIR, "車両情報_*.csv")))
+    if csv_files:
+        latest_csv = csv_files[-1]
+        print(f"Info: 前回電圧の参照先として最新のCSVファイルをロードします: {os.path.basename(latest_csv)}")
+        try:
+            df_prev = pd.read_csv(latest_csv, encoding="utf-8-sig")
+            if "識別番号" in df_prev.columns and "電圧" in df_prev.columns:
+                for _, row in df_prev.iterrows():
+                    b_id = str(row["識別番号"]).strip()
+                    volt = row["電圧"]
+                    try:
+                        v_float = float(volt) if pd.notna(volt) else None
+                    except (ValueError, TypeError):
+                        v_float = None
+                    
+                    if b_id:
                         prev_battery_info[b_id] = {
-                            "voltage": v_float,
-                            "replace_original_volt": orig_v if orig_v is not None else "",
-                            "replace_increased_volt": incr_v if incr_v is not None else "",
-                            "replaced_at": rep_at,
-                            "thresholds": bike.get("thresholds", {})
+                            "voltage": v_float
                         }
         except Exception as e:
-            print(f"Warning: 前回の dashboard_data.json の読み込みに失敗しました: {e}")
+            print(f"Warning: 最新CSVファイルの読み込みに失敗しました: {e}")
+    else:
+        print("Info: 過去の車両情報CSVが見つかりません。前回電圧は空として扱います。")
+
+    # 対策2: 交換履歴専用ファイル battery_replacements.json の導入
+    replacements_json_path = os.path.join(Config.OUTPUT_DIR, "battery_replacements.json")
+    replacements = {}
+    if os.path.exists(replacements_json_path):
+        try:
+            with open(replacements_json_path, "r", encoding="utf-8") as f:
+                replacements = json.load(f)
+        except Exception as e:
+            print(f"Warning: battery_replacements.json の読み込みに失敗しました: {e}")
+
+    # 24時間以上古い履歴レコードを battery_replacements.json から削除（自動クレンジング）
+    now_dt = datetime.now()
+    cleaned_replacements = {}
+    for b_id, rep_info in replacements.items():
+        rep_at_str = rep_info.get("replaced_at", "")
+        if rep_at_str:
+            try:
+                rep_dt = datetime.strptime(rep_at_str, "%Y-%m-%d %H:%M:%S")
+                if (now_dt - rep_dt).total_seconds() < 24 * 3600:
+                    cleaned_replacements[b_id] = rep_info
+            except Exception:
+                cleaned_replacements[b_id] = rep_info
+        else:
+            cleaned_replacements[b_id] = rep_info
+    replacements = cleaned_replacements
 
     now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     unlocked_started_list = []
@@ -106,8 +141,6 @@ def export_to_onedrive(df_list: list[pd.DataFrame]) -> str:
     replace_orig_list = []
     replace_incr_list = []
     replace_time_list = []
-    
-    THRESHOLD_RISE = 1.5
 
     for idx, row in combined_df.iterrows():
         b_id = str(row['識別番号']).strip()
@@ -133,7 +166,6 @@ def export_to_onedrive(df_list: list[pd.DataFrame]) -> str:
                         started_at = now_str
                     try:
                         started_dt = datetime.strptime(started_at, "%Y-%m-%d %H:%M:%S")
-                        now_dt = datetime.now()
                         duration = int((now_dt - started_dt).total_seconds())
                     except Exception:
                         duration = 0
@@ -152,31 +184,27 @@ def export_to_onedrive(df_list: list[pd.DataFrame]) -> str:
         incr_v = ""
         rep_time = ""
         
+        # 履歴情報があれば引き継ぎ
+        if b_id in replacements:
+            rep_info = replacements[b_id]
+            orig_v = rep_info.get("replace_original_volt", "")
+            incr_v = rep_info.get("replace_increased_volt", "")
+            rep_time = rep_info.get("replaced_at", "")
+        
+        # 電圧上昇の検知
         if b_id in prev_battery_info:
             prev_info = prev_battery_info[b_id]
             prev_volt = prev_info["voltage"]
             
-            # 前回の交換情報を引き継ぐ
-            if prev_info.get("replaced_at"):
-                orig_v = prev_info.get("replace_original_volt", "")
-                incr_v = prev_info.get("replace_increased_volt", "")
-                rep_time = prev_info.get("replaced_at", "")
-            
             # 電圧上昇の検知 (動的閾値 ＆ 交換後高電圧判定)
             if curr_volt is not None and prev_volt is not None:
-                # thresholds から画面強調（strong）とLv1（lv1）の閾値を取得
-                thresholds = prev_info.get("thresholds", {})
-                strong_th = thresholds.get("strong")
-                lv1_th = thresholds.get("lv1")
-                
-                # 閾値が取得できない場合のフォールバック値
-                if strong_th is None or lv1_th is None:
-                    if prev_volt >= 30.0:
-                        strong_th = strong_th if strong_th is not None else 35.9
-                        lv1_th = lv1_th if lv1_th is not None else 36.5
-                    else:
-                        strong_th = strong_th if strong_th is not None else 25.2
-                        lv1_th = lv1_th if lv1_th is not None else 25.9
+                # 閾値が取得できない場合のフォールバック値 (最新CSVには thresholds が入っていないため、必ずフォールバックに入る)
+                if prev_volt >= 30.0:
+                    strong_th = 35.9
+                    lv1_th = 36.5
+                else:
+                    strong_th = 25.2
+                    lv1_th = 25.9
                 
                 # 交換前の電圧に基づき、必要な電圧上昇幅を決定
                 if prev_volt > strong_th:
@@ -191,9 +219,23 @@ def export_to_onedrive(df_list: list[pd.DataFrame]) -> str:
                     incr_v = curr_volt
                     rep_time = now_str
                     
+                    # replacements に追加
+                    replacements[b_id] = {
+                        "replace_original_volt": orig_v,
+                        "replace_increased_volt": incr_v,
+                        "replaced_at": rep_time
+                    }
+                    
         replace_orig_list.append(orig_v)
         replace_incr_list.append(incr_v)
         replace_time_list.append(rep_time)
+
+    # battery_replacements.json に書き出し保存
+    try:
+        with open(replacements_json_path, "w", encoding="utf-8") as f:
+            json.dump(replacements, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        print(f"Warning: battery_replacements.json の書き込みに失敗しました: {e}")
 
     combined_df['連続利用開始日時'] = unlocked_started_list
     combined_df['同一ポート継続利用時間(秒)'] = consecutive_duration_list
