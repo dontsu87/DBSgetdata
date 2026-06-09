@@ -970,8 +970,8 @@ header h1 {
 /* ピン右上の警告バッジ用コンテナ（⚠️と⭐などが横に並ぶようにする） */
 .marker-badges-container {
     position: absolute;
-    top: -8px;
-    right: -8px;
+    top: -10px;
+    right: -10px;
     display: flex;
     gap: 1px;
     z-index: 100;
@@ -979,7 +979,7 @@ header h1 {
 }
 
 .marker-badge-item {
-    font-size: 13px;
+    font-size: 16px;
     text-shadow: 
         1px 1px 0 #fff, -1px -1px 0 #fff,
         1px -1px 0 #fff, -1px 1px 0 #fff,
@@ -991,9 +991,9 @@ header h1 {
 /* ピン右上の未施錠未返却警告アイコン (⚠️絵文字) - 互換性維持のため残す */
 .unlocked-dot {
     position: absolute;
-    top: -8px;
-    right: -8px;
-    font-size: 13px;
+    top: -10px;
+    right: -10px;
+    font-size: 16px;
     z-index: 100;
     line-height: 1;
     text-shadow: 
