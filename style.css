@@ -1027,10 +1027,11 @@ header h1 {
     z-index: 1100 !important;
 }
 
-/* 未施錠未返却のポートピン用スタイル（バッテリーレベル色を保ちながらマゼンタ枠を追加） */
+/* アテンション（未施錠未返却や強調表示）のポートピン用スタイル（バッテリーレベル色を保ちながらマゼンタ枠を追加） */
+.port-marker-attention,
 .port-marker-has-unlocked {
     border: 3.5px solid #db2777 !important; /* 目立つマゼンタピンクの外枠 */
-    animation: pulse-unlocked-border 2.0s infinite !important;
+    animation: pulse-attention-border 2.0s infinite !important;
 }
 
 /* ピン右上の警告バッジ用コンテナ（⚠️と⭐などが横に並ぶようにする） */
@@ -1078,6 +1079,12 @@ header h1 {
 }
 
 /* 外枠のパルスアニメーション */
+@keyframes pulse-attention-border {
+    0% { box-shadow: 0 0 0 0 rgba(219, 39, 119, 0.9), 0 2px 4px rgba(0,0,0,0.3); }
+    70% { box-shadow: 0 0 0 10px rgba(219, 39, 119, 0), 0 2px 4px rgba(0,0,0,0.3); }
+    100% { box-shadow: 0 0 0 0 rgba(219, 39, 119, 0), 0 2px 4px rgba(0,0,0,0.3); }
+}
+
 @keyframes pulse-unlocked-border {
     0% { box-shadow: 0 0 0 0 rgba(219, 39, 119, 0.9), 0 2px 4px rgba(0,0,0,0.3); }
     70% { box-shadow: 0 0 0 10px rgba(219, 39, 119, 0), 0 2px 4px rgba(0,0,0,0.3); }
@@ -1345,6 +1352,15 @@ header h1 {
 }
 
 .worker-select-label {
+    cursor: pointer;
+    user-select: none;
+}
+
+.worker-select-label input[type="checkbox"] {
+    display: none;
+}
+
+.worker-select-button {
     display: flex;
     align-items: center;
     gap: 6px;
@@ -1352,29 +1368,23 @@ header h1 {
     color: #cbd5e1;
     border: 1px solid #475569;
     border-radius: 6px;
-    padding: 8px 10px;
+    padding: 8px 14px;
     font-size: 13px;
     font-weight: bold;
     box-shadow: 0 2px 4px rgba(0,0,0,0.15);
     transition: all 0.2s ease;
     white-space: nowrap;
-    cursor: pointer;
 }
 
-.worker-select-box {
-    background: transparent;
-    border: none;
+.worker-select-label input[type="checkbox"]:checked + .worker-select-button {
+    background-color: #007aff;
     color: #ffffff;
-    font-size: 13px;
-    font-weight: bold;
-    outline: none;
-    cursor: pointer;
-    padding-right: 5px;
+    border-color: #0056b3;
+    box-shadow: 0 2px 8px rgba(0, 122, 255, 0.4);
 }
 
-.worker-select-box option {
-    background-color: #1e293b;
-    color: #ffffff;
+.worker-select-button:active {
+    transform: scale(0.95);
 }
 
 /* マップ上の作業員マーカーのスタイル */

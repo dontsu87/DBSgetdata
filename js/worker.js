@@ -18,20 +18,32 @@
             return;
         }
 
-        const workerSelect = document.getElementById("worker-select");
-        if (workerSelect) {
+        const workerSelectCheckbox = document.getElementById("worker-select-checkbox");
+        const workerSelectText = document.querySelector(".worker-select-text");
+
+        if (workerSelectCheckbox) {
             // キャッシュから前回の選択状態を読み込み適用
             const cachedMode = typeof loadFromCache === "function" ? loadFromCache("selected_worker_mode", "none") : "none";
-            workerSelect.value = cachedMode;
+            const isChecked = (cachedMode === "admin");
+            workerSelectCheckbox.checked = isChecked;
+            updateWorkerToggleUI(isChecked);
             handleWorkerModeChange(cachedMode);
 
-            workerSelect.addEventListener("change", function(e) {
-                const mode = e.target.value;
+            workerSelectCheckbox.addEventListener("change", function() {
+                const checked = workerSelectCheckbox.checked;
+                const mode = checked ? "admin" : "none";
+                updateWorkerToggleUI(checked);
                 if (typeof saveToCache === "function") {
                     saveToCache("selected_worker_mode", mode);
                 }
                 handleWorkerModeChange(mode);
             });
+        }
+
+        function updateWorkerToggleUI(checked) {
+            if (workerSelectText) {
+                workerSelectText.innerText = checked ? '作業員位置 ON' : '作業員位置 OFF';
+            }
         }
     });
 

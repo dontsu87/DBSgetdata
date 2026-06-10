@@ -18,7 +18,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="残量マップ">
     <link rel="manifest" href="manifest.json">
-    <!-- ver.20260609220800 -->
+    <!-- ver.20260611082500 -->
 </head>
 <body>
 
@@ -32,14 +32,14 @@
                 </div>
             </div>
             <div class="header-bottom">
-                <!-- 作業選択セレクトボックス -->
+                <!-- 作業員位置トグルスイッチ -->
                 <div class="worker-select-container">
-                    <label class="worker-select-label" for="worker-select">
-                        <span class="worker-select-icon">👤</span>
-                        <select id="worker-select" class="worker-select-box">
-                            <option value="none">作業選択: 未選択</option>
-                            <option value="admin">管理者モード (位置表示)</option>
-                        </select>
+                    <label class="worker-select-label" for="worker-select-checkbox">
+                        <input type="checkbox" id="worker-select-checkbox">
+                        <span class="worker-select-button">
+                            <span class="worker-select-icon">👤</span>
+                            <span class="worker-select-text">作業員位置 OFF</span>
+                        </span>
                     </label>
                 </div>
                 <!-- ポート選択モードトグルスイッチ -->

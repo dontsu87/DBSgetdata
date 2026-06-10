@@ -443,8 +443,11 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
                 zIndexOrder = 500 + bikeCountOffset;   
             }
 
-            if (hasUnlockedBike) {
-                className += ' port-marker-has-unlocked';
+            if (hasUnlockedBike || hasHighlightedBike) {
+                className += ' port-marker-attention';
+                if (hasUnlockedBike) {
+                    className += ' port-marker-has-unlocked';
+                }
                 zIndexOrder += 30000; 
             }
 
