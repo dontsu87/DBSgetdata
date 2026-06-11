@@ -154,8 +154,6 @@ function initUIComponents() {
             console.log("Port Selection Mode:", isPortSelectionMode);
             
             if (!isPortSelectionMode) {
-                selectedPortNames = [];
-                saveToCache('selected_port_names', selectedPortNames);
                 const selectedContainer = document.getElementById('selected-ports-container');
                 if (selectedContainer) {
                     selectedContainer.style.display = 'none';

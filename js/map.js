@@ -449,7 +449,7 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
         const lon = item.lon;
         const isActuallyEmpty = item.isActuallyEmpty;
         const matchingBikes = item.matchingBikes;
-        const isSelected = selectedPortNames.includes(port.port_name);
+        const isSelected = isPortSelectionMode && selectedPortNames.includes(port.port_name);
 
         let markerIcon;
         let zIndexOrder = 100;
@@ -555,6 +555,7 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
         }
 
         marker.portName = port.port_name;
+        item.marker = marker;
 
         const legendHtml = isReplacedModeEnabled ? `<span style="font-size: 11px; font-weight: normal; color: #64748b; margin-left: auto;">✅: 交換済み</span>` : '';
         let popupContent = `
@@ -754,6 +755,13 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
                 card.addEventListener('click', function() {
                     if (portItem) {
                         map.panTo([portItem.lat, portItem.lon]);
+                        if (portItem.marker) {
+                            if (portItem.marker.isPopupOpen && portItem.marker.isPopupOpen()) {
+                                portItem.marker.closePopup();
+                            } else {
+                                portItem.marker.openPopup();
+                            }
+                        }
                     }
                 });
 
