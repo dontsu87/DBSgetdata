@@ -134,6 +134,29 @@
             const worker = workerData[tid];
             if (!worker.lat || !worker.lon) continue;
 
+            // 時間経過によるフィルタリング（日本時間 JST 基準）
+            let isOffline = false;
+            let isHidden = false;
+            if (worker.updated_at) {
+                try {
+                    // 'YYYY-MM-DD HH:MM:SS' を 'YYYY-MM-DDTHH:MM:SS+09:00' にしてパース
+                    const formattedDateStr = worker.updated_at.trim().replace(' ', 'T') + '+09:00';
+                    const updateTime = new Date(formattedDateStr);
+                    const now = new Date();
+                    const diffMs = now - updateTime;
+
+                    if (diffMs >= 24 * 60 * 60 * 1000) {
+                        isHidden = true; // 1日以上通信なしなら非表示
+                    } else if (diffMs >= 30 * 60 * 1000) {
+                        isOffline = true; // 30分以上通信なしなら灰色
+                    }
+                } catch (e) {
+                    console.error("Error parsing worker updated_at:", e);
+                }
+            }
+
+            if (isHidden) continue;
+
             const latlng = [parseFloat(worker.lat), parseFloat(worker.lon)];
             activeTids.add(tid);
 
@@ -141,15 +164,25 @@
             if (workerMarkers[tid]) {
                 workerMarkers[tid].setLatLng(latlng);
                 
+                // オフライン状態に応じてDOMクラスを更新
+                const markerElem = workerMarkers[tid].getElement();
+                if (markerElem) {
+                    if (isOffline) {
+                        markerElem.classList.add('offline');
+                    } else {
+                        markerElem.classList.remove('offline');
+                    }
+                }
+                
                 // ポップアップが開いている場合は内容を更新
                 const popup = workerMarkers[tid].getPopup();
                 if (popup && popup.isOpen()) {
-                    popup.setContent(createPopupContent(worker));
+                    popup.setContent(createPopupContent(worker, isOffline));
                 }
             } else {
                 // 新規マーカーを作成 (パルス波を付与したカスタムDivIcon)
                 const workerIcon = L.divIcon({
-                    className: 'worker-map-marker-container',
+                    className: 'worker-map-marker-container' + (isOffline ? ' offline' : ''),
                     html: `
                         <div class="worker-marker-pulse"></div>
                         <div class="worker-map-marker">${tid}</div>
@@ -163,7 +196,7 @@
                     zIndexOffset: 1000 // 車両ピンより手前に表示
                 })
                 .addTo(window.map)
-                .bindPopup(createPopupContent(worker), {
+                .bindPopup(createPopupContent(worker, isOffline), {
                     offset: [0, -28]
                 });
 
@@ -183,11 +216,12 @@
     /**
      * マーカー内のポップアップHTMLを生成する
      */
-    function createPopupContent(worker) {
+    function createPopupContent(worker, isOffline) {
+        const offlineWarning = isOffline ? ' <span style="color: #ef4444; font-weight: bold;">(長時間通信なし)</span>' : '';
         return `
             <div style="font-size: 13px; line-height: 1.4; padding: 4px; min-width: 150px; color: #1e293b;">
-                <div style="font-weight: bold; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
-                    👤 作業員 (TID: ${worker.tid})
+                <div style="font-weight: bold; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                    👤 作業員 (TID: ${worker.tid})${offlineWarning}
                 </div>
                 <div style="margin-bottom: 4px;">
                     <b>現在位置:</b> <span style="font-family: monospace;">${parseFloat(worker.lat).toFixed(5)}, ${parseFloat(worker.lon).toFixed(5)}</span>

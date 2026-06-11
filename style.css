@@ -1434,5 +1434,16 @@ header h1 {
     100% { transform: scale(1.6); opacity: 0; }
 }
 
+/* 長時間通信なし（オフライン）状態の作業員マーカースタイル */
+.worker-map-marker-container.offline .worker-map-marker {
+    background-color: #64748b; /* slate-500 */
+    border-color: #cbd5e1; /* slate-300 */
+}
 
+.worker-map-marker-container.offline .worker-map-marker::after {
+    border-top-color: #64748b;
+}
 
+.worker-map-marker-container.offline .worker-marker-pulse {
+    border-color: #64748b;
+}
