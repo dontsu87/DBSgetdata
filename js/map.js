@@ -18,6 +18,10 @@ function initMapInstance() {
         let isDoubleTapDragging = false;
         let startY = 0;
         let startZoom = 0;
+        let startTapX = 0;
+        let startTapY = 0;
+        let startLatLng = null;
+        let finalZoomDelta = 0;
         
         const mapContainer = map.getContainer();
         
@@ -25,12 +29,31 @@ function initMapInstance() {
             if (e.touches.length !== 1) return; 
             const currentTime = new Date().getTime();
             const tapDelay = currentTime - lastTapTime;
+            const currentTapX = e.touches[0].clientX;
+            const currentTapY = e.touches[0].clientY;
             
-            if (tapDelay < 300) {
+            // 2つのタップ位置が離れすぎていないか検証 (30px以内)
+            const distance = Math.sqrt(Math.pow(currentTapX - startTapX, 2) + Math.pow(currentTapY - startTapY, 2));
+            
+            if (tapDelay < 300 && distance < 30) {
                 isDoubleTapDragging = true;
-                startY = e.touches[0].clientY;
+                startY = currentTapY;
                 startZoom = map.getZoom();
+                finalZoomDelta = 0;
+                
+                // Leafletの標準ドラッグを無効化
+                if (map.dragging) {
+                    map.dragging.disable();
+                }
+                
+                // ズーム中心を「現在の画面の中心」に固定し、開始時の座標ズレ（ワープ）を防ぐ
+                startLatLng = map.getCenter();
+                
                 e.preventDefault();
+            } else {
+                // 1タップ目の位置を記録
+                startTapX = currentTapX;
+                startTapY = currentTapY;
             }
             lastTapTime = currentTime;
         }, { passive: false });
@@ -42,16 +65,55 @@ function initMapInstance() {
             
             const currentY = e.touches[0].clientY;
             const diffY = startY - currentY; 
-            const zoomDelta = diffY / 80; 
-            let targetZoom = startZoom + zoomDelta;
+            finalZoomDelta = diffY / 80; 
+            
+            let targetZoom = startZoom + finalZoomDelta;
             targetZoom = Math.max(map.getMinZoom(), Math.min(map.getMaxZoom(), targetZoom));
-            map.setZoom(targetZoom, { animate: false });
+            
+            // Leafletの内部ズームアニメーションメソッドを画面中心基準で呼び出す
+            // これにより、ピンチズーム中と完全に同じ滑らかさで、マーカー（バブル）もリアルタイムに拡大縮小します
+            if (startLatLng && map._animateZoom) {
+                map._animateZoom(startLatLng, targetZoom);
+            }
         }, { passive: false });
         
         mapContainer.addEventListener('touchend', function(e) {
             if (isDoubleTapDragging) {
                 isDoubleTapDragging = false;
+                
+                if (map.dragging) {
+                    map.dragging.enable();
+                }
+                
+                // 最終確定したズームを適用
+                // animate: trueにすることで、引き伸ばし状態から新しいタイルへ滑らかにフェードインします
+                let targetZoom = startZoom + finalZoomDelta;
+                targetZoom = Math.max(map.getMinZoom(), Math.min(map.getMaxZoom(), targetZoom));
+                if (startLatLng) {
+                    map.setZoomAround(startLatLng, targetZoom, { animate: true });
+                } else {
+                    map.setZoom(targetZoom, { animate: true });
+                }
+                
                 e.preventDefault();
+            }
+        }, { passive: false });
+        
+        mapContainer.addEventListener('touchcancel', function(e) {
+            if (isDoubleTapDragging) {
+                isDoubleTapDragging = false;
+                
+                if (map.dragging) {
+                    map.dragging.enable();
+                }
+                
+                let targetZoom = startZoom + finalZoomDelta;
+                targetZoom = Math.max(map.getMinZoom(), Math.min(map.getMaxZoom(), targetZoom));
+                if (startLatLng) {
+                    map.setZoomAround(startLatLng, targetZoom, { animate: true });
+                } else {
+                    map.setZoom(targetZoom, { animate: true });
+                }
             }
         }, { passive: false });
     })();
