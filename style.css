@@ -441,6 +441,28 @@ header h1 {
     text-align: center;
 }
 
+.retry-button {
+    margin-top: 20px;
+    padding: 12px 24px;
+    font-size: 15px;
+    font-weight: bold;
+    background-color: #ef4444;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(239, 68, 68, 0.2);
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.retry-button:active {
+    transform: scale(0.95);
+    background-color: #dc2626;
+    box-shadow: 0 2px 4px rgba(239, 68, 68, 0.1);
+}
+
 /* ========================================== */
 /* 新しいカスタムマーカー（DivIcon）用スタイル */
 /* ========================================== */

@@ -20,7 +20,7 @@ function checkAndApplyPendingUpdate() {
     }
 }
 
-function loadDashboardData(isAutoUpdate = false) {
+function loadDashboardData(isAutoUpdate = false, retryCount = 0) {
     const params = new URLSearchParams(searchQuery);
     
     const hasKanriall = params.has('kanriall');
@@ -51,7 +51,11 @@ function loadDashboardData(isAutoUpdate = false) {
     if (!isAutoUpdate) {
         loader.style.display = 'flex';
     }
-    errorScreen.style.display = 'none';
+    
+    // すでにキャッシュデータがある場合は、読み込み開始時でもエラー画面は表示しない
+    if (!cachedDashboardData) {
+        errorScreen.style.display = 'none';
+    }
     
     if (window.isTestMode && window.dashboardData) {
         console.log("🧪 テストモード: ローカルの dashboard_data_test.js を使用します。");
@@ -95,6 +99,9 @@ function loadDashboardData(isAutoUpdate = false) {
             
             isFirstLoad = false;
             
+            // 正常取得できたらエラー画面を隠す
+            errorScreen.style.display = 'none';
+            
             setTimeout(() => {
                 loader.style.display = 'none';
             }, 500);
@@ -122,10 +129,49 @@ function loadDashboardData(isAutoUpdate = false) {
                 updateFilterAndRender(shouldFitBounds);
                 
                 isFirstLoad = false;
+                errorScreen.style.display = 'none';
                 loader.style.display = 'none';
             } else {
+                // 自動リトライロジック
+                if (retryCount < 2) {
+                    const delay = 1500;
+                    console.warn(`⚠️ データの読み込みに失敗しました。${delay}ms 後に自動リトライします (リトライ回数: ${retryCount + 1}/2)...`, error);
+                    setTimeout(() => {
+                        loadDashboardData(isAutoUpdate, retryCount + 1);
+                    }, delay);
+                    return;
+                }
+
                 loader.style.display = 'none';
-                errorScreen.style.display = 'flex';
+                
+                // すでに1度でもデータを読み込めている場合は、既存表示を維持しエラー画面にはしない
+                if (cachedDashboardData) {
+                    console.warn("⚠️ 最新データの取得に失敗しましたが、既存のキャッシュデータを維持します。");
+                } else {
+                    errorScreen.style.display = 'flex';
+                }
             }
         });
 }
+
+// 📱 アプリがフォアグラウンドに復帰した時の自動再ロード処理
+document.addEventListener('visibilitychange', function() {
+    if (document.visibilityState === 'visible') {
+        console.log("📱 アプリがフォアグラウンドに復帰しました。最新データを読み込みます...");
+        const errorScreen = document.getElementById('error-screen');
+        const isErrorVisible = errorScreen && errorScreen.style.display === 'flex';
+        // エラー画面が表示されている場合は通常ロード、そうでない場合はサイレントロード
+        loadDashboardData(isErrorVisible ? false : true);
+    }
+});
+
+// DOMContentLoaded時に再試行ボタンのイベントを設定
+document.addEventListener('DOMContentLoaded', function() {
+    const retryBtn = document.getElementById('retry-btn');
+    if (retryBtn) {
+        retryBtn.addEventListener('click', function() {
+            console.log("🔄 再試行ボタンがクリックされました。データを再読み込みします...");
+            loadDashboardData(false);
+        });
+    }
+});
