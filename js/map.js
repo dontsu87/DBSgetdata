@@ -41,6 +41,9 @@ function initMapInstance() {
                 startZoom = map.getZoom();
                 finalZoomDelta = 0;
                 
+                // 進行中のスクロール・アニメーションを即座に停止
+                map.stop();
+
                 // Leafletの標準ドラッグを無効化
                 if (map.dragging) {
                     map.dragging.disable();
@@ -90,7 +93,7 @@ function initMapInstance() {
                 let targetZoom = startZoom + finalZoomDelta;
                 targetZoom = Math.max(map.getMinZoom(), Math.min(map.getMaxZoom(), targetZoom));
                 if (startLatLng) {
-                    map.setZoomAround(startLatLng, targetZoom, { animate: true });
+                    map.setView(startLatLng, targetZoom, { animate: true });
                 } else {
                     map.setZoom(targetZoom, { animate: true });
                 }
@@ -110,7 +113,7 @@ function initMapInstance() {
                 let targetZoom = startZoom + finalZoomDelta;
                 targetZoom = Math.max(map.getMinZoom(), Math.min(map.getMaxZoom(), targetZoom));
                 if (startLatLng) {
-                    map.setZoomAround(startLatLng, targetZoom, { animate: true });
+                    map.setView(startLatLng, targetZoom, { animate: true });
                 } else {
                     map.setZoom(targetZoom, { animate: true });
                 }

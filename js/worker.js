@@ -174,11 +174,8 @@
                     }
                 }
                 
-                // ポップアップが開いている場合は内容を更新
-                const popup = workerMarkers[tid].getPopup();
-                if (popup && popup.isOpen()) {
-                    popup.setContent(createPopupContent(worker, isOffline));
-                }
+                // ポップアップの内容を常に最新に更新
+                workerMarkers[tid].setPopupContent(createPopupContent(worker, isOffline));
             } else {
                 // 新規マーカーを作成 (パルス波を付与したカスタムDivIcon)
                 const workerIcon = L.divIcon({
