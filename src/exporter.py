@@ -550,3 +550,216 @@ def download_threshold_from_onedrive() -> bool:
         return False
     finally:
         driver.quit()
+
+
+def merge_and_upload_daily_logs(target_date_str: str = None) -> bool:
+    """
+    指定された日付（未指定の場合は昨日）の5分ごとCSVログを
+    1時間ごとの代表値（方式1）に集約し、車種情報を紐づけて、Parquet形式でOneDriveへアップロードします。
+    """
+    import glob
+    from datetime import datetime, timedelta
+    from src.config import ROOT_DIR
+
+    if not target_date_str:
+        # デフォルトは昨日
+        target_date_str = (datetime.now() - timedelta(days=1)).strftime("%Y%m%d")
+
+    print(f"Info: {target_date_str} の日次データマージ処理を開始します...")
+    
+    # 対象ファイルの探索
+    pattern = os.path.join(Config.OUTPUT_DIR, f"車両情報_{target_date_str}_*.csv")
+    csv_files = sorted(glob.glob(pattern))
+    
+    if not csv_files:
+        print(f"Warning: {target_date_str} に対する車両情報CSVが見つかりません。")
+        return False
+        
+    print(f"Info: {len(csv_files)} 個のファイルをマージします。")
+    
+    # マージ処理
+    df_list = []
+    for filepath in csv_files:
+        try:
+            # ファイル名から取得日時をパース (例: 車両情報_20260624_150000.csv -> 2026-06-24 15:00:00)
+            basename = os.path.basename(filepath)
+            time_part = basename.replace("車両情報_", "").replace(".csv", "") # 20260624_150000
+            get_time = datetime.strptime(time_part, "%Y%m%d_%H%M%S")
+            
+            df = pd.read_csv(filepath, encoding="utf-8-sig")
+            df["取得日時_生"] = get_time
+            # 取得日時を1時間単位に丸める
+            df["取得日時"] = get_time.replace(minute=0, second=0, microsecond=0)
+            df_list.append(df)
+        except Exception as e:
+            print(f"Warning: ファイルの読み込みに失敗しました: {filepath}, {e}")
+            
+    if not df_list:
+        print("Error: 読み込み可能なデータが存在しませんでした。")
+        return False
+        
+    combined_df = pd.concat(df_list, ignore_index=True)
+    
+    # サンプル数（集約元の数）をカウント
+    df_counts = combined_df.groupby(["識別番号", "取得日時"]).size().reset_index(name="サンプル数")
+    
+    # 方式1: 1時間ごとの代表値の抽出
+    # 各車両（識別番号）および丸めた取得日時ごとに、最も遅い「取得日時_生」のレコードを残す
+    combined_df = combined_df.sort_values("取得日時_生")
+    combined_df = combined_df.drop_duplicates(subset=["識別番号", "取得日時"], keep="last")
+    
+    # サンプル数をマージ
+    combined_df = pd.merge(combined_df, df_counts, on=["識別番号", "取得日時"], how="left")
+    combined_df.drop(columns=["取得日時_生"], inplace=True, errors="ignore")
+
+    
+    # 車種情報の紐付け
+    threshold_path = os.path.join(str(ROOT_DIR), "車両閾値設定.csv")
+    if os.path.exists(threshold_path):
+        try:
+            # BOM付きUTF-8などで読み込む
+            df_th = pd.read_csv(threshold_path, encoding="utf-8-sig")
+            # 重複を排除
+            df_th = df_th.drop_duplicates(subset=["車両識別番号"])
+            
+            # 車種情報と閾値列がすでにある場合は、マージ前に削除して上書きする
+            th_cols = ["車種名", "閾値_AT異常", "閾値_画面強調", "閾値_Lv1", "閾値_Lv2", "閾値_Lv3"]
+            combined_df = combined_df.drop(columns=[c for c in th_cols if c in combined_df.columns], errors="ignore")
+            
+            combined_df = pd.merge(
+                combined_df,
+                df_th[["車両識別番号"] + th_cols],
+                left_on="識別番号",
+                right_on="車両識別番号",
+                how="left"
+            )
+            # 重複キー列を削除
+            combined_df.drop(columns=["車両識別番号"], inplace=True, errors="ignore")
+            print("Success: 車両閾値設定マスタとの紐付けに成功しました。")
+        except Exception as e:
+            print(f"Warning: 車種閾値設定マスタとの紐付け中にエラーが発生しました: {e}")
+            
+    # Parquet保存
+    parquet_filename = f"車両情報_{target_date_str}.parquet"
+    parquet_path = os.path.join(Config.OUTPUT_DIR, parquet_filename)
+    
+    try:
+        combined_df.to_parquet(parquet_path, index=False)
+        print(f"Success: Parquetファイルを保存しました: {parquet_path}")
+    except Exception as e:
+        print(f"Error: Parquetファイルの保存に失敗しました: {e}")
+        return False
+        
+    # OneDriveアップロード
+    success = upload_to_onedrive_web(parquet_path)
+    return success
+
+
+def merge_and_upload_historical_logs(until_file: str) -> bool:
+    """
+    指定されたファイル名（until_file）以前の過去の5分ごとCSVログを一括でマージし、
+    1時間ごとの代表値（方式1）に集約し、車種情報を紐づけて、Parquet形式でOneDriveへアップロードします。
+    """
+    import glob
+    from datetime import datetime
+    from src.config import ROOT_DIR
+
+    print(f"Info: {until_file} 以前の過去データ一括マージ処理を開始します...")
+    
+    # 対象ファイルの探索
+    pattern = os.path.join(Config.OUTPUT_DIR, "車両情報_*.csv")
+    all_csv_files = sorted(glob.glob(pattern))
+    
+    # until_file 以下のファイル名のみにフィルタリング
+    target_basename = os.path.basename(until_file)
+    csv_files = [f for f in all_csv_files if os.path.basename(f) <= target_basename]
+    
+    if not csv_files:
+        print(f"Warning: 指定された上限 {target_basename} 以前の車両情報CSVが見つかりません。")
+        return False
+        
+    print(f"Info: {len(csv_files)} 個の過去ファイルをマージします。")
+    
+    # マージ処理
+    df_list = []
+    keep_cols = ['エリア名', '識別番号', '車両状態', 'ポート名', 'station_id', 'lat', 'lon', '電圧', 'AT通知受信日時', '連続利用開始日時', '同一ポート継続利用時間(秒)', '交換前電圧', '交換後電圧', '交換日時']
+    
+    print("Info: 過去ファイルの読み込みを開始します...")
+    for idx, filepath in enumerate(csv_files):
+        try:
+            basename = os.path.basename(filepath)
+            time_part = basename.replace("車両情報_", "").replace(".csv", "") # YYYYMMDD_HHMMSS
+            get_time = datetime.strptime(time_part, "%Y%m%d_%H%M%S")
+            
+            # メモリ節約のため必要な列だけ読み込む
+            df_temp = pd.read_csv(filepath, nrows=0)
+            use_cols = [c for c in keep_cols if c in df_temp.columns]
+            
+            df = pd.read_csv(filepath, usecols=use_cols, encoding="utf-8-sig")
+            df["取得日時_生"] = get_time
+            # 取得日時を1時間単位に丸める
+            df["取得日時"] = get_time.replace(minute=0, second=0, microsecond=0)
+            df_list.append(df)
+            
+            if (idx + 1) % 500 == 0:
+                print(f"Info: {idx + 1} / {len(csv_files)} 個のファイルを読み込みました...")
+        except Exception as e:
+            print(f"Warning: ファイルの読み込みに失敗しました: {filepath}, {e}")
+            
+    if not df_list:
+        print("Error: 読み込み可能なデータが存在しませんでした。")
+        return False
+        
+    print("Info: 読み込んだデータを結合しています...")
+    combined_df = pd.concat(df_list, ignore_index=True)
+
+    
+    # サンプル数（集約元の数）をカウント
+    df_counts = combined_df.groupby(["識別番号", "取得日時"]).size().reset_index(name="サンプル数")
+    
+    # 方式1: 1時間ごとの代表値の抽出
+    # 各車両（識別番号）および丸めた取得日時ごとに、最も遅い「取得日時_生」のレコードを残す
+    combined_df = combined_df.sort_values("取得日時_生")
+    combined_df = combined_df.drop_duplicates(subset=["識別番号", "取得日時"], keep="last")
+    
+    # サンプル数をマージ
+    combined_df = pd.merge(combined_df, df_counts, on=["識別番号", "取得日時"], how="left")
+    combined_df.drop(columns=["取得日時_生"], inplace=True, errors="ignore")
+    
+    # 車種情報の紐付け
+    threshold_path = os.path.join(str(ROOT_DIR), "車両閾値設定.csv")
+    if os.path.exists(threshold_path):
+        try:
+            df_th = pd.read_csv(threshold_path, encoding="utf-8-sig")
+            df_th = df_th.drop_duplicates(subset=["車両識別番号"])
+            
+            th_cols = ["車種名", "閾値_AT異常", "閾値_画面強調", "閾値_Lv1", "閾値_Lv2", "閾値_Lv3"]
+            combined_df = combined_df.drop(columns=[c for c in th_cols if c in combined_df.columns], errors="ignore")
+            
+            combined_df = pd.merge(
+                combined_df,
+                df_th[["車両識別番号"] + th_cols],
+                left_on="識別番号",
+                right_on="車両識別番号",
+                how="left"
+            )
+            combined_df.drop(columns=["車両識別番号"], inplace=True, errors="ignore")
+            print("Success: 車両閾値設定マスタとの紐付けに成功しました。")
+        except Exception as e:
+            print(f"Warning: 車種閾値設定マスタとの紐付け中にエラーが発生しました: {e}")
+            
+    # Parquet保存
+    parquet_filename = "車両情報_historical.parquet"
+    parquet_path = os.path.join(Config.OUTPUT_DIR, parquet_filename)
+    
+    try:
+        combined_df.to_parquet(parquet_path, index=False)
+        print(f"Success: 一括マージParquetファイルを保存しました: {parquet_path}")
+    except Exception as e:
+        print(f"Error: 一括マージParquetファイルの保存に失敗しました: {e}")
+        return False
+        
+    # OneDriveアップロード
+    success = upload_to_onedrive_web(parquet_path)
+    return success
+

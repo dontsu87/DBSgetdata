@@ -709,7 +709,7 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
                 } else {
                     selectedPortNames.push(port.port_name);
                     const summaryPanel = document.getElementById('summary-panel');
-                    if (summaryPanel && window.innerWidth <= 768) {
+                    if (summaryPanel && isMobileLayout()) {
                         summaryPanel.classList.add('show-mobile-drawer');
                     }
                 }
@@ -888,7 +888,7 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
     const summaryPanel = document.getElementById('summary-panel');
     if (summaryPanel) {
         summaryPanel.style.display = '';
-        const isMobile = window.innerWidth <= 768;
+        const isMobile = isMobileLayout();
         if (isMobile && isPortSelectionMode && selectedPortNames.length > 0) {
             summaryPanel.classList.add('selection-active-mobile');
             document.body.classList.add('selection-active-mode-layout');

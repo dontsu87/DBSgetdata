@@ -822,8 +822,8 @@ header h1 {
     display: none;
 }
 
-/* 📱 スマホサイズ（画面幅768px以下）のスタイル定義 */
-@media screen and (max-width: 768px) {
+/* 📱 スマホ・タブレットサイズ (画面幅1280px以下、またはタッチデバイスかつ1366px以下) のスタイル定義 */
+@media screen and (max-width: 1280px), screen and (max-width: 1366px) and (pointer: coarse) {
     header {
         flex-direction: column;
         align-items: stretch;
@@ -1309,7 +1309,7 @@ header h1 {
 }
 
 /* モバイル表示で選択モードON時のコンパクトなサマリー表示スタイル */
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 1280px), screen and (max-width: 1366px) and (pointer: coarse) {
     .summary-panel.selection-active-mobile {
         display: none !important; /* 通常は非表示 */
         position: fixed;

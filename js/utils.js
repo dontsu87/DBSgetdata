@@ -36,7 +36,19 @@ function loadFromCache(key, defaultValue) {
 }
 
 function isMobileLayout() {
-    return window.innerWidth <= 768;
+    const width = window.innerWidth;
+    const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+    
+    // 1. 単純に画面幅が1280px以下の場合 (余裕を持たせた閾値)
+    if (width <= 1280) {
+        return true;
+    }
+    // 2. タッチデバイスかつ画面幅が1366px以下の場合 (iPad Pro 12.9インチ横向きなど)
+    if (isTouchDevice && width <= 1366) {
+        return true;
+    }
+    
+    return false;
 }
 
 function getRestrictedArea() {

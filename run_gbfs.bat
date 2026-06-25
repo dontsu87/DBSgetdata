@@ -10,3 +10,7 @@ call .venv\Scripts\activate
 
 rem Run Python GBFS retriever script
 python -u main.py --gbfs
+
+rem Run Python daily summary battery log merge and upload (Method 1 Parquet format)
+python -u main.py --merge-daily
+

@@ -239,10 +239,12 @@ def run_scraping(is_worker=False):
                 if json_path and js_path:
                     print("✅ マップデータのローカル生成に成功しました。この後 GitHub Actions 経由で GitHub Pages に即時デプロイされます！")
                 
-                # --- 【非同期型・蓄積用】時間のかかる OneDrive Web への CSV バックアップ転送は最後にゆっくり実行 ---
-                print("\n📁 [バックアップ] 蓄積用データを OneDrive へアップロードします (約25秒)...")
-                upload_to_onedrive_web(output_path)
-                print("✅ OneDrive への蓄積用データのバックアップアップロード処理が完了しました。")
+                # --- 【非同期型・蓄積用】時間のかかる OneDrive Web への CSV バックアップ転送は日次マージへ移行したため、5分ごとはスキップ ---
+                # print("\n📁 [バックアップ] 蓄積用データを OneDrive へアップロードします (約25秒)...")
+                # upload_to_onedrive_web(output_path)
+                # print("✅ OneDrive への蓄積用データのバックアップアップロード処理が完了しました。")
+                print("ℹ️ 5分ごとの OneDrive への生CSVアップロードはスキップします（日次マージにてParquet形式でまとめてアップロードされます）。")
+
 
             elapsed = str(datetime.now() - start_time).split('.')[0]
             total_rows = sum(len(df) for df in all_data)
@@ -289,12 +291,22 @@ def check_and_run_daily_gbfs():
             if json_path:
                 upload_to_onedrive_web(json_path)
             
+            # 日付が変わったため、前日分の車両情報データをマージしてParquetアップロード
+            print("\n[Daily Battery Merge] 前日分の車両情報のマージ処理を開始します...")
+            try:
+                from src.exporter import merge_and_upload_daily_logs
+                merge_and_upload_daily_logs()
+                print("[Daily Battery Merge] 完了しました。")
+            except Exception as me:
+                print(f"[Daily Battery Merge] 処理中にエラーが発生しました: {me}")
+
             # 実行日記録を更新
             with open(last_run_file, "w", encoding="utf-8") as f:
                 f.write(today_str)
             print("[Daily GBFS] 完了しました。")
         except Exception as e:
             print(f"[Daily GBFS] 処理中にエラーが発生しました: {e}")
+
 
 def main():
     parser = argparse.ArgumentParser(description="ドコモ・バイクシェア 車両情報取得ツール")
@@ -318,13 +330,51 @@ def main():
         action="store_true",
         help="事業者用管理画面から自転車ごとの車種および車種設定マスタを取得し保存します"
     )
+    parser.add_argument(
+        "--merge-daily",
+        action="store_true",
+        help="指定された日付（デフォルトは昨日）の5分ごとCSVログをマージし、Parquet形式でOneDriveへアップロードします"
+    )
+    parser.add_argument(
+        "--date",
+        type=str,
+        default=None,
+        help="--merge-dailyでマージする日付を指定します (例: 20260624)"
+    )
+    parser.add_argument(
+        "--merge-historical",
+        action="store_true",
+        help="過去の5分ごとCSVログを一括マージし、Parquet形式でOneDriveへアップロードします"
+    )
+    parser.add_argument(
+        "--until",
+        type=str,
+        default=None,
+        help="--merge-historicalでマージ対象の上限とするファイル名（このファイルを含めてそれ以前を対象とする）を指定します (例: 車両情報_20260625_120000.csv)"
+    )
     args = parser.parse_args()
+
+    # --merge-daily が指定された場合の処理
+    if args.merge_daily:
+        from src.exporter import merge_and_upload_daily_logs
+        merge_and_upload_daily_logs(args.date)
+        return
+
+    # --merge-historical が指定された場合の処理
+    if args.merge_historical:
+        if not args.until:
+            print("Error: --merge-historical を実行するには、--until <ファイル名> で上限とするファイル名を指定してください。")
+            return
+        from src.exporter import merge_and_upload_historical_logs
+        merge_and_upload_historical_logs(args.until)
+        return
 
     # --bike-types が指定された場合の処理
     if args.bike_types:
         from src.bike_type_retriever import run_bike_types_scraping
         run_bike_types_scraping()
         return
+
 
     # --gbfs が指定された場合の処理
     if args.gbfs:
