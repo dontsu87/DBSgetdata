@@ -15,9 +15,7 @@ if (cachedHighlight === null) {
     checkedHighlightStatuses = [
         'AT異常(AT通知受信なし)', 'AT異常(電池なし)', 
         'AT異常（AT通知受信なし）', 'AT異常（電池なし）', 
-        'AT異常（AT受信通知なし）', // 互換性維持のため
-        'AT異常(不本意開始)', 'AT異常(位置不正)', 'AT異常(センサー異常警報)',
-        'メンテナンス', 'メンテナンス(アラート付)'
+        'AT異常（AT受信通知なし）' // 互換性維持のため
     ];
     saveToCache('checked_highlight_statuses', checkedHighlightStatuses);
 } else {
