@@ -338,6 +338,17 @@ function initStatusFilter(data) {
         const newStatuses = sortedStatuses.filter(s => !checkedStatuses.includes(s) && !prevStatusesStr.split(',').includes(s));
         checkedStatuses = checkedStatuses.filter(s => sortedStatuses.includes(s)).concat(newStatuses);
     }
+    
+    // 新規出現した「AT異常」または「メンテナンス」で始まるステータスは、自動的に強調対象（checkedHighlightStatuses）に追加する
+    const newHighlightStatuses = sortedStatuses.filter(s => 
+        (s.startsWith('AT異常') || s.startsWith('メンテナンス')) &&
+        !checkedHighlightStatuses.includes(s) && 
+        !prevStatusesStr.split(',').includes(s)
+    );
+    if (newHighlightStatuses.length > 0) {
+        checkedHighlightStatuses = checkedHighlightStatuses.concat(newHighlightStatuses);
+        saveToCache('checked_highlight_statuses', checkedHighlightStatuses);
+    }
 
     if (currentStatusesStr === prevStatusesStr) {
         const container = document.getElementById('status-checkboxes-container');
