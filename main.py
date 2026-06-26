@@ -239,6 +239,13 @@ def run_scraping(is_worker=False):
                 if json_path and js_path:
                     print("✅ マップデータのローカル生成に成功しました。この後 GitHub Actions 経由で GitHub Pages に即時デプロイされます！")
                 
+                # --- 【自己申告データ履歴の OneDrive 永続保存】 ---
+                try:
+                    from src.self_replace_archiver import sync_self_replacement_history_to_onedrive
+                    sync_self_replacement_history_to_onedrive()
+                except Exception as arch_err:
+                    print(f"Warning: 自己申告データの履歴保存中にエラーが発生しました: {arch_err}")
+                
                 # --- 【非同期型・蓄積用】時間のかかる OneDrive Web への CSV バックアップ転送は日次マージへ移行したため、5分ごとはスキップ ---
                 # print("\n📁 [バックアップ] 蓄積用データを OneDrive へアップロードします (約25秒)...")
                 # upload_to_onedrive_web(output_path)
