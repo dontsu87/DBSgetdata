@@ -14,7 +14,7 @@ def sync_self_replacement_history_to_onedrive(r2_url=R2_SELF_REPLACED_URL, histo
     R2上の自己申告バッテリー交換データ（self_replaced_bikes.json）をフェッチし、
     重複なくローカルの履歴 CSV (self_replaced_history.csv) に蓄積して OneDrive へアップロードします。
     """
-    print("⏳ 自己申告データの同期（履歴蓄積）を開始します...")
+    print("自己申告データの同期（履歴蓄積）を開始します...")
     
     # 1. R2 から自己申告データをフェッチ
     try:
@@ -93,11 +93,11 @@ def sync_self_replacement_history_to_onedrive(r2_url=R2_SELF_REPLACED_URL, histo
             })
 
     if not new_rows:
-        print("✅ 新規の自己申告データはありません。履歴は最新です。")
+        print("新規の自己申告データはありません。履歴は最新です。")
         return False
 
     # 4. 新規エントリを CSV に追記
-    print(f"📝 新たに {len(new_rows)} 件の自己申告データを検出しました。履歴に追記します。")
+    print(f"新たに {len(new_rows)} 件の自己申告データを検出しました。履歴に追記します。")
     os.makedirs(os.path.dirname(history_csv_path), exist_ok=True)
     
     headers = ['bike_id', 'timestamp', 'recorded_at', 'alert_level', 'voltage']
@@ -110,24 +110,24 @@ def sync_self_replacement_history_to_onedrive(r2_url=R2_SELF_REPLACED_URL, histo
                 writer.writeheader()
             for row in new_rows:
                 writer.writerow(row)
-        print(f"💾 ローカル履歴ファイルを更新しました: {history_csv_path}")
+        print(f"ローカル履歴ファイルを更新しました: {history_csv_path}")
     except Exception as e:
-        print(f"❌ 履歴 CSV への書き込みに失敗しました: {e}")
+        print(f"Error: 履歴 CSV への書き込みに失敗しました: {e}")
         return False
 
     # 5. OneDrive へのアップロード
     if not skip_upload:
         try:
-            print(f"📁 更新された履歴ファイルを OneDrive にアップロードします...")
+            print(f"更新された履歴ファイルを OneDrive にアップロードします...")
             success = upload_to_onedrive_web(history_csv_path)
             if success:
-                print("✅ OneDrive へのアップロードが完了しました。")
+                print("OneDrive へのアップロードが完了しました。")
                 return True
             else:
                 print("Warning: OneDrive へのアップロードに失敗しました。")
                 return False
         except Exception as e:
-            print(f"❌ OneDrive アップロード中に例外が発生しました: {e}")
+            print(f"Error: OneDrive アップロード中に例外が発生しました: {e}")
             return False
     else:
         print("Info: アップロード処理をスキップしました (skip_upload=True)")

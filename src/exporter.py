@@ -282,10 +282,10 @@ def upload_to_onedrive_web(local_file_path: str) -> bool:
     import time
 
     print(f"Info: OneDriveへの自動アップロード処理を開始します...")
-    driver = build_driver()
-    utils = BrowserUtils(driver)
-
+    driver = None
     try:
+        driver = build_driver()
+        utils = BrowserUtils(driver)
         # 1. 共有リンクにアクセス
         print(f"Info: 共有リンクにアクセス中...")
         driver.get(Config.ONEDRIVE_SHARED_LINK)
@@ -402,23 +402,25 @@ def upload_to_onedrive_web(local_file_path: str) -> bool:
 
     except Exception as e:
         print(f"Error: OneDriveへのアップロード中にエラーが発生しました: {e}")
-        try:
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            debug_dir = os.path.join(os.path.dirname(__file__), "..", "debug")
-            os.makedirs(debug_dir, exist_ok=True)
-            screenshot_path = os.path.join(debug_dir, f"onedrive_error_{timestamp}.png")
-            driver.save_screenshot(screenshot_path)
-            print(f"Error: エラー発生時のスクリーンショットを保存しました: {screenshot_path}")
-            
-            html_path = os.path.join(debug_dir, f"onedrive_error_{timestamp}.html")
-            with open(html_path, "w", encoding="utf-8") as f:
-                f.write(driver.page_source)
-            print(f"Error: エラー発生時のHTMLを保存しました: {html_path}")
-        except Exception as se:
-            print(f"Warning: エラー画面のキャプチャに失敗しました: {se}")
+        if driver:
+            try:
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                debug_dir = os.path.join(os.path.dirname(__file__), "..", "debug")
+                os.makedirs(debug_dir, exist_ok=True)
+                screenshot_path = os.path.join(debug_dir, f"onedrive_error_{timestamp}.png")
+                driver.save_screenshot(screenshot_path)
+                print(f"Error: エラー発生時のスクリーンショットを保存しました: {screenshot_path}")
+                
+                html_path = os.path.join(debug_dir, f"onedrive_error_{timestamp}.html")
+                with open(html_path, "w", encoding="utf-8") as f:
+                    f.write(driver.page_source)
+                print(f"Error: エラー発生時のHTMLを保存しました: {html_path}")
+            except Exception as se:
+                print(f"Warning: エラー画面のキャプチャに失敗しました: {se}")
         return False
     finally:
-        driver.quit()
+        if driver:
+            driver.quit()
 
 def download_threshold_from_onedrive() -> bool:
     """
@@ -459,10 +461,10 @@ def download_threshold_from_onedrive() -> bool:
             print(f"Warning: 既存ファイルの退避に失敗しました: {e}")
 
     print("Info: OneDriveから「車両閾値設定.csv」のダウンロードを開始します...")
-    driver = build_driver()
-    utils = BrowserUtils(driver)
-
+    driver = None
     try:
+        driver = build_driver()
+        utils = BrowserUtils(driver)
         # 1. 共有リンクにアクセス
         driver.get(Config.ONEDRIVE_SHARED_LINK)
 
@@ -549,7 +551,8 @@ def download_threshold_from_onedrive() -> bool:
             os.rename(backup_path, local_path)
         return False
     finally:
-        driver.quit()
+        if driver:
+            driver.quit()
 
 
 def merge_and_upload_daily_logs(target_date_str: str = None) -> bool:

@@ -209,7 +209,7 @@ def run_scraping(is_worker=False):
             # 正常終了か例外発生かにかかわらず、次のエリアへ行く前に明示的に「ログアウト」してセッションを綺麗にする
             # (最後のエリアの場合はループを抜けてから通常終了するためログアウトは省略)
             if idx < len(area_names) - 1:
-                print("🚪 セッション切替のため、ログアウト処理を実行しています...")
+                print("セッション切替のため、ログアウト処理を実行しています...")
                 try:
                     # ログアウトボタン（input[value='ログアウト']）を探してクリック
                     logout_btn = driver.find_element(By.CSS_SELECTOR, "input[value='ログアウト']")
@@ -226,18 +226,18 @@ def run_scraping(is_worker=False):
 
     # 3. データの統合と超高速マップ連携処理
     if all_data:
-        print("\n💾 データを統合してCSVファイルに書き出しています...")
+        print("\nデータを統合してCSVファイルに書き出しています...")
         try:
             output_path = export_to_onedrive(all_data)
             
             if output_path:
                 # --- 【超高速マップ連携】最優先でマップ用 JSON と JS をローカル生成し、即時処理完了にする ---
-                print("\n🔄 [最優先] マップ可視化用データの自動生成を開始します...")
+                print("\n[最優先] マップ可視化用データの自動生成を開始します...")
                 from src.dashboard_generator import generate_dashboard_json
                 json_path, js_path = generate_dashboard_json(output_path)
                 
                 if json_path and js_path:
-                    print("✅ マップデータのローカル生成に成功しました。この後 GitHub Actions 経由で GitHub Pages に即時デプロイされます！")
+                    print("マップデータのローカル生成に成功しました。この後 GitHub Actions 経由で GitHub Pages に即時デプロイされます！")
                 
                 # --- 【自己申告データ履歴の OneDrive 永続保存】 ---
                 try:
@@ -247,10 +247,10 @@ def run_scraping(is_worker=False):
                     print(f"Warning: 自己申告データの履歴保存中にエラーが発生しました: {arch_err}")
                 
                 # --- 【非同期型・蓄積用】時間のかかる OneDrive Web への CSV バックアップ転送は日次マージへ移行したため、5分ごとはスキップ ---
-                # print("\n📁 [バックアップ] 蓄積用データを OneDrive へアップロードします (約25秒)...")
+                # print("\n[バックアップ] 蓄積用データを OneDrive へアップロードします (約25秒)...")
                 # upload_to_onedrive_web(output_path)
-                # print("✅ OneDrive への蓄積用データのバックアップアップロード処理が完了しました。")
-                print("ℹ️ 5分ごとの OneDrive への生CSVアップロードはスキップします（日次マージにてParquet形式でまとめてアップロードされます）。")
+                # print("OneDrive への蓄積用データのバックアップアップロード処理が完了しました。")
+                print("5分ごとの OneDrive への生CSVアップロードはスキップします（日次マージにてParquet形式でまとめてアップロードされます）。")
 
 
             elapsed = str(datetime.now() - start_time).split('.')[0]
@@ -260,11 +260,11 @@ def run_scraping(is_worker=False):
             print(f"- 実行作業時間: {elapsed}")
             print(f"- 取得総行数  : {total_rows} 件")
             print(f"- 保存先パス  : {output_path}")
-            print("✅ 処理が正常に完了しました。")
+            print("処理が正常に完了しました。")
         except Exception as e:
-            print(f"❌ データの保存中にエラーが発生しました: {e}")
+            print(f"Error: データの保存中にエラーが発生しました: {e}")
     else:
-        print("\n❌ データを一件も取得できませんでした。")
+        print("\nError: データを一件も取得できませんでした。")
 
 def check_and_run_daily_gbfs():
     """
