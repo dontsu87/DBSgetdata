@@ -1077,6 +1077,13 @@ header h1 {
         0 0 4px #fff;
 }
 
+.warning-badge-svg {
+    display: inline-block;
+    vertical-align: middle;
+    filter: drop-shadow(0px 1px 1.5px rgba(0, 0, 0, 0.4));
+    flex-shrink: 0;
+}
+
 /* ピン右上の未施錠未返却警告アイコン (⚠️絵文字) - 互換性維持のため残す */
 .unlocked-dot {
     position: absolute;

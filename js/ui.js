@@ -368,6 +368,15 @@ function initStatusFilter(data) {
         
         const isChecked = checkedStatuses.includes(status);
         const isHighlighted = checkedHighlightStatuses.includes(status);
+        
+        let color = 'yellow';
+        if (status.startsWith('AT異常')) {
+            color = 'red';
+        } else if (status.startsWith('メンテナンス')) {
+            color = 'brown';
+        }
+        const badgeHtml = getHighlightBadgeSvg(color, 12);
+        
         wrapper.innerHTML = `
             <label style="display: flex; align-items: center; gap: 8px; margin: 0; cursor: pointer; flex: 1;">
                 <input type="checkbox" class="status-filter" value="${status}" ${isChecked ? 'checked' : ''}>
@@ -375,7 +384,7 @@ function initStatusFilter(data) {
             </label>
             <label style="display: flex; align-items: center; gap: 4px; font-size: 11px; color: #cbd5e1; cursor: pointer; margin: 0; user-select: none;">
                 <input type="checkbox" class="status-highlight" value="${status}" ${isHighlighted ? 'checked' : ''}>
-                <span>強調 (${EMOJI_HIGHLIGHT})</span>
+                <span>強調 ${badgeHtml}</span>
             </label>
         `;
 

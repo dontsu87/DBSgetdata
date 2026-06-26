@@ -1,5 +1,21 @@
 // Map Initialization and Render Logic
 
+function getHighlightBadgeSvg(color, size = 16) {
+    let fillColor = '#eab308'; // 黄色 (tailwind yellow-500)
+    let textColor = '#000000'; // 黒字
+    if (color === 'red') {
+        fillColor = '#f87171'; // 薄めの赤色 (tailwind red-400)
+    } else if (color === 'brown') {
+        fillColor = '#a0522d'; // 薄めの赤茶色 (Sienna)
+        textColor = '#ffffff'; // 茶色は白字
+    }
+    
+    return `<svg class="warning-badge-svg" viewBox="0 0 24 24" width="${size}" height="${size}">
+        <path d="M12 2L2 22h20L12 2z" fill="${fillColor}" stroke="${fillColor}" stroke-width="2" stroke-linejoin="round"/>
+        <text x="12" y="19" fill="${textColor}" font-size="15" font-weight="900" text-anchor="middle" font-family="sans-serif" style="text-shadow: none !important;">!</text>
+    </svg>`;
+}
+
 function initMapInstance() {
     const cachedLat = loadFromCache('map_center_lat', 36.568);
     const cachedLng = loadFromCache('map_center_lng', 136.648);
@@ -456,8 +472,30 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
 
         let markerIcon;
         let zIndexOrder = 100;
-        const hasUnlockedBike = matchingBikes.some(bike => bike.consecutive_use_duration >= thresholdSec);
-        const hasHighlightedBike = matchingBikes.some(bike => bike.status && checkedHighlightStatuses.includes(bike.status.trim()));
+        
+        let hasUnlockedBike = false;
+        let hasRedHighlight = false;
+        let hasBrownHighlight = false;
+        let hasYellowHighlight = false;
+
+        matchingBikes.forEach(bike => {
+            if (bike.consecutive_use_duration >= thresholdSec) {
+                hasUnlockedBike = true;
+            }
+            if (bike.status) {
+                const statusTrimmed = bike.status.trim();
+                if (checkedHighlightStatuses.includes(statusTrimmed)) {
+                    if (statusTrimmed.startsWith('AT異常')) {
+                        hasRedHighlight = true;
+                    } else if (statusTrimmed.startsWith('メンテナンス')) {
+                        hasBrownHighlight = true;
+                    } else {
+                        hasYellowHighlight = true;
+                    }
+                }
+            }
+        });
+        const hasHighlightedBike = hasRedHighlight || hasBrownHighlight || hasYellowHighlight;
         
         if (item.isRentalEmpty) {
             let className = 'port-marker-rental-empty';
@@ -527,8 +565,14 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
                 if (hasUnlockedBike) {
                     badgesHtml += `<span class="marker-badge-item">${EMOJI_UNLOCKED}</span>`;
                 }
-                if (hasHighlightedBike) {
-                    badgesHtml += `<span class="marker-badge-item">${EMOJI_HIGHLIGHT}</span>`;
+                if (hasRedHighlight) {
+                    badgesHtml += `<span class="marker-badge-item">${getHighlightBadgeSvg('red')}</span>`;
+                }
+                if (hasBrownHighlight) {
+                    badgesHtml += `<span class="marker-badge-item">${getHighlightBadgeSvg('brown')}</span>`;
+                }
+                if (hasYellowHighlight) {
+                    badgesHtml += `<span class="marker-badge-item">${getHighlightBadgeSvg('yellow')}</span>`;
                 }
                 badgesHtml += '</div>';
             }
@@ -631,7 +675,16 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
 
                 const bikeStatusTrimmed = bike.status ? bike.status.trim() : '';
                 const isBikeHighlighted = checkedHighlightStatuses.includes(bikeStatusTrimmed);
-                const bikeHighlightBadge = isBikeHighlighted ? `<span style="font-size: 12px; margin-right: 2px; display: inline-flex; align-items: center;">${EMOJI_HIGHLIGHT}</span>` : '';
+                let bikeHighlightBadge = '';
+                if (isBikeHighlighted) {
+                    let color = 'yellow';
+                    if (bikeStatusTrimmed.startsWith('AT異常')) {
+                        color = 'red';
+                    } else if (bikeStatusTrimmed.startsWith('メンテナンス')) {
+                        color = 'brown';
+                    }
+                    bikeHighlightBadge = `<span style="margin-right: 2px; display: inline-flex; align-items: center;">${getHighlightBadgeSvg(color, 14)}</span>`;
+                }
                 
                 let replacementInfo = '';
                 if (isReplacedModeEnabled && bike.replaced_at) {
@@ -812,7 +865,14 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
         Object.entries(highlightCounts)
             .filter(([_, count]) => count > 0)
             .forEach(([status, count]) => {
-                activeItems.push(`<span class="highlight-summary-item">⚠️ ${status}: <span class="count" style="color: #c084fc; font-size: 15px; margin-left: 2px;">${count}</span> 台</span>`);
+                let color = 'yellow';
+                if (status.startsWith('AT異常')) {
+                    color = 'red';
+                } else if (status.startsWith('メンテナンス')) {
+                    color = 'brown';
+                }
+                const badgeHtml = getHighlightBadgeSvg(color, 14);
+                activeItems.push(`<span class="highlight-summary-item" style="display: inline-flex; align-items: center; gap: 4px;">${badgeHtml}${status}: <span class="count" style="color: #c084fc; font-size: 15px; margin-left: 2px;">${count}</span> 台</span>`);
             });
 
         if (activeItems.length > 0) {
