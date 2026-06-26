@@ -207,12 +207,17 @@ function initMapInstance() {
             openPortName = source.portName;
             console.log("Popup opened for:", openPortName);
         }
+        if (e.popup && e.popup._container) {
+            L.DomEvent.disableClickPropagation(e.popup._container);
+        }
         if (interactionTimer) clearTimeout(interactionTimer);
     });
 
     map.on('popupclose', function(e) {
         openPortName = null;
         if (interactionTimer) clearTimeout(interactionTimer);
+        // ポップアップが閉じられたら、裏側でマーカーを最新状態に再描画して HTML バインドを更新
+        updateFilterAndRender(false);
         interactionTimer = setTimeout(function() {
             checkAndApplyPendingUpdate();
         }, 5000);
@@ -291,6 +296,9 @@ function updateFilterAndRender(shouldFitBounds = true) {
 
 function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFitBounds = true) {
     if (!data || !data.ports) return;
+
+    // 自己申告データの有効期限切れ(2時間超)をクリーンアップ
+    cleanupSelfReplacedBikes();
 
     if (!targetStatuses) {
         targetStatuses = checkedStatuses;
@@ -399,6 +407,12 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
                         }
                     }
                 }
+            }
+            
+            // 自己申告の考慮 (システム自動検知で元の警告レベルが再評価されていない場合)
+            if (isReplacedModeEnabled && selfReplacedBikes[bike.bike_id]) {
+                const selfReplacedItem = selfReplacedBikes[bike.bike_id];
+                evalAlertLevel = selfReplacedItem.alert_level;
             }
             
             const isLevelMatch = checkedLevels.includes(evalAlertLevel);
@@ -604,10 +618,16 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
         marker.portName = port.port_name;
         item.marker = marker;
 
-        const legendHtml = isReplacedModeEnabled ? `<span style="font-size: 11px; font-weight: normal; color: #64748b; margin-left: auto;">✅: 交換済み</span>` : '';
+        const legendHtml = isReplacedModeEnabled 
+            ? `<div class="popup-title-legend" style="font-size: 8px; font-weight: normal; color: #64748b; text-align: right; line-height: 1.0; margin-left: auto; flex-shrink: 0; padding-left: 6px; user-select: none; display: flex; flex-direction: column; justify-content: center; gap: 1px;">
+                 <div style="font-weight: bold; color: #475569; font-size: 8px; line-height: 1.0;">交換済み</div>
+                 <div style="line-height: 1.0;"><span style="color: #22c55e; font-weight: bold; font-size: 9px; margin-right: 1px; line-height: 1.0;">☑</span>自己申告</div>
+                 <div style="line-height: 1.0;"><span style="font-size: 8px; margin-right: 1px; line-height: 1.0;">✅</span>自動検知</div>
+               </div>` 
+            : '';
         let popupContent = `
             <div class="popup-title" style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
-                <span>${port.port_name}</span>
+                <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1 1 0%;" title="${port.port_name}">${port.port_name}</span>
                 ${legendHtml}
             </div>
         `;
@@ -686,7 +706,8 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
                     bikeHighlightBadge = `<span style="margin-right: 2px; display: inline-flex; align-items: center;">${getHighlightBadgeSvg(color, 14)}</span>`;
                 }
                 
-                let replacementInfo = '';
+                let isSystemReplaced = false;
+                let tooltipStr = '';
                 if (isReplacedModeEnabled && bike.replaced_at) {
                     let isWithin2Hours = false;
                     try {
@@ -703,26 +724,45 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
                     }
 
                     if (isWithin2Hours) {
-                        let displayTime = bike.replaced_at;
-                        try {
-                            const parts = bike.replaced_at.split(' ');
-                            if (parts.length >= 2) {
-                                const dateParts = parts[0].split('-');
-                                const timeParts = parts[1].split(':');
-                                if (dateParts.length >= 3 && timeParts.length >= 2) {
-                                    displayTime = `${dateParts[1]}-${dateParts[2]} ${timeParts[0]}:${timeParts[1]}`;
-                                }
-                            }
-                        } catch (e) {
-                            displayTime = bike.replaced_at;
-                        }
-                        const tooltipStr = `交換前: ${bike.replace_original_volt}V -> 交換後: ${bike.replace_increased_volt}V (交換日時: ${bike.replaced_at})`;
-                        replacementInfo = `<span style="margin-left: 4px; font-size: 14px; cursor: help; display: inline-block; width: 18px; text-align: center;" title="${tooltipStr}">✅</span>`;
+                        isSystemReplaced = true;
+                        tooltipStr = `交換前: ${bike.replace_original_volt}V -> 交換後: ${bike.replace_increased_volt}V (交換日時: ${bike.replaced_at})`;
                     }
                 }
 
+                let selfReplacedIcon = '';
+                let systemReplacedIcon = '';
+                let itemClass = 'popup-bike-item';
+                
+                if (isReplacedModeEnabled) {
+                    const isSelfReplaced = !!selfReplacedBikes[bike.bike_id];
+                    if (isSelfReplaced) {
+                        const mySelfReplaced = loadFromCache('my_self_replaced_bikes', {});
+                        const isMyCheck = !!mySelfReplaced[bike.bike_id] && mySelfReplaced[bike.bike_id].action === 'check';
+                        if (isMyCheck) {
+                            selfReplacedIcon = `<span style="font-size: 11px; line-height: 1; color: #22c55e;" title="自己申告バッテリー交換済み (タップで解除)">☑</span>`;
+                            itemClass += ' self-replaced my-check';
+                        } else {
+                            selfReplacedIcon = `<span style="font-size: 11px; line-height: 1; color: #64748b;" title="自己申告バッテリー交換済み (他の作業員がチェック)">☑</span>`;
+                            itemClass += ' self-replaced other-check';
+                        }
+                    }
+                    if (isSystemReplaced) {
+                        systemReplacedIcon = `<span style="font-size: 11px; line-height: 1; cursor: help;" title="${tooltipStr}">✅</span>`;
+                    }
+                }
+                
+                let iconsStackHtml = '';
+                if (selfReplacedIcon || systemReplacedIcon) {
+                    iconsStackHtml = `
+                        <div class="replacement-icons-stack">
+                            ${selfReplacedIcon}
+                            ${systemReplacedIcon}
+                        </div>
+                    `;
+                }
+
                 popupContent += `
-                    <li class="popup-bike-item">
+                    <li class="${itemClass}" data-bike-id="${bike.bike_id}" data-alert-level="${bike.alert_level}" data-voltage="${bike.voltage || ''}">
                         <div class="popup-bike-col-id">
                             <span class="popup-bike-id">${bike.bike_id}</span>
                         </div>
@@ -736,7 +776,7 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
                             ${bikeHighlightBadge}
                             ${bikeUnlockedBadge}
                             <span class="badge ${badgeClass}">${badgeName}</span>
-                            ${replacementInfo}
+                            ${iconsStackHtml}
                             ${unregisteredBadge}
                         </div>
                     </li>
@@ -982,3 +1022,360 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
         }, 50);
     }
 }
+
+// --- 自己申告バッテリー交換機能の追加コード ---
+
+/**
+ * 自己申告データの有効期限切れ（2時間超）をクリーンアップし、最新データを返す
+ */
+function cleanupSelfReplacedBikes() {
+    const selfReplaced = loadFromCache('self_replaced_bikes', {});
+    const mySelfReplaced = loadFromCache('my_self_replaced_bikes', {});
+    const now = Date.now();
+    let updatedSelf = false;
+    let updatedMy = false;
+    
+    for (const bikeId in selfReplaced) {
+        const item = selfReplaced[bikeId];
+        // 2時間 (7200000 ms) 以上経過、または未来の不正なタイムスタンプは削除
+        if (now - item.timestamp > 7200000 || now - item.timestamp < 0) {
+            delete selfReplaced[bikeId];
+            updatedSelf = true;
+        }
+    }
+    
+    for (const bikeId in mySelfReplaced) {
+        const item = mySelfReplaced[bikeId];
+        // uncheck かつ同期済みのデータは、サーバー反映の遅延を考慮して10分間（600000ms）保持した後に削除
+        if (item.action === 'uncheck' && item.synced === true) {
+            if (now - item.timestamp > 600000 || now - item.timestamp < 0) {
+                delete mySelfReplaced[bikeId];
+                updatedMy = true;
+            }
+        } else {
+            // 通常のチェックデータ、または未同期の解除データは2時間保持
+            if (now - item.timestamp > 7200000 || now - item.timestamp < 0) {
+                delete mySelfReplaced[bikeId];
+                updatedMy = true;
+            }
+        }
+    }
+    
+    if (updatedSelf) {
+        saveToCache('self_replaced_bikes', selfReplaced);
+    }
+    if (updatedMy) {
+        saveToCache('my_self_replaced_bikes', mySelfReplaced);
+    }
+    selfReplacedBikes = selfReplaced;
+    return selfReplaced;
+}
+
+/**
+ * 開発環境と本番環境でAPIのURLを切り分ける
+ */
+function getSelfReplaceApiUrl(endpoint) {
+    const isLocal = window.isTestMode || 
+                    window.location.hostname === 'localhost' || 
+                    window.location.hostname === '127.0.0.1' ||
+                    window.location.protocol === 'file:';
+    return isLocal ? `http://localhost:5000${endpoint}` : endpoint;
+}
+
+/**
+ * サーバーへ自己申告データを送信する
+ */
+function sendSelfReplacementToServer(bikeId, alertLevel, voltage, action) {
+    const url = getSelfReplaceApiUrl('/api/self-replacement');
+    const postData = {
+        bike_id: bikeId,
+        action: action,
+        alert_level: isNaN(alertLevel) ? 0 : alertLevel,
+        voltage: voltage ? parseFloat(voltage) : null
+    };
+    
+    return fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(postData)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(result => {
+        console.log(`[Self-Replace] Successfully synced with server for bike: ${bikeId} (${action})`);
+        
+        // 送信成功時、my_self_replaced_bikes 内の synced を true に更新
+        const mySelfReplaced = loadFromCache('my_self_replaced_bikes', {});
+        if (mySelfReplaced[bikeId]) {
+            // uncheckの場合も即座に消さず、サーバー側遅延（整合性ラグ）への防御用として10分保持するために synced: true で残す
+            mySelfReplaced[bikeId].synced = true;
+            // タイムスタンプを送信成功時刻（＝ここから10分カウント）に更新
+            mySelfReplaced[bikeId].timestamp = Date.now();
+            saveToCache('my_self_replaced_bikes', mySelfReplaced);
+        }
+        
+        // サーバー側の最新データを反映（マージ）
+        if (result.data) {
+            mergeAndApplySelfReplacements(result.data);
+        }
+    })
+    .catch(error => {
+        console.warn(`[Self-Replace] Failed to sync with server (will retry later) for bike: ${bikeId}:`, error);
+        // 送信失敗した場合は my_self_replaced_bikes の synced: false を維持する
+        const mySelfReplaced = loadFromCache('my_self_replaced_bikes', {});
+        if (mySelfReplaced[bikeId]) {
+            mySelfReplaced[bikeId].synced = false;
+            saveToCache('my_self_replaced_bikes', mySelfReplaced);
+        }
+    });
+}
+
+/**
+ * 未同期の自己申告データをバックグラウンドで再送する
+ */
+function retryUnsyncedSelfReplacements() {
+    const mySelfReplaced = loadFromCache('my_self_replaced_bikes', {});
+    const promises = [];
+    
+    for (const bikeId in mySelfReplaced) {
+        const item = mySelfReplaced[bikeId];
+        if (item.synced === false) {
+            console.log(`[Self-Replace] Retrying unsynced bike: ${bikeId} (${item.action})`);
+            promises.push(
+                sendSelfReplacementToServer(bikeId, item.alert_level, item.voltage, item.action)
+            );
+        }
+    }
+    return Promise.all(promises);
+}
+
+/**
+ * 自己申告データのトグル処理（本人操作ガード付き、ローカル即時反映 ＆ サーバー非同期送信）
+ */
+function toggleSelfReplacement(bikeId, alertLevel, voltage, itemEl) {
+    // 期限切れを整理
+    cleanupSelfReplacedBikes();
+    
+    // 本人操作ガード：他の人がチェックした車両（other-check）の場合は操作をブロック
+    if (itemEl && itemEl.classList.contains('other-check')) {
+        console.log(`[Self-Replace] Action blocked: Bike ${bikeId} is checked by another user.`);
+        return;
+    }
+    
+    const now = Date.now();
+    const mySelfReplaced = loadFromCache('my_self_replaced_bikes', {});
+    
+    // 自分が現在チェックを入れているかどうか
+    const isMyCheck = !!mySelfReplaced[bikeId] && mySelfReplaced[bikeId].action === 'check';
+    let action = 'check';
+    
+    if (isMyCheck) {
+        // すでに自分がチェックしている場合は解除 (uncheck)
+        action = 'uncheck';
+        console.log(`[Self-Replace] Unchecking bike locally: ${bikeId}`);
+        
+        mySelfReplaced[bikeId] = {
+            timestamp: now,
+            alert_level: isNaN(alertLevel) ? 0 : alertLevel,
+            voltage: voltage ? parseFloat(voltage) : null,
+            action: 'uncheck',
+            synced: false
+        };
+        
+        // selfReplacedBikes からも削除（ローカルでの即時反映）
+        delete selfReplacedBikes[bikeId];
+        
+        // --- DOMを直接操作して、ポップアップが消えないようにする ---
+        if (itemEl) {
+            itemEl.classList.remove('self-replaced', 'my-check');
+            const badgesCol = itemEl.querySelector('.popup-bike-col-badges');
+            if (badgesCol) {
+                const stack = badgesCol.querySelector('.replacement-icons-stack');
+                if (stack) {
+                    const selfIcon = stack.querySelector('[title*="自己申告"]');
+                    if (selfIcon) {
+                        selfIcon.remove();
+                    }
+                    // stackが空になったらstack自体も削除
+                    if (stack.children.length === 0) {
+                        stack.remove();
+                    }
+                }
+            }
+        }
+    } else {
+        // 未チェックの場合、または以前に uncheck していた場合はチェック ON (check)
+        action = 'check';
+        console.log(`[Self-Replace] Checking bike locally: ${bikeId}`);
+        
+        mySelfReplaced[bikeId] = {
+            timestamp: now,
+            alert_level: isNaN(alertLevel) ? 0 : alertLevel,
+            voltage: voltage ? parseFloat(voltage) : null,
+            action: 'check',
+            synced: false
+        };
+        
+        // selfReplacedBikes に追加（ローカルでの即時反映）
+        selfReplacedBikes[bikeId] = {
+            timestamp: now,
+            alert_level: isNaN(alertLevel) ? 0 : alertLevel,
+            voltage: voltage ? parseFloat(voltage) : null
+        };
+        
+        // --- DOMを直接操作して、ポップアップが消えないようにする ---
+        if (itemEl) {
+            itemEl.classList.add('self-replaced', 'my-check');
+            const badgesCol = itemEl.querySelector('.popup-bike-col-badges');
+            if (badgesCol) {
+                let stack = badgesCol.querySelector('.replacement-icons-stack');
+                if (!stack) {
+                    stack = document.createElement('div');
+                    stack.className = 'replacement-icons-stack';
+                    badgesCol.appendChild(stack);
+                }
+                let selfIcon = stack.querySelector('[title*="自己申告"]');
+                if (!selfIcon) {
+                    selfIcon = document.createElement('span');
+                    selfIcon.style.fontSize = '11px';
+                    selfIcon.style.lineHeight = '1';
+                    selfIcon.style.color = '#22c55e';
+                    selfIcon.title = '自己申告バッテリー交換済み (タップで解除)';
+                    selfIcon.innerText = '☑';
+                    stack.insertBefore(selfIcon, stack.firstChild);
+                }
+            }
+        }
+    }
+    
+    // キャッシュに保存
+    saveToCache('my_self_replaced_bikes', mySelfReplaced);
+    saveToCache('self_replaced_bikes', selfReplacedBikes);
+    
+    // サーバーへ非同期送信
+    sendSelfReplacementToServer(bikeId, alertLevel, voltage, action);
+}
+
+/**
+ * サーバーデータとローカルデータをマージし、画面を更新する
+ */
+function mergeAndApplySelfReplacements(serverData) {
+    const localData = loadFromCache('self_replaced_bikes', {});
+    const mySelfReplaced = loadFromCache('my_self_replaced_bikes', {});
+    const merged = { ...serverData };
+    const now = Date.now();
+    
+    // 1. まずサーバー側のデータから、ローカルで自分が「すでに解除 (uncheck) した」ものを強制除外する
+    // (同期済み/未同期にかかわらず、現在ローカルに解除履歴が残っているものはサーバー側でまだ消えていなくても消去)
+    for (const bikeId in mySelfReplaced) {
+        const myItem = mySelfReplaced[bikeId];
+        if (myItem.action === 'uncheck') {
+            delete merged[bikeId];
+        }
+    }
+    
+    // 2. ローカルで最近（2時間以内）チェックしたもので、まだサーバーに反映されていないものをマージ
+    for (const bikeId in localData) {
+        const localItem = localData[bikeId];
+        if (now - localItem.timestamp <= 7200000 && now - localItem.timestamp >= 0) {
+            if (!merged[bikeId] || localItem.timestamp > merged[bikeId].timestamp) {
+                // ただし、自分が解除 (uncheck) していないものに限る
+                const myItem = mySelfReplaced[bikeId];
+                if (!(myItem && myItem.action === 'uncheck')) {
+                    merged[bikeId] = localItem;
+                }
+            }
+        }
+    }
+    
+    // 3. 自分の mySelfReplaced のうち、check アクションかつ未同期のものをマージ（サーバーにまだ反映されていないため優先）
+    for (const bikeId in mySelfReplaced) {
+        const myItem = mySelfReplaced[bikeId];
+        if (myItem.action === 'check' && myItem.synced === false) {
+            if (now - myItem.timestamp <= 7200000 && now - myItem.timestamp >= 0) {
+                merged[bikeId] = {
+                    timestamp: myItem.timestamp,
+                    alert_level: myItem.alert_level,
+                    voltage: myItem.voltage
+                };
+            }
+        }
+    }
+    
+    // 4. クリーンアップ
+    for (const bikeId in merged) {
+        const item = merged[bikeId];
+        if (now - item.timestamp > 7200000 || now - item.timestamp < 0) {
+            delete merged[bikeId];
+        }
+    }
+    
+    // 保存
+    saveToCache('self_replaced_bikes', merged);
+    selfReplacedBikes = merged;
+}
+
+/**
+ * サーバー（またはR2）から自己申告データを取得してマージする
+ */
+function fetchSelfReplacements() {
+    const timestamp = Date.now();
+    
+    // 未同期データの再送をバックグラウンドで実行
+    retryUnsyncedSelfReplacements();
+    
+    // 開発環境と本番環境でR2かローカルAPIかを切り分ける
+    const isLocal = window.isTestMode || 
+                    window.location.hostname === 'localhost' || 
+                    window.location.hostname === '127.0.0.1' ||
+                    window.location.protocol === 'file:';
+                    
+    const fetchUrl = isLocal 
+        ? `http://localhost:5000/api/self-replacement?t=${timestamp}`
+        : `https://pub-1c068f2df9ab42a0b9dcc5d112078269.r2.dev/self_replaced_bikes.json?t=${timestamp}`;
+        
+    console.log(`🌐 自己申告データをフェッチ中: ${fetchUrl}`);
+    
+    return fetch(fetchUrl)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Self-replacement fetch failed");
+            }
+            return response.json();
+        })
+        .then(data => {
+            mergeAndApplySelfReplacements(data);
+            return data;
+        })
+        .catch(error => {
+            console.warn("Warning: 自己申告データの同期に失敗しました（ローカル記憶を使用します）:", error);
+            // エラー時はローカルのクリーンアップのみ行う
+            cleanupSelfReplacedBikes();
+            return null;
+        });
+}
+
+// ドキュメントクリック時のイベントデリゲーション（車両行クリックの検知）
+document.addEventListener('click', function(e) {
+    // 交換済モードが有効でない場合は何もしない
+    if (!isReplacedModeEnabled) return;
+    
+    const item = e.target.closest('.popup-bike-item');
+    if (!item) return;
+    
+    // 他のインタラクティブな要素（例えばバッジなどのツールチップがあるスパンなど）がクリックされた場合でも
+    // 車両行そのもののクリックとして扱う
+    const bikeId = item.getAttribute('data-bike-id');
+    const alertLevel = parseInt(item.getAttribute('data-alert-level'), 10);
+    const voltage = item.getAttribute('data-voltage');
+    
+    if (bikeId) {
+        toggleSelfReplacement(bikeId, alertLevel, voltage, item);
+    }
+});

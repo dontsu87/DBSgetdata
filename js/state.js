@@ -26,6 +26,7 @@ let unlockedThresholdHours = loadFromCache('unlocked_threshold_hours', 2.0);
 let isPortSelectionMode = loadFromCache('is_port_selection_mode', false);
 let selectedPortNames = loadFromCache('selected_port_names', []); 
 let isReplacedModeEnabled = loadFromCache('is_replaced_mode_enabled', true);
+let selfReplacedBikes = {}; // { bike_id: { timestamp, alert_level, voltage } }
 
 // User interaction and auto-updating states
 let prevStatusesStr = ""; 

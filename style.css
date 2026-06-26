@@ -342,6 +342,50 @@ header h1 {
     justify-content: space-between;
     align-items: center;
     gap: 8px;
+    cursor: pointer;
+    transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.popup-bike-item:hover {
+    background-color: #f8fafc;
+}
+
+.popup-bike-item:active {
+    background-color: #f1f5f9;
+}
+
+.popup-bike-item.self-replaced.my-check {
+    background-color: rgba(240, 253, 244, 0.65); /* 薄い緑色 */
+    border-left: 3px solid #22c55e; /* 自己申告済みを示す緑の左ボーダー */
+    padding-left: 7px; /* ボーダー分の調整 (10px - 3px = 7px) */
+    cursor: pointer;
+}
+
+.popup-bike-item.self-replaced.my-check:hover {
+    background-color: rgba(220, 252, 231, 0.75);
+}
+
+.popup-bike-item.self-replaced.other-check {
+    background-color: rgba(248, 250, 252, 0.65); /* 薄いグレー */
+    border-left: 3px solid #cbd5e1; /* グレーの左ボーダー */
+    padding-left: 7px;
+    cursor: not-allowed;
+}
+
+.popup-bike-item.self-replaced.other-check:hover {
+    background-color: rgba(248, 250, 252, 0.65); /* ホバー変化なし */
+}
+
+.replacement-icons-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    line-height: 1;
+    margin-left: 6px;
+    flex: 0 0 auto;
+    font-size: 11px;
 }
 
 .popup-bike-item:last-child {

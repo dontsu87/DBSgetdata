@@ -64,7 +64,13 @@ function loadDashboardData(isAutoUpdate = false, retryCount = 0) {
         initStatusFilter(cachedDashboardData);
         const hasCachedPosition = localStorage.getItem('map_center_lat') !== null;
         const shouldFitBounds = !isAutoUpdate && isFirstLoad && !hasCachedPosition;
-        updateFilterAndRender(shouldFitBounds);
+        if (typeof fetchSelfReplacements === 'function') {
+            fetchSelfReplacements().finally(() => {
+                updateFilterAndRender(shouldFitBounds);
+            });
+        } else {
+            updateFilterAndRender(shouldFitBounds);
+        }
         isFirstLoad = false;
         setTimeout(() => {
             loader.style.display = 'none';
@@ -95,7 +101,13 @@ function loadDashboardData(isAutoUpdate = false, retryCount = 0) {
             
             const hasCachedPosition = localStorage.getItem('map_center_lat') !== null;
             const shouldFitBounds = !isAutoUpdate && isFirstLoad && !hasCachedPosition;
-            updateFilterAndRender(shouldFitBounds);
+            if (typeof fetchSelfReplacements === 'function') {
+                fetchSelfReplacements().finally(() => {
+                    updateFilterAndRender(shouldFitBounds);
+                });
+            } else {
+                updateFilterAndRender(shouldFitBounds);
+            }
             
             isFirstLoad = false;
             
@@ -126,7 +138,13 @@ function loadDashboardData(isAutoUpdate = false, retryCount = 0) {
                 
                 const hasCachedPosition = localStorage.getItem('map_center_lat') !== null;
                 const shouldFitBounds = !isAutoUpdate && isFirstLoad && !hasCachedPosition;
-                updateFilterAndRender(shouldFitBounds);
+                if (typeof fetchSelfReplacements === 'function') {
+                    fetchSelfReplacements().finally(() => {
+                        updateFilterAndRender(shouldFitBounds);
+                    });
+                } else {
+                    updateFilterAndRender(shouldFitBounds);
+                }
                 
                 isFirstLoad = false;
                 errorScreen.style.display = 'none';
