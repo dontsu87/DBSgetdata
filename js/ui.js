@@ -293,6 +293,14 @@ function initStatusFilter(data) {
         });
     });
 
+    // 特定の重要なステータスは、実データに一切含まれていなくても常にフィルターに表示させる
+    const alwaysVisibleStatuses = [
+        'AT異常(AT通知受信なし)', 'AT異常（AT通知受信なし）',
+        'AT異常(電池なし)', 'AT異常（電池なし）',
+        'メンテナンス(アラート付)', 'メンテナンス（アラート付）'
+    ];
+    alwaysVisibleStatuses.forEach(s => statuses.add(s));
+
     const sortedStatuses = Array.from(statuses).sort();
     const currentStatusesStr = sortedStatuses.join(',');
 
