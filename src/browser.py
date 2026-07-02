@@ -93,12 +93,30 @@ def build_driver():
     options.add_argument("--disable-notifications")
     # eager 戦略は高速ですが、DOM破棄時にバックグラウンド通信がセグメンテーションフォルトを誘発するため標準(normal)に戻します
 
-    service = Service(
-        ChromeDriverManager().install(),
-        log_output=subprocess.DEVNULL
-    )
+    # ChromeDriverManager().install() が WMIハングやネットワークエラーで停止するのを防ぐため、
+    # まずローカルの WDM キャッシュから既存の chromedriver.exe を最優先で検索して使用します。
+    import glob
+    from pathlib import Path
+    
+    driver_path = None
+    wdm_home = Path(os.environ.get("WDM_LOCAL_PATH", Path.home() / ".wdm"))
+    cached_drivers = sorted(glob.glob(str(wdm_home / "**/chromedriver.exe"), recursive=True))
+    if cached_drivers:
+        driver_path = cached_drivers[-1]
+    else:
+        try:
+            import socket
+            socket.setdefaulttimeout(15)
+            driver_path = ChromeDriverManager().install()
+        except Exception:
+            driver_path = None
 
-    driver = webdriver.Chrome(service=service, options=options)
+    if driver_path:
+        service = Service(driver_path, log_output=subprocess.DEVNULL)
+        driver = webdriver.Chrome(service=service, options=options)
+    else:
+        # フォールバックとして Selenium Manager に解決させる (Selenium 4.6+)
+        driver = webdriver.Chrome(options=options)
     driver.set_page_load_timeout(40)  # VPN環境の遅延に対応するためタイムアウト値を40秒に緩和
 
     if not Config.HEADLESS:
