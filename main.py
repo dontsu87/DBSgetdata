@@ -333,6 +333,16 @@ def main():
         help="ブラウザなしのrequests.Sessionでログインから車両情報HTML取得まで到達できるか検証します"
     )
     parser.add_argument(
+        "--http-experiment",
+        action="store_true",
+        help="現行Selenium版とは別出力で、ブラウザなしHTTPスクレイピングを全エリア並行検証します"
+    )
+    parser.add_argument(
+        "--compare-scrapers",
+        action="store_true",
+        help="最新の現行Selenium CSVとHTTP実験CSVの主要列を比較します"
+    )
+    parser.add_argument(
         "--admin",
         action="store_true",
         help="従来の事業者用管理画面（ENTSYS・要VPN）を使用して実行します"
@@ -418,6 +428,16 @@ def main():
     if args.probe_http:
         from src.http_probe import run_http_probe
         run_http_probe(is_worker=is_worker)
+        return
+
+    if args.http_experiment:
+        from src.http_scraper import run_http_scraping_experiment
+        run_http_scraping_experiment(is_worker=is_worker)
+        return
+
+    if args.compare_scrapers:
+        from src.compare_scrapers import print_compare_latest_outputs
+        print_compare_latest_outputs()
         return
 
     if is_worker:
