@@ -9,6 +9,20 @@ This trial runs the experimental HTTP scraper only. It does not upload to R2 and
 3. Measure actual job duration, CPU, and memory settings.
 4. Estimate whether a 5-minute schedule fits the Cloud Run free tier.
 
+
+## Current OneDrive Limitation
+
+The HTTP Cloud Run trial intentionally excludes OneDrive Web UI upload.
+
+Current code paths using OneDrive Web UI are browser/Selenium dependent:
+
+- Daily GBFS CSV/JSON upload from `check_and_run_daily_gbfs()`.
+- Daily merged battery Parquet upload from `merge_and_upload_daily_logs()`.
+- Self-replacement history upload from `sync_self_replacement_history_to_onedrive()`.
+- Manual/historical merge upload commands.
+
+The 5-minute raw battery CSV upload is currently skipped in `main.py`, so the core 5-minute map refresh can be moved independently if it writes dashboard artifacts to R2. Full cloud migration still needs a non-browser replacement for OneDrive backup, such as Microsoft Graph upload, R2 archival, or leaving the daily backup on the existing Windows PC until replaced.
+
 ## Prerequisites
 
 - Google Cloud project with billing enabled.
