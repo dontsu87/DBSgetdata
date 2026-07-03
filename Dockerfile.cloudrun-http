@@ -1,0 +1,17 @@
+FROM python:3.11-slim
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONIOENCODING=utf-8 \
+    OUTPUT_DIR=/tmp/dbs-output
+
+WORKDIR /app
+
+COPY requirements-http.txt ./
+RUN pip install --no-cache-dir -r requirements-http.txt
+
+COPY main.py ./
+COPY src ./src
+
+RUN mkdir -p /tmp/dbs-output
+
+CMD ["python", "-u", "main.py", "--http-experiment"]

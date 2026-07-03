@@ -1,0 +1,6 @@
+beautifulsoup4
+pandas
+python-dotenv
+requests
+selenium>=4.0.0
+webdriver-manager
