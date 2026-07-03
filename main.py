@@ -323,6 +323,16 @@ def main():
         help="安全にログイン画面またはエリア選択画面を調査し、スクリーンショットとHTMLを保存します（データには触れません）"
     )
     parser.add_argument(
+        "--inspect-api",
+        action="store_true",
+        help="API直叩き化の可否調査用に、通信とフォーム構造のメタデータだけを保存します"
+    )
+    parser.add_argument(
+        "--probe-http",
+        action="store_true",
+        help="ブラウザなしのrequests.Sessionでログインから車両情報HTML取得まで到達できるか検証します"
+    )
+    parser.add_argument(
         "--admin",
         action="store_true",
         help="従来の事業者用管理画面（ENTSYS・要VPN）を使用して実行します"
@@ -399,6 +409,16 @@ def main():
 
     # デフォルトを作業員モード(is_worker=True)とする設計
     is_worker = not args.admin
+
+    if args.inspect_api:
+        from src.api_probe import run_api_probe
+        run_api_probe(is_worker=is_worker)
+        return
+
+    if args.probe_http:
+        from src.http_probe import run_http_probe
+        run_http_probe(is_worker=is_worker)
+        return
 
     if is_worker:
         if args.inspect:

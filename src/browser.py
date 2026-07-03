@@ -39,7 +39,7 @@ def get_windows_screen_size():
     except Exception:
         return None
 
-def build_driver():
+def build_driver(enable_performance_logging=False):
     """Chrome WebDriverを構築します。"""
     options = webdriver.ChromeOptions()
 
@@ -55,9 +55,17 @@ def build_driver():
 
     # ログ抑制設定
     options.add_experimental_option("excludeSwitches", ["enable-logging"])
+    if enable_performance_logging:
+        from pathlib import Path as _Path
+        profile_dir = _Path(Config.OUTPUT_DIR) / "chrome_api_probe_profile"
+        profile_dir.mkdir(parents=True, exist_ok=True)
+        options.set_capability("goog:loggingPrefs", {"performance": "ALL"})
+        options.add_argument(f"--user-data-dir={profile_dir}")
+        options.add_argument("--remote-debugging-port=0")
     options.add_argument("--log-level=3")
     options.add_argument("--disable-logging")
-    options.add_argument("--remote-debugging-pipe")
+    if not enable_performance_logging:
+        options.add_argument("--remote-debugging-pipe")
 
     # 音声系/通知系を極力オフ
     options.add_argument("--disable-speech-api")
