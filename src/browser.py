@@ -119,12 +119,19 @@ def build_driver(enable_performance_logging=False):
         except Exception:
             driver_path = None
 
+    creation_flags = 0
+    if os.name == 'nt':
+        creation_flags = 0x08000000  # CREATE_NO_WINDOW
+
     if driver_path:
         service = Service(driver_path, log_output=subprocess.DEVNULL)
+        service.creation_flags = creation_flags
         driver = webdriver.Chrome(service=service, options=options)
     else:
         # フォールバックとして Selenium Manager に解決させる (Selenium 4.6+)
-        driver = webdriver.Chrome(options=options)
+        service = Service(log_output=subprocess.DEVNULL)
+        service.creation_flags = creation_flags
+        driver = webdriver.Chrome(service=service, options=options)
     driver.set_page_load_timeout(40)  # VPN環境の遅延に対応するためタイムアウト値を40秒に緩和
 
     if not Config.HEADLESS:
