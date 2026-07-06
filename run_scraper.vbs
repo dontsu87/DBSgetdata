@@ -8,8 +8,8 @@ scriptDir = fso.GetParentFolderName(WScript.ScriptFullName)
 Set env = ws.Environment("Process")
 env("PYTHONIOENCODING") = "utf-8"
 
-' Build paths to python inside virtualenv and python scripts
-pyPath = scriptDir & "\.venv\Scripts\python.exe"
+' Build paths to pythonw (no-window version) inside virtualenv and python scripts
+pyPath = scriptDir & "\.venv\Scripts\pythonw.exe"
 mainPath = scriptDir & "\main.py"
 uploadPath = scriptDir & "\src\upload_to_r2.py"
 
