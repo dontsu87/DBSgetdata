@@ -84,7 +84,9 @@ function initUIComponents() {
         
         const isExpanded = basemapPanel.classList.toggle('expanded');
         if (isExpanded) {
-            basemapContainer.style.maxHeight = basemapContainer.scrollHeight + 'px';
+            const panelRect = basemapPanel.getBoundingClientRect();
+            const availableHeight = window.innerHeight - panelRect.top - 130;
+            basemapContainer.style.maxHeight = Math.max(100, Math.min(basemapContainer.scrollHeight, availableHeight)) + 'px';
             basemapArrow.style.transform = 'rotate(180deg)';
         } else {
             basemapContainer.style.maxHeight = '0px';
@@ -102,7 +104,9 @@ function initUIComponents() {
         
         const isExpanded = statusPanel.classList.toggle('expanded');
         if (isExpanded) {
-            statusContainer.style.maxHeight = statusContainer.scrollHeight + 'px';
+            const panelRect = statusPanel.getBoundingClientRect();
+            const availableHeight = window.innerHeight - panelRect.top - 130;
+            statusContainer.style.maxHeight = Math.max(150, Math.min(statusContainer.scrollHeight, availableHeight)) + 'px';
             statusArrow.style.transform = 'rotate(180deg)';
         } else {
             statusContainer.style.maxHeight = '0px';
@@ -121,7 +125,9 @@ function initUIComponents() {
                 basemapContainer.style.maxHeight = '0px';
                 basemapArrow.style.transform = 'rotate(0deg)';
             } else {
-                basemapContainer.style.maxHeight = basemapContainer.scrollHeight + 'px';
+                const panelRect = basemapPanel.getBoundingClientRect();
+                const availableHeight = window.innerHeight - panelRect.top - 130;
+                basemapContainer.style.maxHeight = Math.max(100, Math.min(basemapContainer.scrollHeight, availableHeight)) + 'px';
                 basemapArrow.style.transform = 'rotate(180deg)';
             }
             
@@ -129,7 +135,9 @@ function initUIComponents() {
                 statusContainer.style.maxHeight = '0px';
                 statusArrow.style.transform = 'rotate(0deg)';
             } else {
-                statusContainer.style.maxHeight = statusContainer.scrollHeight + 'px';
+                const panelRect = statusPanel.getBoundingClientRect();
+                const availableHeight = window.innerHeight - panelRect.top - 130;
+                statusContainer.style.maxHeight = Math.max(150, Math.min(statusContainer.scrollHeight, availableHeight)) + 'px';
                 statusArrow.style.transform = 'rotate(180deg)';
             }
         }
@@ -187,7 +195,37 @@ function initUIComponents() {
                     'checked_legend_levels', 'selected_worker_mode'
                 ];
                 keysToRemove.forEach(key => localStorage.removeItem(key));
+                for (let i = localStorage.length - 1; i >= 0; i--) {
+                    const key = localStorage.key(i);
+                    if (key && key.startsWith('checked_prefixes_')) {
+                        localStorage.removeItem(key);
+                    }
+                }
                 window.location.reload();
+            }
+        });
+    }
+
+    // --- ポート外車両情報モーダル制御 ---
+    const outOfPortBtn = document.getElementById('out-of-port-btn');
+    const outOfPortModal = document.getElementById('out-of-port-modal');
+    const closeOutOfPortModalBtn = document.getElementById('close-out-of-port-modal-btn');
+
+    if (outOfPortBtn && outOfPortModal) {
+        outOfPortBtn.addEventListener('click', function() {
+            showOutOfPortModal(cachedDashboardData);
+        });
+    }
+
+    if (closeOutOfPortModalBtn && outOfPortModal) {
+        closeOutOfPortModalBtn.addEventListener('click', function() {
+            outOfPortModal.style.display = 'none';
+        });
+        
+        // モーダルの外側をクリックしたら閉じる
+        outOfPortModal.addEventListener('click', function(e) {
+            if (e.target === outOfPortModal) {
+                outOfPortModal.style.display = 'none';
             }
         });
     }
@@ -261,6 +299,7 @@ function initAreaTabs(data) {
             btn.classList.add('active');
             selectedArea = area;
             saveToCache('selected_area', area);
+            updatePrefixFilterUI(cachedDashboardData);
             updateFilterAndRender();
         });
         
@@ -440,4 +479,218 @@ function initStatusFilter(data) {
 
         container.appendChild(wrapper);
     });
+}
+
+// 車両コード (接頭辞) フィルターの動的生成
+function updatePrefixFilterUI(data) {
+    const container = document.getElementById('prefix-filter-container');
+    const checkboxesContainer = document.getElementById('prefix-checkboxes');
+    
+    updateOutOfPortCount(data);
+    
+    if (!container || !checkboxesContainer) return;
+
+    if (!data || !data.ports || !selectedArea) {
+        container.style.display = 'none';
+        checkedPrefixes = [];
+        return;
+    }
+
+    const prefixes = new Set();
+    data.ports.forEach(port => {
+        if (port.bikes) {
+            port.bikes.forEach(bike => {
+                if (bike.area_name === selectedArea && bike.bike_id) {
+                    const match = bike.bike_id.match(/^[A-Za-z]+/);
+                    if (match) {
+                        prefixes.add(match[0].toUpperCase());
+                    }
+                }
+            });
+        }
+    });
+    const sortedPrefixes = Array.from(prefixes).sort();
+
+    // プレフィックスが2種類以上ある場合のみフィルターを表示する
+    if (sortedPrefixes.length <= 1) {
+        container.style.display = 'none';
+        checkedPrefixes = []; // フィルターは適用しない (全表示)
+        isAllPrefixesChecked = true;
+        return;
+    }
+
+    container.style.display = 'flex';
+    
+    // エリアごとの選択状態をキャッシュから読み込み
+    const cachedChecked = loadFromCache('checked_prefixes_' + selectedArea, null);
+    
+    if (Array.isArray(cachedChecked)) {
+        checkedPrefixes = cachedChecked.filter(p => sortedPrefixes.includes(p));
+        if (checkedPrefixes.length === 0) {
+            checkedPrefixes = [...sortedPrefixes];
+        }
+    } else {
+        checkedPrefixes = [...sortedPrefixes];
+    }
+
+    isAllPrefixesChecked = (checkedPrefixes.length === sortedPrefixes.length);
+
+    checkboxesContainer.innerHTML = '';
+
+    sortedPrefixes.forEach(prefix => {
+        const label = document.createElement('label');
+        label.className = 'status-filter-item';
+        label.style.cssText = 'display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border: 1px solid #475569; border-radius: 4px; background-color: #1e293b; color: #cbd5e1; cursor: pointer; font-size: 11px; margin: 0;';
+        
+        const isChecked = checkedPrefixes.includes(prefix);
+        
+        label.innerHTML = `
+            <input type="checkbox" class="prefix-filter" value="${prefix}" ${isChecked ? 'checked' : ''} style="margin: 0;">
+            <span style="font-weight: bold;">${prefix}</span>
+        `;
+        
+        const checkbox = label.querySelector('input');
+        checkbox.addEventListener('change', function() {
+            if (checkbox.checked) {
+                if (!checkedPrefixes.includes(prefix)) {
+                    checkedPrefixes.push(prefix);
+                }
+            } else {
+                checkedPrefixes = checkedPrefixes.filter(p => p !== prefix);
+            }
+            isAllPrefixesChecked = (checkedPrefixes.length === sortedPrefixes.length);
+            saveToCache('checked_prefixes_' + selectedArea, checkedPrefixes);
+            updateFilterAndRender(false);
+        });
+
+        checkboxesContainer.appendChild(label);
+    });
+}
+
+// ポート外車両モーダルの生成と表示
+function showOutOfPortModal(data) {
+    const modal = document.getElementById('out-of-port-modal');
+    const areaNameSpan = document.getElementById('out-of-port-area-name');
+    const listBody = document.getElementById('out-of-port-list-body');
+    const emptyMsg = document.getElementById('out-of-port-empty-msg');
+    const tableContainer = document.querySelector('#out-of-port-modal .modal-table-container');
+    
+    if (!modal || !listBody || !emptyMsg) return;
+    
+    // エリア名表示をセット
+    let readableAreaName = '不明';
+    if (selectedArea) {
+        const parts = selectedArea.split('_');
+        readableAreaName = parts.length > 1 ? parts[1] : selectedArea;
+    }
+    if (areaNameSpan) {
+        areaNameSpan.innerText = readableAreaName;
+    }
+    
+    // リストの初期化
+    listBody.innerHTML = '';
+    
+    // GPS位置のないポート（port.has_gps === false）から車両を抽出
+    const outOfPortBikes = [];
+    if (data && data.ports) {
+        data.ports.forEach(port => {
+            if (port.has_gps === false || port.lat === null || port.lon === null) {
+                if (port.bikes) {
+                    port.bikes.forEach(bike => {
+                        if (bike.area_name === selectedArea) {
+                            outOfPortBikes.push({
+                                bike_id: bike.bike_id,
+                                port_name: port.port_name || 'ポート外',
+                                voltage: bike.voltage,
+                                alert_level: bike.alert_level,
+                                alert_level_name: bike.alert_level_name,
+                                status: bike.status
+                            });
+                        }
+                    });
+                }
+            }
+        });
+    }
+    
+    // 車体番号でソート
+    outOfPortBikes.sort((a, b) => a.bike_id.localeCompare(b.bike_id));
+    
+    if (outOfPortBikes.length === 0) {
+        emptyMsg.style.display = 'block';
+        if (tableContainer) tableContainer.style.display = 'none';
+    } else {
+        emptyMsg.style.display = 'none';
+        if (tableContainer) tableContainer.style.display = 'block';
+        
+        outOfPortBikes.forEach(bike => {
+            const tr = document.createElement('tr');
+            
+            // 車体番号 td
+            const tdBikeId = document.createElement('td');
+            tdBikeId.style.fontWeight = 'bold';
+            tdBikeId.style.textAlign = 'center';
+            tdBikeId.innerText = bike.bike_id;
+            tr.appendChild(tdBikeId);
+            
+            // データ上のポート位置 td
+            const tdPortPos = document.createElement('td');
+            tdPortPos.style.textAlign = 'center';
+            tdPortPos.innerText = bike.port_name;
+            tr.appendChild(tdPortPos);
+            
+            // バッテリー残量 td (電圧値 + 警告バッジ)
+            const tdVolt = document.createElement('td');
+            tdVolt.style.textAlign = 'center';
+            
+            const voltText = bike.voltage !== null ? `${bike.voltage.toFixed(1)}V` : '--V';
+            let badgeClass = 'unknown';
+            if (bike.alert_level === 5) badgeClass = 'at-error';
+            else if (bike.alert_level === 4) badgeClass = 'strong';
+            else if (bike.alert_level === 0) badgeClass = 'normal';
+            else badgeClass = 'unknown';
+            
+            const badgeSpan = document.createElement('span');
+            badgeSpan.className = `modal-badge ${badgeClass}`;
+            badgeSpan.style.marginLeft = '8px';
+            badgeSpan.innerText = bike.alert_level_name || '正常';
+            
+            tdVolt.appendChild(document.createTextNode(voltText));
+            tdVolt.appendChild(badgeSpan);
+            tr.appendChild(tdVolt);
+            
+            // 車両状態 td
+            const tdStatus = document.createElement('td');
+            tdStatus.style.textAlign = 'center';
+            tdStatus.innerText = bike.status;
+            tr.appendChild(tdStatus);
+            
+            listBody.appendChild(tr);
+        });
+    }
+    
+    // モーダルを表示
+    modal.style.display = 'flex';
+}
+
+// ポート外（位置情報なし）車両数のカウント更新
+function updateOutOfPortCount(data) {
+    const countEl = document.getElementById('out-of-port-count');
+    if (!countEl) return;
+    
+    let count = 0;
+    if (data && data.ports && selectedArea) {
+        data.ports.forEach(port => {
+            if (port.has_gps === false || port.lat === null || port.lon === null) {
+                if (port.bikes) {
+                    port.bikes.forEach(bike => {
+                        if (bike.area_name === selectedArea) {
+                            count++;
+                        }
+                    });
+                }
+            }
+        });
+    }
+    countEl.innerText = count;
 }

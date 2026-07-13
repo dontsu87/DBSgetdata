@@ -8,6 +8,8 @@ let markerGroup;
 let selectedArea = ""; 
 let checkedStatuses = []; 
 let checkedHighlightStatuses = []; 
+let checkedPrefixes = []; 
+let isAllPrefixesChecked = true; 
 
 // Initialize highlight statuses
 const cachedHighlight = loadFromCache('checked_highlight_statuses', null);

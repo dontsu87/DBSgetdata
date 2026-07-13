@@ -65,6 +65,7 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         },
         updateFilterAndRender: updateFilterAndRender,
+        updatePrefixFilterUI: updatePrefixFilterUI,
         getIsPortSelectionMode: () => isPortSelectionMode,
         setIsPortSelectionMode: (val) => {
             isPortSelectionMode = val;

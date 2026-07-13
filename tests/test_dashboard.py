@@ -299,6 +299,180 @@ def run_test():
             page.locator(".leaflet-popup-close-button").dispatch_event("click")
             page.wait_for_timeout(500)
             
+            # --- 車両コード接頭辞フィルターの動作検証 ---
+            print("\nStep 7.5.5: 車両コード接頭辞フィルターの動作検証...")
+            
+            # テスト用のデータを注入 (selectedArea を金沢エリアにして、マスタから KNZ/NNI が選ばれるようにする)
+            page.evaluate("""() => {
+                selectedArea = 'KNZ_金沢市公共シェアサイクルまちのり事務局';
+                
+                const currentData = window._testInterface.getCachedDashboardData();
+                const testData = JSON.parse(JSON.stringify(currentData));
+                
+                if (testData.ports.length > 0) {
+                    testData.ports[0].area_name = 'KNZ_金沢市公共シェアサイクルまちのり事務局';
+                    testData.ports[0].bikes = [
+                        {
+                            "bike_id": "KNZ001",
+                            "status": "利用可能",
+                            "model_name": "DD",
+                            "voltage": 28.5,
+                            "alert_level": 4,
+                            "alert_level_name": "強警告",
+                            "is_unregistered": false,
+                            "thresholds": {"at_error": 24.0, "strong": 25.0, "lv1": 26.0, "lv2": 27.0, "lv3": null},
+                            "at_time": "2026-06-03 20:00:00",
+                            "unlocked_started_at": "",
+                            "consecutive_use_duration": 0,
+                            "area_name": "KNZ_金沢市公共シェアサイクルまちのり事務局"
+                        },
+                        {
+                            "bike_id": "NNI002",
+                            "status": "利用可能",
+                            "model_name": "DD",
+                            "voltage": 28.5,
+                            "alert_level": 4,
+                            "alert_level_name": "強警告",
+                            "is_unregistered": false,
+                            "thresholds": {"at_error": 24.0, "strong": 25.0, "lv1": 26.0, "lv2": 27.0, "lv3": null},
+                            "at_time": "2026-06-03 20:00:00",
+                            "unlocked_started_at": "",
+                            "consecutive_use_duration": 0,
+                            "area_name": "KNZ_金沢市公共シェアサイクルまちのり事務局"
+                        }
+                    ];
+                    testData.ports[0].total_bikes = 2;
+                }
+                
+                window._testInterface.setCachedDashboardData(testData);
+                window._testInterface.updatePrefixFilterUI(testData);
+                window._testInterface.updateFilterAndRender(false);
+            }""")
+            
+            page.wait_for_timeout(1000)
+            
+            prefix_filters = page.evaluate("() => Array.from(document.querySelectorAll('.prefix-filter')).map(el => el.value)")
+            print(f"検出された接頭辞フィルター: {prefix_filters}")
+            assert "KNZ" in prefix_filters, "接頭辞 KNZ フィルターが見つかりません"
+            assert "NNI" in prefix_filters, "接頭辞 NNI フィルターが見つかりません"
+            
+            initial_ports, initial_bikes = dashboard.get_summary_data()
+            assert initial_bikes == "2", f"初期台数が2台ではありません: {initial_bikes}"
+            
+            print("接頭辞 KNZ フィルターを OFF にします...")
+            dashboard.toggle_prefix_checkbox("KNZ", False)
+            
+            filtered_ports, filtered_bikes = dashboard.get_summary_data()
+            print(f"接頭辞フィルタ適用後 (KNZ OFF) - ポート: {filtered_ports} / 車両: {filtered_bikes}")
+            assert filtered_bikes == "1", f"台数が1台に減少していません: {filtered_bikes}"
+            
+            dashboard.click_first_marker_and_verify_popup()
+            expect(page.locator("li:has-text('NNI002')")).to_be_visible()
+            expect(page.locator("li:has-text('KNZ001')")).to_be_hidden()
+            print("✅ ポップアップ内でも接頭辞フィルタが適用されていることを確認しました。")
+            
+            page.locator(".leaflet-popup-close-button").dispatch_event("click")
+            page.wait_for_timeout(500)
+            
+            print("接頭辞 KNZ フィルターを ON に戻します...")
+            dashboard.toggle_prefix_checkbox("KNZ", True)
+            restored_ports, restored_bikes = dashboard.get_summary_data()
+            assert restored_bikes == "2", f"フィルター復旧後に台数が2台に戻りませんでした: {restored_bikes}"
+            
+            # --- ポート外車両情報モーダルの動作検証 ---
+            print("\nStep 7.5.6: ポート外車両情報モーダルの動作検証...")
+            
+            # テスト用データの注入（GPSなしポートオブジェクトを登録）
+            page.evaluate("""() => {
+                selectedArea = 'KNZ_金沢市公共シェアサイクルまちのり事務局';
+                
+                const testData = {
+                    "updated_at": "2026-07-13 20:50:00",
+                    "total_ports_count": 1,
+                    "total_alert_bikes": 2,
+                    "summary_counts": {"at_error": 1, "strong": 1, "lv1": 0, "lv2": 0, "lv3": 0},
+                    "ports": [
+                        {
+                            "port_name": "テスト倉庫ポート外",
+                            "area_name": "KNZ_金沢市公共シェアサイクルまちのり事務局",
+                            "station_id": "",
+                            "lat": null,
+                            "lon": null,
+                            "has_gps": false,
+                            "total_bikes": 2,
+                            "max_alert_level": 5,
+                            "alert_bikes_count": 2,
+                            "bikes": [
+                                {
+                                    "bike_id": "KNZ001",
+                                    "status": "利用可能",
+                                    "model_name": "DD",
+                                    "voltage": 28.5,
+                                    "alert_level": 4,
+                                    "alert_level_name": "強警告",
+                                    "is_unregistered": false,
+                                    "thresholds": {"at_error": 24.0, "strong": 25.0, "lv1": 26.0, "lv2": 27.0, "lv3": null},
+                                    "at_time": "2026-06-03 20:00:00",
+                                    "unlocked_started_at": "",
+                                    "consecutive_use_duration": 0,
+                                    "area_name": "KNZ_金沢市公共シェアサイクルまちのり事務局"
+                                },
+                                {
+                                    "bike_id": "NNI002",
+                                    "status": "メンテナンス(アラート付)",
+                                    "model_name": "DD",
+                                    "voltage": 23.5,
+                                    "alert_level": 5,
+                                    "alert_level_name": "AT異常",
+                                    "is_unregistered": false,
+                                    "thresholds": {"at_error": 24.0, "strong": 25.0, "lv1": 26.0, "lv2": 27.0, "lv3": null},
+                                    "at_time": "2026-06-03 20:00:00",
+                                    "unlocked_started_at": "",
+                                    "consecutive_use_duration": 0,
+                                    "area_name": "KNZ_金沢市公共シェアサイクルまちのり事務局"
+                                }
+                            ]
+                        }
+                    ]
+                };
+                
+                window._testInterface.setCachedDashboardData(testData);
+                window._testInterface.updatePrefixFilterUI(testData);
+                window._testInterface.updateFilterAndRender(false);
+            }""")
+            
+            page.wait_for_timeout(1000)
+            
+            expect(dashboard.out_of_port_btn).to_be_visible()
+            expect(page.locator("#out-of-port-count")).to_have_text("2")
+            dashboard.click_out_of_port_btn()
+            
+            expect(dashboard.out_of_port_modal).to_be_visible()
+            
+            count = dashboard.get_out_of_port_bikes_count()
+            print(f"モーダル内のポート外車両数: {count}")
+            assert count == 2, f"モーダル内のポート外車両数が2ではありません: {count}"
+            
+            expect(page.locator("#out-of-port-list-body")).to_contain_text("KNZ001")
+            expect(page.locator("#out-of-port-list-body")).to_contain_text("NNI002")
+            expect(page.locator("#out-of-port-list-body")).to_contain_text("テスト倉庫ポート外")
+            expect(page.locator("#out-of-port-list-body")).to_contain_text("AT異常")
+            print("✅ モーダル内に車体情報、GPSのないポート名、バッテリ、状態が正しく描画されていることを確認しました。")
+            
+            dashboard.close_out_of_port_modal()
+            expect(dashboard.out_of_port_modal).to_be_hidden()
+            print("✅ 閉じるボタンによりモーダルが非表示になることを確認しました。")
+
+            # テスト終了後に FKI_ふくチャリ エリアへ復元する
+            page.evaluate("""() => {
+                selectedArea = 'FKI_ふくチャリ';
+                window._testInterface.setCachedDashboardData(window.dashboardData);
+                window._testInterface.updatePrefixFilterUI(window.dashboardData);
+                window._testInterface.updateFilterAndRender(false);
+            }""")
+            page.wait_for_timeout(500)
+            print("✅ 車両コード接頭辞フィルターおよびポート外車両情報モーダルの全動作検証が完了しました。")
+            
             # --- ポート選択サマリーモードの動作検証 ---
             print("\nStep 7.6: ポート選択サマリーモードの動作検証...")
             

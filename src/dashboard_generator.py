@@ -403,7 +403,10 @@ def aggregate_ports_data(df_merged, master_data, gbfs_stations):
             "consecutive_use_duration": consecutive_use_duration,
             "replace_original_volt": replace_orig_val,
             "replace_increased_volt": replace_incr_val,
-            "replaced_at": replaced_at
+            "replaced_at": replaced_at,
+            "area_name": str(row['エリア名']).strip() if not pd.isna(row['エリア名']) else "その他",
+            "lat": float(lat) if has_gps else None,
+            "lon": float(lon) if has_gps else None
         }
         
         ports_data[port_name]["bikes"].append(bike_info)

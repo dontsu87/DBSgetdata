@@ -20,6 +20,12 @@ class MapDashboardPage:
         self.error_screen = page.locator("#error-screen")
         self.status_filter_panel = page.locator("#status-filter-panel")
         self.status_checkboxes = page.locator(".status-filter")
+        self.prefix_checkboxes = page.locator(".prefix-filter")
+        self.out_of_port_btn = page.locator("#out-of-port-btn")
+        self.out_of_port_modal = page.locator("#out-of-port-modal")
+        self.close_out_of_port_modal_btn = page.locator("#close-out-of-port-modal-btn")
+        self.out_of_port_rows = page.locator("#out-of-port-list-body tr")
+        self.out_of_port_empty_msg = page.locator("#out-of-port-empty-msg")
         
         # モバイル表示用要素セレクター
         self.legend_panel = page.locator("#map-legend-panel")
@@ -90,6 +96,30 @@ class MapDashboardPage:
                 # 反映のための少しの待機
                 self.page.wait_for_timeout(300)
                 print(f"Action: 車両状態 '{status_value}' を {'ON' if checked else 'OFF'} に切り替えました。")
+    def toggle_prefix_checkbox(self, prefix_value: str, checked: bool):
+        """特定の車両コード接頭辞フィルターのチェックボックスをON/OFFします"""
+        checkbox = self.page.locator(f".prefix-filter[value='{prefix_value}']")
+        if checkbox.count() > 0:
+            is_currently_checked = checkbox.is_checked()
+            if is_currently_checked != checked:
+                checkbox.click(force=True)
+                # 反映のための少しの待機
+                self.page.wait_for_timeout(300)
+                print(f"Action: 車両コード接頭辞 '{prefix_value}' を {'ON' if checked else 'OFF'} に切り替えました。")
         else:
-            raise AssertionError(f"車両状態 '{status_value}' のチェックボックスが見つかりません。")
+            raise AssertionError(f"車両コード接頭辞 '{prefix_value}' のチェックボックスが見つかりません。")
+
+    def click_out_of_port_btn(self):
+        """ポート外車両ボタンをクリックします"""
+        self.out_of_port_btn.click(force=True)
+        self.page.wait_for_timeout(300)
+
+    def close_out_of_port_modal(self):
+        """ポート外車両モーダルを閉じます"""
+        self.close_out_of_port_modal_btn.click(force=True)
+        self.page.wait_for_timeout(300)
+
+    def get_out_of_port_bikes_count(self) -> int:
+        """モーダル内の車両リストの行数を取得します"""
+        return self.out_of_port_rows.count()
 

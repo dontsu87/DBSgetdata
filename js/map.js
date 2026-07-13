@@ -419,6 +419,13 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
             const isStatusMatch = bike.status ? targetStatuses.includes(bike.status.trim()) : false;
             const isHighlighted = bike.status ? checkedHighlightStatuses.includes(bike.status.trim()) : false;
             
+            let isPrefixMatch = true;
+            if (!isAllPrefixesChecked && checkedPrefixes && checkedPrefixes.length > 0) {
+                const bikePrefixMatch = bike.bike_id ? bike.bike_id.match(/^[A-Za-z]+/) : null;
+                const bikePrefix = bikePrefixMatch ? bikePrefixMatch[0].toUpperCase() : "";
+                isPrefixMatch = checkedPrefixes.includes(bikePrefix);
+            }
+            
             let isReplaced = false;
             if (isReplacedModeEnabled && bike.replaced_at) {
                 try {
@@ -435,7 +442,7 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
                 }
             }
             
-            return (isReplaced || isLevelMatch || (isUnlocked && isUnlockedFilterChecked) || isHighlighted) && isStatusMatch;
+            return (isReplaced || isLevelMatch || (isUnlocked && isUnlockedFilterChecked) || isHighlighted) && isStatusMatch && isPrefixMatch;
         });
 
         // バッテリー警告対象が1台でもいれば、利用可能0台より警告マーカーを優先する
@@ -641,7 +648,15 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
             `;
         } else {
             // 表示対象の自転車リスト。表示対象(matchingBikes)があればそれを、なければそのポートにあるすべての自転車(port.bikes)を表示
-            const displayBikes = (matchingBikes.length > 0) ? matchingBikes : port.bikes;
+            const filterBikesByPrefix = (bikes) => {
+                if (isAllPrefixesChecked || !checkedPrefixes || checkedPrefixes.length === 0) return bikes;
+                return bikes.filter(bike => {
+                    const bikePrefixMatch = bike.bike_id ? bike.bike_id.match(/^[A-Za-z]+/) : null;
+                    const bikePrefix = bikePrefixMatch ? bikePrefixMatch[0].toUpperCase() : "";
+                    return checkedPrefixes.includes(bikePrefix);
+                });
+            };
+            const displayBikes = filterBikesByPrefix((matchingBikes.length > 0) ? matchingBikes : port.bikes);
 
             const modelCounts = {};
             displayBikes.forEach(bike => {

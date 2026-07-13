@@ -156,6 +156,42 @@ header h1 {
     fill: currentColor;
 }
 
+/* ポート外車両ボタン基本スタイル */
+.out-of-port-button {
+    position: absolute;
+    bottom: 30px; /* GPSボタンと左右並び */
+    right: 100px;
+    background-color: #f97316; /* オレンジ */
+    color: white;
+    border: none;
+    border-radius: 50px;
+    width: 70px;
+    height: 70px;
+    font-size: 11px;
+    font-weight: bold;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    touch-action: manipulation;
+    transition: background-color 0.2s, transform 0.1s;
+    cursor: pointer;
+}
+.out-of-port-button:hover {
+    background-color: #ea580c;
+}
+.out-of-port-button:active {
+    transform: scale(0.95);
+}
+.out-of-port-button svg {
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
+    margin-bottom: 2px;
+}
+
 /* アラート状況サマリーパネル */
 .summary-panel {
     position: absolute;
@@ -729,7 +765,7 @@ header h1 {
     flex-direction: row-reverse; /* 右から順に並べる */
     align-items: flex-start; /* 引き伸ばしを防ぎ、各々の高さを維持する */
     gap: 12px;
-    z-index: 1000;
+    z-index: 1100; /* ボタンのz-index: 1000より前面に表示 */
     pointer-events: none;
 }
 .map-top-right-controls > div {
@@ -785,6 +821,7 @@ header h1 {
 .basemap-options-container, .status-options-container {
     max-height: 0;
     overflow: hidden;
+    overflow-y: auto;
     transition: max-height 0.3s ease-out;
 }
 
@@ -1051,6 +1088,39 @@ header h1 {
     .gps-button svg {
         width: 20px;
         height: 20px;
+    }
+    
+    .out-of-port-button {
+        bottom: 85px;
+        right: 80px;
+        width: 55px;
+        height: 55px;
+        font-size: 9px;
+    }
+    .out-of-port-button svg {
+        width: 20px;
+        height: 20px;
+    }
+    
+    /* モバイルでのモーダル右端切れ・マージン微調整 */
+    .modal-overlay {
+        padding: 8px;
+    }
+    .modal-content {
+        max-width: 96%;
+        max-height: 75%;
+    }
+    .modal-body {
+        padding: 10px;
+    }
+    .modal-table th, .modal-table td {
+        padding: 8px 6px;
+        font-size: 11px;
+    }
+    .modal-badge {
+        padding: 2px 4px;
+        font-size: 9px;
+        margin-left: 2px !important;
     }
     
     /* スマホ画面でのヘルプボタン微調整 */
@@ -1519,4 +1589,136 @@ header h1 {
 
 .worker-map-marker-container.offline .worker-marker-pulse {
     border-color: #64748b;
+}
+
+/* モーダルオーバーレイ & コンテンツスタイル */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(4px);
+    z-index: 2500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+.modal-content {
+    background-color: #1e293b;
+    border: 1px solid #475569;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 700px;
+    max-height: 75%;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.5);
+    animation: modalFadeIn 0.2s ease-out;
+}
+@keyframes modalFadeIn {
+    from { opacity: 0; transform: scale(0.96); }
+    to { opacity: 1; transform: scale(1); }
+}
+.modal-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid #334155;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.modal-header h3 {
+    margin: 0;
+    color: #f8fafc;
+    font-size: 16px;
+    font-weight: bold;
+}
+.close-modal-btn {
+    background: none;
+    border: none;
+    color: #94a3b8;
+    font-size: 22px;
+    cursor: pointer;
+    transition: color 0.15s;
+    padding: 4px;
+    line-height: 1;
+}
+.close-modal-btn:hover {
+    color: #f1f5f9;
+}
+.modal-body {
+    padding: 20px;
+    overflow-y: auto;
+    flex: 1;
+}
+.modal-table-container {
+    overflow-x: auto;
+    border-radius: 8px;
+    border: 1px solid #334155;
+    background-color: #0f172a;
+}
+.modal-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 13px;
+    color: #cbd5e1;
+}
+.modal-table th, .modal-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #334155;
+}
+.modal-table th {
+    background-color: #1e293b;
+    color: #94a3b8;
+    font-weight: bold;
+    white-space: nowrap;
+}
+.modal-table tbody tr:hover {
+    background-color: #1e293b;
+}
+
+/* モーダル内バッジスタイル */
+.modal-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: bold;
+    text-align: center;
+}
+.modal-badge.at-error {
+    background-color: #ef4444; /* red-500 */
+    color: white;
+}
+.modal-badge.strong {
+    background-color: #f97316; /* orange-500 */
+    color: white;
+}
+.modal-badge.normal {
+    background-color: #10b981; /* emerald-500 */
+    color: white;
+}
+.modal-badge.unknown {
+    background-color: #64748b; /* slate-500 */
+    color: white;
+}
+.map-link-btn {
+    display: inline-flex;
+    align-items: center;
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 11px;
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: bold;
+    gap: 4px;
+}
+.map-link-btn:hover {
+    background-color: #2563eb;
 }

@@ -68,7 +68,7 @@
                 <!-- ヘルプボタン -->
                 <a href="docs/manual.html" target="_blank" class="help-button" title="使い方マニュアルを開く">❓ ヘルプ</a>
                 <!-- バージョン表示 -->
-                <span class="version-label" style="font-size: 10px; color: #94a3b8; font-family: monospace; font-weight: bold; align-self: center; margin-left: 4px;">ver.20260626171000</span>
+                <span class="version-label" style="font-size: 10px; color: #94a3b8; font-family: monospace; font-weight: bold; align-self: center; margin-left: 4px;">ver.20260713211100</span>
 
 
             </div>
@@ -188,6 +188,13 @@
                                 <input type="checkbox" id="unlocked-filter-checkbox" value="unlocked" checked>
                             </label>
                         </div>
+                        <!-- 車両コード (接頭辞) フィルター -->
+                        <div id="prefix-filter-container" style="padding: 8px 12px 0 12px; border-bottom: 1px solid #475569; padding-bottom: 8px; display: none; flex-direction: column; gap: 6px;">
+                            <div style="font-size: 11px; font-weight: bold; color: #cbd5e1;">車両コードフィルター</div>
+                            <div id="prefix-checkboxes" style="display: flex; flex-wrap: wrap; gap: 8px; padding-top: 4px;">
+                                <!-- JavaScriptで動的生成 -->
+                            </div>
+                        </div>
                         <!-- 一括選択・解除項目 -->
                         <div style="padding: 8px 12px; display: flex; gap: 8px; border-bottom: 1px dashed #475569;">
                             <button type="button" id="status-select-all" style="flex: 1; background-color: #007aff; border: none; color: #ffffff; border-radius: 4px; padding: 8px 0; font-weight: bold; cursor: pointer; font-size: 12px; transition: background-color 0.2s;">すべて選択</button>
@@ -246,6 +253,41 @@
                 <button class="mobile-toggle-btn btn-basemap">
                     🗺️ 地図
                 </button>
+            </div>
+            
+            <button id="out-of-port-btn" class="out-of-port-button" title="位置情報のないポート外車両一覧を表示">
+                <span id="out-of-port-count" style="font-size: 20px; font-weight: bold; line-height: 1; margin-bottom: 2px;">-</span>
+                <span style="font-size: 10px;">ポート外</span>
+            </button>
+            
+            <!-- ポート外車両情報モーダル -->
+            <div id="out-of-port-modal" class="modal-overlay" style="display: none;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>📦 ポート外車両情報 (<span id="out-of-port-area-name">-</span>)</h3>
+                        <button class="close-modal-btn" id="close-out-of-port-modal-btn">✕</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="modal-table-container">
+                            <table class="modal-table">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align: center; width: 25%;">車体番号</th>
+                                        <th style="text-align: center; width: 35%;">データ上のポート位置</th>
+                                        <th style="text-align: center; width: 20%;">バッテリー残量</th>
+                                        <th style="text-align: center; width: 20%;">車両状態</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="out-of-port-list-body">
+                                    <!-- JSで動的生成 -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="out-of-port-empty-msg" style="display: none; text-align: center; padding: 20px; color: #94a3b8; font-weight: bold;">
+                            表示対象のポート外車両はありません。
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- GPSボタン -->
