@@ -21,6 +21,15 @@
 </head>
 <body>
 
+    <!-- メンテナンス画面 (全画面オーバーレイ) -->
+    <div id="maintenance-overlay" class="maintenance-overlay" style="display: none;">
+        <div class="maintenance-card">
+            <div class="maintenance-logo">⚠️</div>
+            <h1 class="maintenance-title">システム一時休止中</h1>
+            <p id="maintenance-message" class="maintenance-text"></p>
+        </div>
+    </div>
+
     <div id="app-container">
         <header>
             <div class="header-top">
@@ -80,6 +89,14 @@
         <div id="main-content">
             <!-- 地図表示領域 -->
             <div id="map"></div>
+
+            <!-- お知らせバナー (マップ上に絶対配置される窓型、文字スクロール仕様) -->
+            <div id="announcement-banner" class="announcement-banner" style="display: none;">
+                <span class="banner-icon">📢</span>
+                <div class="banner-scroll-container">
+                    <span id="announcement-banner-text" class="banner-text"></span>
+                </div>
+            </div>
 
             <!-- サマリー情報 -->
             <div id="summary-panel" class="summary-panel" style="display: none;">
@@ -322,6 +339,7 @@
     <script src="dashboard_data.js"></script>
 
     <!-- 外部スクリプト -->
+    <script src="js/announcement.js"></script>
     <script src="js/config.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/state.js"></script>

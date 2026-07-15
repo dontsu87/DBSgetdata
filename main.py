@@ -13,6 +13,47 @@ from src.exporter import export_to_onedrive, upload_to_onedrive_web
 from src.area_inspector import inspect_area_page
 from src.worker_inspector import inspect_worker_login_page
 
+def check_maintenance_mode():
+    """
+    announcement.json からメンテナンス設定を読み込み、
+    現在時刻がメンテナンス開始時刻以降であればTrueを返します。
+    """
+    import os
+    import json
+    from datetime import datetime, timezone, timedelta
+
+    json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "announcement.json")
+    if not os.path.exists(json_path):
+        return False
+
+    try:
+        with open(json_path, "r", encoding="utf-8") as f:
+            config = json.load(f)
+        
+        maintenance = config.get("maintenance", {})
+        if not maintenance.get("enabled", False):
+            return False
+
+        start_time_str = maintenance.get("start_time")
+        if not start_time_str:
+            return False
+
+        dt_str = start_time_str.replace("Z", "+00:00")
+        maintenance_start = datetime.fromisoformat(dt_str)
+        
+        if maintenance_start.tzinfo is None:
+            jst = timezone(timedelta(hours=9))
+            maintenance_start = maintenance_start.replace(tzinfo=jst)
+            
+        now = datetime.now(timezone.utc)
+        
+        if now >= maintenance_start.astimezone(timezone.utc):
+            print(f"【お知らせ】メンテナンスモード期間中（開始時刻: {start_time_str}）のため、処理をスキップして終了します。")
+            return True
+    except Exception as e:
+        print(f"Error checking maintenance mode: {e}")
+    return False
+
 def run_scraping(is_worker=False):
     """
     通常スクレイピング処理。
@@ -380,6 +421,10 @@ def main():
         help="--merge-historicalでマージ対象の上限とするファイル名（このファイルを含めてそれ以前を対象とする）を指定します (例: 車両情報_20260625_120000.csv)"
     )
     args = parser.parse_args()
+
+    # メンテナンスモード期間中かチェック
+    if check_maintenance_mode():
+        sys.exit(0)
 
     # --merge-daily が指定された場合の処理
     if args.merge_daily:

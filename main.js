@@ -37,10 +37,22 @@ document.addEventListener("DOMContentLoaded", function() {
     loadDashboardData(false);
 
     // 2分ごと(120000ms)にバックグラウンドでサイレント自動更新を繰り返す
-    setInterval(function() {
+    let autoUpdateInterval = setInterval(function() {
         console.log("🔄 定期自動アップデートを実行中...");
         loadDashboardData(true);
     }, 120000);
+
+    // お知らせ/メンテナンス情報の初期化
+    if (typeof AnnouncementManager !== 'undefined') {
+        AnnouncementManager.init().then(isMaintenance => {
+            if (isMaintenance) {
+                console.log("メンテナンス期間中のため、定期アップデートをクリアします。");
+                if (autoUpdateInterval) {
+                    clearInterval(autoUpdateInterval);
+                }
+            }
+        });
+    }
 
     // E2Eテスト用に一部の内部関数・変数をwindowオブジェクトに公開
     const unlockedThresholdInput = document.getElementById('unlocked-threshold-input');

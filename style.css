@@ -1722,3 +1722,171 @@ header h1 {
 .map-link-btn:hover {
     background-color: #2563eb;
 }
+
+/* ==========================================================================
+   Announcements & Maintenance Overlays
+   ========================================================================== */
+
+/* お知らせバナー (マップ内フローティング窓型) */
+.announcement-banner {
+    position: absolute;
+    top: 15px; /* マップ上部からの距離（タブやヘッダーの下） */
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(15, 23, 42, 0.85); /* 高級感のあるダークな半透明背景 */
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: #fef08a; /* 視認性の高い黄色の文字 */
+    border: 1px solid rgba(254, 240, 138, 0.25);
+    border-radius: 24px;
+    padding: 8px 16px;
+    z-index: 2000; /* マップ(1000付近)より前面、ドロワー(2500)より背面 */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+    width: 380px; /* デフォルト幅（スマホ・タブレット向け） */
+    max-width: 80%;
+    overflow: hidden;
+    pointer-events: auto; /* マップのクリックイベント等をバナー上で遮断 */
+}
+
+/* PCモード時のみ：中央寄せで、左サマリーや右コントロールと被らないよう安全な固定幅に設定 */
+@media screen and (min-width: 1281px) {
+    .announcement-banner {
+        left: 50%;
+        transform: translateX(-50%);
+        width: 360px;
+        max-width: 360px;
+    }
+}
+
+@media screen and (max-width: 640px) {
+    .announcement-banner {
+        width: calc(100% - 100px); /* モバイル画面ではさらにコンパクトにする */
+        max-width: 80%;
+        top: 10px;
+    }
+}
+
+.announcement-banner .banner-icon {
+    font-size: 15px;
+    flex-shrink: 0;
+    animation: pulse 2s infinite;
+}
+
+/* 文字を流すためのスクロールコンテナ */
+.banner-scroll-container {
+    overflow: hidden;
+    white-space: nowrap;
+    width: 100%;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.announcement-banner .banner-text {
+    display: inline-block;
+    padding-left: 100%; /* 初期位置を右端にする */
+    animation: marquee 15s linear infinite;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: 0.02em;
+}
+
+/* マップ上からのスライドインアニメーション */
+@keyframes slideDownFloating {
+    from { transform: translate(-50%, -30px); opacity: 0; }
+    to { transform: translate(-50%, 0); opacity: 1; }
+}
+
+.announcement-banner {
+    animation: slideDownFloating 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* 無限スクロールのmarqueeアニメーション */
+@keyframes marquee {
+    0% { transform: translate3d(0, 0, 0); }
+    100% { transform: translate3d(-100%, 0, 0); }
+}
+
+/* メンテナンスオーバーレイ（全画面） */
+.maintenance-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.85); /* ダーク背景 */
+    backdrop-filter: blur(10px); /* すりガラス効果 */
+    -webkit-backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999; /* 最前面 */
+    animation: fadeIn 0.4s ease-out;
+}
+
+/* メンテナンスカード */
+.maintenance-card {
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.5);
+    border-radius: 16px;
+    padding: 40px 32px;
+    max-width: 480px;
+    width: 90%;
+    text-align: center;
+    color: #f8fafc;
+    animation: scaleUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.maintenance-logo {
+    font-size: 48px;
+    margin-bottom: 16px;
+    display: inline-block;
+    animation: bounce 2s infinite;
+}
+
+.maintenance-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: #f1f5f9;
+    letter-spacing: -0.025em;
+}
+
+.maintenance-text {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #cbd5e1;
+    margin: 0;
+    white-space: pre-wrap; /* 改行を有効に */
+}
+
+/* アニメーション定義 */
+@keyframes slideDown {
+    from { transform: translateY(-100%); }
+    to { transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes scaleUp {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
