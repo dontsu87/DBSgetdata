@@ -46,30 +46,22 @@ const AnnouncementManager = {
     },
 
     applyAnnouncements() {
-        // 1. メンテナンスモード判定
+        const banner = document.getElementById('announcement-banner');
+        const textEl = document.getElementById('announcement-banner-text');
+        if (!banner || !textEl) return;
+
+        // 1. メンテナンス（休止）モード判定
+        // 休止期間中（7/31 21:00〜）は、全画面ブロックは行わず、バナーにて休止メッセージを表示し、機能（作業員表示など）は動かしたままにする
         if (this.isMaintenanceActive()) {
-            const overlay = document.getElementById('maintenance-overlay');
-            const messageEl = document.getElementById('maintenance-message');
-            if (overlay && messageEl) {
-                messageEl.textContent = this.config.maintenance.message;
-                overlay.style.display = 'flex';
-                // app-containerを非表示にして操作を防ぐ
-                const appContainer = document.getElementById('app-container');
-                if (appContainer) {
-                    appContainer.style.display = 'none';
-                }
-            }
+            textEl.textContent = this.config.maintenance.message;
+            banner.style.display = 'flex';
             return;
         }
 
-        // 2. お知らせバナー判定
+        // 2. 事前周知お知らせバナー判定（本日〜7/31 21:00）
         if (this.isBannerActive()) {
-            const banner = document.getElementById('announcement-banner');
-            const textEl = document.getElementById('announcement-banner-text');
-            if (banner && textEl) {
-                textEl.textContent = this.config.banner.message;
-                banner.style.display = 'flex';
-            }
+            textEl.textContent = this.config.banner.message;
+            banner.style.display = 'flex';
         }
     }
 };
