@@ -5,6 +5,8 @@ import json
 import pandas as pd
 from datetime import datetime, timezone, timedelta
 from src.config import Config, ROOT_DIR
+from src.public_data_generator import generate_public_ports_data
+
 
 def read_csv_safe(path):
     """エンコーコーディングを自動フォールバックしながら安全にCSVをロードします"""
@@ -561,5 +563,12 @@ def generate_dashboard_json(latest_vehicle_path: str = None) -> str:
     # 4. ポートごとの集計処理
     ports_data = aggregate_ports_data(df_merged, master_data, gbfs_stations)
     
+    # 4.5 利用者向け公開ポートデータの生成
+    try:
+        generate_public_ports_data(ports_data, gbfs_stations)
+    except Exception as e:
+        print(f"Warning: 利用者向け公開ポートデータの生成に失敗しました: {e}")
+
     # 5. ファイル出力
     return export_dashboard_files(ports_data)
+

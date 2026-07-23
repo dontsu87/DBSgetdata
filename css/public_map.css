@@ -1,0 +1,399 @@
+/* ==========================================================================
+   Public Map Component Styles
+   ========================================================================== */
+
+:root {
+    --public-bg-dark: #0f172a;
+    --public-card-bg: rgba(15, 23, 42, 0.85);
+    --public-card-border: rgba(255, 255, 255, 0.12);
+    --public-accent: #38bdf8;
+    --public-accent-hover: #0284c7;
+    --public-success: #22c55e;
+    --public-warning: #f59e0b;
+    --public-danger: #ef4444;
+    --public-neutral: #64748b;
+    --public-text: #f8fafc;
+    --public-text-muted: #94a3b8;
+}
+
+body.public-map-body {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    font-family: 'Inter', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: var(--public-bg-dark);
+    color: var(--public-text);
+}
+
+#public-app-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+#map {
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    background: #0f172a;
+}
+
+/* Notice Screen (Security / No Params) */
+.public-notice-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.notice-card {
+    background: rgba(30, 41, 59, 0.9);
+    border: 1px solid var(--public-card-border);
+    backdrop-filter: blur(12px);
+    border-radius: 16px;
+    padding: 32px 24px;
+    max-width: 420px;
+    text-align: center;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+}
+
+.notice-icon {
+    font-size: 42px;
+    margin-bottom: 12px;
+}
+
+.notice-card h2 {
+    margin: 0 0 8px 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #f1f5f9;
+}
+
+.notice-card p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--public-text-muted);
+    line-height: 1.5;
+}
+
+.notice-card code {
+    background: rgba(56, 189, 248, 0.15);
+    color: var(--public-accent);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: monospace;
+}
+
+/* Header Overlay */
+.public-header-overlay {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    right: 12px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    pointer-events: none; /* Allow click through empty spaces */
+}
+
+.public-header-overlay > * {
+    pointer-events: auto;
+}
+
+.public-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--public-card-bg);
+    border: 1px solid var(--public-card-border);
+    backdrop-filter: blur(12px);
+    padding: 6px 12px;
+    border-radius: 20px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+}
+
+.brand-badge {
+    background: #ef4444;
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 10px;
+    letter-spacing: 0.5px;
+    animation: pulse-badge 2s infinite;
+}
+
+@keyframes pulse-badge {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
+.brand-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #f8fafc;
+}
+
+.public-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Search Box */
+.public-search-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+#public-search-input {
+    background: var(--public-card-bg);
+    border: 1px solid var(--public-card-border);
+    backdrop-filter: blur(12px);
+    color: #fff;
+    padding: 6px 30px 6px 12px;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    width: 130px;
+    transition: all 0.25s ease;
+    outline: none;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+
+#public-search-input:focus {
+    width: 190px;
+    border-color: var(--public-accent);
+    box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.25);
+}
+
+.search-clear-btn {
+    position: absolute;
+    right: 8px;
+    background: none;
+    border: none;
+    color: var(--public-text-muted);
+    cursor: pointer;
+    font-size: 0.75rem;
+    padding: 2px;
+}
+
+.search-clear-btn:hover {
+    color: #fff;
+}
+
+/* Language Toggle Button */
+.lang-btn {
+    background: var(--public-card-bg);
+    border: 1px solid var(--public-card-border);
+    backdrop-filter: blur(12px);
+    color: var(--public-text-muted);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+
+.lang-btn:hover {
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.lang-label.active {
+    color: var(--public-accent);
+    font-weight: 700;
+}
+
+.lang-divider {
+    opacity: 0.4;
+}
+
+/* Footer Status Overlay */
+.public-footer-overlay {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    pointer-events: none;
+}
+
+.area-tag-badge {
+    background: rgba(56, 189, 248, 0.15);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    color: var(--public-accent);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 12px;
+    backdrop-filter: blur(8px);
+}
+
+.update-time-tag {
+    background: var(--public-card-bg);
+    border: 1px solid var(--public-card-border);
+    color: var(--public-text-muted);
+    font-size: 0.7rem;
+    padding: 4px 10px;
+    border-radius: 12px;
+    backdrop-filter: blur(8px);
+}
+
+/* Custom Marker Styling */
+.public-port-marker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.8rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    border: 2px solid #ffffff;
+    transition: transform 0.2s ease;
+}
+
+.public-port-marker:hover {
+    transform: scale(1.15);
+    z-index: 1000 !important;
+}
+
+.marker-high {
+    background: linear-gradient(135deg, #22c55e 0%, #15803d 100%);
+}
+
+.marker-med {
+    background: linear-gradient(135deg, #f59e0b 0%, #b45309 100%);
+}
+
+.marker-zero {
+    background: linear-gradient(135deg, #64748b 0%, #334155 100%);
+}
+
+/* Leaflet Custom Popup Styling */
+.leaflet-popup-content-wrapper {
+    background: rgba(15, 23, 42, 0.95) !important;
+    border: 1px solid var(--public-card-border) !important;
+    backdrop-filter: blur(16px) !important;
+    color: #f8fafc !important;
+    border-radius: 14px !important;
+    box-shadow: 0 12px 28px rgba(0,0,0,0.5) !important;
+    padding: 4px;
+}
+
+.leaflet-popup-tip {
+    background: rgba(15, 23, 42, 0.95) !important;
+}
+
+.leaflet-container a.leaflet-popup-close-button {
+    color: #94a3b8 !important;
+    padding: 6px !important;
+}
+
+.leaflet-container a.leaflet-popup-close-button:hover {
+    color: #fff !important;
+}
+
+.public-popup-card {
+    padding: 8px 12px;
+    min-width: 180px;
+    max-width: 240px;
+}
+
+.popup-port-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin: 0 0 2px 0;
+    color: #ffffff;
+    line-height: 1.3;
+}
+
+.popup-port-sub {
+    font-size: 0.75rem;
+    color: var(--public-accent);
+    margin: 0 0 10px 0;
+    font-weight: 500;
+}
+
+.popup-capacity-block {
+    margin-top: 8px;
+}
+
+.capacity-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.78rem;
+    margin-bottom: 4px;
+}
+
+.capacity-count {
+    font-weight: 700;
+    color: #22c55e;
+}
+
+.capacity-count.zero {
+    color: #94a3b8;
+}
+
+.capacity-total {
+    color: var(--public-text-muted);
+}
+
+.capacity-bar-track {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.capacity-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #22c55e 0%, #38bdf8 100%);
+    border-radius: 4px;
+    transition: width 0.4s ease;
+}
+
+.capacity-bar-fill.zero {
+    background: #64748b;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 480px) {
+    .public-header-overlay {
+        top: 8px;
+        left: 8px;
+        right: 8px;
+    }
+    
+    .brand-title {
+        display: none; /* Hide subtitle on tiny frames */
+    }
+    
+    #public-search-input {
+        width: 100px;
+    }
+    
+    #public-search-input:focus {
+        width: 140px;
+    }
+}

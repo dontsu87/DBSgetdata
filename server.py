@@ -15,6 +15,8 @@ import urllib.request
 
 LOCATIONS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "worker_locations.json")
 SELF_REPLACEMENTS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "self_replaced_bikes.json")
+SMS_CODE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sms_code.json")
+SMS_SECRET = os.getenv("DBS_SMS_SECRET", "dbs-sms-secret")
 
 # ファイル書き込み時の排他制御用ロック
 file_lock = threading.Lock()
@@ -253,6 +255,100 @@ def get_self_replacements():
         return jsonify(self_replacements), 200
     except Exception as e:
         print(f"Error reading self-replacements: {e}")
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+
+@app.route('/api/sms-code', methods=['POST'])
+def receive_sms_code():
+    try:
+        data = request.json
+        if not data:
+            return jsonify({"status": "error", "message": "No data received"}), 400
+
+        code = data.get('code')
+        secret = data.get('secret')
+
+        if secret != SMS_SECRET:
+            return jsonify({"status": "error", "message": "Unauthorized"}), 401
+
+        if not code:
+            return jsonify({"status": "error", "message": "Missing code"}), 400
+
+        # 数字のみのコードであることを簡易バリデーション (通常4〜8桁)
+        code_str = str(code).strip()
+        if not code_str.isdigit() or len(code_str) < 4 or len(code_str) > 8:
+            return jsonify({"status": "error", "message": "Invalid code format"}), 400
+
+        with file_lock:
+            sms_data = {
+                "code": code_str,
+                "received_at": datetime.now(timezone.utc).timestamp()
+            }
+            with open(SMS_CODE_FILE, 'w', encoding='utf-8') as f:
+                json.dump(sms_data, f, ensure_ascii=False, indent=2)
+
+        print(f"[SMS-CODE] Received and saved code: {code_str}")
+        return jsonify({"status": "success", "message": "SMS code saved"}), 200
+
+    except Exception as e:
+        print(f"Error receiving SMS code: {e}")
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+
+@app.route('/api/sms-code', methods=['GET'])
+def get_sms_code():
+    try:
+        secret = request.args.get('secret')
+        if secret != SMS_SECRET:
+            return jsonify({"status": "error", "message": "Unauthorized"}), 401
+
+        code = None
+        with file_lock:
+            if os.path.exists(SMS_CODE_FILE):
+                try:
+                    with open(SMS_CODE_FILE, 'r', encoding='utf-8') as f:
+                        sms_data = json.load(f)
+                    
+                    received_at = sms_data.get("received_at", 0)
+                    now = datetime.now(timezone.utc).timestamp()
+                    
+                    # 5分 (300秒) 以内のコードのみ有効とする
+                    if now - received_at <= 300 and now - received_at >= 0:
+                        code = sms_data.get("code")
+                    else:
+                        print("[SMS-CODE] Code has expired")
+                except Exception as e:
+                    print(f"Warning: Failed to load SMS code: {e}")
+
+        return jsonify({"code": code}), 200
+
+    except Exception as e:
+        print(f"Error getting SMS code: {e}")
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+
+@app.route('/api/sms-code', methods=['DELETE'])
+def delete_sms_code():
+    try:
+        secret = request.args.get('secret')
+        if secret != SMS_SECRET:
+            return jsonify({"status": "error", "message": "Unauthorized"}), 401
+
+        with file_lock:
+            if os.path.exists(SMS_CODE_FILE):
+                try:
+                    os.remove(SMS_CODE_FILE)
+                    print("[SMS-CODE] SMS code file deleted successfully")
+                except Exception as e:
+                    print(f"Error deleting SMS code file: {e}")
+                    # ファイル削除に失敗した場合は空データで上書き
+                    with open(SMS_CODE_FILE, 'w', encoding='utf-8') as f:
+                        json.dump({}, f)
+
+        return jsonify({"status": "success", "message": "SMS code cleared"}), 200
+
+    except Exception as e:
+        print(f"Error deleting SMS code: {e}")
         return jsonify({"status": "error", "message": str(e)}), 500
 
 

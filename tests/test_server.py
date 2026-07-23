@@ -3,13 +3,13 @@ import os
 import json
 import pytest
 from unittest.mock import patch
-from server import app, LOCATIONS_FILE, SELF_REPLACEMENTS_FILE
+from server import app, LOCATIONS_FILE, SELF_REPLACEMENTS_FILE, SMS_CODE_FILE
 
 @pytest.fixture
 def client():
     app.config['TESTING'] = True
-    # テスト前に一時的な場所情報ファイルと自己申告ファイルをクリーンアップ
-    for file_path in [LOCATIONS_FILE, SELF_REPLACEMENTS_FILE]:
+    # テスト前に一時的な場所情報ファイルと自己申告ファイル、SMSコードファイルをクリーンアップ
+    for file_path in [LOCATIONS_FILE, SELF_REPLACEMENTS_FILE, SMS_CODE_FILE]:
         if os.path.exists(file_path):
             try:
                 os.remove(file_path)
@@ -20,7 +20,7 @@ def client():
         yield client
 
     # テスト後にクリーンアップ
-    for file_path in [LOCATIONS_FILE, SELF_REPLACEMENTS_FILE]:
+    for file_path in [LOCATIONS_FILE, SELF_REPLACEMENTS_FILE, SMS_CODE_FILE]:
         if os.path.exists(file_path):
             try:
                 os.remove(file_path)
@@ -186,3 +186,118 @@ def test_get_self_replacements(mock_upload, client):
     res_data = json.loads(response.data.decode('utf-8'))
     assert "KNZ0100" in res_data
     assert res_data["KNZ0100"]["alert_level"] == 1
+
+
+def test_sms_code_flow_success(client):
+    secret = "dbs-sms-secret"
+    
+    # 1. 保存前は空であること
+    response = client.get(f'/api/sms-code?secret={secret}')
+    assert response.status_code == 200
+    res_data = json.loads(response.data.decode('utf-8'))
+    assert res_data["code"] is None
+
+    # 2. 正常なコードの保存
+    payload = {
+        "code": "123456",
+        "secret": secret
+    }
+    response = client.post('/api/sms-code', json=payload)
+    assert response.status_code == 200
+    res_data = json.loads(response.data.decode('utf-8'))
+    assert res_data["status"] == "success"
+
+    # 3. 正常なコードの取得
+    response = client.get(f'/api/sms-code?secret={secret}')
+    assert response.status_code == 200
+    res_data = json.loads(response.data.decode('utf-8'))
+    assert res_data["code"] == "123456"
+
+    # 4. コードの削除
+    response = client.delete(f'/api/sms-code?secret={secret}')
+    assert response.status_code == 200
+    res_data = json.loads(response.data.decode('utf-8'))
+    assert res_data["status"] == "success"
+
+    # 5. 削除後は空であること
+    response = client.get(f'/api/sms-code?secret={secret}')
+    assert response.status_code == 200
+    res_data = json.loads(response.data.decode('utf-8'))
+    assert res_data["code"] is None
+
+
+def test_sms_code_unauthorized(client):
+    secret = "dbs-sms-secret"
+    wrong_secret = "wrong-secret"
+
+    # 1. POST時の認証エラー
+    payload = {
+        "code": "123456",
+        "secret": wrong_secret
+    }
+    response = client.post('/api/sms-code', json=payload)
+    assert response.status_code == 401
+
+    # 正しいシークレットで一度保存
+    payload["secret"] = secret
+    client.post('/api/sms-code', json=payload)
+
+    # 2. GET時の認証エラー
+    response = client.get(f'/api/sms-code?secret={wrong_secret}')
+    assert response.status_code == 401
+
+    # 3. DELETE時の認証エラー
+    response = client.delete(f'/api/sms-code?secret={wrong_secret}')
+    assert response.status_code == 401
+
+
+def test_sms_code_invalid_format(client):
+    secret = "dbs-sms-secret"
+
+    # 数字以外
+    payload = {
+        "code": "123a56",
+        "secret": secret
+    }
+    response = client.post('/api/sms-code', json=payload)
+    assert response.status_code == 400
+
+    # 短すぎる
+    payload["code"] = "123"
+    response = client.post('/api/sms-code', json=payload)
+    assert response.status_code == 400
+
+    # 長すぎる
+    payload["code"] = "123456789"
+    response = client.post('/api/sms-code', json=payload)
+    assert response.status_code == 400
+
+
+def test_sms_code_expired(client):
+    secret = "dbs-sms-secret"
+
+    # コードを保存
+    payload = {
+        "code": "654321",
+        "secret": secret
+    }
+    response = client.post('/api/sms-code', json=payload)
+    assert response.status_code == 200
+
+    # ファイルを手動で書き換えて、タイムスタンプを過去（6分前＝360秒前）にする
+    assert os.path.exists(SMS_CODE_FILE)
+    with open(SMS_CODE_FILE, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+    
+    # タイムスタンプを過去に改ざん
+    from datetime import datetime, timezone
+    data["received_at"] = datetime.now(timezone.utc).timestamp() - 360
+
+    with open(SMS_CODE_FILE, 'w', encoding='utf-8') as f:
+        json.dump(data, f)
+
+    # 取得すると期限切れのため None が返ることを確認
+    response = client.get(f'/api/sms-code?secret={secret}')
+    assert response.status_code == 200
+    res_data = json.loads(response.data.decode('utf-8'))
+    assert res_data["code"] is None

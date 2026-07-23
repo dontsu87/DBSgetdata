@@ -87,7 +87,7 @@ def upload_dashboard_data() -> bool:
         return False
 
 
-def upload_file_to_r2(local_path: str, r2_key: str) -> bool:
+def upload_file_to_r2(local_path: str, r2_key: str, cache_control: str = "no-cache, max-age=0") -> bool:
     """
     指定されたファイルを Cloudflare R2 にアップロードする。
     """
@@ -136,17 +136,29 @@ def upload_file_to_r2(local_path: str, r2_key: str) -> bool:
             r2_key,
             ExtraArgs={
                 "ContentType": content_type,
-                "CacheControl": "no-cache, max-age=0",
+                "CacheControl": cache_control,
             }
         )
-        print(f"[OK] R2 upload completed: {public_url}/{r2_key}")
+        print(f"[OK] R2 upload completed: {public_url}/{r2_key} (Cache-Control: {cache_control})")
         return True
     except Exception as e:
         print(f"[ERROR] R2 アップロードエラー ({r2_key}): {e}")
         return False
 
 
+def upload_public_ports() -> bool:
+    """
+    public_ports.json を Cloudflare R2 に Edge Cache (1分) 有効でアップロードします。
+    """
+    project_root = Path(__file__).parent.parent
+    local_json = str(project_root / "public_ports.json")
+    return upload_file_to_r2(local_json, "public_ports.json", cache_control="public, max-age=60")
+
+
+
 if __name__ == "__main__":
-    success = upload_dashboard_data()
-    sys.exit(0 if success else 1)
+    success_dash = upload_dashboard_data()
+    success_public = upload_public_ports()
+    sys.exit(0 if (success_dash or success_public) else 1)
+
 
