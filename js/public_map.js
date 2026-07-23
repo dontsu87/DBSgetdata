@@ -67,27 +67,52 @@
         }
     }
 
-    // 作業員用マップを継承したベースマップ定義
-    const baseMaps = {
-        googleRoad: L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
-            maxZoom: 21,
-            attribution: '&copy; <a href="https://maps.google.com/" target="_blank">Google Maps</a>'
-        }),
-        googleSatellite: L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
-            maxZoom: 21,
-            attribution: '&copy; <a href="https://maps.google.com/" target="_blank">Google Maps</a>'
-        }),
-        gsiStd: L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png', {
-            maxZoom: 18,
-            attribution: '&copy; <a href="https://maps.gsi.go.jp/development/ichiran.html" target="_blank">国土地理院</a>'
-        }),
-        gsiPale: L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png', {
-            maxZoom: 18,
-            attribution: '&copy; <a href="https://maps.gsi.go.jp/development/ichiran.html" target="_blank">国土地理院</a>'
-        })
-    };
-
+    let currentBaseKey = 'googleRoad';
     let currentBaseLayer = null;
+
+    /**
+     * 指定された種類と言語設定のタイルレイヤーを取得
+     */
+    function getBaseTileLayer(key, lang = 'ja') {
+        const langParam = lang === 'en' ? '&hl=en' : '&hl=ja';
+        switch (key) {
+            case 'googleSatellite':
+                return L.tileLayer(`https://mt1.google.com/vt/lyrs=y${langParam}&x={x}&y={y}&z={z}`, {
+                    maxZoom: 21,
+                    attribution: '&copy; <a href="https://maps.google.com/" target="_blank">Google Maps</a>'
+                });
+            case 'gsiStd':
+                return L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png', {
+                    maxZoom: 18,
+                    attribution: '&copy; <a href="https://maps.gsi.go.jp/development/ichiran.html" target="_blank">国土地理院</a>'
+                });
+            case 'gsiPale':
+                return L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png', {
+                    maxZoom: 18,
+                    attribution: '&copy; <a href="https://maps.gsi.go.jp/development/ichiran.html" target="_blank">国土地理院</a>'
+                });
+            case 'googleRoad':
+            default:
+                return L.tileLayer(`https://mt1.google.com/vt/lyrs=m${langParam}&x={x}&y={y}&z={z}`, {
+                    maxZoom: 21,
+                    attribution: '&copy; <a href="https://maps.google.com/" target="_blank">Google Maps</a>'
+                });
+        }
+    }
+
+    /**
+     * ベースマップレイヤーの変更・切り替え
+     */
+    function setBaseMap(key) {
+        currentBaseKey = key;
+        if (currentBaseLayer && map) {
+            map.removeLayer(currentBaseLayer);
+        }
+        currentBaseLayer = getBaseTileLayer(currentBaseKey, currentLang);
+        if (map) {
+            currentBaseLayer.addTo(map);
+        }
+    }
 
     /**
      * 地図の初期化
@@ -102,25 +127,20 @@
         L.control.zoom({ position: 'bottomright' }).addTo(map);
 
         // デフォルト: Google マップ (googleRoad) を追加
-        currentBaseLayer = baseMaps.googleRoad;
-        currentBaseLayer.addTo(map);
+        setBaseMap('googleRoad');
 
         markersGroup = L.layerGroup().addTo(map);
 
         // ベースマップ切替イベントの登録
         const basemapSelect = document.getElementById('public-basemap-select');
         if (basemapSelect) {
-            basemapSelect.value = 'googleRoad'; // 初期値 Google マップ
+            basemapSelect.value = 'googleRoad';
             basemapSelect.addEventListener('change', (e) => {
-                const selectedVal = e.target.value;
-                if (baseMaps[selectedVal]) {
-                    map.removeLayer(currentBaseLayer);
-                    currentBaseLayer = baseMaps[selectedVal];
-                    currentBaseLayer.addTo(map);
-                }
+                setBaseMap(e.target.value);
             });
         }
     }
+
 
 
     const R2_PUBLIC_PORTS_URL = 'https://pub-1c068f2df9ab42a0b9dcc5d112078269.r2.dev/public_ports.json';
@@ -304,9 +324,13 @@
         if (appTitleText) appTitleText.innerText = I18N[lang].title;
         if (searchInput) searchInput.placeholder = I18N[lang].searchPlaceholder;
 
+        // 地図タイル（Googleマップ等）の言語属性（hl=en / hl=ja）を更新
+        setBaseMap(currentBaseKey);
+
         // マーカーの再描画
         renderMarkers();
     }
+
 
     /**
      * イベントリスナーの登録
