@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ja" prefix="og: http://ogp.me/ns#">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ポートマップ（埋め込みプレビュー） | まちのり - 金沢市公共シェアサイクル</title>
+  <meta name="description" content="金沢市公共シェアサイクル『まちのり』のリアルタイムポート利用状況マップ（埋め込みテスト表示）。" />
+  
+  <!-- まちのり公式スタイルのロード -->
+  <link rel="stylesheet" href="https://www.machi-nori.jp/wp/wp-content/themes/wptheme_machinori/vendor/swiper/package/css/swiper.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://www.machi-nori.jp/wp/wp-content/themes/wptheme_machinori/css/style.css?ver=20250401">
+  <link rel="stylesheet" href="https://www.machi-nori.jp/wp/wp-content/themes/wptheme_machinori/css/style-2025.css?ver=20250401">
+  <link rel="stylesheet" href="https://www.machi-nori.jp/wp/wp-content/themes/wptheme_machinori/style.css">
+
+  <style>
+    .demo-notice-banner {
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      color: #ffffff;
+      text-align: center;
+      padding: 12px 16px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+      position: sticky;
+      top: 0;
+      z-index: 99999;
+    }
+    .demo-notice-banner code {
+      background: rgba(255,255,255,0.2);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .c-map-mymap__map iframe {
+      width: 100%;
+      height: 520px;
+      border: 0;
+      border-radius: 8px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+
+<body id="pagetop" class="">
+
+  <!-- デモプレビュー用告知ヘッダー -->
+  <div class="demo-notice-banner">
+    💡 【新リアルタイムポートマップ 埋め込みプレビュー】 Googleマイマップから『新・リアルタイムポートマップ』への差し替えテスト表示画面です。
+  </div>
+
+  <header class="c-header">
+    <div class="c-header__left js-menu-logo">
+      <h1 class="c-header__logo">
+        <a href="https://www.machi-nori.jp/"><img src="https://www.machi-nori.jp/wp/wp-content/themes/wptheme_machinori/img/common/logo_machinori-g.svg" alt="まちのり"></a>
+      </h1>
+    </div>
+    <div class="c-header__right">
+      <nav>
+        <ul>
+          <li><a href="https://www.machi-nori.jp/about/">まちのりとは？</a></li>
+          <li><a href="https://www.machi-nori.jp/price/">料金・利用方法</a></li>
+          <li class="active"><a href="#">ポートマップ</a></li>
+          <li><a href="https://www.machi-nori.jp/faq/">よくある質問</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="c-main p-port">
+    <div class="content content_1040">
+      
+      <div class="c-titlepage">
+        <h2>ポートを探す</h2>
+        <p><span>Port</span></p>
+      </div>
+
+      <section class="ct-white">
+        <h3 class="c-title">ポート一覧（リアルタイム利用可能台数）</h3>
+        
+        <div class="c-card9">
+          <p>ポートアイコンをタップすると、現在の貸出可能台数およびラック設置状況（満車・空き）がリアルタイムに表示されます。</p>
+        </div>
+
+        <!-- IFRAME 埋め込みエリア -->
+        <div class="c-map-mymap p-helmet__map">
+          <div class="c-map-mymap__map">
+            <!-- 今回作成した利用者向けマップ（エリア：金沢 KNZ）に差し替え -->
+            <iframe 
+              src="public_map.html?area=KNZ" 
+              title="まちのり リアルタイムポートマップ (金沢エリア)" 
+              allow="geolocation">
+            </iframe>
+          </div>
+          <p class="c-map-mymap__button" style="margin-top: 16px;">
+            <a href="public_map.html?area=KNZ" target="_blank" rel="noopener noreferrer" class="c-button-01">大きい全画面マップで見る</a>
+          </p>
+        </div>
+
+      </section>
+    </div>
+  </main>
+
+  <footer class="c-footer">
+    <div class="c-footer__inner" style="text-align: center; padding: 20px; color: #666; font-size: 0.85rem;">
+      <p>&copy; 金沢市公共シェアサイクル「まちのり」 埋め込み確認用デモページ</p>
+    </div>
+  </footer>
+
+</body>
+</html>
