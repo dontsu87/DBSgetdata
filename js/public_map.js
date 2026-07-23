@@ -23,6 +23,8 @@
     let filteredPorts = [];
     let currentLang = 'ja'; // 'ja' or 'en'
     let currentAreaParam = '';
+    let latestUpdatedAt = '';
+
 
     // 言語ごとのテキスト定義
     const I18N = {
@@ -186,14 +188,18 @@
             return;
         }
 
-        // 更新日時の反映
-        if (updateTimeDisplay && data.updated_at) {
-            updateTimeDisplay.innerText = `${I18N[currentLang].updatedAt}: ${data.updated_at}`;
+        // 最新のデータ作成日時の保持 & UI反映
+        if (data.updated_at) {
+            latestUpdatedAt = data.updated_at;
+            if (updateTimeDisplay) {
+                updateTimeDisplay.innerText = `${I18N[currentLang].updatedAt}: ${latestUpdatedAt}`;
+            }
         }
 
         allPorts = data.ports;
         filterAndRender();
     }
+
 
     /**
      * エリア制限および検索ワードによるポートのフィルタリング & マップ描画
@@ -342,9 +348,13 @@
         // UIテキストの更新
         if (appTitleText) appTitleText.innerText = I18N[lang].title;
         if (searchInput) searchInput.placeholder = I18N[lang].searchPlaceholder;
+        if (updateTimeDisplay && latestUpdatedAt) {
+            updateTimeDisplay.innerText = `${I18N[lang].updatedAt}: ${latestUpdatedAt}`;
+        }
 
         // 地図タイル（Googleマップ等）の言語属性（hl=en / hl=ja）を更新
         setBaseMap(currentBaseKey);
+
 
         // マーカーの再描画
         renderMarkers();
