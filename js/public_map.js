@@ -235,8 +235,21 @@
      */
     function renderMarkers() {
         if (!markersGroup) return;
-        markersGroup.clearLayers();
+        
+        // 開いているポップアップのポート名またはIDを退避
+        let openPopupPortName = null;
+        map.eachLayer(layer => {
+            if (layer instanceof L.Marker && layer.isPopupOpen()) {
+                const popupContent = layer.getPopup() ? layer.getPopup().getContent() : '';
+                // ポップアップ内のタイトル要素を簡易抽出
+                const match = popupContent.match(/class="popup-port-title">([^<]+)</);
+                if (match) {
+                    openPopupPortName = match[1];
+                }
+            }
+        });
 
+        markersGroup.clearLayers();
         if (!filteredPorts.length) return;
 
         const bounds = L.latLngBounds();
@@ -295,11 +308,17 @@
 
             marker.bindPopup(popupContent);
             markersGroup.addLayer(marker);
+
+            // 以前開いていたポップアップがあれば復元
+            if (openPopupPortName && (displayName === openPopupPortName || port.port_name === openPopupPortName)) {
+                setTimeout(() => marker.openPopup(), 50);
+            }
         });
 
-        // エリアのポート全体が収まるようにマップの表示位置を自動フィット
-        if (bounds.isValid()) {
+        // 初回ロード時のみエリア全体が収まるように自動ズームフィット（定期更新時はユーザー視点を維持）
+        if (isInitialLoad && bounds.isValid()) {
             map.fitBounds(bounds, { padding: [40, 40], maxZoom: 16 });
+            isInitialLoad = false;
         }
     }
 
@@ -381,7 +400,17 @@
         initMap();
         setupEvents();
         loadPublicData();
+
+        // 60秒（1分）ごとのバックグラウンド自動更新ポーリング
+        if (autoRefreshTimer) {
+            clearInterval(autoRefreshTimer);
+        }
+        autoRefreshTimer = setInterval(() => {
+            console.log('🔄 利用者向けポートデータの定期自動フェッチを実行中...');
+            loadPublicData();
+        }, 60000);
     }
+
 
     // DOMロード時に初期化実行
     if (document.readyState === 'loading') {
