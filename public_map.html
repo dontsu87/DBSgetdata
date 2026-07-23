@@ -47,6 +47,14 @@
                     <button id="public-search-clear" class="search-clear-btn" style="display: none;">✕</button>
                 </div>
                 
+                <!-- ベースマップ選択ドロップダウン -->
+                <select id="public-basemap-select" class="public-select" title="地図の種類を変更">
+                    <option value="googleRoad">Googleマップ</option>
+                    <option value="googleSatellite">Google航空写真</option>
+                    <option value="gsiStd">国土地理院(標準)</option>
+                    <option value="gsiPale">国土地理院(淡色)</option>
+                </select>
+
                 <!-- 日英言語切替ボタン -->
                 <button id="lang-toggle-btn" class="lang-btn" title="Language Switch">
                     <span class="lang-label active" data-lang="ja">JP</span>
@@ -54,6 +62,7 @@
                     <span class="lang-label" data-lang="en">EN</span>
                 </button>
             </div>
+
         </div>
 
         <!-- マップ下部ステータスバー -->

@@ -67,27 +67,61 @@
         }
     }
 
+    // 作業員用マップを継承したベースマップ定義
+    const baseMaps = {
+        googleRoad: L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+            maxZoom: 21,
+            attribution: '&copy; <a href="https://maps.google.com/" target="_blank">Google Maps</a>'
+        }),
+        googleSatellite: L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+            maxZoom: 21,
+            attribution: '&copy; <a href="https://maps.google.com/" target="_blank">Google Maps</a>'
+        }),
+        gsiStd: L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution: '&copy; <a href="https://maps.gsi.go.jp/development/ichiran.html" target="_blank">国土地理院</a>'
+        }),
+        gsiPale: L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution: '&copy; <a href="https://maps.gsi.go.jp/development/ichiran.html" target="_blank">国土地理院</a>'
+        })
+    };
+
+    let currentBaseLayer = null;
+
     /**
      * 地図の初期化
      */
     function initMap() {
-        // ダークベースの標準 Leaflet マップ (CartoDB Dark Matter / OpenStreetMap)
         map = L.map('map', {
             zoomControl: false,
-            attributionControl: false
+            attributionControl: true
         }).setView([36.56, 136.65], 13); // 初期仮位置（金沢近辺）
 
         // Zoom コントロールを右下に配置
         L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-        // キャロDB / OpenStreetMap タイル
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-            maxZoom: 19,
-            subdomains: 'abcd'
-        }).addTo(map);
+        // デフォルト: Google マップ (googleRoad) を追加
+        currentBaseLayer = baseMaps.googleRoad;
+        currentBaseLayer.addTo(map);
 
         markersGroup = L.layerGroup().addTo(map);
+
+        // ベースマップ切替イベントの登録
+        const basemapSelect = document.getElementById('public-basemap-select');
+        if (basemapSelect) {
+            basemapSelect.value = 'googleRoad'; // 初期値 Google マップ
+            basemapSelect.addEventListener('change', (e) => {
+                const selectedVal = e.target.value;
+                if (baseMaps[selectedVal]) {
+                    map.removeLayer(currentBaseLayer);
+                    currentBaseLayer = baseMaps[selectedVal];
+                    currentBaseLayer.addTo(map);
+                }
+            });
+        }
     }
+
 
     const R2_PUBLIC_PORTS_URL = 'https://pub-1c068f2df9ab42a0b9dcc5d112078269.r2.dev/public_ports.json';
 

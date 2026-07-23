@@ -258,24 +258,65 @@ body.public-map-body {
     backdrop-filter: blur(8px);
 }
 
-/* Custom Marker Styling */
+/* Basemap Select Dropdown */
+.public-select {
+    background: var(--public-card-bg);
+    border: 1px solid var(--public-card-border);
+    backdrop-filter: blur(12px);
+    color: #f8fafc;
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    outline: none;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    transition: all 0.2s ease;
+}
+
+.public-select:hover, .public-select:focus {
+    border-color: rgba(255, 255, 255, 0.4);
+    background: rgba(30, 41, 59, 0.95);
+}
+
+.public-select option {
+    background: #1e293b;
+    color: #f8fafc;
+    padding: 6px;
+}
+
+/* Custom Marker Styling (Perfect Circle Fix) */
+.custom-div-icon {
+    background: transparent !important;
+    border: none !important;
+}
+
 .public-port-marker {
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
+    min-height: 28px !important;
+    box-sizing: border-box !important;
+    aspect-ratio: 1 / 1 !important;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
+    border-radius: 50% !important;
     color: #ffffff;
     font-weight: 700;
     font-size: 0.8rem;
+    line-height: 1;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
     border: 2px solid #ffffff;
     transition: transform 0.2s ease;
+    overflow: hidden;
 }
 
 .public-port-marker:hover {
     transform: scale(1.15);
     z-index: 1000 !important;
 }
+
 
 .marker-high {
     background: linear-gradient(135deg, #22c55e 0%, #15803d 100%);
