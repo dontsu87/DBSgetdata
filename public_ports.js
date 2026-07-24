@@ -1,5 +1,5 @@
 window.PUBLIC_PORTS_DATA = {
-  "updated_at": "2026-07-23 16:24:37",
+  "updated_at": "2026-07-24 09:18:21",
   "total_ports": 1,
   "ports": [
     {

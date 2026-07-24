@@ -287,7 +287,7 @@ def sync_port_area_master(df_merged):
 
     # ジオフェンシングによるエリア判定
     def get_area_by_coords(lat, lon):
-        if 36.5 <= lat <= 36.65 and 136.55 <= lon <= 136.75:
+        if 36.48 <= lat <= 36.65 and 136.50 <= lon <= 136.75:
             return "KNZ_金沢市公共シェアサイクルまちのり事務局"
         elif 36.0 <= lat <= 36.15 and 136.15 <= lon <= 136.25:
             return "FKI_ふくチャリ"
@@ -445,7 +445,7 @@ def aggregate_ports_data(df_merged, master_data, gbfs_stations):
             # 地理的ジオフェンスガード
             is_valid_coords = False
             if "KNZ" in area:
-                is_valid_coords = (36.5 <= s_lat <= 36.65 and 136.55 <= s_lon <= 136.75)
+                is_valid_coords = (36.48 <= s_lat <= 36.65 and 136.50 <= s_lon <= 136.75)
             elif "FKI" in area:
                 is_valid_coords = (36.0 <= s_lat <= 36.15 and 136.15 <= s_lon <= 136.25)
             elif "KMT" in area:
