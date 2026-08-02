@@ -25,6 +25,20 @@
     let currentAreaParam = '';
     let latestUpdatedAt = '';
 
+    const AREA_CODE_ALIASES = Object.freeze({
+        FKI: '福井',
+        KMT: '小松',
+        KNZ: '金沢',
+        SNN: '上田千曲広域',
+        TRG: '敦賀'
+    });
+
+    function normalizePublicAreaName(value) {
+        const name = String(value || '').trim();
+        if (!name) return '';
+        const areaCode = name.split('_', 1)[0].toUpperCase();
+        return AREA_CODE_ALIASES[areaCode] || name;
+    }
 
     // 言語ごとのテキスト定義
     const I18N = {
@@ -208,15 +222,17 @@
         if (!allPorts.length) return;
 
         // 1. エリアパラメータによる必須絞り込み
-        const targetArea = currentAreaParam.toLowerCase();
+        const targetArea = normalizePublicAreaName(currentAreaParam).toLowerCase();
         let areaPorts = allPorts.filter(p => {
-            const aName = (p.area_name || '').toLowerCase();
-            return aName.includes(targetArea);
+            const aName = normalizePublicAreaName(p.area_name).toLowerCase();
+            return aName === targetArea;
         });
 
         // エリア名バッジの更新
         if (areaBadge) {
-            const matchedAreaName = areaPorts.length > 0 ? areaPorts[0].area_name : currentAreaParam;
+            const matchedAreaName = areaPorts.length > 0
+                ? normalizePublicAreaName(areaPorts[0].area_name)
+                : normalizePublicAreaName(currentAreaParam);
             areaBadge.innerText = matchedAreaName;
         }
 

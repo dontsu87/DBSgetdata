@@ -30,7 +30,7 @@ def run_test():
         page = context.new_page()
         
         # モックフェッチで静的なモックデータを返す (リロード後も永続的に有効)
-        page.add_init_script("""() => {
+        page.add_init_script("""(() => {
             const mockData = {
                 "updated_at": "2026-06-09 13:41:26",
                 "total_ports_count": 1,
@@ -38,7 +38,7 @@ def run_test():
                 "ports": [
                     {
                         "port_name": "テストポート",
-                        "area_name": "FKI_ふくチャリ",
+                        "area_name": "福井",
                         "station_id": "00001412",
                         "lat": 36.061486,
                         "lon": 136.222531,
@@ -46,7 +46,7 @@ def run_test():
                         "bikes": [
                             {
                                 "bike_id": "TEST-AT-1",
-                                "status": "AT異常(AT通知受信なし)",
+                                "status": "AT異常全般",
                                 "model_name": "DD",
                                 "voltage": 33.5,
                                 "alert_level": 5,
@@ -57,7 +57,7 @@ def run_test():
                             },
                             {
                                 "bike_id": "TEST-AT-2",
-                                "status": "AT異常(電池なし)",
+                                "status": "メンテナンス(手動)",
                                 "model_name": "DD",
                                 "voltage": 32.5,
                                 "alert_level": 5,
@@ -79,7 +79,7 @@ def run_test():
                 }
                 throw new Error('Not found in mock fetch');
             };
-        }""")
+        })()""")
         
         try:
             # kanriall パラメータを付与して車両状態フィルターを強制的に全件生成させる
@@ -102,11 +102,6 @@ def run_test():
             page.locator("#reset-view-btn").click()
             page.wait_for_timeout(2000) # リロード待ち
             
-            # 車両状態フィルターパネルを展開
-            print("車両状態フィルターパネルを展開します...")
-            page.locator("#status-header-btn").click()
-            page.wait_for_timeout(500)
-            
             # 実際に生成されたチェックボックスの value をログ出力
             values = page.evaluate("() => Array.from(document.querySelectorAll('.status-highlight')).map(el => el.value)")
             print(f"検出された強調チェックボックスの value 一覧: {values}")
@@ -116,20 +111,20 @@ def run_test():
             print(f"リセット後のローカルストレージ値: {cached}")
 
             # 各チェックボックスの状態をDOMから直接取得
-            is_unlocked_highlighted = page.evaluate("""() => {
-                const el = Array.from(document.querySelectorAll('.status-highlight')).find(el => el.value === 'AT異常(AT通知受信なし)');
+            is_at_error_highlighted = page.evaluate("""() => {
+                const el = Array.from(document.querySelectorAll('.status-highlight')).find(el => el.value === 'AT異常全般');
                 return el ? el.checked : null;
             }""")
-            is_battery_highlighted = page.evaluate("""() => {
-                const el = Array.from(document.querySelectorAll('.status-highlight')).find(el => el.value === 'AT異常(電池なし)');
+            is_maintenance_highlighted = page.evaluate("""() => {
+                const el = Array.from(document.querySelectorAll('.status-highlight')).find(el => el.value === 'メンテナンス(手動)');
                 return el ? el.checked : null;
             }""")
             
-            print(f"AT異常(AT通知受信なし)の強調チェック状態: {is_unlocked_highlighted}")
-            print(f"AT異常(電池なし)の強調チェック状態: {is_battery_highlighted}")
+            print(f"AT異常全般の強調チェック状態: {is_at_error_highlighted}")
+            print(f"メンテナンス(手動)の強調チェック状態: {is_maintenance_highlighted}")
             
-            assert is_unlocked_highlighted is True, "AT異常(AT通知受信なし)の強調表示チェックが入っていません"
-            assert is_battery_highlighted is True, "AT異常(電池なし)の強調表示チェックが入っていません"
+            assert is_at_error_highlighted is True, "AT異常全般の強調表示チェックが入っていません"
+            assert is_maintenance_highlighted is True, "メンテナンス(手動)の強調表示チェックが入っていません"
             
             # スクリーンショットを撮影して目視確認できるようにする
             os.makedirs("debug", exist_ok=True)
@@ -141,6 +136,7 @@ def run_test():
             
         except Exception as e:
             print(f"❌ テスト失敗: {e}")
+            raise
         finally:
             browser.close()
 

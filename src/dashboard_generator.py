@@ -8,6 +8,49 @@ from src.config import Config, ROOT_DIR
 from src.public_data_generator import generate_public_ports_data
 
 
+CURRENT_AREA_NAMES = frozenset({'福井', '小松', '金沢', '上田千曲広域', '敦賀'})
+AREA_CODE_ALIASES = {
+    'FKI': '福井',
+    'KMT': '小松',
+    'KNZ': '金沢',
+    'SNN': '上田千曲広域',
+    'TRG': '敦賀',
+}
+AREA_GEOFENCES = {
+    '金沢': (36.48, 36.65, 136.50, 136.75),
+    '福井': (36.00, 36.15, 136.15, 136.25),
+    '小松': (36.30, 36.45, 136.40, 136.50),
+    '上田千曲広域': (36.30, 36.58, 138.05, 138.32),
+    '敦賀': (35.50, 35.70, 136.00, 136.15),
+}
+
+
+def normalize_area_name(value):
+    "旧管理画面のコード付きエリア名を現行ポータルの名称へ統合する。"
+    name = str(value or '').strip()
+    if name in CURRENT_AREA_NAMES:
+        return name
+    area_code = name.split('_', 1)[0].upper()
+    return AREA_CODE_ALIASES.get(area_code, name)
+
+
+def get_area_by_coords(lat, lon):
+    "現在の対象5エリア内にある座標から現行エリア名を返す。"
+    for area_name, (lat_min, lat_max, lon_min, lon_max) in AREA_GEOFENCES.items():
+        if lat_min <= lat <= lat_max and lon_min <= lon <= lon_max:
+            return area_name
+    return None
+
+
+def is_coords_in_area(area_name, lat, lon):
+    normalized = normalize_area_name(area_name)
+    bounds = AREA_GEOFENCES.get(normalized)
+    if not bounds:
+        return False
+    lat_min, lat_max, lon_min, lon_max = bounds
+    return lat_min <= lat <= lat_max and lon_min <= lon <= lon_max
+
+
 def read_csv_safe(path):
     """エンコーコーディングを自動フォールバックしながら安全にCSVをロードします"""
     for enc in ['utf-8-sig', 'utf-8', 'cp932']:
@@ -118,7 +161,10 @@ def apply_vehicle_thresholds(df_vehicle, df_threshold):
             model = str(row['車種名']).strip()
             
         # TRGエリアで、且つAT種別情報がある場合は、直接端末のタイプ（丸形=グリッター・EB, 四角型=SW）から車種を決定します
-        is_trg_area = "TRG" in str(row.get('エリア名', '')) or "Tokyo Ring" in str(row.get('エリア名', '')) or str(row.get('識別番号', '')).startswith("TRG")
+        is_trg_area = (
+            normalize_area_name(row.get('エリア名', '')) == '敦賀'
+            or str(row.get('識別番号', '')).startswith('TRG')
+        )
         if is_trg_area and 'AT種別' in df_merged.columns:
             at_val = str(row['AT種別']).strip()
             if "丸形" in at_val:
@@ -135,7 +181,10 @@ def apply_vehicle_thresholds(df_vehicle, df_threshold):
             
         # 車種マスタからのしきい値動的適用
         applied_thresholds = False
-        is_trg = "TRG" in str(row.get('エリア名', '')) or "Tokyo Ring" in str(row.get('エリア名', ''))
+        is_trg = (
+            normalize_area_name(row.get('エリア名', '')) == "敦賀"
+            or str(row.get('識別番号', '')).startswith("TRG")
+        )
         if df_type_master is not None and not is_trg:
             master_match = df_type_master[
                 (df_type_master['車種名'].astype(str).str.strip() == model) |
@@ -213,10 +262,20 @@ def sync_port_area_master(df_merged):
         except Exception as e:
             print(f"Warning: マスタファイルのロードに失敗しました (再構築します): {e}")
 
+    # 旧ポータル由来のコード付き名称は、ロード時点で現行5名称へ移行する。
+    master_data["ports"] = {
+        key: normalize_area_name(value)
+        for key, value in master_data["ports"].items()
+    }
+    master_data["stations"] = {
+        key: normalize_area_name(value)
+        for key, value in master_data["stations"].items()
+    }
+
     # 今回の車両情報からポート名・station_idとエリアの対応関係を自動学習
     for idx, row in df_merged.iterrows():
         p_name = str(row['ポート名']).strip()
-        a_name = str(row['エリア名']).strip() if not pd.isna(row['エリア名']) else "その他"
+        a_name = normalize_area_name(row['エリア名']) if not pd.isna(row['エリア名']) else 'その他'
         s_id = row['station_id']
         
         if p_name and a_name and a_name != "その他":
@@ -285,16 +344,6 @@ def sync_port_area_master(df_merged):
         if deleted_ports_count or deleted_stations_count:
             print(f"Info: 不要な古いポート情報をマスタから自動消し込みしました (ポート名: {deleted_ports_count}件, ID: {deleted_stations_count}件)")
 
-    # ジオフェンシングによるエリア判定
-    def get_area_by_coords(lat, lon):
-        if 36.48 <= lat <= 36.65 and 136.50 <= lon <= 136.75:
-            return "KNZ_金沢市公共シェアサイクルまちのり事務局"
-        elif 36.0 <= lat <= 36.15 and 136.15 <= lon <= 136.25:
-            return "FKI_ふくチャリ"
-        elif 36.3 <= lat <= 36.45 and 136.4 <= lon <= 136.5:
-            return "KMT_こまつシェアサイクル"
-        return None
-
     # GBFSポートをもとに、マスタへのジオフェンス初回学習
     for s in gbfs_stations:
         s_id_raw = s.get("station_id", "").strip()
@@ -351,7 +400,7 @@ def aggregate_ports_data(df_merged, master_data, gbfs_stations):
         if port_name not in ports_data:
             ports_data[port_name] = {
                 "port_name": port_name,
-                "area_name": str(row['エリア名']).strip() if not pd.isna(row['エリア名']) else "その他",
+                "area_name": normalize_area_name(row['エリア名']) if not pd.isna(row['エリア名']) else "その他",
                 "station_id": s_id_str,
                 "lat": float(lat) if has_gps else None,
                 "lon": float(lon) if has_gps else None,
@@ -406,7 +455,7 @@ def aggregate_ports_data(df_merged, master_data, gbfs_stations):
             "replace_original_volt": replace_orig_val,
             "replace_increased_volt": replace_incr_val,
             "replaced_at": replaced_at,
-            "area_name": str(row['エリア名']).strip() if not pd.isna(row['エリア名']) else "その他",
+            "area_name": normalize_area_name(row['エリア名']) if not pd.isna(row['エリア名']) else "その他",
             "lat": float(lat) if has_gps else None,
             "lon": float(lon) if has_gps else None
         }
@@ -438,22 +487,14 @@ def aggregate_ports_data(df_merged, master_data, gbfs_stations):
             if s_name in ports_data:
                 continue
                 
-            area = master_data["stations"].get(s_id) or master_data["ports"].get(s_name)
+            area = normalize_area_name(
+                master_data["stations"].get(s_id) or master_data["ports"].get(s_name)
+            )
             if not area:
                 continue
             
             # 地理的ジオフェンスガード
-            is_valid_coords = False
-            if "KNZ" in area:
-                is_valid_coords = (36.48 <= s_lat <= 36.65 and 136.50 <= s_lon <= 136.75)
-            elif "FKI" in area:
-                is_valid_coords = (36.0 <= s_lat <= 36.15 and 136.15 <= s_lon <= 136.25)
-            elif "KMT" in area:
-                is_valid_coords = (36.3 <= s_lat <= 36.45 and 136.4 <= s_lon <= 136.5)
-            elif "TRG" in area:
-                is_valid_coords = (35.5 <= s_lat <= 35.7 and 136.0 <= s_lon <= 136.15)
-                
-            if not is_valid_coords:
+            if not is_coords_in_area(area, s_lat, s_lon):
                 continue
             
             ports_data[s_name] = {
@@ -571,4 +612,3 @@ def generate_dashboard_json(latest_vehicle_path: str = None) -> str:
 
     # 5. ファイル出力
     return export_dashboard_files(ports_data)
-

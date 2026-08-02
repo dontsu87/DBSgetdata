@@ -1,6 +1,6 @@
 window.PUBLIC_PORTS_DATA = {
-  "updated_at": "2026-08-02 12:34:25",
-  "total_ports": 241,
+  "updated_at": "2026-08-02 13:44:24",
+  "total_ports": 249,
   "ports": [
     {
       "station_id": "00001388",
@@ -19,7 +19,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "敦賀",
       "lat": 35.644981,
       "lon": 136.07549,
-      "bikes_available": 14,
+      "bikes_available": 11,
       "capacity": 14
     },
     {
@@ -29,7 +29,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.577185,
       "lon": 136.647628,
-      "bikes_available": 28,
+      "bikes_available": 24,
       "capacity": 69
     },
     {
@@ -73,10 +73,20 @@ window.PUBLIC_PORTS_DATA = {
       "capacity": 2
     },
     {
+      "station_id": "00001179",
+      "port_name": "02_海野宿第一駐車場【とうみシェアサイクル】",
+      "port_name_en": "海野宿第一駐車場【とうみシェアサイクル】",
+      "area_name": "上田千曲広域",
+      "lat": 36.36035,
+      "lon": 138.316813,
+      "bikes_available": 0,
+      "capacity": 0
+    },
+    {
       "station_id": "00001390",
       "port_name": "03.小松市役所【拠点ポート】",
       "port_name_en": "小松市役所【拠点ポート】",
-      "area_name": "KMT_こまつシェアサイクル",
+      "area_name": "小松",
       "lat": 36.408438,
       "lon": 136.445753,
       "bikes_available": 0,
@@ -89,7 +99,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.573534,
       "lon": 136.654453,
-      "bikes_available": 0,
+      "bikes_available": 1,
       "capacity": 5
     },
     {
@@ -116,7 +126,7 @@ window.PUBLIC_PORTS_DATA = {
       "station_id": "00090004",
       "port_name": "04.キッズパークつるが",
       "port_name_en": "キッズパークつるが",
-      "area_name": "TRG_つるがシェアサイクル事務局",
+      "area_name": "敦賀",
       "lat": 35.653607,
       "lon": 136.069973,
       "bikes_available": 0,
@@ -149,7 +159,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.570722,
       "lon": 136.656975,
-      "bikes_available": 6,
+      "bikes_available": 3,
       "capacity": 6
     },
     {
@@ -189,8 +199,8 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.571198,
       "lon": 136.662652,
-      "bikes_available": 4,
-      "capacity": 4
+      "bikes_available": 5,
+      "capacity": 5
     },
     {
       "station_id": "00090006",
@@ -209,7 +219,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "小松",
       "lat": 36.395411,
       "lon": 136.467373,
-      "bikes_available": 1,
+      "bikes_available": 2,
       "capacity": 6
     },
     {
@@ -259,7 +269,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.571636,
       "lon": 136.665979,
-      "bikes_available": 4,
+      "bikes_available": 3,
       "capacity": 21
     },
     {
@@ -273,13 +283,23 @@ window.PUBLIC_PORTS_DATA = {
       "capacity": 5
     },
     {
+      "station_id": "00002782",
+      "port_name": "07_しなの鉄道大屋駅【とうみシェアサイクル】",
+      "port_name_en": "しなの鉄道大屋駅【とうみシェアサイクル】",
+      "area_name": "上田千曲広域",
+      "lat": 36.369148,
+      "lon": 138.296918,
+      "bikes_available": 0,
+      "capacity": 20
+    },
+    {
       "station_id": "00089008",
       "port_name": "08.徳田秋聲記念館",
       "port_name_en": "徳田秋聲記念館",
       "area_name": "金沢",
       "lat": 36.57101,
       "lon": 136.667063,
-      "bikes_available": 3,
+      "bikes_available": 2,
       "capacity": 9
     },
     {
@@ -349,8 +369,8 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.566926,
       "lon": 136.645188,
-      "bikes_available": 0,
-      "capacity": 1
+      "bikes_available": 2,
+      "capacity": 2
     },
     {
       "station_id": "00089010",
@@ -366,7 +386,7 @@ window.PUBLIC_PORTS_DATA = {
       "station_id": "00000772",
       "port_name": "10.気比の松原",
       "port_name_en": "気比の松原",
-      "area_name": "TRG_つるがシェアサイクル事務局",
+      "area_name": "敦賀",
       "lat": 35.65596,
       "lon": 136.051981,
       "bikes_available": 0,
@@ -379,7 +399,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "福井",
       "lat": 36.07465,
       "lon": 136.218235,
-      "bikes_available": 5,
+      "bikes_available": 4,
       "capacity": 11
     },
     {
@@ -399,7 +419,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.553937,
       "lon": 136.69042,
-      "bikes_available": 1,
+      "bikes_available": 0,
       "capacity": 3
     },
     {
@@ -409,7 +429,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.544754,
       "lon": 136.690079,
-      "bikes_available": 0,
+      "bikes_available": 1,
       "capacity": 5
     },
     {
@@ -419,7 +439,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.560046,
       "lon": 136.643516,
-      "bikes_available": 13,
+      "bikes_available": 9,
       "capacity": 13
     },
     {
@@ -439,7 +459,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.55598,
       "lon": 136.68486,
-      "bikes_available": 3,
+      "bikes_available": 0,
       "capacity": 3
     },
     {
@@ -469,7 +489,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.559129,
       "lon": 136.65252,
-      "bikes_available": 8,
+      "bikes_available": 3,
       "capacity": 8
     },
     {
@@ -506,7 +526,7 @@ window.PUBLIC_PORTS_DATA = {
       "station_id": "00000773",
       "port_name": "11.日本海さかな街",
       "port_name_en": "日本海さかな街",
-      "area_name": "TRG_つるがシェアサイクル事務局",
+      "area_name": "敦賀",
       "lat": 35.634316,
       "lon": 136.049646,
       "bikes_available": 0,
@@ -529,8 +549,8 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "福井",
       "lat": 36.061156,
       "lon": 136.223334,
-      "bikes_available": 7,
-      "capacity": 7
+      "bikes_available": 8,
+      "capacity": 8
     },
     {
       "station_id": "00004955",
@@ -549,7 +569,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.573127,
       "lon": 136.644085,
-      "bikes_available": 1,
+      "bikes_available": 3,
       "capacity": 6
     },
     {
@@ -566,7 +586,7 @@ window.PUBLIC_PORTS_DATA = {
       "station_id": "00001400",
       "port_name": "12.「安宅の関」こまつ勧進帳の里【簡易ポート】",
       "port_name_en": "「安宅の関」こまつ勧進帳の里【簡易ポート】",
-      "area_name": "KMT_こまつシェアサイクル",
+      "area_name": "小松",
       "lat": 36.419072,
       "lon": 136.417097,
       "bikes_available": 0,
@@ -576,7 +596,7 @@ window.PUBLIC_PORTS_DATA = {
       "station_id": "00001381",
       "port_name": "12.敦賀市役所",
       "port_name_en": "敦賀市役所",
-      "area_name": "TRG_つるがシェアサイクル事務局",
+      "area_name": "敦賀",
       "lat": 35.645389,
       "lon": 136.056118,
       "bikes_available": 0,
@@ -589,14 +609,14 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "福井",
       "lat": 36.07681,
       "lon": 136.211926,
-      "bikes_available": 1,
-      "capacity": 1
+      "bikes_available": 3,
+      "capacity": 3
     },
     {
       "station_id": "00001401",
       "port_name": "13.八の辻広場(八日市町）【簡易ポート】",
       "port_name_en": "八の辻広場(八日市町）【簡易ポート】",
-      "area_name": "KMT_こまつシェアサイクル",
+      "area_name": "小松",
       "lat": 36.40362,
       "lon": 136.449511,
       "bikes_available": 0,
@@ -629,7 +649,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.563054,
       "lon": 136.650498,
-      "bikes_available": 4,
+      "bikes_available": 3,
       "capacity": 14
     },
     {
@@ -639,14 +659,14 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "福井",
       "lat": 36.06019,
       "lon": 136.21784,
-      "bikes_available": 1,
+      "bikes_available": 2,
       "capacity": 2
     },
     {
       "station_id": "00001402",
       "port_name": "14.公立小松大学（末広キャンパス）【簡易ポート】",
       "port_name_en": "公立小松大学（末広キャンパス）【簡易ポート】",
-      "area_name": "KMT_こまつシェアサイクル",
+      "area_name": "小松",
       "lat": 36.399731,
       "lon": 136.438505,
       "bikes_available": 0,
@@ -656,7 +676,7 @@ window.PUBLIC_PORTS_DATA = {
       "station_id": "00001908",
       "port_name": "14.敦賀市総合運動公園",
       "port_name_en": "敦賀市総合運動公園",
-      "area_name": "TRG_つるがシェアサイクル事務局",
+      "area_name": "敦賀",
       "lat": 35.64219,
       "lon": 136.032981,
       "bikes_available": 0,
@@ -669,7 +689,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.562019,
       "lon": 136.652486,
-      "bikes_available": 4,
+      "bikes_available": 3,
       "capacity": 6
     },
     {
@@ -679,14 +699,14 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.563219,
       "lon": 136.654692,
-      "bikes_available": 4,
+      "bikes_available": 3,
       "capacity": 6
     },
     {
       "station_id": "00001403",
       "port_name": "15.九谷セラミック・ラボラトリー【簡易ポート】",
       "port_name_en": "九谷セラミック・ラボラトリー【簡易ポート】",
-      "area_name": "KMT_こまつシェアサイクル",
+      "area_name": "小松",
       "lat": 36.39281,
       "lon": 136.484018,
       "bikes_available": 0,
@@ -706,7 +726,7 @@ window.PUBLIC_PORTS_DATA = {
       "station_id": "00001909",
       "port_name": "15.西福寺",
       "port_name_en": "西福寺",
-      "area_name": "TRG_つるがシェアサイクル事務局",
+      "area_name": "敦賀",
       "lat": 35.656052,
       "lon": 136.031783,
       "bikes_available": 0,
@@ -746,7 +766,7 @@ window.PUBLIC_PORTS_DATA = {
       "station_id": "00005839",
       "port_name": "17.アルビス小松幸町店【簡易ポート】",
       "port_name_en": "アルビス小松幸町店【簡易ポート】",
-      "area_name": "KMT_こまつシェアサイクル",
+      "area_name": "小松",
       "lat": 36.391854,
       "lon": 136.451564,
       "bikes_available": 0,
@@ -769,7 +789,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "敦賀",
       "lat": 35.642993,
       "lon": 136.058129,
-      "bikes_available": 1,
+      "bikes_available": 2,
       "capacity": 5
     },
     {
@@ -786,7 +806,7 @@ window.PUBLIC_PORTS_DATA = {
       "station_id": "00001406",
       "port_name": "18.こまつドーム 駐輪場【簡易ポート】",
       "port_name_en": "こまつドーム 駐輪場【簡易ポート】",
-      "area_name": "KMT_こまつシェアサイクル",
+      "area_name": "小松",
       "lat": 36.338403,
       "lon": 136.43538,
       "bikes_available": 0,
@@ -836,7 +856,7 @@ window.PUBLIC_PORTS_DATA = {
       "station_id": "00001407",
       "port_name": "19.日本自動車博物館【簡易ポート】",
       "port_name_en": "日本自動車博物館【簡易ポート】",
-      "area_name": "KMT_こまつシェアサイクル",
+      "area_name": "小松",
       "lat": 36.333531,
       "lon": 136.42963,
       "bikes_available": 0,
@@ -849,8 +869,8 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.557653,
       "lon": 136.655177,
-      "bikes_available": 2,
-      "capacity": 2
+      "bikes_available": 4,
+      "capacity": 4
     },
     {
       "station_id": "00089020",
@@ -879,7 +899,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.555379,
       "lon": 136.671146,
-      "bikes_available": 5,
+      "bikes_available": 7,
       "capacity": 13
     },
     {
@@ -939,7 +959,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.556011,
       "lon": 136.650972,
-      "bikes_available": 4,
+      "bikes_available": 3,
       "capacity": 11
     },
     {
@@ -969,7 +989,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "小松",
       "lat": 36.400174,
       "lon": 136.44874,
-      "bikes_available": 1,
+      "bikes_available": 2,
       "capacity": 2
     },
     {
@@ -986,7 +1006,7 @@ window.PUBLIC_PORTS_DATA = {
       "station_id": "00002698",
       "port_name": "27.スカイパークこまつ共生の丘【簡易ポート】",
       "port_name_en": "スカイパークこまつ共生の丘【簡易ポート】",
-      "area_name": "KMT_こまつシェアサイクル",
+      "area_name": "小松",
       "lat": 36.405016,
       "lon": 136.423213,
       "bikes_available": 0,
@@ -1029,7 +1049,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.572064,
       "lon": 136.656882,
-      "bikes_available": 10,
+      "bikes_available": 14,
       "capacity": 19
     },
     {
@@ -1049,14 +1069,14 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.569846,
       "lon": 136.653221,
-      "bikes_available": 3,
+      "bikes_available": 1,
       "capacity": 8
     },
     {
       "station_id": "00003915",
       "port_name": "30.沖町１号公園【簡易ポート】",
       "port_name_en": "沖町１号公園【簡易ポート】",
-      "area_name": "KMT_こまつシェアサイクル",
+      "area_name": "小松",
       "lat": 36.396175,
       "lon": 136.460755,
       "bikes_available": 0,
@@ -1069,14 +1089,14 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.569484,
       "lon": 136.662582,
-      "bikes_available": 1,
+      "bikes_available": 0,
       "capacity": 9
     },
     {
       "station_id": "00089032",
       "port_name": "32.金沢商工会議所",
       "port_name_en": "金沢商工会議所",
-      "area_name": "KNZ_金沢市公共シェアサイクルまちのり事務局",
+      "area_name": "金沢",
       "lat": 36.567493,
       "lon": 136.65625,
       "bikes_available": 0,
@@ -1089,8 +1109,8 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.560481,
       "lon": 136.650635,
-      "bikes_available": 9,
-      "capacity": 9
+      "bikes_available": 10,
+      "capacity": 10
     },
     {
       "station_id": "00089034",
@@ -1099,7 +1119,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.565477,
       "lon": 136.663783,
-      "bikes_available": 4,
+      "bikes_available": 2,
       "capacity": 22
     },
     {
@@ -1109,7 +1129,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.553907,
       "lon": 136.655908,
-      "bikes_available": 7,
+      "bikes_available": 8,
       "capacity": 10
     },
     {
@@ -1149,7 +1169,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.568716,
       "lon": 136.639568,
-      "bikes_available": 7,
+      "bikes_available": 6,
       "capacity": 7
     },
     {
@@ -1169,7 +1189,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.579579,
       "lon": 136.646037,
-      "bikes_available": 13,
+      "bikes_available": 11,
       "capacity": 17
     },
     {
@@ -1186,7 +1206,7 @@ window.PUBLIC_PORTS_DATA = {
       "station_id": "00089043",
       "port_name": "43.金沢港クルーズターミナル",
       "port_name_en": "金沢港クルーズターミナル",
-      "area_name": "KNZ_金沢市公共シェアサイクルまちのり事務局",
+      "area_name": "金沢",
       "lat": 36.607703,
       "lon": 136.615137,
       "bikes_available": 0,
@@ -1199,8 +1219,8 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.611315,
       "lon": 136.604932,
-      "bikes_available": 4,
-      "capacity": 5
+      "bikes_available": 8,
+      "capacity": 8
     },
     {
       "station_id": "00089045",
@@ -1219,7 +1239,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.569659,
       "lon": 136.660728,
-      "bikes_available": 2,
+      "bikes_available": 1,
       "capacity": 11
     },
     {
@@ -1229,7 +1249,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.544785,
       "lon": 136.654136,
-      "bikes_available": 11,
+      "bikes_available": 8,
       "capacity": 11
     },
     {
@@ -1289,14 +1309,14 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.582372,
       "lon": 136.640421,
-      "bikes_available": 0,
+      "bikes_available": 3,
       "capacity": 0
     },
     {
       "station_id": "00089056",
       "port_name": "54.ファミリーマート金沢中央市場店",
       "port_name_en": "ファミリーマート金沢中央市場店",
-      "area_name": "KNZ_金沢市公共シェアサイクルまちのり事務局",
+      "area_name": "金沢",
       "lat": 36.588257,
       "lon": 136.632698,
       "bikes_available": 0,
@@ -1309,7 +1329,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.559343,
       "lon": 136.67713,
-      "bikes_available": 1,
+      "bikes_available": 0,
       "capacity": 1
     },
     {
@@ -1319,8 +1339,8 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.575763,
       "lon": 136.637299,
-      "bikes_available": 4,
-      "capacity": 4
+      "bikes_available": 6,
+      "capacity": 6
     },
     {
       "station_id": "00000717",
@@ -1349,7 +1369,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.554839,
       "lon": 136.657245,
-      "bikes_available": 0,
+      "bikes_available": 1,
       "capacity": 2
     },
     {
@@ -1359,7 +1379,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.548066,
       "lon": 136.648938,
-      "bikes_available": 3,
+      "bikes_available": 2,
       "capacity": 4
     },
     {
@@ -1369,7 +1389,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.547518,
       "lon": 136.64276,
-      "bikes_available": 1,
+      "bikes_available": 0,
       "capacity": 1
     },
     {
@@ -1389,17 +1409,17 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.573652,
       "lon": 136.649461,
-      "bikes_available": 5,
+      "bikes_available": 4,
       "capacity": 7
     },
     {
       "station_id": "00089065",
       "port_name": "64.ローソン金沢駅西本町店",
       "port_name_en": "ローソン金沢駅西本町店",
-      "area_name": "KNZ_金沢市公共シェアサイクルまちのり事務局",
+      "area_name": "金沢",
       "lat": 36.58359,
       "lon": 136.635317,
-      "bikes_available": 0,
+      "bikes_available": 5,
       "capacity": 7
     },
     {
@@ -1409,7 +1429,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.581424,
       "lon": 136.632034,
-      "bikes_available": 7,
+      "bikes_available": 6,
       "capacity": 7
     },
     {
@@ -1429,7 +1449,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.547531,
       "lon": 136.678978,
-      "bikes_available": 3,
+      "bikes_available": 2,
       "capacity": 11
     },
     {
@@ -1459,7 +1479,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.560594,
       "lon": 136.656572,
-      "bikes_available": 4,
+      "bikes_available": 1,
       "capacity": 14
     },
     {
@@ -1469,7 +1489,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.600208,
       "lon": 136.616076,
-      "bikes_available": 3,
+      "bikes_available": 4,
       "capacity": 14
     },
     {
@@ -1489,8 +1509,8 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.547777,
       "lon": 136.68,
-      "bikes_available": 6,
-      "capacity": 6
+      "bikes_available": 9,
+      "capacity": 9
     },
     {
       "station_id": "00001193",
@@ -1499,7 +1519,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.560162,
       "lon": 136.663106,
-      "bikes_available": 4,
+      "bikes_available": 3,
       "capacity": 5
     },
     {
@@ -1509,7 +1529,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.589306,
       "lon": 136.674271,
-      "bikes_available": 3,
+      "bikes_available": 2,
       "capacity": 7
     },
     {
@@ -1519,7 +1539,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.578046,
       "lon": 136.597897,
-      "bikes_available": 11,
+      "bikes_available": 12,
       "capacity": 13
     },
     {
@@ -1529,14 +1549,14 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.579723,
       "lon": 136.649338,
-      "bikes_available": 3,
+      "bikes_available": 0,
       "capacity": 21
     },
     {
       "station_id": "00004099",
       "port_name": "78.此花町緑地",
       "port_name_en": "此花町緑地",
-      "area_name": "KNZ_金沢市公共シェアサイクルまちのり事務局",
+      "area_name": "金沢",
       "lat": 36.577124,
       "lon": 136.652214,
       "bikes_available": 0,
@@ -1559,7 +1579,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.562908,
       "lon": 136.652382,
-      "bikes_available": 2,
+      "bikes_available": 0,
       "capacity": 4
     },
     {
@@ -1569,7 +1589,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.56085,
       "lon": 136.65213,
-      "bikes_available": 4,
+      "bikes_available": 2,
       "capacity": 4
     },
     {
@@ -1579,7 +1599,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.561123,
       "lon": 136.651334,
-      "bikes_available": 8,
+      "bikes_available": 9,
       "capacity": 12
     },
     {
@@ -1589,8 +1609,8 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.564989,
       "lon": 136.646554,
-      "bikes_available": 3,
-      "capacity": 3
+      "bikes_available": 6,
+      "capacity": 6
     },
     {
       "station_id": "00004105",
@@ -1626,10 +1646,10 @@ window.PUBLIC_PORTS_DATA = {
       "station_id": "00004108",
       "port_name": "88.駅西本町・福井銀行金沢支店",
       "port_name_en": "駅西本町・福井銀行金沢支店",
-      "area_name": "KNZ_金沢市公共シェアサイクルまちのり事務局",
+      "area_name": "金沢",
       "lat": 36.579976,
       "lon": 136.637058,
-      "bikes_available": 0,
+      "bikes_available": 4,
       "capacity": 15
     },
     {
@@ -1649,7 +1669,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.591258,
       "lon": 136.645556,
-      "bikes_available": 11,
+      "bikes_available": 4,
       "capacity": 11
     },
     {
@@ -1659,24 +1679,24 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.586889,
       "lon": 136.648988,
-      "bikes_available": 2,
+      "bikes_available": 1,
       "capacity": 11
     },
     {
       "station_id": "00004112",
       "port_name": "92.広岡・スコール金沢",
       "port_name_en": "広岡・スコール金沢",
-      "area_name": "KNZ_金沢市公共シェアサイクルまちのり事務局",
+      "area_name": "金沢",
       "lat": 36.58215,
       "lon": 136.646575,
-      "bikes_available": 0,
+      "bikes_available": 1,
       "capacity": 9
     },
     {
       "station_id": "00001394",
       "port_name": "93.城北市民運動公園",
       "port_name_en": "城北市民運動公園",
-      "area_name": "KNZ_金沢市公共シェアサイクルまちのり事務局",
+      "area_name": "金沢",
       "lat": 36.598866,
       "lon": 136.657854,
       "bikes_available": 0,
@@ -1696,7 +1716,7 @@ window.PUBLIC_PORTS_DATA = {
       "station_id": "00004119",
       "port_name": "95.鳴和駐輪場",
       "port_name_en": "鳴和駐輪場",
-      "area_name": "KNZ_金沢市公共シェアサイクルまちのり事務局",
+      "area_name": "金沢",
       "lat": 36.587268,
       "lon": 136.675705,
       "bikes_available": 0,
@@ -1709,7 +1729,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.58199,
       "lon": 136.663713,
-      "bikes_available": 3,
+      "bikes_available": 4,
       "capacity": 4
     },
     {
@@ -1719,7 +1739,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.543696,
       "lon": 136.649739,
-      "bikes_available": 4,
+      "bikes_available": 3,
       "capacity": 20
     },
     {
@@ -1729,7 +1749,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.594743,
       "lon": 136.603998,
-      "bikes_available": 1,
+      "bikes_available": 2,
       "capacity": 12
     },
     {
@@ -1769,7 +1789,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "上田千曲広域",
       "lat": 36.532941,
       "lon": 138.127805,
-      "bikes_available": 7,
+      "bikes_available": 6,
       "capacity": 7
     },
     {
@@ -1799,7 +1819,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "上田千曲広域",
       "lat": 36.483478,
       "lon": 138.140884,
-      "bikes_available": 2,
+      "bikes_available": 3,
       "capacity": 4
     },
     {
@@ -1809,7 +1829,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.618424,
       "lon": 136.605225,
-      "bikes_available": 3,
+      "bikes_available": 2,
       "capacity": 5
     },
     {
@@ -1839,7 +1859,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.54614,
       "lon": 136.703719,
-      "bikes_available": 4,
+      "bikes_available": 2,
       "capacity": 4
     },
     {
@@ -1849,7 +1869,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.539791,
       "lon": 136.649422,
-      "bikes_available": 2,
+      "bikes_available": 1,
       "capacity": 10
     },
     {
@@ -1869,7 +1889,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.53451,
       "lon": 136.649854,
-      "bikes_available": 2,
+      "bikes_available": 3,
       "capacity": 10
     },
     {
@@ -1889,8 +1909,8 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.542658,
       "lon": 136.626485,
-      "bikes_available": 6,
-      "capacity": 7
+      "bikes_available": 8,
+      "capacity": 8
     },
     {
       "station_id": "00006099",
@@ -1929,7 +1949,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.541689,
       "lon": 136.598552,
-      "bikes_available": 2,
+      "bikes_available": 1,
       "capacity": 9
     },
     {
@@ -1939,7 +1959,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.541777,
       "lon": 136.597853,
-      "bikes_available": 5,
+      "bikes_available": 3,
       "capacity": 9
     },
     {
@@ -1969,7 +1989,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.532538,
       "lon": 136.6083,
-      "bikes_available": 4,
+      "bikes_available": 5,
       "capacity": 12
     },
     {
@@ -2029,8 +2049,8 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "上田千曲広域",
       "lat": 36.397019,
       "lon": 138.250168,
-      "bikes_available": 9,
-      "capacity": 9
+      "bikes_available": 10,
+      "capacity": 10
     },
     {
       "station_id": "00002723",
@@ -2049,7 +2069,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "上田千曲広域",
       "lat": 36.403216,
       "lon": 138.247279,
-      "bikes_available": 5,
+      "bikes_available": 3,
       "capacity": 7
     },
     {
@@ -2059,7 +2079,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "上田千曲広域",
       "lat": 36.402258,
       "lon": 138.248609,
-      "bikes_available": 4,
+      "bikes_available": 2,
       "capacity": 5
     },
     {
@@ -2069,8 +2089,18 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "上田千曲広域",
       "lat": 36.401062,
       "lon": 138.252338,
-      "bikes_available": 3,
+      "bikes_available": 1,
       "capacity": 5
+    },
+    {
+      "station_id": "00000808",
+      "port_name": "U-06.北国街道柳町南",
+      "port_name_en": "北国街道柳町南",
+      "area_name": "上田千曲広域",
+      "lat": 36.40465,
+      "lon": 138.25367,
+      "bikes_available": 1,
+      "capacity": 0
     },
     {
       "station_id": "00000809",
@@ -2079,8 +2109,18 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "上田千曲広域",
       "lat": 36.40013,
       "lon": 138.25977,
-      "bikes_available": 7,
-      "capacity": 7
+      "bikes_available": 8,
+      "capacity": 8
+    },
+    {
+      "station_id": "00000810",
+      "port_name": "U-08.アリオ上田",
+      "port_name_en": "アリオ上田",
+      "area_name": "上田千曲広域",
+      "lat": 36.39827,
+      "lon": 138.2458,
+      "bikes_available": 0,
+      "capacity": 4
     },
     {
       "station_id": "00000811",
@@ -2089,8 +2129,18 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "上田千曲広域",
       "lat": 36.39241,
       "lon": 138.25809,
-      "bikes_available": 1,
+      "bikes_available": 2,
       "capacity": 3
+    },
+    {
+      "station_id": "00001864",
+      "port_name": "U-10.ユーメイト",
+      "port_name_en": "ユーメイト",
+      "area_name": "上田千曲広域",
+      "lat": 36.40638,
+      "lon": 138.25855,
+      "bikes_available": 0,
+      "capacity": 0
     },
     {
       "station_id": "00000812",
@@ -2101,6 +2151,26 @@ window.PUBLIC_PORTS_DATA = {
       "lon": 138.27339,
       "bikes_available": 1,
       "capacity": 3
+    },
+    {
+      "station_id": "00002725",
+      "port_name": "U-12.三好町駅",
+      "port_name_en": "三好町駅",
+      "area_name": "上田千曲広域",
+      "lat": 36.391752,
+      "lon": 138.235079,
+      "bikes_available": 0,
+      "capacity": 1
+    },
+    {
+      "station_id": "00002726",
+      "port_name": "U-13.赤坂上駅",
+      "port_name_en": "赤坂上駅",
+      "area_name": "上田千曲広域",
+      "lat": 36.391385,
+      "lon": 138.227576,
+      "bikes_available": 0,
+      "capacity": 1
     },
     {
       "station_id": "00002727",
@@ -2183,6 +2253,16 @@ window.PUBLIC_PORTS_DATA = {
       "capacity": 6
     },
     {
+      "station_id": "00005683",
+      "port_name": "U-22.大星神社",
+      "port_name_en": "大星神社",
+      "area_name": "上田千曲広域",
+      "lat": 36.413166,
+      "lon": 138.255322,
+      "bikes_available": 0,
+      "capacity": 2
+    },
+    {
       "station_id": "00005684",
       "port_name": "U-23.上田城跡公園南",
       "port_name_en": "上田城跡公園南",
@@ -2259,7 +2339,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "上田千曲広域",
       "lat": 36.392683,
       "lon": 138.242769,
-      "bikes_available": 3,
+      "bikes_available": 4,
       "capacity": 4
     },
     {
@@ -2309,7 +2389,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "福井",
       "lat": 36.062804,
       "lon": 136.240577,
-      "bikes_available": 2,
+      "bikes_available": 3,
       "capacity": 3
     },
     {
@@ -2319,7 +2399,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "福井",
       "lat": 36.082174,
       "lon": 136.22163,
-      "bikes_available": 1,
+      "bikes_available": 2,
       "capacity": 4
     },
     {
@@ -2329,7 +2409,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "福井",
       "lat": 36.04521,
       "lon": 136.22709,
-      "bikes_available": 8,
+      "bikes_available": 3,
       "capacity": 8
     },
     {
@@ -2359,14 +2439,14 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "福井",
       "lat": 36.081518,
       "lon": 136.218017,
-      "bikes_available": 5,
+      "bikes_available": 3,
       "capacity": 5
     },
     {
       "station_id": "00002842",
       "port_name": "【臨時】福井運動公園",
       "port_name_en": "【臨時】福井運動公園",
-      "area_name": "FKI_ふくチャリ",
+      "area_name": "福井",
       "lat": 36.051868,
       "lon": 136.184979,
       "bikes_available": 0,

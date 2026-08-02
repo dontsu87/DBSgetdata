@@ -420,10 +420,12 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
             const isHighlighted = bike.status ? checkedHighlightStatuses.includes(bike.status.trim()) : false;
             
             let isPrefixMatch = true;
-            if (!isAllPrefixesChecked && checkedPrefixes && checkedPrefixes.length > 0) {
-                const bikePrefixMatch = bike.bike_id ? bike.bike_id.match(/^[A-Za-z]+/) : null;
-                const bikePrefix = bikePrefixMatch ? bikePrefixMatch[0].toUpperCase() : "";
-                isPrefixMatch = checkedPrefixes.includes(bikePrefix);
+            if (!isAllPrefixesChecked) {
+                isPrefixMatch = matchesBikePrefix(
+                    bike.bike_id,
+                    checkedPrefixes,
+                    isAllPrefixesChecked
+                );
             }
             
             let isReplaced = false;
@@ -649,12 +651,13 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
         } else {
             // 表示対象の自転車リスト。表示対象(matchingBikes)があればそれを、なければそのポートにあるすべての自転車(port.bikes)を表示
             const filterBikesByPrefix = (bikes) => {
-                if (isAllPrefixesChecked || !checkedPrefixes || checkedPrefixes.length === 0) return bikes;
-                return bikes.filter(bike => {
-                    const bikePrefixMatch = bike.bike_id ? bike.bike_id.match(/^[A-Za-z]+/) : null;
-                    const bikePrefix = bikePrefixMatch ? bikePrefixMatch[0].toUpperCase() : "";
-                    return checkedPrefixes.includes(bikePrefix);
-                });
+                if (isAllPrefixesChecked) return bikes;
+                if (!Array.isArray(checkedPrefixes)) return [];
+                return bikes.filter(bike => matchesBikePrefix(
+                    bike.bike_id,
+                    checkedPrefixes,
+                    isAllPrefixesChecked
+                ));
             };
             const displayBikes = filterBikesByPrefix((matchingBikes.length > 0) ? matchingBikes : port.bikes);
 

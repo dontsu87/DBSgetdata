@@ -51,6 +51,32 @@ function isMobileLayout() {
     return false;
 }
 
+function normalizeAreaName(value) {
+    const name = String(value || '').trim();
+    if (!name) return '';
+    const areaCode = name.split('_', 1)[0].toUpperCase();
+    return AREA_CODE_ALIASES[areaCode] || name;
+}
+
+function findMatchingArea(areas, requestedArea) {
+    const requested = normalizeAreaName(requestedArea);
+    if (!requested) return '';
+    return areas.find(area => normalizeAreaName(area) === requested)
+        || areas.find(area => normalizeAreaName(area).toLowerCase().includes(requested.toLowerCase()))
+        || '';
+}
+
+function extractBikePrefix(bikeId) {
+    const match = String(bikeId || '').match(/^[A-Za-z]+/);
+    return match ? match[0].toUpperCase() : '';
+}
+
+function matchesBikePrefix(bikeId, selectedPrefixes, isAllSelected) {
+    if (isAllSelected) return true;
+    return Array.isArray(selectedPrefixes)
+        && selectedPrefixes.includes(extractBikePrefix(bikeId));
+}
+
 function getRestrictedArea() {
     const params = new URLSearchParams(searchQuery);
     if (params.has('kanriall')) {

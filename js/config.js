@@ -2,6 +2,15 @@
 const EMOJI_UNLOCKED = '🔑';
 const EMOJI_HIGHLIGHT = '⚠️';
 
+const DEFAULT_AREA_NAME = '金沢';
+const AREA_CODE_ALIASES = Object.freeze({
+    FKI: '福井',
+    KMT: '小松',
+    KNZ: '金沢',
+    SNN: '上田千曲広域',
+    TRG: '敦賀'
+});
+
 const KINDAI_PORTS_MASTER = {
     "00001685": { name: "E13_臨時 角間キャンパス北地区駐車場", lat: 36.5485, lon: 136.7025 },
     "00001686": { name: "E14_臨時 角間キャンパス南地区駐車場", lat: 36.54614, lon: 136.703719 },
@@ -14,4 +23,3 @@ const KINDAI_PORTS_MASTER = {
 };
 
 const KINDAI_STATION_IDS = Object.keys(KINDAI_PORTS_MASTER);
-

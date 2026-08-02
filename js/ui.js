@@ -235,16 +235,20 @@ function initUIComponents() {
 function initAreaTabs(data) {
     if (!data || !data.ports) return;
     
-    let areas = Array.from(new Set(data.ports.map(p => p.area_name))).filter(Boolean);
+    let areas = Array.from(new Set(data.ports.map(p => normalizeAreaName(p.area_name)))).filter(Boolean);
     const limitAreaParam = getRestrictedArea();
+
+    // 自動更新中の選択値や旧端末キャッシュを、現行エリア名へ移行する。
+    selectedArea = findMatchingArea(areas, selectedArea);
+
     if (isKindaiMode()) {
-        const matchedArea = areas.find(a => a.includes("KNZ"));
+        const matchedArea = findMatchingArea(areas, DEFAULT_AREA_NAME);
         if (matchedArea) {
             areas = [matchedArea];
             selectedArea = matchedArea;
         }
     } else if (limitAreaParam) {
-        const matchedArea = areas.find(a => a.toLowerCase().includes(limitAreaParam.toLowerCase()));
+        const matchedArea = findMatchingArea(areas, limitAreaParam);
         if (matchedArea) {
             areas = [matchedArea];
             selectedArea = matchedArea; 
@@ -254,13 +258,17 @@ function initAreaTabs(data) {
     if (!selectedArea) {
         if (!limitAreaParam && !isKindaiMode()) {
             const cachedArea = loadFromCache('selected_area', '');
-            if (cachedArea && areas.includes(cachedArea)) {
-                selectedArea = cachedArea;
+            const matchedCachedArea = findMatchingArea(areas, cachedArea);
+            if (matchedCachedArea) {
+                selectedArea = matchedCachedArea;
             }
         }
         if (!selectedArea) {
-            selectedArea = areas.find(a => a.includes("KNZ")) || areas[0] || "";
+            selectedArea = findMatchingArea(areas, DEFAULT_AREA_NAME) || areas[0] || "";
         }
+    }
+    if (selectedArea) {
+        saveToCache('selected_area', selectedArea);
     }
 
     const currentAreasStr = areas.sort().join(',');
@@ -334,9 +342,8 @@ function initStatusFilter(data) {
 
     // 特定の重要なステータスは、実データに一切含まれていなくても常にフィルターに表示させる
     const alwaysVisibleStatuses = [
-        'AT異常(AT通知受信なし)',
-        'AT異常(電池なし)',
-        'メンテナンス(アラート付)'
+        'AT異常全般',
+        'メンテナンス(手動)'
     ];
     alwaysVisibleStatuses.forEach(s => statuses.add(s));
 
@@ -501,9 +508,9 @@ function updatePrefixFilterUI(data) {
         if (port.bikes) {
             port.bikes.forEach(bike => {
                 if (bike.area_name === selectedArea && bike.bike_id) {
-                    const match = bike.bike_id.match(/^[A-Za-z]+/);
-                    if (match) {
-                        prefixes.add(match[0].toUpperCase());
+                    const prefix = extractBikePrefix(bike.bike_id);
+                    if (prefix) {
+                        prefixes.add(prefix);
                     }
                 }
             });
@@ -526,7 +533,7 @@ function updatePrefixFilterUI(data) {
     
     if (Array.isArray(cachedChecked)) {
         checkedPrefixes = cachedChecked.filter(p => sortedPrefixes.includes(p));
-        if (checkedPrefixes.length === 0) {
+        if (cachedChecked.length > 0 && checkedPrefixes.length === 0) {
             checkedPrefixes = [...sortedPrefixes];
         }
     } else {
