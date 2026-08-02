@@ -1,16 +1,9 @@
-name: DBS Scraper Auto Run
+name: DBS Scraper Manual Run
 
+# 本番取得はWindowsタスクスケジューラで実行する。
+# GitHub側は旧認証設定によるpush時の不要な失敗を避け、手動実行だけ残す。
 on:
-  push:
-    branches:
-      - master
-  pull_request:
-    branches:
-      - master
-#   schedule:
-#     # 5分おきに自動実行するスケジュール
-#     - cron: '*/5 * * * *'
-  workflow_dispatch: # 手動起動用
+  workflow_dispatch:
 
 jobs:
   run-scraper:

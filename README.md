@@ -28,6 +28,18 @@
    - `DBS_PASSWORD`: ログインパスワード
    - `ONEDRIVE_OUTPUT_DIR`: 出力先フォルダ（例: `C:\Users\Username\OneDrive\バイクシェア\車両情報`）
 
+### ポート外車両の位置詳細取得
+
+通常の車両一覧取得後、最新GBFSに対応するポート座標がない車両だけを対象に、位置詳細APIを追加取得します。取得結果は車両CSVと履歴Parquetに、`位置詳細取得フラグ`、`位置詳細取得状態`、`車両位置緯度`、`車両位置経度`などとして保存されます。
+
+負荷が高い場合は、一覧取得を止めずに追加取得だけを停止できます。
+
+```text
+DBS_VEHICLE_LOCATION_FETCH_ENABLED=false
+```
+
+台数上限と呼び出し間隔は `DBS_VEHICLE_LOCATION_FETCH_MAX_PER_RUN`（既定200台）、`DBS_VEHICLE_LOCATION_FETCH_DELAY_MS`（既定100ms）で調整できます。
+
 ## ディレクトリ構成
 - `src/`: アプリケーションのコアコード
 - `tests/`: 単体テストコード

@@ -246,7 +246,7 @@ def export_to_onedrive(df_list: list[pd.DataFrame]) -> str:
     combined_df['交換日時'] = replace_time_list
 
     # カラム順序を整理 (新しく追加した station_id, lat, lon, AT種別, 連続利用開始日時, 同一ポート継続利用時間(秒), 交換前電圧, 交換後電圧, 交換日時 も含める)
-    columns_order = ['エリア名', '識別番号', '車両状態', 'ポート名', 'station_id', 'lat', 'lon', '電圧', 'AT通知受信日時', 'AT種別', '連続利用開始日時', '同一ポート継続利用時間(秒)', '交換前電圧', '交換後電圧', '交換日時']
+    columns_order = ['エリア名', '識別番号', '車両状態', 'ポート名', 'station_id', 'lat', 'lon', '位置詳細取得フラグ', '位置詳細取得状態', '車両位置緯度', '車両位置経度', '車両位置測位日時', '車両位置標高', '車両位置速度', '車両位置方位', '車両位置衛星数', '電圧', 'AT通知受信日時', 'AT種別', '連続利用開始日時', '同一ポート継続利用時間(秒)', '交換前電圧', '交換後電圧', '交換日時']
 
     # 存在するカラムのみで再配置
     columns_order = [col for col in columns_order if col in combined_df.columns]
@@ -685,7 +685,7 @@ def merge_and_upload_historical_logs(until_file: str) -> bool:
     
     # マージ処理
     df_list = []
-    keep_cols = ['エリア名', '識別番号', '車両状態', 'ポート名', 'station_id', 'lat', 'lon', '電圧', 'AT通知受信日時', '連続利用開始日時', '同一ポート継続利用時間(秒)', '交換前電圧', '交換後電圧', '交換日時']
+    keep_cols = ['エリア名', '識別番号', '車両状態', 'ポート名', 'station_id', 'lat', 'lon', '位置詳細取得フラグ', '位置詳細取得状態', '車両位置緯度', '車両位置経度', '車両位置測位日時', '車両位置標高', '車両位置速度', '車両位置方位', '車両位置衛星数', '電圧', 'AT通知受信日時', '連続利用開始日時', '同一ポート継続利用時間(秒)', '交換前電圧', '交換後電圧', '交換日時']
     
     print("Info: 過去ファイルの読み込みを開始します...")
     for idx, filepath in enumerate(csv_files):

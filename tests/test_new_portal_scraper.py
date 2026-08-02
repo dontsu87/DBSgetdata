@@ -87,6 +87,8 @@ def test_scrape_all_vehicles_http_paginates_maps_and_deduplicates(monkeypatch):
     assert all(call[1]["timeout"] == portal.HTTP_TIMEOUT for call in http.calls)
     assert list(frame.columns) == [
         "エリア名", "識別番号", "車両状態", "ポート名", "電圧", "AT通知受信日時",
+        "位置詳細取得フラグ", "位置詳細取得状態", "車両位置緯度", "車両位置経度",
+        "車両位置測位日時", "車両位置標高", "車両位置速度", "車両位置方位", "車両位置衛星数",
     ]
     assert list(frame["識別番号"]) == ["B-002", "A-001"]
     assert frame.loc[1, "車両状態"] == "メンテナンス(手動)"
@@ -194,7 +196,81 @@ def test_scrape_all_vehicles_returns_compatible_empty_frame():
     assert frame.empty
     assert list(frame.columns) == [
         "エリア名", "識別番号", "車両状態", "ポート名", "電圧", "AT通知受信日時",
+        "位置詳細取得フラグ", "位置詳細取得状態", "車両位置緯度", "車両位置経度",
+        "車両位置測位日時", "車両位置標高", "車両位置速度", "車両位置方位", "車両位置衛星数",
     ]
+
+
+def test_fetch_vehicle_location_details_collects_gps_and_audit_fields():
+    rows = [
+        {
+            'areaName': '金沢',
+            'vehicleUniqueCode': 'OUT-001',
+            'portName': '',
+            'attachmentId': 'AT-001',
+        },
+        {
+            'areaName': '金沢',
+            'vehicleUniqueCode': 'IN-001',
+            'portName': '駅前',
+            'attachmentId': 'AT-002',
+        },
+    ]
+    http = FakeHttpSession([
+        FakeResponse(body={
+            'gpsInfo': {
+                'gpsGlobalLocationLatitude': 36.578,
+                'gpsGlobalLocationLongitude': 136.648,
+                'gpsGlobalLocationDateTime': '2026-08-02T01:02:03Z',
+                'gpsGlobalLocationElevation': 12.3,
+                'gpsGlobalLocationGroundSpeed': 4.5,
+                'gpsGlobalLocationDirection': 90,
+                'gpsGlobalLocationSatellitesNumber': 8,
+            },
+        }),
+    ])
+
+    portal.fetch_vehicle_location_details(
+        rows,
+        http_session=http,
+        base_url='https://mg.example/',
+        known_port_names={'駅前'},
+        enabled=True,
+        max_per_run=10,
+        delay_ms=0,
+    )
+
+    assert len(http.calls) == 1
+    assert http.calls[0][0].endswith('/api/attachments/AT-001')
+    assert rows[0]['vehicleLocationFetchFlag'] == 1
+    assert rows[0]['vehicleLocationFetchStatus'] == '取得成功'
+    assert rows[0]['vehicleGpsLatitude'] == pytest.approx(36.578)
+    assert rows[0]['vehicleGpsLongitude'] == pytest.approx(136.648)
+    assert rows[1]['vehicleLocationFetchFlag'] == 0
+    assert rows[1]['vehicleLocationFetchStatus'] == '対象外'
+
+
+def test_fetch_vehicle_location_details_can_be_stopped_without_detail_calls():
+    rows = [{
+        'vehicleUniqueCode': 'OUT-001',
+        'portName': '',
+        'attachmentId': 'AT-001',
+    }]
+    http = FakeHttpSession([])
+
+    portal.fetch_vehicle_location_details(
+        rows,
+        http_session=http,
+        base_url='https://mg.example/',
+        known_port_names={'駅前'},
+        enabled=False,
+        max_per_run=10,
+        delay_ms=0,
+    )
+
+    assert http.calls == []
+    assert rows[0]['vehicleLocationFetchFlag'] == 0
+    assert rows[0]['vehicleLocationFetchStatus'] == '停止中'
 
 
 def test_scrape_all_vehicles_rejects_missing_required_fields():

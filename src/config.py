@@ -15,6 +15,18 @@ def _int_env(name: str, default: int) -> int:
     except ValueError:
         return default
 
+
+def _bool_env(name: str, default: bool) -> bool:
+    """環境変数を真偽値として読み込みます。"""
+    value = os.getenv(name, '').strip().lower()
+    if not value:
+        return default
+    if value in ('true', '1', 'yes', 'on'):
+        return True
+    if value in ('false', '0', 'no', 'off'):
+        return False
+    return default
+
 class Config:
     ACCOUNT = os.getenv("DBS_ACCOUNT", "")
     PASSWORD = os.getenv("DBS_PASSWORD", "")
@@ -61,6 +73,18 @@ class Config:
     def login_credentials(cls, is_worker: bool = True):
         """刷新後ポータルの (メールアドレス, パスワード) を返します。"""
         return cls.LOGIN_EMAIL, cls.LOGIN_PASSWORD
+
+    # 車両位置詳細の追加取得。車両一覧取得とは独立した負荷停止スイッチ。
+    # 既定では有効。負荷を下げる場合は DBS_VEHICLE_LOCATION_FETCH_ENABLED=false。
+    VEHICLE_LOCATION_FETCH_ENABLED = _bool_env(
+        'DBS_VEHICLE_LOCATION_FETCH_ENABLED', True
+    )
+    VEHICLE_LOCATION_FETCH_MAX_PER_RUN = _int_env(
+        'DBS_VEHICLE_LOCATION_FETCH_MAX_PER_RUN', 200
+    )
+    VEHICLE_LOCATION_FETCH_DELAY_MS = _int_env(
+        'DBS_VEHICLE_LOCATION_FETCH_DELAY_MS', 100
+    )
 
     # メール2段階認証コードの受け渡し (Power Automate → OneDrive 共有ファイル)
     # 詳細仕様: docs/email-2fa-power-automate-spec.md

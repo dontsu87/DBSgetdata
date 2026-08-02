@@ -2,6 +2,9 @@
 """刷新後の管理ポータルから、読み取り専用GET APIで車両情報を取得する。"""
 
 import json
+import glob
+import os
+import re
 import time
 from pathlib import Path
 from urllib.parse import urljoin, urlparse
@@ -9,6 +12,7 @@ from urllib.parse import urljoin, urlparse
 import pandas as pd
 import requests
 
+from src.config import Config
 from src.session_store import SESSION_FILE, app_url
 
 
@@ -32,6 +36,19 @@ VEHICLE_STATE_LABELS = {
 HTTP_TIMEOUT = (10, 30)
 PAGE_SIZE = 500
 MAX_PAGES = 1000
+LOCATION_ATTACHMENT_ID = re.compile(r'^[A-Za-z0-9:_-]+$')
+
+LOCATION_SOURCE_COLUMNS = {
+    'vehicleLocationFetchFlag': '位置詳細取得フラグ',
+    'vehicleLocationFetchStatus': '位置詳細取得状態',
+    'vehicleGpsLatitude': '車両位置緯度',
+    'vehicleGpsLongitude': '車両位置経度',
+    'vehicleGpsDateTime': '車両位置測位日時',
+    'vehicleGpsElevation': '車両位置標高',
+    'vehicleGpsGroundSpeed': '車両位置速度',
+    'vehicleGpsDirection': '車両位置方位',
+    'vehicleGpsSatellites': '車両位置衛星数',
+}
 
 
 class PortalSessionError(RuntimeError):
@@ -75,6 +92,8 @@ const done = arguments[arguments.length - 1];
       for (const vehicle of vehicles) {
         rows.push({
           areaName: area.areaName || 'その他',
+          vehicleId: vehicle.vehicleId ?? '',
+          attachmentId: vehicle.attachmentId ?? '',
           vehicleUniqueCode: vehicle.vehicleUniqueCode ?? '',
           vehicleState: vehicle.vehicleState ?? '',
           portName: vehicle.portName ?? '',
@@ -187,6 +206,175 @@ def _as_list(body):
     return body
 
 
+def _load_known_port_names(output_dir=None):
+    "最新GBFSに存在するポート名を返す。無い場合はNone（空欄だけを対象にする）。"
+    output_dir = output_dir or Config.OUTPUT_DIR
+    files = sorted(glob.glob(os.path.join(str(output_dir), 'gbfs_stations_*.csv')))
+    if not files:
+        return None
+
+    try:
+        stations = pd.read_csv(files[-1], encoding='utf-8-sig')
+    except (OSError, UnicodeError, pd.errors.ParserError):
+        print('Warning: GBFSポート名を読めないため、空欄ポートだけを位置詳細取得対象にします。')
+        return None
+    if 'name' not in stations.columns:
+        return None
+
+    return {
+        str(value).strip()
+        for value in stations['name'].dropna()
+        if str(value).strip()
+    }
+
+
+def _is_out_of_port_row(row, known_port_names):
+    "フロントエンドの「ポート外」（GBFSに対応する座標が無い）に近い判定。"
+    port_name = str(row.get('portName') or '').strip()
+    if not port_name:
+        return True
+    if known_port_names is None:
+        # GBFSが無い場合は、一覧APIだけで確実に判定できる空欄に限定する。
+        return False
+    return port_name not in known_port_names
+
+
+def fetch_vehicle_location_details(
+    rows,
+    *,
+    http_session,
+    base_url,
+    known_port_names=None,
+    enabled=None,
+    max_per_run=None,
+    delay_ms=None,
+    timeout=HTTP_TIMEOUT,
+    sleep=time.sleep,
+):
+    "対象車両の位置詳細を追加取得し、監査用の状態を行へ設定する。"
+    if enabled is None:
+        enabled = Config.VEHICLE_LOCATION_FETCH_ENABLED
+    if max_per_run is None:
+        max_per_run = Config.VEHICLE_LOCATION_FETCH_MAX_PER_RUN
+    if delay_ms is None:
+        delay_ms = Config.VEHICLE_LOCATION_FETCH_DELAY_MS
+
+    try:
+        max_per_run = max(0, int(max_per_run))
+    except (TypeError, ValueError):
+        max_per_run = 0
+    try:
+        delay_ms = max(0, int(delay_ms))
+    except (TypeError, ValueError):
+        delay_ms = 0
+
+    if known_port_names is None:
+        known_port_names = _load_known_port_names()
+
+    target_count = 0
+    attempted = 0
+    success_count = 0
+    failed_count = 0
+    skipped_count = 0
+
+    for row in rows:
+        target = _is_out_of_port_row(row, known_port_names)
+        row['vehicleLocationFetchFlag'] = 0
+        row['vehicleGpsLatitude'] = None
+        row['vehicleGpsLongitude'] = None
+        row['vehicleGpsDateTime'] = ''
+        row['vehicleGpsElevation'] = None
+        row['vehicleGpsGroundSpeed'] = None
+        row['vehicleGpsDirection'] = None
+        row['vehicleGpsSatellites'] = None
+
+        if not target:
+            row['vehicleLocationFetchStatus'] = '対象外'
+            continue
+
+        target_count += 1
+        if not enabled:
+            row['vehicleLocationFetchStatus'] = '停止中'
+            skipped_count += 1
+            continue
+        if attempted >= max_per_run:
+            row['vehicleLocationFetchStatus'] = '上限超過'
+            skipped_count += 1
+            continue
+
+        attachment_id = str(
+            row.get('attachmentId')
+            or row.get('attachment_id')
+            or row.get('atId')
+            or ''
+        ).strip()
+        if not attachment_id:
+            row['vehicleLocationFetchStatus'] = 'attachmentIdなし'
+            skipped_count += 1
+            continue
+        if not LOCATION_ATTACHMENT_ID.fullmatch(attachment_id):
+            row['vehicleLocationFetchStatus'] = 'attachmentId不正'
+            skipped_count += 1
+            continue
+
+        attempted += 1
+        detail_url = urljoin(base_url, 'api/attachments/' + attachment_id)
+        try:
+            detail = _get_json(http_session, detail_url, timeout=timeout)
+        except PortalSessionError:
+            # セッション切れは一覧処理と同じく上位の再認証フローへ渡す。
+            raise
+        except (PortalApiError, requests.RequestException):
+            row['vehicleLocationFetchStatus'] = '取得失敗'
+            failed_count += 1
+            if delay_ms:
+                sleep(delay_ms / 1000)
+            continue
+
+        payload = detail
+        if isinstance(detail, dict) and isinstance(detail.get('data'), dict):
+            payload = detail['data']
+        gps = payload.get('gpsInfo') if isinstance(payload, dict) else None
+        if not isinstance(gps, dict) and isinstance(payload, dict):
+            gps = payload.get('globalLocation')
+        if not isinstance(gps, dict):
+            gps = {}
+
+        gps_map = {
+            'vehicleGpsLatitude': 'gpsGlobalLocationLatitude',
+            'vehicleGpsLongitude': 'gpsGlobalLocationLongitude',
+            'vehicleGpsDateTime': 'gpsGlobalLocationDateTime',
+            'vehicleGpsElevation': 'gpsGlobalLocationElevation',
+            'vehicleGpsGroundSpeed': 'gpsGlobalLocationGroundSpeed',
+            'vehicleGpsDirection': 'gpsGlobalLocationDirection',
+            'vehicleGpsSatellites': 'gpsGlobalLocationSatellitesNumber',
+        }
+        for destination, source in gps_map.items():
+            row[destination] = gps.get(source)
+
+        # フラグ1は詳細APIの取得成功。座標が無い場合は状態「座標なし」で区別する。
+        row['vehicleLocationFetchFlag'] = 1
+        has_coordinates = (
+            row['vehicleGpsLatitude'] is not None
+            and row['vehicleGpsLongitude'] is not None
+        )
+        row['vehicleLocationFetchStatus'] = '取得成功' if has_coordinates else '座標なし'
+        success_count += 1
+        if delay_ms:
+            sleep(delay_ms / 1000)
+
+    if not enabled:
+        summary = '停止中'
+    else:
+        summary = (
+            'targets=' + str(target_count) + ', attempted=' + str(attempted)
+            + ', success=' + str(success_count) + ', failed=' + str(failed_count)
+            + ', skipped=' + str(skipped_count)
+        )
+    print('[Vehicle Location] ' + summary)
+    return rows
+
+
 def _frame_from_rows(rows) -> pd.DataFrame:
     source_columns = {
         "areaName": "エリア名",
@@ -196,11 +384,31 @@ def _frame_from_rows(rows) -> pd.DataFrame:
         "batteryElectricVoltage": "電圧",
         "dataReceivedTs": "AT通知受信日時",
     }
+    source_columns.update(LOCATION_SOURCE_COLUMNS)
     frame = pd.DataFrame(rows)
     if frame.empty:
         return pd.DataFrame(columns=list(source_columns.values()))
 
-    missing = set(source_columns) - set(frame.columns)
+    optional_defaults = {
+        'vehicleLocationFetchFlag': 0,
+        'vehicleLocationFetchStatus': '未取得',
+        'vehicleGpsLatitude': None,
+        'vehicleGpsLongitude': None,
+        'vehicleGpsDateTime': '',
+        'vehicleGpsElevation': None,
+        'vehicleGpsGroundSpeed': None,
+        'vehicleGpsDirection': None,
+        'vehicleGpsSatellites': None,
+    }
+    for key, default in optional_defaults.items():
+        if key not in frame.columns:
+            frame[key] = default
+
+    required_columns = {
+        'areaName', 'vehicleUniqueCode', 'vehicleState', 'portName',
+        'batteryElectricVoltage', 'dataReceivedTs',
+    }
+    missing = required_columns - set(frame.columns)
     if missing:
         raise PortalApiError(
             f"車両情報APIの必須項目が不足しています: {', '.join(sorted(missing))}"
@@ -208,6 +416,14 @@ def _frame_from_rows(rows) -> pd.DataFrame:
     frame = frame.rename(columns=source_columns)[list(source_columns.values())]
     frame["車両状態"] = frame["車両状態"].map(_state_label)
     frame["電圧"] = pd.to_numeric(frame["電圧"], errors="coerce")
+    frame['位置詳細取得フラグ'] = pd.to_numeric(
+        frame['位置詳細取得フラグ'], errors='coerce'
+    ).fillna(0).astype(int)
+    for column in (
+        '車両位置緯度', '車両位置経度', '車両位置標高',
+        '車両位置速度', '車両位置方位', '車両位置衛星数',
+    ):
+        frame[column] = pd.to_numeric(frame[column], errors='coerce')
     return frame.drop_duplicates(subset=["識別番号"], keep="last").reset_index(drop=True)
 
 
@@ -265,6 +481,8 @@ def scrape_all_vehicles_http(
                     if not isinstance(vehicle, dict):
                         raise PortalApiError("車両一覧APIの応答形式が不正です。")
                     rows.append({
+                        'vehicleId': vehicle.get('vehicleId', ''),
+                        'attachmentId': vehicle.get('attachmentId', ''),
                         "areaName": area_name,
                         "vehicleUniqueCode": vehicle.get("vehicleUniqueCode", ""),
                         "vehicleState": vehicle.get("vehicleState", ""),
@@ -282,6 +500,13 @@ def scrape_all_vehicles_http(
             else:
                 raise PortalApiError("車両一覧のページ数が上限を超えました。")
 
+        fetch_vehicle_location_details(
+            rows,
+            http_session=http_session,
+            base_url=base_url,
+            sleep=sleep,
+            timeout=timeout,
+        )
         frame = _frame_from_rows(rows)
         print(
             "Success: 新管理ポータルから車両情報をHTTP取得しました"
