@@ -159,6 +159,6 @@ def upload_public_ports() -> bool:
 if __name__ == "__main__":
     success_dash = upload_dashboard_data()
     success_public = upload_public_ports()
-    sys.exit(0 if (success_dash or success_public) else 1)
+    sys.exit(0 if (success_dash and success_public) else 1)
 
 

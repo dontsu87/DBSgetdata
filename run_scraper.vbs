@@ -15,10 +15,13 @@ uploadPath = scriptDir & "\src\upload_to_r2.py"
 
 ' 1. Run main.py (0 = hide window, True = wait for completion)
 mainCmd = """" & pyPath & """ -u """ & mainPath & """"
-exitCode = ws.run(mainCmd, 0, True)
+mainExitCode = ws.run(mainCmd, 0, True)
 
-If exitCode = 0 Then
-    ' 2. Run upload_to_r2.py only if main.py succeeded
-    uploadCmd = """" & pyPath & """ -u """ & uploadPath & """"
-    ws.run uploadCmd, 0, True
+If mainExitCode <> 0 Then
+    WScript.Quit mainExitCode
 End If
+
+' 2. Upload only after main.py succeeds, and propagate upload failure.
+uploadCmd = """" & pyPath & """ -u """ & uploadPath & """"
+uploadExitCode = ws.run(uploadCmd, 0, True)
+WScript.Quit uploadExitCode
