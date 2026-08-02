@@ -7,6 +7,14 @@ from dotenv import load_dotenv
 ROOT_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(dotenv_path=ROOT_DIR / ".env")
 
+def _int_env(name: str, default: int) -> int:
+    """環境変数を整数として読み込みます。未設定・不正値の場合は既定値を返します。"""
+    try:
+        value = os.getenv(name, "").strip()
+        return int(value) if value else default
+    except ValueError:
+        return default
+
 class Config:
     ACCOUNT = os.getenv("DBS_ACCOUNT", "")
     PASSWORD = os.getenv("DBS_PASSWORD", "")
@@ -37,25 +45,45 @@ class Config:
     WORKER_PASSWORD = os.getenv("DBS_WORKER_PASSWORD", "")
     WORKER_TOP_PAGE = os.getenv("DBS_WORKER_TOP_PAGE", "")
 
+    # 刷新後 (2026年8月〜) の新管理ポータル。
+    # 事業者用・作業員用の区別は廃止され、単一のポータルに統合された。
+    # 認証基盤は AWS Cognito の Hosted UI で、ログインIDはメールアドレス形式。
+    LOGIN_URL = os.getenv("DBS_LOGIN_URL", "")
+    LOGIN_EMAIL = os.getenv("DBS_LOGIN_EMAIL", "")
+    LOGIN_PASSWORD = os.getenv("DBS_LOGIN_PASSWORD", "")
+
+    @classmethod
+    def login_url(cls, is_worker: bool = True) -> str:
+        """刷新後ポータルのログインURLを返します。旧ポータルにはフォールバックしません。"""
+        return cls.LOGIN_URL
+
+    @classmethod
+    def login_credentials(cls, is_worker: bool = True):
+        """刷新後ポータルの (メールアドレス, パスワード) を返します。"""
+        return cls.LOGIN_EMAIL, cls.LOGIN_PASSWORD
+
+    # メール2段階認証コードの受け渡し (Power Automate → OneDrive 共有ファイル)
+    # 詳細仕様: docs/email-2fa-power-automate-spec.md
+    MAILCODE_SHARE_LINK = os.getenv("DBS_MAILCODE_SHARE_LINK", "")
+    MAILCODE_SHARE_PASSWORD = os.getenv("DBS_MAILCODE_SHARE_PASSWORD", "")
+    MAILCODE_TIMEOUT_SEC = _int_env("DBS_MAILCODE_TIMEOUT_SEC", 180)
+    MAILCODE_POLL_SEC = _int_env("DBS_MAILCODE_POLL_SEC", 10)
+    MAILCODE_MAX_AGE_SEC = _int_env("DBS_MAILCODE_MAX_AGE_SEC", 600)
+    # 受信時刻のクロックずれ許容幅（Exchange のサーバ時刻とローカル時計の差を吸収）
+    MAILCODE_CLOCK_SKEW_SEC = _int_env("DBS_MAILCODE_CLOCK_SKEW_SEC", 60)
+    # 空の場合は既定の抽出ロジック（キーワード近傍の4〜8桁）を使用
+    MAILCODE_REGEX = os.getenv("DBS_MAILCODE_REGEX", "")
+
     @classmethod
     def validate(cls, is_worker=False):
         """設定値のチェックを行い、不足している場合は例外を発生させます。"""
         missing = []
-        if is_worker:
-            if not cls.WORKER_ACCOUNT:
-                missing.append("DBS_WORKER_ACCOUNT")
-            if not cls.WORKER_PASSWORD:
-                missing.append("DBS_WORKER_PASSWORD")
-            if not cls.WORKER_TOP_PAGE:
-                missing.append("DBS_WORKER_TOP_PAGE")
-        else:
-            if not cls.ACCOUNT:
-                missing.append("DBS_ACCOUNT")
-            if not cls.PASSWORD:
-                missing.append("DBS_PASSWORD")
-            if not cls.TOP_PAGE:
-                missing.append("DBS_TOP_PAGE")
-            
+        if not cls.LOGIN_URL:
+            missing.append("DBS_LOGIN_URL")
+        if not cls.LOGIN_EMAIL:
+            missing.append("DBS_LOGIN_EMAIL")
+        if not cls.LOGIN_PASSWORD:
+            missing.append("DBS_LOGIN_PASSWORD")
         if missing:
             raise ValueError(
                 f".env ファイルに必要な設定が不足しています: {', '.join(missing)}\n"

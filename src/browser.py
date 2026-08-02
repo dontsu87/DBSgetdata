@@ -39,14 +39,19 @@ def get_windows_screen_size():
     except Exception:
         return None
 
-def build_driver(enable_performance_logging=False):
-    """Chrome WebDriverを構築します。"""
+def build_driver(enable_performance_logging=False, download_dir=None):
+    """
+    Chrome WebDriverを構築します。
+
+    download_dir: 自動ダウンロード先を明示する場合に指定します。
+                  未指定の場合は従来どおりプロジェクトのルートフォルダになります。
+    """
     options = webdriver.ChromeOptions()
 
-    # 自動ダウンロードフォルダの設定 (プロジェクトのルートフォルダを指定)
+    # 自動ダウンロードフォルダの設定 (既定はプロジェクトのルートフォルダ)
     from src.config import ROOT_DIR
     prefs = {
-        "download.default_directory": str(ROOT_DIR),
+        "download.default_directory": str(download_dir or ROOT_DIR),
         "download.prompt_for_download": False,
         "download.directory_upgrade": True,
         "safebrowsing.enabled": True

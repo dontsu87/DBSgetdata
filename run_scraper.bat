@@ -10,6 +10,10 @@ call .venv\Scripts\activate
 
 rem Run Python scraper script
 python -u main.py
+if errorlevel 1 (
+    echo [INFO] main.py was skipped or exited (code: %errorlevel%). Skipping R2 upload.
+    exit /b 0
+)
 
 rem --- [Cloudflare R2 Upload] ---
 rem Upload the latest dashboard data to Cloudflare R2

@@ -1,39 +1,47 @@
 # -*- coding: utf-8 -*-
-import unittest
 from unittest.mock import patch
+
+import pytest
+
 from src.config import Config
 
-class TestConfig(unittest.TestCase):
-    @patch('src.config.os.getenv')
-    def test_validate_missing_variables(self, mock_getenv):
-        # 必須環境変数が無い場合をシミュレート
-        mock_getenv.side_effect = lambda key, default="": ""
-        Config.ACCOUNT = ""
-        Config.PASSWORD = ""
-        Config.OUTPUT_DIR = ""
-        
-        with self.assertRaises(ValueError) as context:
-            Config.validate()
-        
-        self.assertIn("DBS_ACCOUNT", str(context.exception))
-        self.assertIn("DBS_PASSWORD", str(context.exception))
 
-    @patch('src.config.os.getenv')
-    @patch('src.config.os.makedirs')
-    def test_validate_success(self, mock_makedirs, mock_getenv):
-        # 必要な環境変数が揃っている場合をシミュレート
-        Config.ACCOUNT = "test_user"
-        Config.PASSWORD = "test_pass"
-        Config.OUTPUT_DIR = "C:\\dummy_onedrive_path"
-        
-        # 例外が発生しないことを確認
-        try:
-            Config.validate()
-        except ValueError as e:
-            self.fail(f"Config.validate() raised ValueError unexpectedly: {e}")
-            
-        mock_makedirs.assert_called_once_with("C:\\dummy_onedrive_path", exist_ok=True)
+def test_validate_missing_new_portal_variables(monkeypatch):
+    monkeypatch.setattr(Config, "LOGIN_URL", "")
+    monkeypatch.setattr(Config, "LOGIN_EMAIL", "")
+    monkeypatch.setattr(Config, "LOGIN_PASSWORD", "")
+
+    with pytest.raises(ValueError) as error:
+        Config.validate()
+
+    message = str(error.value)
+    assert "DBS_LOGIN_URL" in message
+    assert "DBS_LOGIN_EMAIL" in message
+    assert "DBS_LOGIN_PASSWORD" in message
 
 
-if __name__ == '__main__':
-    unittest.main()
+@patch("src.config.os.makedirs")
+def test_validate_new_portal_success(mock_makedirs, monkeypatch):
+    monkeypatch.setattr(Config, "LOGIN_URL", "https://mg-auth.example/login")
+    monkeypatch.setattr(Config, "LOGIN_EMAIL", "user@example.com")
+    monkeypatch.setattr(Config, "LOGIN_PASSWORD", "password")
+    monkeypatch.setattr(Config, "OUTPUT_DIR", r"C:\dummy_onedrive_path")
+
+    Config.validate(is_worker=True)
+
+    mock_makedirs.assert_called_once_with(r"C:\dummy_onedrive_path", exist_ok=True)
+
+
+def test_login_settings_never_fall_back_to_closed_portal(monkeypatch):
+    monkeypatch.setattr(Config, "LOGIN_URL", "")
+    monkeypatch.setattr(Config, "LOGIN_EMAIL", "")
+    monkeypatch.setattr(Config, "LOGIN_PASSWORD", "")
+    monkeypatch.setattr(Config, "TOP_PAGE", "https://closed-admin.example/")
+    monkeypatch.setattr(Config, "WORKER_TOP_PAGE", "https://closed-worker.example/")
+    monkeypatch.setattr(Config, "ACCOUNT", "legacy-admin")
+    monkeypatch.setattr(Config, "WORKER_ACCOUNT", "legacy-worker")
+
+    assert Config.login_url(is_worker=False) == ""
+    assert Config.login_url(is_worker=True) == ""
+    assert Config.login_credentials(is_worker=False) == ("", "")
+    assert Config.login_credentials(is_worker=True) == ("", "")

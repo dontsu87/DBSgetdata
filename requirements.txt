@@ -3,6 +3,7 @@ webdriver-manager
 beautifulsoup4
 pandas
 python-dotenv
+requests
 boto3
 flask
 flask-cors

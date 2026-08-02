@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""閉鎖済み旧ポータルのDOMスクレイパー（過去仕様の参考用・実行経路では未使用）。"""
 import time
 import pandas as pd
 from bs4 import BeautifulSoup

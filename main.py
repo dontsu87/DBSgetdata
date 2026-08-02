@@ -7,22 +7,33 @@ from datetime import datetime
 from selenium.webdriver.common.by import By
 from src.config import Config
 from src.browser import build_driver
-from src.auth import login_and_get_areas
+from src.auth import login_and_get_areas, authenticate_new_portal
 from src.scraper import open_vehicle_page, scrape_vehicle_page
+from src.new_portal_scraper import PortalSessionError, scrape_all_vehicles_http
 from src.exporter import export_to_onedrive, upload_to_onedrive_web
 from src.area_inspector import inspect_area_page
 from src.worker_inspector import inspect_worker_login_page
 
-def check_maintenance_mode():
+def check_maintenance_mode(json_path=None):
     """
     announcement.json からメンテナンス設定を読み込み、
-    現在時刻がメンテナンス開始時刻以降であればTrueを返します。
+    または環境変数 (DBS_DISABLE_SCRAPING / DBS_MAINTENANCE_MODE) を確認し、
+    メンテナンス・障害停止モードであれば True を返します。
     """
     import os
     import json
     from datetime import datetime, timezone, timedelta
 
-    json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "announcement.json")
+    # 環境変数による緊急停止スイッチ
+    disable_env = os.getenv("DBS_DISABLE_SCRAPING", "").lower() in ("true", "1", "yes")
+    maint_env = os.getenv("DBS_MAINTENANCE_MODE", "").lower() in ("true", "1", "yes")
+    if disable_env or maint_env:
+        print("【お知らせ】環境変数 (DBS_DISABLE_SCRAPING / DBS_MAINTENANCE_MODE) によりスクレイピング停止モードが有効です。処理をスキップします。")
+        return True
+
+    if json_path is None:
+        json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "announcement.json")
+
     if not os.path.exists(json_path):
         return False
 
@@ -34,9 +45,11 @@ def check_maintenance_mode():
         if not maintenance.get("enabled", False):
             return False
 
+        message = maintenance.get("message", "メンテナンス中")
         start_time_str = maintenance.get("start_time")
         if not start_time_str:
-            return False
+            print(f"【お知らせ】メンテナンス/障害対応モードが有効（理由: {message}）のため、処理をスキップして終了します。")
+            return True
 
         dt_str = start_time_str.replace("Z", "+00:00")
         maintenance_start = datetime.fromisoformat(dt_str)
@@ -48,18 +61,52 @@ def check_maintenance_mode():
         now = datetime.now(timezone.utc)
         
         if now >= maintenance_start.astimezone(timezone.utc):
-            print(f"【お知らせ】メンテナンスモード期間中（開始時刻: {start_time_str}）のため、処理をスキップして終了します。")
+            print(f"【お知らせ】メンテナンス/障害対応期間中（理由: {message} / 開始時刻: {start_time_str}）のため、処理をスキップして終了します。")
             return True
     except Exception as e:
         print(f"Error checking maintenance mode: {e}")
     return False
 
+def _finalize_scraping(all_data, start_time):
+    """取得済みDataFrameを保存し、既存ダッシュボード生成へ渡します。"""
+    if not all_data or not any(len(df) for df in all_data):
+        raise RuntimeError("データを一件も取得できませんでした。")
+
+    print("\nデータを統合してCSVファイルに書き出しています...")
+    try:
+        output_path = export_to_onedrive(all_data)
+
+        if output_path:
+            # マップ用 JSON と JS をローカル生成する。
+            print("\n[最優先] マップ可視化用データの自動生成を開始します...")
+            from src.dashboard_generator import generate_dashboard_json
+            json_path, js_path = generate_dashboard_json(output_path)
+
+            if json_path and js_path:
+                print("マップデータのローカル生成に成功しました。この後 GitHub Actions 経由で GitHub Pages に即時デプロイされます！")
+
+            try:
+                from src.self_replace_archiver import sync_self_replacement_history_to_onedrive
+                sync_self_replacement_history_to_onedrive()
+            except Exception as arch_err:
+                print(f"Warning: 自己申告データの履歴保存中にエラーが発生しました: {arch_err}")
+
+            print("5分ごとの OneDrive への生CSVアップロードはスキップします（日次マージにてParquet形式でまとめてアップロードされます）。")
+
+        elapsed = str(datetime.now() - start_time).split('.')[0]
+        total_rows = sum(len(df) for df in all_data)
+
+        print("\n=== スクレイピング実行完了 ===")
+        print(f"- 実行作業時間: {elapsed}")
+        print(f"- 取得総行数  : {total_rows} 件")
+        print(f"- 保存先パス  : {output_path}")
+        print("処理が正常に完了しました。")
+    except Exception as error:
+        print(f"Error: データの保存中にエラーが発生しました: {error}")
+        raise
+
 def run_scraping(is_worker=False):
-    """
-    通常スクレイピング処理。
-    1つのエリア情報を取得するごとにブラウザを終了し、状態の不整合を防ぐため
-    ログインから順番にやり直す堅牢なアプローチをとります。
-    """
+    """通常はHTTP GET、認証切れ時だけブラウザを使って全エリアを取得します。"""
     Config.validate(is_worker=is_worker)
 
 
@@ -67,12 +114,6 @@ def run_scraping(is_worker=False):
     # 0. OneDrive から最新の『車両閾値設定.csv』をダウンロードしてローカル同期する処理は廃止し、
     #    ワークスペース上に保存された『車両閾値設定.csv』を直接読み込む方式としました。
     
-    if is_worker:
-        # 一時的にConfigのURLとID/PWを作業員用にオーバーライド
-        Config.ACCOUNT = Config.WORKER_ACCOUNT
-        Config.PASSWORD = Config.WORKER_PASSWORD
-        Config.TOP_PAGE = Config.WORKER_TOP_PAGE
-        print("作業員モード（固定IP制限・VPNなし）で実行します...")
 
     # MAP_DATA_ONLY モードの場合、スクレイピングを全バイパスしてローカルの最新車両情報からマップデータ（JSON/JS）のみを再生成・再デプロイします
     if Config.RUN_MODE == "MAP_DATA_ONLY":
@@ -103,6 +144,35 @@ def run_scraping(is_worker=False):
     start_time = datetime.now()
     print("=== ドコモ・バイクシェア 車両情報取得開始 ===")
 
+    print("新管理ポータルの読み取り専用APIから全エリアを一括取得します...")
+    try:
+        try:
+            frame = scrape_all_vehicles_http()
+        except PortalSessionError:
+            print("Info: 保存セッションを更新するため、認証時だけブラウザを起動します。")
+            driver = None
+            try:
+                driver = build_driver()
+                authenticate_new_portal(driver)
+            finally:
+                if driver is not None:
+                    try:
+                        driver.quit()
+                    except Exception:
+                        pass
+            # 再認証後も車両取得はHTTPで行う。再失敗時にブラウザを再起動しない。
+            frame = scrape_all_vehicles_http()
+
+        _finalize_scraping([frame], start_time)
+    except Exception as error:
+        print(f"Error: 新管理ポータルの車両情報取得に失敗しました: {error}")
+        raise
+    return
+
+    # ------------------------------------------------------------------
+    # ここから下は閉鎖済み旧ポータルの参考実装。実行経路からは到達せず、
+    # 自動フォールバックにも使用しない。旧DOM調査・過去仕様確認のためだけに残す。
+    # ------------------------------------------------------------------
     # 1. ログインして全エリアの一覧を取得
     print("エリア一覧の取得を開始します...")
     driver = build_driver()
@@ -266,46 +336,7 @@ def run_scraping(is_worker=False):
         pass
 
     # 3. データの統合と超高速マップ連携処理
-    if all_data:
-        print("\nデータを統合してCSVファイルに書き出しています...")
-        try:
-            output_path = export_to_onedrive(all_data)
-            
-            if output_path:
-                # --- 【超高速マップ連携】最優先でマップ用 JSON と JS をローカル生成し、即時処理完了にする ---
-                print("\n[最優先] マップ可視化用データの自動生成を開始します...")
-                from src.dashboard_generator import generate_dashboard_json
-                json_path, js_path = generate_dashboard_json(output_path)
-                
-                if json_path and js_path:
-                    print("マップデータのローカル生成に成功しました。この後 GitHub Actions 経由で GitHub Pages に即時デプロイされます！")
-                
-                # --- 【自己申告データ履歴の OneDrive 永続保存】 ---
-                try:
-                    from src.self_replace_archiver import sync_self_replacement_history_to_onedrive
-                    sync_self_replacement_history_to_onedrive()
-                except Exception as arch_err:
-                    print(f"Warning: 自己申告データの履歴保存中にエラーが発生しました: {arch_err}")
-                
-                # --- 【非同期型・蓄積用】時間のかかる OneDrive Web への CSV バックアップ転送は日次マージへ移行したため、5分ごとはスキップ ---
-                # print("\n[バックアップ] 蓄積用データを OneDrive へアップロードします (約25秒)...")
-                # upload_to_onedrive_web(output_path)
-                # print("OneDrive への蓄積用データのバックアップアップロード処理が完了しました。")
-                print("5分ごとの OneDrive への生CSVアップロードはスキップします（日次マージにてParquet形式でまとめてアップロードされます）。")
-
-
-            elapsed = str(datetime.now() - start_time).split('.')[0]
-            total_rows = sum(len(df) for df in all_data)
-            
-            print("\n=== スクレイピング実行完了 ===")
-            print(f"- 実行作業時間: {elapsed}")
-            print(f"- 取得総行数  : {total_rows} 件")
-            print(f"- 保存先パス  : {output_path}")
-            print("処理が正常に完了しました。")
-        except Exception as e:
-            print(f"Error: データの保存中にエラーが発生しました: {e}")
-    else:
-        print("\nError: データを一件も取得できませんでした。")
+    _finalize_scraping(all_data, start_time)
 
 def check_and_run_daily_gbfs():
     """
@@ -424,7 +455,8 @@ def main():
 
     # メンテナンスモード期間中かチェック
     if check_maintenance_mode():
-        sys.exit(0)
+        # bat/vbs 等で後続のアップロード処理等を発生させず安全にスキップ終了するため exit code 2 を返します
+        sys.exit(2)
 
     # --merge-daily が指定された場合の処理
     if args.merge_daily:
