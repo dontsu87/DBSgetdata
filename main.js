@@ -34,24 +34,27 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    loadDashboardData(false);
+    let autoUpdateInterval = null;
+    const startDashboardUpdates = function() {
+        loadDashboardData(false);
+        // 2分ごと(120000ms)にバックグラウンドでサイレント自動更新を繰り返す
+        autoUpdateInterval = setInterval(function() {
+            console.log("🔄 定期自動アップデートを実行中...");
+            loadDashboardData(true);
+        }, 120000);
+    };
 
-    // 2分ごと(120000ms)にバックグラウンドでサイレント自動更新を繰り返す
-    let autoUpdateInterval = setInterval(function() {
-        console.log("🔄 定期自動アップデートを実行中...");
-        loadDashboardData(true);
-    }, 120000);
-
-    // お知らせ/メンテナンス情報の初期化
+    // 障害停止中は車両データを読み込まず、作業員位置情報だけを動かす。
     if (typeof AnnouncementManager !== 'undefined') {
         AnnouncementManager.init().then(isMaintenance => {
             if (isMaintenance) {
-                console.log("メンテナンス期間中のため、定期アップデートをクリアします。");
-                if (autoUpdateInterval) {
-                    clearInterval(autoUpdateInterval);
-                }
+                console.log("メンテナンス期間中のため、車両データの読み込みを停止します。");
+                return;
             }
+            startDashboardUpdates();
         });
+    } else {
+        startDashboardUpdates();
     }
 
     // E2Eテスト用に一部の内部関数・変数をwindowオブジェクトに公開

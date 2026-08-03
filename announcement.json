@@ -1,13 +1,14 @@
 {
   "banner": {
-    "enabled": true,
+    "enabled": false,
     "message": "ドコモバイクシェア本体システム側の不具合により現場の状態と異なることがあります",
     "start_time": "2026-08-02T12:27:00+09:00",
     "end_time": "2026-08-31T23:59:59+09:00"
   },
   "maintenance": {
-    "enabled": false,
-    "message": "ドコモバイクシェア更新に暫定対応しました",
-    "start_time": "2026-07-31T21:00:00+09:00"
+    "enabled": true,
+    "worker_location_only": true,
+    "message": "ドコモバイクシェアシステム障害のため、作業員位置情報機能以外は休止しています",
+    "start_time": "2026-08-03T00:00:00+09:00"
   }
 }

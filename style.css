@@ -1718,6 +1718,42 @@ header h1 {
    Announcements & Maintenance Overlays
    ========================================================================== */
 
+/* 障害時の縮退表示: 地図と作業員位置情報機能だけを残す */
+body.worker-location-only header {
+    justify-content: center !important;
+}
+
+body.worker-location-only .header-top,
+body.worker-location-only .header-bottom > :not(.worker-select-container),
+body.worker-location-only #area-tabs,
+body.worker-location-only #summary-panel,
+body.worker-location-only #map-legend-panel,
+body.worker-location-only .map-top-right-controls,
+body.worker-location-only #mobile-control-bar,
+body.worker-location-only #out-of-port-btn,
+body.worker-location-only #out-of-port-modal,
+body.worker-location-only #gps-btn,
+body.worker-location-only #loader,
+body.worker-location-only #error-screen {
+    display: none !important;
+}
+
+body.worker-location-only .header-bottom {
+    width: 100%;
+    justify-content: center !important;
+    overflow: visible !important;
+}
+
+body.worker-location-only .worker-select-container {
+    display: flex !important;
+}
+
+/* 既に描画済みの場合も、車両・ポートマーカーだけを確実に隠す */
+body.worker-location-only #map [class*='port-marker-'] {
+    display: none !important;
+    pointer-events: none !important;
+}
+
 /* お知らせバナー (マップ内フローティング窓型) */
 .announcement-banner {
     position: absolute;
