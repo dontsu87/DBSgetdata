@@ -39,6 +39,7 @@ venv/
 refference/
 
 # Temporary test scripts
+tmp_analyze_replaced.py
 keep_alive_tester.py
 keep_alive_profile/
 last_gbfs_run.txt
