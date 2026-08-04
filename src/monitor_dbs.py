@@ -3,6 +3,48 @@ import json
 from datetime import datetime, timedelta, timezone
 import os
 import sys
+from pathlib import Path
+
+
+JST = timezone(timedelta(hours=9))
+ANNOUNCEMENT_PATH = Path(__file__).resolve().parents[1] / "announcement.json"
+
+
+def is_scraping_maintenance_active(config_path=None, now=None):
+    """Return True when announcement.json intentionally pauses scraping."""
+    path = Path(config_path) if config_path else ANNOUNCEMENT_PATH
+    try:
+        with path.open("r", encoding="utf-8") as handle:
+            config = json.load(handle)
+
+        maintenance = config.get("maintenance", {})
+        scraping_disabled = maintenance.get(
+            "scraping_disabled",
+            maintenance.get("enabled", False),
+        )
+        if not scraping_disabled:
+            return False
+
+        start_time_str = maintenance.get("start_time")
+        if not start_time_str:
+            return True
+
+        maintenance_start = datetime.fromisoformat(
+            start_time_str.replace("Z", "+00:00")
+        )
+        if maintenance_start.tzinfo is None:
+            maintenance_start = maintenance_start.replace(tzinfo=JST)
+
+        current = now or datetime.now(timezone.utc)
+        if current.tzinfo is None:
+            current = current.replace(tzinfo=JST)
+        return current.astimezone(timezone.utc) >= maintenance_start.astimezone(timezone.utc)
+    except Exception as error:
+        print(
+            f"Warning: maintenance status could not be read; monitoring continues: {error}",
+            file=sys.stderr,
+        )
+        return False
 
 def post_to_slack(webhook_url, text):
     payload = {"text": text}
@@ -19,6 +61,10 @@ def post_to_slack(webhook_url, text):
         print(f"Failed to send Slack alert: {e}", file=sys.stderr)
 
 def main():
+    if is_scraping_maintenance_active():
+        print("Scraping maintenance is active. Slack heartbeat alert is paused.")
+        return
+
     webhook_url = os.environ.get("SLACK_WEBHOOK_URL")
     if not webhook_url:
         print("Error: SLACK_WEBHOOK_URL environment variable is not set.", file=sys.stderr)
@@ -49,13 +95,13 @@ def main():
     # updated_at is JST (Japan Standard Time)
     try:
         updated_at = datetime.strptime(updated_at_str, "%Y-%m-%d %H:%M:%S")
-        updated_at = updated_at.replace(tzinfo=timezone(timedelta(hours=9)))
+        updated_at = updated_at.replace(tzinfo=JST)
     except Exception as e:
         post_to_slack(webhook_url, f"⚠️ 【警告】'updated_at' のパースに失敗しました ({updated_at_str})。\nエラー: {e}")
         sys.exit(1)
 
     # Current JST
-    now_jst = datetime.now(timezone(timedelta(hours=9)))
+    now_jst = datetime.now(JST)
 
     diff = now_jst - updated_at
     diff_minutes = diff.total_seconds() / 60

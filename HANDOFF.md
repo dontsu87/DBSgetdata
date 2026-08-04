@@ -499,3 +499,16 @@ R2アップロードと実タスクスケジューラ連続運転は、2026-08-0
 - 第1コミット: 新ポータル・HTTP優先ハイブリッド・MFA・テスト一式
 - 第2コミット: 本番アラート、最新公開ポートデータ、タスク/R2失敗伝播、本番復帰記録
 - `.env`、保存セッション、`output/`、`debug/` はGit対象外のまま
+
+---
+
+## 14. 停止監視のメンテナンス連動（2026-08-04）
+
+GitHub Actions の `Monitor DBS Scraper` は、Slack通知判定の前に
+`announcement.json` のスクレイピング停止状態を確認する。
+
+- `maintenance.scraping_disabled=true` かつ開始時刻到来後は、停止が意図的なためSlack通知を休止する
+- `scraping_disabled=false` の画面縮退表示だけなら、スクレイピング停止監視を継続する
+- `scraping_disabled` が無い旧設定は、後方互換として `maintenance.enabled` を使用する
+- 設定ファイルの欠損・破損・日時異常時は監視を継続し、意図しない通知停止を避ける
+- メンテナンス解除時は同じ設定変更だけでSlack停止監視も自動的に再開する
