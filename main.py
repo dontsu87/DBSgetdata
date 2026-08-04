@@ -16,9 +16,13 @@ from src.worker_inspector import inspect_worker_login_page
 
 def check_maintenance_mode(json_path=None):
     """
-    announcement.json からメンテナンス設定を読み込み、
+    announcement.json からスクレイピング停止設定を読み込み、
     または環境変数 (DBS_DISABLE_SCRAPING / DBS_MAINTENANCE_MODE) を確認し、
-    メンテナンス・障害停止モードであれば True を返します。
+    停止モードであれば True を返します。
+
+    maintenance.scraping_disabled が明示されている場合は、その値を
+    フロントエンド向けの maintenance.enabled より優先します。
+    未指定の既存設定では後方互換のため enabled を停止判定に使用します。
     """
     import os
     import json
@@ -42,7 +46,11 @@ def check_maintenance_mode(json_path=None):
             config = json.load(f)
         
         maintenance = config.get("maintenance", {})
-        if not maintenance.get("enabled", False):
+        scraping_disabled = maintenance.get(
+            "scraping_disabled",
+            maintenance.get("enabled", False),
+        )
+        if not scraping_disabled:
             return False
 
         message = maintenance.get("message", "メンテナンス中")
