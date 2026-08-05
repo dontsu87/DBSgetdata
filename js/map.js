@@ -312,7 +312,6 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
     if (outOfPortMarkerGroup) {
         outOfPortMarkerGroup.clearLayers();
     }
-    renderOutOfPortDotMarkers(data);
 
     let alertHtml = '';
     let alertClass = '';
@@ -368,13 +367,37 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
             return;
         }
 
-        // ポート外専用モード有効時は通常ポートのバブルを描画しない
-        if (isOutOfPortOnlyMode) return;
-
         if (isKindaiMode()) {
             if (!port.station_id || !KINDAI_STATION_IDS.includes(port.station_id)) {
                 return;
             }
+        }
+
+        // ポート外専用モード時: 一律の小サイズ・縁なし灰色の円を背景用ガイドとして描画
+        if (isOutOfPortOnlyMode) {
+            const grayPortMarker = L.circleMarker([lat, lon], {
+                radius: 6,
+                fillColor: '#94a3b8',
+                stroke: false,
+                fillOpacity: 0.5,
+                interactive: true
+            });
+
+            const portBikesCount = port.bikes ? port.bikes.length : 0;
+            const popupHtml = `
+                <div style="font-size: 12px; font-family: sans-serif; padding: 2px;">
+                    <div style="font-weight: bold; color: #475569;">
+                        📍 ${port.port_name || 'ポート'}
+                    </div>
+                    <div style="font-size: 11px; color: #64748b; margin-top: 2px;">
+                        駐輪数: <b>${portBikesCount}</b> / ${port.capacity || '--'}台
+                    </div>
+                </div>
+            `;
+            grayPortMarker.bindPopup(popupHtml);
+            markerGroup.addLayer(grayPortMarker);
+            validCoordinates.push([lat, lon]);
+            return;
         }
 
         const isEmptyPort = (parseInt(port.total_bikes) === 0 || !port.bikes || port.bikes.length === 0);
@@ -1043,6 +1066,11 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
             const bounds = L.latLngBounds(validCoordinates);
             map.fitBounds(bounds, { padding: [40, 40] });
         }
+    }
+
+    renderOutOfPortDotMarkers(data);
+    if (outOfPortMarkerGroup && typeof outOfPortMarkerGroup.bringToFront === 'function') {
+        outOfPortMarkerGroup.bringToFront();
     }
 
     if (activePopupMarker) {
