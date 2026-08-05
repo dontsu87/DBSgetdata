@@ -38,8 +38,7 @@ let unlockedThresholdHours = loadFromCache('unlocked_threshold_hours', 2.0);
 let isPortSelectionMode = loadFromCache('is_port_selection_mode', false);
 let selectedPortNames = loadFromCache('selected_port_names', []); 
 let isReplacedModeEnabled = loadFromCache('is_replaced_mode_enabled', true);
-let isOutOfPortOnlyMode = loadFromCache('out_of_port_only_mode', false);
-let isOutOfPortMarkerActive = true; // ポート外自転車の点描画は常にON
+let isOutOfPortMarkerActive = loadFromCache('out_of_port_layer_active', false);
 let outOfPortMarkerGroup = null;
 let selfReplacedBikes = {}; // { bike_id: { timestamp, alert_level, voltage } }
 

@@ -206,28 +206,55 @@ function initUIComponents() {
         });
     }
 
-    // --- ポート外専用モードトグルスイッチ ---
-    const outOfPortOnlyCheckbox = document.getElementById('out-of-port-only-checkbox');
-    if (outOfPortOnlyCheckbox) {
-        outOfPortOnlyCheckbox.checked = isOutOfPortOnlyMode;
-        updateOutOfPortOnlyBtnUI(isOutOfPortOnlyMode);
-
-        outOfPortOnlyCheckbox.addEventListener('change', function() {
-            isOutOfPortOnlyMode = outOfPortOnlyCheckbox.checked;
-            saveToCache('out_of_port_only_mode', isOutOfPortOnlyMode);
-            updateOutOfPortOnlyBtnUI(isOutOfPortOnlyMode);
-            updateFilterAndRender(false);
-        });
-    }
-
-    // --- ポート外車両バブルボタン制御（タップでリスト表示モーダルを開く） ---
+    // --- ポート外車両ボタン制御（タップ: 点Toggle / 長押し・右クリック: リスト表示モーダル） ---
     const outOfPortBtn = document.getElementById('out-of-port-btn');
     const outOfPortModal = document.getElementById('out-of-port-modal');
     const closeOutOfPortModalBtn = document.getElementById('close-out-of-port-modal-btn');
 
     if (outOfPortBtn) {
-        outOfPortBtn.addEventListener('click', function() {
+        let pressTimer = null;
+        let isLongPress = false;
+
+        const startPress = () => {
+            isLongPress = false;
+            pressTimer = setTimeout(() => {
+                isLongPress = true;
+                showOutOfPortModal(cachedDashboardData);
+            }, 500); // 500msの長押しで表形式モーダル表示
+        };
+
+        const cancelPress = () => {
+            if (pressTimer) {
+                clearTimeout(pressTimer);
+                pressTimer = null;
+            }
+        };
+
+        outOfPortBtn.addEventListener('mousedown', startPress);
+        outOfPortBtn.addEventListener('mouseup', cancelPress);
+        outOfPortBtn.addEventListener('mouseleave', cancelPress);
+
+        outOfPortBtn.addEventListener('touchstart', () => {
+            startPress();
+        }, { passive: true });
+        outOfPortBtn.addEventListener('touchend', cancelPress);
+        outOfPortBtn.addEventListener('touchcancel', cancelPress);
+
+        outOfPortBtn.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
             showOutOfPortModal(cachedDashboardData);
+        });
+
+        outOfPortBtn.addEventListener('click', function() {
+            if (isLongPress) {
+                isLongPress = false;
+                return;
+            }
+            // タップでToggle切替
+            isOutOfPortMarkerActive = !isOutOfPortMarkerActive;
+            saveToCache('out_of_port_layer_active', isOutOfPortMarkerActive);
+            updateOutOfPortBtnUI(isOutOfPortMarkerActive);
+            updateFilterAndRender(false);
         });
     }
 
@@ -613,14 +640,12 @@ function showOutOfPortModal(data) {
     
     // GPS位置のないポート（port.has_gps === false）から車両を抽出
     const outOfPortBikes = [];
-    const targetArea = normalizeAreaName(selectedArea);
     if (data && data.ports) {
         data.ports.forEach(port => {
             if (port.has_gps === false || port.lat === null || port.lon === null) {
                 if (port.bikes) {
                     port.bikes.forEach(bike => {
-                        const bikeArea = normalizeAreaName(bike.area_name || port.area_name);
-                        if (!targetArea || bikeArea === targetArea) {
+                        if (bike.area_name === selectedArea) {
                             outOfPortBikes.push({
                                 bike_id: bike.bike_id,
                                 port_name: port.port_name || 'ポート外',
@@ -703,14 +728,12 @@ function updateOutOfPortCount(data) {
     if (!countEl) return;
     
     let count = 0;
-    const targetArea = normalizeAreaName(selectedArea);
-    if (data && data.ports && targetArea) {
+    if (data && data.ports && selectedArea) {
         data.ports.forEach(port => {
             if (port.has_gps === false || port.lat === null || port.lon === null) {
                 if (port.bikes) {
                     port.bikes.forEach(bike => {
-                        const bikeArea = normalizeAreaName(bike.area_name || port.area_name);
-                        if (bikeArea === targetArea) {
+                        if (bike.area_name === selectedArea) {
                             count++;
                         }
                     });
@@ -725,12 +748,5 @@ function updateOutOfPortBtnUI(active) {
     const btn = document.getElementById('out-of-port-btn');
     if (btn) {
         btn.classList.toggle('active', !!active);
-    }
-}
-
-function updateOutOfPortOnlyBtnUI(enabled) {
-    const textSpan = document.querySelector('.out-of-port-only-toggle-text');
-    if (textSpan) {
-        textSpan.textContent = enabled ? 'ポート外専用 ON' : 'ポート外専用 OFF';
     }
 }

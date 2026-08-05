@@ -356,12 +356,7 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
     const unlockedFilterCheckbox = document.getElementById('unlocked-filter-checkbox');
     const isUnlockedFilterChecked = unlockedFilterCheckbox ? unlockedFilterCheckbox.checked : true;
 
-    const targetArea = normalizeAreaName(selectedArea);
-
     data.ports.forEach(port => {
-        // ポート外専用モード有効時は通常ポートのバブルを描画しない
-        if (isOutOfPortOnlyMode) return;
-
         const lat = parseFloat(port.lat);
         const lon = parseFloat(port.lon);
         
@@ -369,8 +364,7 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
             return; 
         }
 
-        const portArea = normalizeAreaName(port.area_name);
-        if (targetArea && portArea !== targetArea) {
+        if (port.area_name !== selectedArea) {
             return;
         }
 
@@ -1414,17 +1408,15 @@ document.addEventListener('click', function(e) {
 
 // ポート外自転車のドットマーカー描画処理
 function renderOutOfPortDotMarkers(data) {
-    if (!outOfPortMarkerGroup || !data || !data.ports) return;
-
-    const targetArea = normalizeAreaName(selectedArea);
+    if (!outOfPortMarkerGroup || !isOutOfPortMarkerActive || !data || !data.ports) return;
 
     data.ports.forEach(port => {
         if (!port.bikes || port.bikes.length === 0) return;
 
         port.bikes.forEach(bike => {
-            // エリアフィルター（正規化比較）
-            const bikeArea = normalizeAreaName(bike.area_name || port.area_name);
-            if (targetArea && bikeArea !== targetArea) return;
+            // エリアフィルター
+            if (bike.area_name && bike.area_name !== selectedArea) return;
+            if (!bike.area_name && port.area_name !== selectedArea) return;
 
             // 緯度経度の取得（bike.lat / bike.lon または port.lat / port.lon）
             const bLat = parseFloat(bike.lat || (port.lat !== null ? port.lat : null));
@@ -1437,41 +1429,21 @@ function renderOutOfPortDotMarkers(data) {
 
             if (!isOutOfPort) return;
 
-            // 「利用中」または「一時駐輪」状態の判定
-            const isUsingStatus = bike.status && (
-                bike.status.includes('利用中') ||
-                bike.status.includes('一時駐輪') ||
-                bike.status.includes('USING') ||
-                bike.status.includes('PARKING')
-            );
-
-            // 車両状態フィルタパネルで「利用中」関連の強調チェックが入っているか
-            const isUsingHighlighted = checkedHighlightStatuses && checkedHighlightStatuses.some(hs => 
-                hs && (hs.includes('利用中') || hs.includes('一時駐輪') || hs.includes('USING') || hs.includes('PARKING'))
-            );
-
-            // 「利用中」車両は基本非表示。フィルタで「利用中」の強調がONの場合のみ表示
-            if (isUsingStatus && !isUsingHighlighted) {
-                return;
-            }
-
-            // 車両状態フィルタで「強調」となっているものは赤、そうでないものはオレンジ（波紋なし）
-            const isHighlighted = (
-                Array.isArray(checkedHighlightStatuses) &&
-                bike.status &&
-                checkedHighlightStatuses.some(st => st && (st === bike.status || bike.status.includes(st)))
-            );
-            const radius = isHighlighted ? (isOutOfPortOnlyMode ? 9 : 7) : (isOutOfPortOnlyMode ? 6 : 4);
-            const fillColor = isHighlighted ? '#ef4444' : '#f97316';
+            // 強調表示（アラートレベル >= 4 等）判定
+            const isAlert = (bike.alert_level && bike.alert_level >= 4) || bike.is_alert;
+            const radius = isAlert ? 7 : 4;
+            const fillColor = isAlert ? '#ef4444' : '#f97316';
             const color = '#ffffff';
+            const className = isAlert ? 'out-of-port-alert-dot' : '';
 
             const dotMarker = L.circleMarker([bLat, bLon], {
                 radius: radius,
                 fillColor: fillColor,
                 color: color,
-                weight: isHighlighted ? 2 : 1.5,
+                weight: isAlert ? 2 : 1.5,
                 opacity: 0.9,
-                fillOpacity: isHighlighted ? 0.95 : 0.85
+                fillOpacity: isAlert ? 0.95 : 0.85,
+                className: className
             });
 
             // ポップアップの設定

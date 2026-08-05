@@ -98,29 +98,28 @@ function loadDashboardData(isAutoUpdate = false, retryCount = 0) {
             }
 
             cachedDashboardData = data;
-            try {
-                initAreaTabs(cachedDashboardData);
-                updatePrefixFilterUI(cachedDashboardData);
-                initStatusFilter(cachedDashboardData);
-                
-                const hasCachedPosition = localStorage.getItem('map_center_lat') !== null;
-                const shouldFitBounds = !isAutoUpdate && isFirstLoad && !hasCachedPosition;
-                if (typeof fetchSelfReplacements === 'function') {
-                    fetchSelfReplacements().finally(() => {
-                        updateFilterAndRender(shouldFitBounds);
-                    });
-                } else {
+            initAreaTabs(cachedDashboardData);
+            updatePrefixFilterUI(cachedDashboardData);
+            initStatusFilter(cachedDashboardData);
+            
+            const hasCachedPosition = localStorage.getItem('map_center_lat') !== null;
+            const shouldFitBounds = !isAutoUpdate && isFirstLoad && !hasCachedPosition;
+            if (typeof fetchSelfReplacements === 'function') {
+                fetchSelfReplacements().finally(() => {
                     updateFilterAndRender(shouldFitBounds);
-                }
-            } catch (err) {
-                console.error("Error rendering dashboard data:", err);
-            } finally {
-                isFirstLoad = false;
-                errorScreen.style.display = 'none';
-                setTimeout(() => {
-                    if (loader) loader.style.display = 'none';
-                }, 300);
+                });
+            } else {
+                updateFilterAndRender(shouldFitBounds);
             }
+            
+            isFirstLoad = false;
+            
+            // 正常取得できたらエラー画面を隠す
+            errorScreen.style.display = 'none';
+            
+            setTimeout(() => {
+                loader.style.display = 'none';
+            }, 500);
         })
         .catch(error => {
             console.log("Info: JSON直接取得をバイパスし、フォールバックJSの読み込みを試みます...", error);
@@ -137,27 +136,23 @@ function loadDashboardData(isAutoUpdate = false, retryCount = 0) {
                 }
 
                 cachedDashboardData = data;
-                try {
-                    initAreaTabs(cachedDashboardData);
-                    updatePrefixFilterUI(cachedDashboardData);
-                    initStatusFilter(cachedDashboardData);
-                    
-                    const hasCachedPosition = localStorage.getItem('map_center_lat') !== null;
-                    const shouldFitBounds = !isAutoUpdate && isFirstLoad && !hasCachedPosition;
-                    if (typeof fetchSelfReplacements === 'function') {
-                        fetchSelfReplacements().finally(() => {
-                            updateFilterAndRender(shouldFitBounds);
-                        });
-                    } else {
+                initAreaTabs(cachedDashboardData);
+                updatePrefixFilterUI(cachedDashboardData);
+                initStatusFilter(cachedDashboardData);
+                
+                const hasCachedPosition = localStorage.getItem('map_center_lat') !== null;
+                const shouldFitBounds = !isAutoUpdate && isFirstLoad && !hasCachedPosition;
+                if (typeof fetchSelfReplacements === 'function') {
+                    fetchSelfReplacements().finally(() => {
                         updateFilterAndRender(shouldFitBounds);
-                    }
-                } catch (err) {
-                    console.error("Error rendering fallback dashboard data:", err);
-                } finally {
-                    isFirstLoad = false;
-                    if (errorScreen) errorScreen.style.display = 'none';
-                    if (loader) loader.style.display = 'none';
+                    });
+                } else {
+                    updateFilterAndRender(shouldFitBounds);
                 }
+                
+                isFirstLoad = false;
+                errorScreen.style.display = 'none';
+                loader.style.display = 'none';
             } else {
                 // 自動リトライロジック
                 if (retryCount < 2) {
