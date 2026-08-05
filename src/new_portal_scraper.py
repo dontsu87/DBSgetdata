@@ -12,7 +12,7 @@ from urllib.parse import urljoin, urlparse
 import pandas as pd
 import requests
 
-from src.config import Config
+from src.config import Config, ROOT_DIR
 from src.session_store import SESSION_FILE, app_url
 
 
@@ -207,25 +207,35 @@ def _as_list(body):
 
 
 def _load_known_port_names(output_dir=None):
-    "最新GBFSに存在するポート名を返す。無い場合はNone（空欄だけを対象にする）。"
+    "既知のポート名セット（port_coords_master.json および最新GBFS）を返す。"
     output_dir = output_dir or Config.OUTPUT_DIR
+    known_ports = set()
+
+    # 1. port_coords_master.json からの全既知ポート名
+    master_path = os.path.join(str(ROOT_DIR), "port_coords_master.json")
+    if os.path.exists(master_path):
+        try:
+            with open(master_path, "r", encoding="utf-8") as f:
+                master = json.load(f)
+                known_ports.update(master.keys())
+        except Exception:
+            pass
+
+    # 2. 最新GBFSからのポート名追加
     files = sorted(glob.glob(os.path.join(str(output_dir), 'gbfs_stations_*.csv')))
-    if not files:
-        return None
+    if files:
+        try:
+            stations = pd.read_csv(files[-1], encoding='utf-8-sig')
+            if 'name' in stations.columns:
+                known_ports.update([
+                    str(value).strip()
+                    for value in stations['name'].dropna()
+                    if str(value).strip()
+                ])
+        except Exception:
+            pass
 
-    try:
-        stations = pd.read_csv(files[-1], encoding='utf-8-sig')
-    except (OSError, UnicodeError, pd.errors.ParserError):
-        print('Warning: GBFSポート名を読めないため、空欄ポートだけを位置詳細取得対象にします。')
-        return None
-    if 'name' not in stations.columns:
-        return None
-
-    return {
-        str(value).strip()
-        for value in stations['name'].dropna()
-        if str(value).strip()
-    }
+    return known_ports if known_ports else None
 
 
 def _is_out_of_port_row(row, known_port_names):
