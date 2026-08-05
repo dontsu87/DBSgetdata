@@ -640,12 +640,14 @@ function showOutOfPortModal(data) {
     
     // GPS位置のないポート（port.has_gps === false）から車両を抽出
     const outOfPortBikes = [];
+    const targetArea = normalizeAreaName(selectedArea);
     if (data && data.ports) {
         data.ports.forEach(port => {
             if (port.has_gps === false || port.lat === null || port.lon === null) {
                 if (port.bikes) {
                     port.bikes.forEach(bike => {
-                        if (bike.area_name === selectedArea) {
+                        const bikeArea = normalizeAreaName(bike.area_name || port.area_name);
+                        if (!targetArea || bikeArea === targetArea) {
                             outOfPortBikes.push({
                                 bike_id: bike.bike_id,
                                 port_name: port.port_name || 'ポート外',
@@ -728,12 +730,14 @@ function updateOutOfPortCount(data) {
     if (!countEl) return;
     
     let count = 0;
-    if (data && data.ports && selectedArea) {
+    const targetArea = normalizeAreaName(selectedArea);
+    if (data && data.ports && targetArea) {
         data.ports.forEach(port => {
             if (port.has_gps === false || port.lat === null || port.lon === null) {
                 if (port.bikes) {
                     port.bikes.forEach(bike => {
-                        if (bike.area_name === selectedArea) {
+                        const bikeArea = normalizeAreaName(bike.area_name || port.area_name);
+                        if (bikeArea === targetArea) {
                             count++;
                         }
                     });
