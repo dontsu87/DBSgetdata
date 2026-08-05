@@ -159,17 +159,17 @@ header h1 {
 /* ポート外車両ボタン基本スタイル */
 .out-of-port-button {
     position: absolute;
-    bottom: 30px; /* GPSボタンと左右並び */
+    bottom: 30px;
     right: 100px;
-    background: linear-gradient(135deg, #334155 0%, #475569 100%); /* デフォルト: グレー (OFF状態) */
-    color: #cbd5e1;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: linear-gradient(135deg, #ea580c 0%, #f97316 100%);
+    color: #ffffff;
+    border: 1px solid #fb923c;
     border-radius: 50px;
     width: 70px;
     height: 70px;
     font-size: 11px;
     font-weight: bold;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 16px rgba(249, 115, 22, 0.6);
     z-index: 1000;
     display: flex;
     flex-direction: column;
@@ -180,8 +180,8 @@ header h1 {
     cursor: pointer;
 }
 .out-of-port-button:hover {
-    background: linear-gradient(135deg, #475569 0%, #64748b 100%);
-    color: #ffffff;
+    background: linear-gradient(135deg, #c2410c 0%, #ea580c 100%);
+    box-shadow: 0 6px 20px rgba(249, 115, 22, 0.8);
 }
 .out-of-port-button:active {
     transform: scale(0.95);
@@ -1917,4 +1917,39 @@ body.worker-location-only #map [class*='port-marker-'] {
 @keyframes bounce {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-10px); }
+}
+
+/* ポート外専用モード トグルボタンのスタイル */
+.out-of-port-only-toggle-container {
+    display: inline-flex;
+    align-items: center;
+    user-select: none;
+}
+
+.out-of-port-only-toggle-button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background-color: #334155;
+    color: #cbd5e1;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.out-of-port-only-toggle-label input[type="checkbox"]:checked + .out-of-port-only-toggle-button {
+    background: linear-gradient(135deg, #ea580c 0%, #f97316 100%);
+    color: #ffffff;
+    border-color: #fb923c;
+    box-shadow: 0 2px 8px rgba(249, 115, 22, 0.5);
+}
+
+.out-of-port-only-toggle-button:active {
+    transform: scale(0.95);
 }

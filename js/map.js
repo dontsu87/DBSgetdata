@@ -368,6 +368,9 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
             return;
         }
 
+        // ポート外専用モード有効時は通常ポートのバブルを描画しない
+        if (isOutOfPortOnlyMode) return;
+
         if (isKindaiMode()) {
             if (!port.station_id || !KINDAI_STATION_IDS.includes(port.station_id)) {
                 return;
@@ -1408,13 +1411,13 @@ document.addEventListener('click', function(e) {
 
 // ポート外自転車のドットマーカー描画処理
 function renderOutOfPortDotMarkers(data) {
-    if (!outOfPortMarkerGroup || !isOutOfPortMarkerActive || !data || !data.ports) return;
+    if (!outOfPortMarkerGroup || !data || !data.ports) return;
 
     data.ports.forEach(port => {
         if (!port.bikes || port.bikes.length === 0) return;
 
         port.bikes.forEach(bike => {
-            // エリアフィルター
+            // エリアフィルター（元のロジックをそのまま維持）
             if (bike.area_name && bike.area_name !== selectedArea) return;
             if (!bike.area_name && port.area_name !== selectedArea) return;
 
@@ -1429,21 +1432,28 @@ function renderOutOfPortDotMarkers(data) {
 
             if (!isOutOfPort) return;
 
-            // 強調表示（アラートレベル >= 4 等）判定
-            const isAlert = (bike.alert_level && bike.alert_level >= 4) || bike.is_alert;
-            const radius = isAlert ? 7 : 4;
-            const fillColor = isAlert ? '#ef4444' : '#f97316';
-            const color = '#ffffff';
-            const className = isAlert ? 'out-of-port-alert-dot' : '';
+            // 「利用中」「一時駐輪」は基本非表示、強調ONの場合のみ表示
+            var isUsingStatus = bike.status && (
+                bike.status.indexOf('利用中') >= 0 || bike.status.indexOf('一時駐輪') >= 0
+            );
+            var isUsingHighlighted = Array.isArray(checkedHighlightStatuses) && checkedHighlightStatuses.some(function(hs) {
+                return hs && (hs.indexOf('利用中') >= 0 || hs.indexOf('一時駐輪') >= 0);
+            });
+            if (isUsingStatus && !isUsingHighlighted) return;
+
+            // 車両状態フィルタで「強調」のものは赤、そうでないものはオレンジ
+            var isHighlighted = Array.isArray(checkedHighlightStatuses) && bike.status && checkedHighlightStatuses.indexOf(bike.status) >= 0;
+            var radius = isHighlighted ? (isOutOfPortOnlyMode ? 9 : 7) : (isOutOfPortOnlyMode ? 6 : 4);
+            var fillColor = isHighlighted ? '#ef4444' : '#f97316';
+            var color = '#ffffff';
 
             const dotMarker = L.circleMarker([bLat, bLon], {
                 radius: radius,
                 fillColor: fillColor,
                 color: color,
-                weight: isAlert ? 2 : 1.5,
+                weight: isHighlighted ? 2 : 1.5,
                 opacity: 0.9,
-                fillOpacity: isAlert ? 0.95 : 0.85,
-                className: className
+                fillOpacity: isHighlighted ? 0.95 : 0.85
             });
 
             // ポップアップの設定
