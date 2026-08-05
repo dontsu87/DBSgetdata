@@ -1453,7 +1453,11 @@ function renderOutOfPortDotMarkers(data) {
             }
 
             // 車両状態フィルタで「強調」となっているものは赤、そうでないものはオレンジ（波紋なし）
-            const isHighlighted = (checkedHighlightStatuses && bike.status && checkedHighlightStatuses.includes(bike.status));
+            const isHighlighted = (
+                Array.isArray(checkedHighlightStatuses) &&
+                bike.status &&
+                checkedHighlightStatuses.some(st => st && (st === bike.status || bike.status.includes(st)))
+            );
             const radius = isHighlighted ? (isOutOfPortOnlyMode ? 9 : 7) : (isOutOfPortOnlyMode ? 6 : 4);
             const fillColor = isHighlighted ? '#ef4444' : '#f97316';
             const color = '#ffffff';
