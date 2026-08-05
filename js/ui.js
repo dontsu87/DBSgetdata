@@ -518,11 +518,13 @@ function updatePrefixFilterUI(data) {
         return;
     }
 
+    const targetArea = normalizeAreaName(selectedArea);
     const prefixes = new Set();
     data.ports.forEach(port => {
         if (port.bikes) {
             port.bikes.forEach(bike => {
-                if (bike.area_name === selectedArea && bike.bike_id) {
+                const bikeArea = normalizeAreaName(bike.area_name || port.area_name);
+                if (bikeArea === targetArea && bike.bike_id) {
                     const prefix = extractBikePrefix(bike.bike_id);
                     if (prefix) {
                         prefixes.add(prefix);
@@ -614,12 +616,24 @@ function showOutOfPortModal(data) {
     
     // GPS位置のないポート（port.has_gps === false）から車両を抽出
     const outOfPortBikes = [];
+    const targetArea = normalizeAreaName(selectedArea);
     if (data && data.ports) {
         data.ports.forEach(port => {
-            if (port.has_gps === false || port.lat === null || port.lon === null) {
+            if (port.has_gps === false || port.lat === null || port.lon === null || (port.port_name && port.port_name.includes('ポート外'))) {
                 if (port.bikes) {
                     port.bikes.forEach(bike => {
-                        if (bike.area_name === selectedArea) {
+                        const bikeArea = normalizeAreaName(bike.area_name || port.area_name);
+                        if (bikeArea === targetArea) {
+                            // 車両コード（接頭辞）フィルター判定
+                            if (!isAllPrefixesChecked && bike.bike_id) {
+                                const isPrefixMatch = matchesBikePrefix(
+                                    bike.bike_id,
+                                    checkedPrefixes,
+                                    isAllPrefixesChecked
+                                );
+                                if (!isPrefixMatch) return;
+                            }
+
                             outOfPortBikes.push({
                                 bike_id: bike.bike_id,
                                 port_name: port.port_name || 'ポート外',

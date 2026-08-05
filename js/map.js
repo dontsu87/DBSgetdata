@@ -1432,6 +1432,16 @@ function renderOutOfPortDotMarkers(data) {
 
             if (!isOutOfPort) return;
 
+            // 車両コード（接頭辞）フィルター判定
+            if (!isAllPrefixesChecked && bike.bike_id) {
+                const isPrefixMatch = matchesBikePrefix(
+                    bike.bike_id,
+                    checkedPrefixes,
+                    isAllPrefixesChecked
+                );
+                if (!isPrefixMatch) return;
+            }
+
             // 「利用中」「一時駐輪」は基本非表示、強調ONの場合のみ表示
             var isUsingStatus = bike.status && (
                 bike.status.indexOf('利用中') >= 0 || bike.status.indexOf('一時駐輪') >= 0
