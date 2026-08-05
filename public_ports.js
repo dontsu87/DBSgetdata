@@ -1,5 +1,5 @@
 window.PUBLIC_PORTS_DATA = {
-  "updated_at": "2026-08-05 18:19:33",
+  "updated_at": "2026-08-05 18:35:47",
   "total_ports": 213,
   "ports": [
     {
@@ -37,8 +37,8 @@ window.PUBLIC_PORTS_DATA = {
       "port_name": "01.金沢駅(県立音楽堂横）",
       "port_name_en": "金沢駅(県立音楽堂横）",
       "area_name": "金沢",
-      "lat": 36.577127,
-      "lon": 136.648082,
+      "lat": 36.577353,
+      "lon": 136.647893,
       "bikes_available": 24,
       "capacity": 0
     },
@@ -167,8 +167,8 @@ window.PUBLIC_PORTS_DATA = {
       "port_name": "06.イオンモール新小松【拠点ポート】",
       "port_name_en": "イオンモール新小松【拠点ポート】",
       "area_name": "小松",
-      "lat": 36.395468,
-      "lon": 136.467362,
+      "lat": 36.395487,
+      "lon": 136.467305,
       "bikes_available": 4,
       "capacity": 0
     },
@@ -187,8 +187,8 @@ window.PUBLIC_PORTS_DATA = {
       "port_name": "06.福井商工会議所",
       "port_name_en": "福井商工会議所",
       "area_name": "福井",
-      "lat": 36.055227,
-      "lon": 136.212635,
+      "lat": 36.05513,
+      "lon": 136.213153,
       "bikes_available": 1,
       "capacity": 0
     },
@@ -207,8 +207,8 @@ window.PUBLIC_PORTS_DATA = {
       "port_name": "07.愛宕坂下駐車場",
       "port_name_en": "愛宕坂下駐車場",
       "area_name": "福井",
-      "lat": 36.060198,
-      "lon": 136.21119,
+      "lat": 36.060193,
+      "lon": 136.211203,
       "bikes_available": 1,
       "capacity": 0
     },
@@ -227,8 +227,8 @@ window.PUBLIC_PORTS_DATA = {
       "port_name": "07.粟津駅【拠点ポート】",
       "port_name_en": "粟津駅【拠点ポート】",
       "area_name": "小松",
-      "lat": 36.355897,
-      "lon": 136.425227,
+      "lat": 36.355887,
+      "lon": 136.425285,
       "bikes_available": 5,
       "capacity": 0
     },
@@ -357,8 +357,8 @@ window.PUBLIC_PORTS_DATA = {
       "port_name": "102.中村町・満天の湯金沢店",
       "port_name_en": "中村町・満天の湯金沢店",
       "area_name": "金沢",
-      "lat": 36.560052,
-      "lon": 136.643583,
+      "lat": 36.560055,
+      "lon": 136.643448,
       "bikes_available": 10,
       "capacity": 0
     },
@@ -537,8 +537,8 @@ window.PUBLIC_PORTS_DATA = {
       "port_name": "13.福井工業大学",
       "port_name_en": "福井工業大学",
       "area_name": "福井",
-      "lat": 36.068753,
-      "lon": 136.194895,
+      "lat": 36.068907,
+      "lon": 136.194748,
       "bikes_available": 3,
       "capacity": 0
     },
@@ -557,8 +557,8 @@ window.PUBLIC_PORTS_DATA = {
       "port_name": "14.ヨリバ",
       "port_name_en": "ヨリバ",
       "area_name": "福井",
-      "lat": 36.060223,
-      "lon": 136.2181,
+      "lat": 36.060297,
+      "lon": 136.218227,
       "bikes_available": 4,
       "capacity": 0
     },
@@ -667,8 +667,8 @@ window.PUBLIC_PORTS_DATA = {
       "port_name": "18.本多の森公園・国立工芸館",
       "port_name_en": "本多の森公園・国立工芸館",
       "area_name": "金沢",
-      "lat": 36.558518,
-      "lon": 136.662023,
+      "lat": 36.558552,
+      "lon": 136.661963,
       "bikes_available": 8,
       "capacity": 0
     },
@@ -677,8 +677,8 @@ window.PUBLIC_PORTS_DATA = {
       "port_name": "19.えちぜん鉄道 福井口駅",
       "port_name_en": "えちぜん鉄道 福井口駅",
       "area_name": "福井",
-      "lat": 36.070888,
-      "lon": 136.233617,
+      "lat": 36.070698,
+      "lon": 136.2337,
       "bikes_available": 4,
       "capacity": 0
     },
@@ -717,8 +717,8 @@ window.PUBLIC_PORTS_DATA = {
       "port_name": "20.加賀伝統工芸村 ゆのくにの森【簡易ポート】",
       "port_name_en": "加賀伝統工芸村 ゆのくにの森【簡易ポート】",
       "area_name": "小松",
-      "lat": 36.331315,
-      "lon": 136.446417,
+      "lat": 36.331328,
+      "lon": 136.446422,
       "bikes_available": 1,
       "capacity": 0
     },
@@ -747,8 +747,8 @@ window.PUBLIC_PORTS_DATA = {
       "port_name": "22.小松駅（コマツナイン）【拠点ポート】",
       "port_name_en": "小松駅（コマツナイン）【拠点ポート】",
       "area_name": "小松",
-      "lat": 36.401682,
-      "lon": 136.453293,
+      "lat": 36.401675,
+      "lon": 136.453967,
       "bikes_available": 15,
       "capacity": 0
     },
@@ -777,8 +777,8 @@ window.PUBLIC_PORTS_DATA = {
       "port_name": "24.土居原町南【簡易ポート】",
       "port_name_en": "土居原町南【簡易ポート】",
       "area_name": "小松",
-      "lat": 36.396888,
-      "lon": 136.451292,
+      "lat": 36.39691,
+      "lon": 136.45124,
       "bikes_available": 5,
       "capacity": 0
     },
@@ -797,8 +797,8 @@ window.PUBLIC_PORTS_DATA = {
       "port_name": "25.桜木町交差点【簡易ポート】",
       "port_name_en": "桜木町交差点【簡易ポート】",
       "area_name": "小松",
-      "lat": 36.406263,
-      "lon": 136.441087,
+      "lat": 36.406255,
+      "lon": 136.441078,
       "bikes_available": 6,
       "capacity": 0
     },
@@ -857,8 +857,8 @@ window.PUBLIC_PORTS_DATA = {
       "port_name": "29.かなざわはこまち",
       "port_name_en": "かなざわはこまち",
       "area_name": "金沢",
-      "lat": 36.571717,
-      "lon": 136.656692,
+      "lat": 36.572155,
+      "lon": 136.656492,
       "bikes_available": 6,
       "capacity": 0
     },
@@ -879,7 +879,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.569484,
       "lon": 136.662582,
-      "bikes_available": 5,
+      "bikes_available": 4,
       "capacity": 0
     },
     {
@@ -1009,7 +1009,7 @@ window.PUBLIC_PORTS_DATA = {
       "area_name": "金沢",
       "lat": 36.569659,
       "lon": 136.660728,
-      "bikes_available": 7,
+      "bikes_available": 8,
       "capacity": 0
     },
     {
@@ -1157,8 +1157,8 @@ window.PUBLIC_PORTS_DATA = {
       "port_name": "61.ローソン金沢泉店",
       "port_name_en": "ローソン金沢泉店",
       "area_name": "金沢",
-      "lat": 36.54751,
-      "lon": 136.64271,
+      "lat": 36.547537,
+      "lon": 136.642717,
       "bikes_available": 2,
       "capacity": 0
     },
@@ -2027,8 +2027,8 @@ window.PUBLIC_PORTS_DATA = {
       "port_name": "【臨時】ふくみち",
       "port_name_en": "【臨時】ふくみち",
       "area_name": "福井",
-      "lat": 36.06268,
-      "lon": 136.219123,
+      "lat": 36.062638,
+      "lon": 136.218955,
       "bikes_available": 4,
       "capacity": 0
     },
@@ -2037,8 +2037,8 @@ window.PUBLIC_PORTS_DATA = {
       "port_name": "【臨時】パリオCiTY",
       "port_name_en": "【臨時】パリオCiTY",
       "area_name": "福井",
-      "lat": 36.062912,
-      "lon": 136.240538,
+      "lat": 36.063342,
+      "lon": 136.240558,
       "bikes_available": 4,
       "capacity": 0
     },
@@ -2047,8 +2047,8 @@ window.PUBLIC_PORTS_DATA = {
       "port_name": "【臨時】幾久公園",
       "port_name_en": "【臨時】幾久公園",
       "area_name": "福井",
-      "lat": 36.082187,
-      "lon": 136.221607,
+      "lat": 36.082172,
+      "lon": 136.221648,
       "bikes_available": 1,
       "capacity": 0
     },
@@ -2067,8 +2067,8 @@ window.PUBLIC_PORTS_DATA = {
       "port_name": "【臨時】福井市立みどり図書館",
       "port_name_en": "【臨時】福井市立みどり図書館",
       "area_name": "福井",
-      "lat": 36.052193,
-      "lon": 136.192173,
+      "lat": 36.05206,
+      "lon": 136.192228,
       "bikes_available": 1,
       "capacity": 0
     },
@@ -2087,8 +2087,8 @@ window.PUBLIC_PORTS_DATA = {
       "port_name": "【臨時】福井運動公園",
       "port_name_en": "【臨時】福井運動公園",
       "area_name": "福井",
-      "lat": 36.051847,
-      "lon": 136.18507,
+      "lat": 36.051888,
+      "lon": 136.184983,
       "bikes_available": 2,
       "capacity": 0
     },
@@ -2127,8 +2127,8 @@ window.PUBLIC_PORTS_DATA = {
       "port_name": "【臨時】越前花堂駅",
       "port_name_en": "【臨時】越前花堂駅",
       "area_name": "福井",
-      "lat": 36.038953,
-      "lon": 136.217927,
+      "lat": 36.038972,
+      "lon": 136.217893,
       "bikes_available": 8,
       "capacity": 0
     }

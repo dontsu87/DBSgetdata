@@ -181,6 +181,7 @@ function initMapInstance() {
 
     L.control.zoom({ position: 'topleft' }).addTo(map);
     markerGroup = L.layerGroup().addTo(map);
+    outOfPortMarkerGroup = L.layerGroup().addTo(map);
 
     // マップ操作状態を検知するリスナー
     map.on('movestart', function() {
@@ -305,6 +306,13 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
     }
 
     markerGroup.clearLayers();
+    if (!outOfPortMarkerGroup && window.map) {
+        outOfPortMarkerGroup = L.layerGroup().addTo(window.map);
+    }
+    if (outOfPortMarkerGroup) {
+        outOfPortMarkerGroup.clearLayers();
+    }
+    renderOutOfPortDotMarkers(data);
 
     let alertHtml = '';
     let alertClass = '';
@@ -1397,3 +1405,69 @@ document.addEventListener('click', function(e) {
         toggleSelfReplacement(bikeId, alertLevel, voltage, item);
     }
 });
+
+// ポート外自転車のドットマーカー描画処理
+function renderOutOfPortDotMarkers(data) {
+    if (!outOfPortMarkerGroup || !isOutOfPortMarkerActive || !data || !data.ports) return;
+
+    data.ports.forEach(port => {
+        if (!port.bikes || port.bikes.length === 0) return;
+
+        port.bikes.forEach(bike => {
+            // エリアフィルター
+            if (bike.area_name && bike.area_name !== selectedArea) return;
+            if (!bike.area_name && port.area_name !== selectedArea) return;
+
+            // 緯度経度の取得（bike.lat / bike.lon または port.lat / port.lon）
+            const bLat = parseFloat(bike.lat || (port.lat !== null ? port.lat : null));
+            const bLon = parseFloat(bike.lon || (port.lon !== null ? port.lon : null));
+
+            if (isNaN(bLat) || isNaN(bLon) || bLat === 0.0 || bLon === 0.0) return;
+
+            // ポート外条件判定（port.has_gps === false または ポート名がポート外）
+            const isOutOfPort = (port.has_gps === false || port.lat === null || port.lon === null || (port.port_name && port.port_name.includes('ポート外')));
+
+            if (!isOutOfPort) return;
+
+            // 強調表示（アラートレベル >= 4 等）判定
+            const isAlert = (bike.alert_level && bike.alert_level >= 4) || bike.is_alert;
+            const radius = isAlert ? 7 : 4;
+            const fillColor = isAlert ? '#ef4444' : '#f97316';
+            const color = '#ffffff';
+            const className = isAlert ? 'out-of-port-alert-dot' : '';
+
+            const dotMarker = L.circleMarker([bLat, bLon], {
+                radius: radius,
+                fillColor: fillColor,
+                color: color,
+                weight: isAlert ? 2 : 1.5,
+                opacity: 0.9,
+                fillOpacity: isAlert ? 0.95 : 0.85,
+                className: className
+            });
+
+            // ポップアップの設定
+            const voltText = bike.voltage !== null ? `${bike.voltage.toFixed(1)}V` : '--V';
+            const statusText = bike.status || '不明';
+            const alertName = bike.alert_level_name || '正常';
+
+            const popupHtml = `
+                <div style="font-size: 12px; font-family: sans-serif; padding: 2px;">
+                    <div style="font-weight: bold; font-size: 13px; color: #0f172a; margin-bottom: 4px;">
+                        🚲 ${bike.bike_id} <span style="font-size: 10px; color: #64748b; font-weight: normal;">(ポート外)</span>
+                    </div>
+                    <div style="display: flex; gap: 8px; font-size: 11px; margin-bottom: 2px;">
+                        <span>電圧: <b>${voltText}</b></span>
+                        <span>状態: <b>${statusText}</b></span>
+                    </div>
+                    <div style="font-size: 11px; color: #475569;">
+                        判定: <b style="color: ${isAlert ? '#dc2626' : '#2563eb'};">${alertName}</b>
+                    </div>
+                </div>
+            `;
+
+            dotMarker.bindPopup(popupHtml);
+            outOfPortMarkerGroup.addLayer(dotMarker);
+        });
+    });
+}

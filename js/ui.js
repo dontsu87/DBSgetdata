@@ -206,14 +206,55 @@ function initUIComponents() {
         });
     }
 
-    // --- ポート外車両情報モーダル制御 ---
+    // --- ポート外車両ボタン制御（タップ: 点Toggle / 長押し・右クリック: リスト表示モーダル） ---
     const outOfPortBtn = document.getElementById('out-of-port-btn');
     const outOfPortModal = document.getElementById('out-of-port-modal');
     const closeOutOfPortModalBtn = document.getElementById('close-out-of-port-modal-btn');
 
-    if (outOfPortBtn && outOfPortModal) {
-        outOfPortBtn.addEventListener('click', function() {
+    if (outOfPortBtn) {
+        let pressTimer = null;
+        let isLongPress = false;
+
+        const startPress = () => {
+            isLongPress = false;
+            pressTimer = setTimeout(() => {
+                isLongPress = true;
+                showOutOfPortModal(cachedDashboardData);
+            }, 500); // 500msの長押しで表形式モーダル表示
+        };
+
+        const cancelPress = () => {
+            if (pressTimer) {
+                clearTimeout(pressTimer);
+                pressTimer = null;
+            }
+        };
+
+        outOfPortBtn.addEventListener('mousedown', startPress);
+        outOfPortBtn.addEventListener('mouseup', cancelPress);
+        outOfPortBtn.addEventListener('mouseleave', cancelPress);
+
+        outOfPortBtn.addEventListener('touchstart', () => {
+            startPress();
+        }, { passive: true });
+        outOfPortBtn.addEventListener('touchend', cancelPress);
+        outOfPortBtn.addEventListener('touchcancel', cancelPress);
+
+        outOfPortBtn.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
             showOutOfPortModal(cachedDashboardData);
+        });
+
+        outOfPortBtn.addEventListener('click', function() {
+            if (isLongPress) {
+                isLongPress = false;
+                return;
+            }
+            // タップでToggle切替
+            isOutOfPortMarkerActive = !isOutOfPortMarkerActive;
+            saveToCache('out_of_port_layer_active', isOutOfPortMarkerActive);
+            updateOutOfPortBtnUI(isOutOfPortMarkerActive);
+            updateFilterAndRender(false);
         });
     }
 
@@ -680,9 +721,10 @@ function showOutOfPortModal(data) {
     modal.style.display = 'flex';
 }
 
-// ポート外（位置情報なし）車両数のカウント更新
+// ポート外（位置情報なし）車両数のカウント更新およびUI状態同期
 function updateOutOfPortCount(data) {
     const countEl = document.getElementById('out-of-port-count');
+    updateOutOfPortBtnUI(isOutOfPortMarkerActive);
     if (!countEl) return;
     
     let count = 0;
@@ -700,4 +742,11 @@ function updateOutOfPortCount(data) {
         });
     }
     countEl.innerText = count;
+}
+
+function updateOutOfPortBtnUI(active) {
+    const btn = document.getElementById('out-of-port-btn');
+    if (btn) {
+        btn.classList.toggle('active', !!active);
+    }
 }

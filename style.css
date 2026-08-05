@@ -161,9 +161,9 @@ header h1 {
     position: absolute;
     bottom: 30px; /* GPSボタンと左右並び */
     right: 100px;
-    background-color: #f97316; /* オレンジ */
-    color: white;
-    border: none;
+    background: linear-gradient(135deg, #334155 0%, #475569 100%); /* デフォルト: グレー (OFF状態) */
+    color: #cbd5e1;
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 50px;
     width: 70px;
     height: 70px;
@@ -176,11 +176,12 @@ header h1 {
     justify-content: center;
     align-items: center;
     touch-action: manipulation;
-    transition: background-color 0.2s, transform 0.1s;
+    transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, transform 0.1s;
     cursor: pointer;
 }
 .out-of-port-button:hover {
-    background-color: #ea580c;
+    background: linear-gradient(135deg, #475569 0%, #64748b 100%);
+    color: #ffffff;
 }
 .out-of-port-button:active {
     transform: scale(0.95);

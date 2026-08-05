@@ -384,23 +384,25 @@ def sync_port_area_master(df_merged):
     return master_data, gbfs_stations
 
 def load_public_port_coords():
-    """public_ports.js からマスターポート座標マップをロードします"""
+    """port_coords_master.json からマスターポート座標マップをロードします"""
     coords = {}
-    path = os.path.join(str(ROOT_DIR), "public_ports.js")
+    path = os.path.join(str(ROOT_DIR), "port_coords_master.json")
     if os.path.exists(path):
         try:
             with open(path, "r", encoding="utf-8") as f:
-                content = f.read()
-            m = re.search(r'window\.PUBLIC_PORTS_DATA\s*=\s*(\{.*\});?', content, re.DOTALL)
-            if m:
-                data = json.loads(m.group(1))
-                for p in data.get("ports", []):
-                    p_name = p.get("port_name", "").strip()
-                    if p_name and p.get("lat") and p.get("lon"):
-                        coords[p_name] = (float(p["lat"]), float(p["lon"]))
+                data = json.load(f)
+                for p_name, item in data.items():
+                    if item.get("lat") and item.get("lon"):
+                        coords[p_name] = (float(item["lat"]), float(item["lon"]))
         except Exception as e:
-            print(f"Warning: public_ports.js からの座標マスタ読み込みに失敗しました: {e}")
+            print(f"Warning: port_coords_master.json からの座標マスタ読み込みに失敗しました: {e}")
     return coords
+
+def is_empty_coord(val):
+    if val is None or pd.isna(val):
+        return True
+    s = str(val).strip()
+    return s in ('', 'nan', 'None', '0', '0.0', '0.000000')
 
 def aggregate_ports_data(df_merged, master_data, gbfs_stations):
     """ポート単位の集計処理および空ポートのマージを行います"""
@@ -413,16 +415,16 @@ def aggregate_ports_data(df_merged, master_data, gbfs_stations):
         lon = row.get('lon')
         
         # 1. 車両位置緯度・経度からのフォールバック
-        if (pd.isna(lat) or lat == 0.0 or lat == "") and '車両位置緯度' in df_merged.columns and not pd.isna(row.get('車両位置緯度')):
+        if is_empty_coord(lat) and '車両位置緯度' in df_merged.columns and not is_empty_coord(row.get('車両位置緯度')):
             lat = row.get('車両位置緯度')
-        if (pd.isna(lon) or lon == 0.0 or lon == "") and '車両位置経度' in df_merged.columns and not pd.isna(row.get('車両位置経度')):
+        if is_empty_coord(lon) and '車両位置経度' in df_merged.columns and not is_empty_coord(row.get('車両位置経度')):
             lon = row.get('車両位置経度')
             
-        # 2. public_ports.js マスターポート位置情報からのフォールバック
-        if (pd.isna(lat) or pd.isna(lon) or lat == 0.0 or lon == 0.0 or lat == "" or lon == "") and port_name in public_port_coords:
+        # 2. port_coords_master.json マスターポート位置情報からのフォールバック
+        if (is_empty_coord(lat) or is_empty_coord(lon)) and port_name in public_port_coords:
             lat, lon = public_port_coords[port_name]
 
-        has_gps = not (pd.isna(lat) or pd.isna(lon) or lat == 0.0 or lon == 0.0 or lat == "" or lon == "")
+        has_gps = not (is_empty_coord(lat) or is_empty_coord(lon))
         
         bike_id = str(row['識別番号'])
         status = str(row['車両status']) if '車両status' in df_merged.columns else str(row['車両状態'])
