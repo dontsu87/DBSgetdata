@@ -206,55 +206,21 @@ function initUIComponents() {
         });
     }
 
-    // --- ポート外車両ボタン制御（タップ: 点Toggle / 長押し・右クリック: リスト表示モーダル） ---
+    // --- ポート外車両ボタン制御（タップ: 点Toggle ＋ リスト表示モーダル） ---
     const outOfPortBtn = document.getElementById('out-of-port-btn');
     const outOfPortModal = document.getElementById('out-of-port-modal');
     const closeOutOfPortModalBtn = document.getElementById('close-out-of-port-modal-btn');
 
     if (outOfPortBtn) {
-        let pressTimer = null;
-        let isLongPress = false;
-
-        const startPress = () => {
-            isLongPress = false;
-            pressTimer = setTimeout(() => {
-                isLongPress = true;
-                showOutOfPortModal(cachedDashboardData);
-            }, 500); // 500msの長押しで表形式モーダル表示
-        };
-
-        const cancelPress = () => {
-            if (pressTimer) {
-                clearTimeout(pressTimer);
-                pressTimer = null;
-            }
-        };
-
-        outOfPortBtn.addEventListener('mousedown', startPress);
-        outOfPortBtn.addEventListener('mouseup', cancelPress);
-        outOfPortBtn.addEventListener('mouseleave', cancelPress);
-
-        outOfPortBtn.addEventListener('touchstart', () => {
-            startPress();
-        }, { passive: true });
-        outOfPortBtn.addEventListener('touchend', cancelPress);
-        outOfPortBtn.addEventListener('touchcancel', cancelPress);
-
-        outOfPortBtn.addEventListener('contextmenu', (e) => {
-            e.preventDefault();
-            showOutOfPortModal(cachedDashboardData);
-        });
-
         outOfPortBtn.addEventListener('click', function() {
-            if (isLongPress) {
-                isLongPress = false;
-                return;
-            }
-            // タップでToggle切替
+            // 1. マップ点レイヤーのToggle切替
             isOutOfPortMarkerActive = !isOutOfPortMarkerActive;
             saveToCache('out_of_port_layer_active', isOutOfPortMarkerActive);
             updateOutOfPortBtnUI(isOutOfPortMarkerActive);
             updateFilterAndRender(false);
+
+            // 2. ポート外車両リスト（表形式モーダル）を表示
+            showOutOfPortModal(cachedDashboardData);
         });
     }
 
