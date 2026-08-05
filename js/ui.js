@@ -206,55 +206,28 @@ function initUIComponents() {
         });
     }
 
-    // --- ポート外車両ボタン制御（タップ: 点Toggle / 長押し・右クリック: リスト表示モーダル） ---
+    // --- ポート外専用モードトグルスイッチ ---
+    const outOfPortOnlyCheckbox = document.getElementById('out-of-port-only-checkbox');
+    if (outOfPortOnlyCheckbox) {
+        outOfPortOnlyCheckbox.checked = isOutOfPortOnlyMode;
+        updateOutOfPortOnlyBtnUI(isOutOfPortOnlyMode);
+
+        outOfPortOnlyCheckbox.addEventListener('change', function() {
+            isOutOfPortOnlyMode = outOfPortOnlyCheckbox.checked;
+            saveToCache('out_of_port_only_mode', isOutOfPortOnlyMode);
+            updateOutOfPortOnlyBtnUI(isOutOfPortOnlyMode);
+            updateFilterAndRender(false);
+        });
+    }
+
+    // --- ポート外車両バブルボタン制御（タップでリスト表示モーダルを開く） ---
     const outOfPortBtn = document.getElementById('out-of-port-btn');
     const outOfPortModal = document.getElementById('out-of-port-modal');
     const closeOutOfPortModalBtn = document.getElementById('close-out-of-port-modal-btn');
 
     if (outOfPortBtn) {
-        let pressTimer = null;
-        let isLongPress = false;
-
-        const startPress = () => {
-            isLongPress = false;
-            pressTimer = setTimeout(() => {
-                isLongPress = true;
-                showOutOfPortModal(cachedDashboardData);
-            }, 500); // 500msの長押しで表形式モーダル表示
-        };
-
-        const cancelPress = () => {
-            if (pressTimer) {
-                clearTimeout(pressTimer);
-                pressTimer = null;
-            }
-        };
-
-        outOfPortBtn.addEventListener('mousedown', startPress);
-        outOfPortBtn.addEventListener('mouseup', cancelPress);
-        outOfPortBtn.addEventListener('mouseleave', cancelPress);
-
-        outOfPortBtn.addEventListener('touchstart', () => {
-            startPress();
-        }, { passive: true });
-        outOfPortBtn.addEventListener('touchend', cancelPress);
-        outOfPortBtn.addEventListener('touchcancel', cancelPress);
-
-        outOfPortBtn.addEventListener('contextmenu', (e) => {
-            e.preventDefault();
-            showOutOfPortModal(cachedDashboardData);
-        });
-
         outOfPortBtn.addEventListener('click', function() {
-            if (isLongPress) {
-                isLongPress = false;
-                return;
-            }
-            // タップでToggle切替
-            isOutOfPortMarkerActive = !isOutOfPortMarkerActive;
-            saveToCache('out_of_port_layer_active', isOutOfPortMarkerActive);
-            updateOutOfPortBtnUI(isOutOfPortMarkerActive);
-            updateFilterAndRender(false);
+            showOutOfPortModal(cachedDashboardData);
         });
     }
 
@@ -748,5 +721,12 @@ function updateOutOfPortBtnUI(active) {
     const btn = document.getElementById('out-of-port-btn');
     if (btn) {
         btn.classList.toggle('active', !!active);
+    }
+}
+
+function updateOutOfPortOnlyBtnUI(enabled) {
+    const textSpan = document.querySelector('.out-of-port-only-toggle-text');
+    if (textSpan) {
+        textSpan.textContent = enabled ? 'ポート外専用 ON' : 'ポート外専用 OFF';
     }
 }
