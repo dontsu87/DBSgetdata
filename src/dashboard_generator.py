@@ -2,6 +2,7 @@
 import os
 import glob
 import json
+import re
 import pandas as pd
 from datetime import datetime, timezone, timedelta
 from src.config import Config, ROOT_DIR
@@ -63,10 +64,18 @@ def read_csv_safe(path):
 def load_input_data(latest_vehicle_path: str = None):
     """車両データCSVおよびしきい値CSVを安全にロードします"""
     if not latest_vehicle_path:
-        vehicle_files = sorted(glob.glob(os.path.join(Config.OUTPUT_DIR, "車両情報_*.csv")))
+        pattern1 = glob.glob(os.path.join(Config.OUTPUT_DIR, "車両_*.csv"))
+        pattern2 = glob.glob(os.path.join(Config.OUTPUT_DIR, "車両情報_*.csv"))
+        vehicle_files = [p for p in pattern1 + pattern2 if "gbfs" not in p and "onedrive" not in p]
         if not vehicle_files:
             print("Error: 車両情報CSVが見つかりません。")
             return None, None
+            
+        def _extract_dt(p):
+            m = re.search(r'(\d{8}_\d{6})', p)
+            return m.group(1) if m else ''
+            
+        vehicle_files.sort(key=_extract_dt)
         latest_vehicle_path = vehicle_files[-1]
     
     threshold_path = os.path.join(str(ROOT_DIR), "車両閾値設定.csv")
@@ -374,15 +383,46 @@ def sync_port_area_master(df_merged):
         
     return master_data, gbfs_stations
 
+def load_public_port_coords():
+    """public_ports.js からマスターポート座標マップをロードします"""
+    coords = {}
+    path = os.path.join(str(ROOT_DIR), "public_ports.js")
+    if os.path.exists(path):
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                content = f.read()
+            m = re.search(r'window\.PUBLIC_PORTS_DATA\s*=\s*(\{.*\});?', content, re.DOTALL)
+            if m:
+                data = json.loads(m.group(1))
+                for p in data.get("ports", []):
+                    p_name = p.get("port_name", "").strip()
+                    if p_name and p.get("lat") and p.get("lon"):
+                        coords[p_name] = (float(p["lat"]), float(p["lon"]))
+        except Exception as e:
+            print(f"Warning: public_ports.js からの座標マスタ読み込みに失敗しました: {e}")
+    return coords
+
 def aggregate_ports_data(df_merged, master_data, gbfs_stations):
     """ポート単位の集計処理および空ポートのマージを行います"""
     ports_data = {}
+    public_port_coords = load_public_port_coords()
     
     for idx, row in df_merged.iterrows():
         port_name = str(row['ポート名']).strip()
-        lat = row['lat']
-        lon = row['lon']
-        has_gps = not (pd.isna(lat) or pd.isna(lon) or lat == 0.0 or lon == 0.0)
+        lat = row.get('lat')
+        lon = row.get('lon')
+        
+        # 1. 車両位置緯度・経度からのフォールバック
+        if (pd.isna(lat) or lat == 0.0 or lat == "") and '車両位置緯度' in df_merged.columns and not pd.isna(row.get('車両位置緯度')):
+            lat = row.get('車両位置緯度')
+        if (pd.isna(lon) or lon == 0.0 or lon == "") and '車両位置経度' in df_merged.columns and not pd.isna(row.get('車両位置経度')):
+            lon = row.get('車両位置経度')
+            
+        # 2. public_ports.js マスターポート位置情報からのフォールバック
+        if (pd.isna(lat) or pd.isna(lon) or lat == 0.0 or lon == 0.0 or lat == "" or lon == "") and port_name in public_port_coords:
+            lat, lon = public_port_coords[port_name]
+
+        has_gps = not (pd.isna(lat) or pd.isna(lon) or lat == 0.0 or lon == 0.0 or lat == "" or lon == "")
         
         bike_id = str(row['識別番号'])
         status = str(row['車両status']) if '車両status' in df_merged.columns else str(row['車両状態'])

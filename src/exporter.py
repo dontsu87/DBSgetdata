@@ -36,6 +36,11 @@ def export_to_onedrive(df_list: list[pd.DataFrame]) -> str:
             # マージ用に必要なカラムだけを抽出
             df_gbfs_subset = df_gbfs[['join_key', 'station_id', 'lat', 'lon']].drop_duplicates(subset=['join_key'])
             
+            # カラム名重複(lat_x/lat_yなど)を防ぐため、既に存在する場合は事前にドロップ
+            for col_to_drop in ['station_id', 'lat', 'lon']:
+                if col_to_drop in combined_df.columns:
+                    combined_df.drop(columns=[col_to_drop], inplace=True)
+
             # 左結合でマージ
             combined_df = pd.merge(combined_df, df_gbfs_subset, on='join_key', how='left')
             
