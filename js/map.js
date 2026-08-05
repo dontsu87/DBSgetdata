@@ -1434,21 +1434,37 @@ function renderOutOfPortDotMarkers(data) {
 
             if (!isOutOfPort) return;
 
-            // 強調表示（アラートレベル >= 4 等）判定
-            const isAlert = (bike.alert_level && bike.alert_level >= 4) || bike.is_alert;
-            const radius = isAlert ? (isOutOfPortOnlyMode ? 9 : 7) : (isOutOfPortOnlyMode ? 6 : 4);
-            const fillColor = isAlert ? '#ef4444' : '#f97316';
+            // 「利用中」または「一時駐輪」状態の判定
+            const isUsingStatus = bike.status && (
+                bike.status.includes('利用中') ||
+                bike.status.includes('一時駐輪') ||
+                bike.status.includes('USING') ||
+                bike.status.includes('PARKING')
+            );
+
+            // 車両状態フィルタパネルで「利用中」関連の強調チェックが入っているか
+            const isUsingHighlighted = checkedHighlightStatuses && checkedHighlightStatuses.some(hs => 
+                hs && (hs.includes('利用中') || hs.includes('一時駐輪') || hs.includes('USING') || hs.includes('PARKING'))
+            );
+
+            // 「利用中」車両は基本非表示。フィルタで「利用中」の強調がONの場合のみ表示
+            if (isUsingStatus && !isUsingHighlighted) {
+                return;
+            }
+
+            // 車両状態フィルタで「強調」となっているものは赤、そうでないものはオレンジ（波紋なし）
+            const isHighlighted = (checkedHighlightStatuses && bike.status && checkedHighlightStatuses.includes(bike.status));
+            const radius = isHighlighted ? (isOutOfPortOnlyMode ? 9 : 7) : (isOutOfPortOnlyMode ? 6 : 4);
+            const fillColor = isHighlighted ? '#ef4444' : '#f97316';
             const color = '#ffffff';
-            const className = isAlert ? 'out-of-port-alert-dot' : '';
 
             const dotMarker = L.circleMarker([bLat, bLon], {
                 radius: radius,
                 fillColor: fillColor,
                 color: color,
-                weight: isAlert ? 2 : 1.5,
+                weight: isHighlighted ? 2 : 1.5,
                 opacity: 0.9,
-                fillOpacity: isAlert ? 0.95 : 0.85,
-                className: className
+                fillOpacity: isHighlighted ? 0.95 : 0.85
             });
 
             // ポップアップの設定
