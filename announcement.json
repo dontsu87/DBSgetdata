@@ -6,10 +6,10 @@
     "end_time": "2026-08-31T23:59:59+09:00"
   },
   "maintenance": {
-    "enabled": true,
-    "worker_location_only": true,
-    "scraping_disabled": true,
-    "message": "ドコモバイクシェアシステム障害のため、作業員位置情報機能以外は休止しています",
-    "start_time": "2026-08-04T11:59:00+09:00"
+    "enabled": false,
+    "worker_location_only": false,
+    "scraping_disabled": false,
+    "message": "通常運用中",
+    "start_time": "2026-08-05T18:00:00+09:00"
   }
 }
