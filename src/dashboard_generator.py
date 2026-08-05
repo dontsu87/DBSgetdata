@@ -410,7 +410,15 @@ def aggregate_ports_data(df_merged, master_data, gbfs_stations):
     public_port_coords = load_public_port_coords()
     
     for idx, row in df_merged.iterrows():
-        port_name = str(row['ポート名']).strip()
+        raw_port_name = str(row['ポート名']).strip() if not pd.isna(row.get('ポート名')) else ""
+        area_name = normalize_area_name(row['エリア名']) if not pd.isna(row.get('エリア名')) else "その他"
+
+        is_no_port = is_empty_coord(raw_port_name) or raw_port_name in ('nan', 'None', 'ポート外', '位置情報なし')
+        if is_no_port:
+            port_name = f"{area_name}_ポート外"
+        else:
+            port_name = raw_port_name
+
         lat = row.get('lat')
         lon = row.get('lon')
         
@@ -420,11 +428,12 @@ def aggregate_ports_data(df_merged, master_data, gbfs_stations):
         if is_empty_coord(lon) and '車両位置経度' in df_merged.columns and not is_empty_coord(row.get('車両位置経度')):
             lon = row.get('車両位置経度')
             
-        # 2. port_coords_master.json マスターポート位置情報からのフォールバック
-        if (is_empty_coord(lat) or is_empty_coord(lon)) and port_name in public_port_coords:
+        # 2. port_coords_master.json マスターポート位置情報からのフォールバック（実在ポートのみ）
+        if not is_no_port and (is_empty_coord(lat) or is_empty_coord(lon)) and port_name in public_port_coords:
             lat, lon = public_port_coords[port_name]
 
-        has_gps = not (is_empty_coord(lat) or is_empty_coord(lon))
+        # ポート外仮想ポートの場合は has_gps を False とする
+        has_gps = (not is_no_port) and not (is_empty_coord(lat) or is_empty_coord(lon))
         
         bike_id = str(row['識別番号'])
         status = str(row['車両status']) if '車両status' in df_merged.columns else str(row['車両状態'])
@@ -441,11 +450,11 @@ def aggregate_ports_data(df_merged, master_data, gbfs_stations):
 
         if port_name not in ports_data:
             ports_data[port_name] = {
-                "port_name": port_name,
-                "area_name": normalize_area_name(row['エリア名']) if not pd.isna(row['エリア名']) else "その他",
+                "port_name": "ポート外" if is_no_port else port_name,
+                "area_name": area_name,
                 "station_id": s_id_str,
-                "lat": float(lat) if has_gps else None,
-                "lon": float(lon) if has_gps else None,
+                "lat": float(lat) if (has_gps and lat is not None) else None,
+                "lon": float(lon) if (has_gps and lon is not None) else None,
                 "has_gps": has_gps,
                 "total_bikes": 0,
                 "max_alert_level": 0,
@@ -498,8 +507,8 @@ def aggregate_ports_data(df_merged, master_data, gbfs_stations):
             "replace_increased_volt": replace_incr_val,
             "replaced_at": replaced_at,
             "area_name": normalize_area_name(row['エリア名']) if not pd.isna(row['エリア名']) else "その他",
-            "lat": float(lat) if has_gps else None,
-            "lon": float(lon) if has_gps else None
+            "lat": float(row.get('車両位置緯度')) if ('車両位置緯度' in df_merged.columns and not is_empty_coord(row.get('車両位置緯度'))) else (float(row.get('lat')) if (not is_empty_coord(row.get('lat'))) else None),
+            "lon": float(row.get('車両位置経度')) if ('車両位置経度' in df_merged.columns and not is_empty_coord(row.get('車両位置経度'))) else (float(row.get('lon')) if (not is_empty_coord(row.get('lon'))) else None),
         }
         
         ports_data[port_name]["bikes"].append(bike_info)
