@@ -1457,7 +1457,7 @@ function renderOutOfPortDotMarkers(data) {
             });
 
             // ポップアップの設定
-            const voltText = bike.voltage !== null ? `${bike.voltage.toFixed(1)}V` : '--V';
+            const voltText = (bike.voltage != null) ? `${bike.voltage.toFixed(1)}V` : '--V';
             const statusText = bike.status || '不明';
             const alertName = bike.alert_level_name || '正常';
 
@@ -1471,7 +1471,7 @@ function renderOutOfPortDotMarkers(data) {
                         <span>状態: <b>${statusText}</b></span>
                     </div>
                     <div style="font-size: 11px; color: #475569;">
-                        判定: <b style="color: ${isAlert ? '#dc2626' : '#2563eb'};">${alertName}</b>
+                        判定: <b style="color: ${isHighlighted ? '#dc2626' : '#2563eb'};">${alertName}</b>
                     </div>
                 </div>
             `;
