@@ -356,6 +356,8 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
     const unlockedFilterCheckbox = document.getElementById('unlocked-filter-checkbox');
     const isUnlockedFilterChecked = unlockedFilterCheckbox ? unlockedFilterCheckbox.checked : true;
 
+    const targetArea = normalizeAreaName(selectedArea);
+
     data.ports.forEach(port => {
         // ポート外専用モード有効時は通常ポートのバブルを描画しない
         if (isOutOfPortOnlyMode) return;
@@ -367,7 +369,8 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
             return; 
         }
 
-        if (port.area_name !== selectedArea) {
+        const portArea = normalizeAreaName(port.area_name);
+        if (targetArea && portArea !== targetArea) {
             return;
         }
 
