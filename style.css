@@ -1927,3 +1927,50 @@ body.worker-location-only #map [class*='port-marker-'] {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-10px); }
 }
+
+/* ポート外専用モード トグルボタンのスタイル */
+.out-of-port-only-toggle-container {
+    display: inline-flex;
+    align-items: center;
+    user-select: none;
+}
+
+.out-of-port-only-toggle-button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background-color: #334155;
+    color: #cbd5e1;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.out-of-port-only-toggle-label input[type="checkbox"]:checked + .out-of-port-only-toggle-button {
+    background: linear-gradient(135deg, #ea580c 0%, #f97316 100%);
+    color: #ffffff;
+    border-color: #fb923c;
+    box-shadow: 0 2px 8px rgba(249, 115, 22, 0.5);
+}
+
+.out-of-port-only-toggle-button:active {
+    transform: scale(0.95);
+}
+
+/* 右下ポート外バブルボタンの常時オレンジスタイル */
+.out-of-port-button {
+    background: linear-gradient(135deg, #ea580c 0%, #f97316 100%) !important;
+    color: #ffffff !important;
+    border: 1px solid #fb923c !important;
+    box-shadow: 0 4px 16px rgba(249, 115, 22, 0.6) !important;
+}
+.out-of-port-button:hover {
+    background: linear-gradient(135deg, #c2410c 0%, #ea580c 100%) !important;
+    box-shadow: 0 6px 20px rgba(249, 115, 22, 0.8) !important;
+}

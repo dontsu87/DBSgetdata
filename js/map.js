@@ -357,6 +357,9 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
     const isUnlockedFilterChecked = unlockedFilterCheckbox ? unlockedFilterCheckbox.checked : true;
 
     data.ports.forEach(port => {
+        // ポート外専用モード有効時は通常ポートのバブルを描画しない
+        if (isOutOfPortOnlyMode) return;
+
         const lat = parseFloat(port.lat);
         const lon = parseFloat(port.lon);
         
@@ -1408,15 +1411,17 @@ document.addEventListener('click', function(e) {
 
 // ポート外自転車のドットマーカー描画処理
 function renderOutOfPortDotMarkers(data) {
-    if (!outOfPortMarkerGroup || !isOutOfPortMarkerActive || !data || !data.ports) return;
+    if (!outOfPortMarkerGroup || !data || !data.ports) return;
+
+    const targetArea = normalizeAreaName(selectedArea);
 
     data.ports.forEach(port => {
         if (!port.bikes || port.bikes.length === 0) return;
 
         port.bikes.forEach(bike => {
-            // エリアフィルター
-            if (bike.area_name && bike.area_name !== selectedArea) return;
-            if (!bike.area_name && port.area_name !== selectedArea) return;
+            // エリアフィルター（正規化比較）
+            const bikeArea = normalizeAreaName(bike.area_name || port.area_name);
+            if (targetArea && bikeArea !== targetArea) return;
 
             // 緯度経度の取得（bike.lat / bike.lon または port.lat / port.lon）
             const bLat = parseFloat(bike.lat || (port.lat !== null ? port.lat : null));
@@ -1431,7 +1436,7 @@ function renderOutOfPortDotMarkers(data) {
 
             // 強調表示（アラートレベル >= 4 等）判定
             const isAlert = (bike.alert_level && bike.alert_level >= 4) || bike.is_alert;
-            const radius = isAlert ? 7 : 4;
+            const radius = isAlert ? (isOutOfPortOnlyMode ? 9 : 7) : (isOutOfPortOnlyMode ? 6 : 4);
             const fillColor = isAlert ? '#ef4444' : '#f97316';
             const color = '#ffffff';
             const className = isAlert ? 'out-of-port-alert-dot' : '';

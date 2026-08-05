@@ -206,20 +206,27 @@ function initUIComponents() {
         });
     }
 
-    // --- ポート外車両ボタン制御（タップ: 点Toggle ＋ リスト表示モーダル） ---
+    // --- ポート外専用モードトグルスイッチ ---
+    const outOfPortOnlyCheckbox = document.getElementById('out-of-port-only-checkbox');
+    if (outOfPortOnlyCheckbox) {
+        outOfPortOnlyCheckbox.checked = isOutOfPortOnlyMode;
+        updateOutOfPortOnlyBtnUI(isOutOfPortOnlyMode);
+
+        outOfPortOnlyCheckbox.addEventListener('change', function() {
+            isOutOfPortOnlyMode = outOfPortOnlyCheckbox.checked;
+            saveToCache('out_of_port_only_mode', isOutOfPortOnlyMode);
+            updateOutOfPortOnlyBtnUI(isOutOfPortOnlyMode);
+            updateFilterAndRender(false);
+        });
+    }
+
+    // --- ポート外車両バブルボタン制御（タップでリスト表示モーダルを開く） ---
     const outOfPortBtn = document.getElementById('out-of-port-btn');
     const outOfPortModal = document.getElementById('out-of-port-modal');
     const closeOutOfPortModalBtn = document.getElementById('close-out-of-port-modal-btn');
 
     if (outOfPortBtn) {
         outOfPortBtn.addEventListener('click', function() {
-            // 1. マップ点レイヤーのToggle切替
-            isOutOfPortMarkerActive = !isOutOfPortMarkerActive;
-            saveToCache('out_of_port_layer_active', isOutOfPortMarkerActive);
-            updateOutOfPortBtnUI(isOutOfPortMarkerActive);
-            updateFilterAndRender(false);
-
-            // 2. ポート外車両リスト（表形式モーダル）を表示
             showOutOfPortModal(cachedDashboardData);
         });
     }
@@ -718,5 +725,12 @@ function updateOutOfPortBtnUI(active) {
     const btn = document.getElementById('out-of-port-btn');
     if (btn) {
         btn.classList.toggle('active', !!active);
+    }
+}
+
+function updateOutOfPortOnlyBtnUI(enabled) {
+    const textSpan = document.querySelector('.out-of-port-only-toggle-text');
+    if (textSpan) {
+        textSpan.textContent = enabled ? 'ポート外専用 ON' : 'ポート外専用 OFF';
     }
 }
