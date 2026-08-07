@@ -35,7 +35,7 @@
 
           
         <div class="alert alert-success" id="update-notice">
-          <p><strong>更新しました: 2026年8月7日 16:32</strong></p>
+          <p><strong>更新しました: 2026年8月7日 20:52</strong></p>
         </div>
 <div class="bookmarklet-copy-area">
             <label for="bookmarklet-text">ドラッグできない場合は、以下のコードをコピーしてブックマークのURL欄に貼り付けてください：</label>
@@ -88,32 +88,19 @@
           <li><strong>サイドパネル表示</strong> — 画面横にマップを並べて表示できる</li>
         </ul>
 
-        <h3>導入手順（方法A: CRXインストール・自動更新対応）</h3>
+        <h3>導入手順</h3>
         <ol>
-          <li><strong>CRXファイルを右クリック→「名前を付けてリンク先を保存」</strong> でダウンロードします。<br>
-            <a href="dbs-portal-ext.crx" class="btn btn-primary">⬇ dbs-portal-ext.crx</a>
-            <br><small>※左クリックでは開かず、必ず右クリックで保存してください。</small></li>
+          <li><a href="dbs-portal-ext.zip" class="btn btn-primary">⬇ dbs-portal-ext.zip をダウンロード</a></li>
+          <li>ダウンロードした ZIP を <strong>任意のフォルダに展開</strong> します。</li>
           <li>Chrome のアドレス欄に <code>chrome://extensions</code> と入力して開きます。</li>
           <li>右上の <strong>「デベロッパー モード」をオン</strong> にします。</li>
-          <li>ダウンロードした <code>dbs-portal-ext.crx</code> を <strong>拡張機能画面にドラッグ＆ドロップ</strong> します。</li>
-          <li>「拡張機能を追加」を押します。</li>
+          <li>「<strong>パッケージ化されていない拡張機能を読み込む</strong>」を押し、展開したフォルダを選択します。</li>
           <li>管理ポータルを開き直すと、自動で機能が適用されます。</li>
         </ol>
 
-        <h3>導入手順（方法B: ZIP展開・CRXが弾かれる場合）</h3>
-        <ol>
-          <li><a href="dbs-portal-ext.zip" class="btn btn-secondary">⬇ dbs-portal-ext.zip をダウンロード</a></li>
-          <li>ダウンロードした ZIP を <strong>任意のフォルダに展開</strong> します。</li>
-          <li><code>chrome://extensions</code> を開き、デベロッパーモードをオンにします。</li>
-          <li>「<strong>パッケージ化されていない拡張機能を読み込む</strong>」を押し、展開したフォルダを選択します。</li>
-        </ol>
-        <p><small>※方法Bでインストールした場合、自動更新は機能しません。更新時は再度ZIPを展開して読み込み直してください。</small></p>
-
-        <h3>更新について</h3>
-        <p>方法Aでインストールした場合、新しいバージョンが公開されると Chrome が自動的に更新します。</p>
-
-        <div class="alert">
-          <p>※「パッケージが無効です」と表示される場合は、方法Bをお試しください。CRXがChromeのセキュリティ制限で弾かれている可能性があります。</p>
+        <div class="alert alert-info">
+          <p><strong>【更新方法】</strong></p>
+          <p>新しいバージョンが公開された場合は、再度ZIPをダウンロードして展開し、<code>chrome://extensions</code> で「再読み込み」ボタンを押してください。</p>
         </div>
       </section>
 
