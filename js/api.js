@@ -26,6 +26,7 @@ function loadDashboardData(isAutoUpdate = false, retryCount = 0) {
     
     const hasKanriall = params.has('kanriall');
     const hasArea = params.has('area');
+    const hasAreas = params.has('areas');
     const hasKindai = params.has('kindai');
     
     let hasValidStatus = false;
@@ -36,7 +37,7 @@ function loadDashboardData(isAutoUpdate = false, retryCount = 0) {
         }
     }
     
-    if (!hasKanriall && !hasArea && !hasKindai && !hasValidStatus) {
+    if (!hasKanriall && !hasArea && !hasAreas && !hasKindai && !hasValidStatus) {
         console.log("Info: 有効なURLパラメータがありません。データをロードしません。");
         const loader = document.getElementById('loader');
         if (loader) loader.style.display = 'none';

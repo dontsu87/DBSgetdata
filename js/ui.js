@@ -252,6 +252,7 @@ function initAreaTabs(data) {
     
     let areas = Array.from(new Set(data.ports.map(p => normalizeAreaName(p.area_name)))).filter(Boolean);
     const limitAreaParam = getRestrictedArea();
+    const limitAreasParam = getRestrictedAreas();
 
     // 自動更新中の選択値や旧端末キャッシュを、現行エリア名へ移行する。
     selectedArea = findMatchingArea(areas, selectedArea);
@@ -262,6 +263,15 @@ function initAreaTabs(data) {
             areas = [matchedArea];
             selectedArea = matchedArea;
         }
+    } else if (limitAreasParam) {
+        const matched = limitAreasParam
+            .map(requested => findMatchingArea(areas, requested))
+            .filter(Boolean);
+        const unique = Array.from(new Set(matched));
+        if (unique.length) {
+            areas = unique;
+            selectedArea = findMatchingArea(areas, selectedArea) || areas[0];
+        }
     } else if (limitAreaParam) {
         const matchedArea = findMatchingArea(areas, limitAreaParam);
         if (matchedArea) {
@@ -271,7 +281,7 @@ function initAreaTabs(data) {
     }
     
     if (!selectedArea) {
-        if (!limitAreaParam && !isKindaiMode()) {
+        if (!limitAreaParam && !limitAreasParam && !isKindaiMode()) {
             const cachedArea = loadFromCache('selected_area', '');
             const matchedCachedArea = findMatchingArea(areas, cachedArea);
             if (matchedCachedArea) {
@@ -649,8 +659,8 @@ function showOutOfPortModal(data) {
         });
     }
     
-    // 車体番号でソート
-    outOfPortBikes.sort((a, b) => a.bike_id.localeCompare(b.bike_id));
+    // 車体番号でソート (自然順)
+    outOfPortBikes.sort((a, b) => (a.bike_id || '').localeCompare(b.bike_id || '', undefined, { numeric: true, sensitivity: 'base' }));
     
     if (outOfPortBikes.length === 0) {
         emptyMsg.style.display = 'block';

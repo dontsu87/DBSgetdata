@@ -8,6 +8,7 @@ const AREA_CODE_ALIASES = Object.freeze({
     KMT: '小松',
     KNZ: '金沢',
     SNN: '上田千曲広域',
+    SPS: '出雲・松江・境港',
     TRG: '敦賀'
 });
 

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>管理ポータル 機能拡張のご案内</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="guide.js" defer></script>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1>管理ポータル 機能拡張のご案内</h1>
+    </header>
+
+    <main class="content">
+      <section class="card">
+        <h2>1. いまお使いのもの（ブックマークレット版）</h2>
+        <p>ブックマークを押すことで、管理ポータルの画面上に以下の機能を追加できます。</p>
+        <ul>
+          <li>バッテリーマップを開く</li>
+          <li>一覧の並べ替え・絞り込み</li>
+        </ul>
+        <div class="status-indicator-info">
+          <p><strong>【適用状態の見分け方】</strong></p>
+          <p>画面右下のパネルが<strong>青くなっていれば適用中</strong>、<strong>赤に戻っていれば外れている</strong>状態です。</p>
+        </div>
+        <div class="alert alert-warning">
+          <p>※<strong>画面を再読込したら、もう一度ブックマークを押す必要があります。</strong></p>
+        </div>
+      </section>
+
+      <section class="card" id="bookmarklet-section">
+        <h2>2. 最新版のブックマークレット</h2>
+        <div id="bookmarklet-status-container">
+          <p>以下のリンクをブラウザのブックマークバーへドラッグ＆ドロップして登録してください。</p>
+          <div class="bookmarklet-drag-area">
+            <a id="bookmarklet-link" href="#" class="btn btn-primary btn-drag">DBS拡張</a>
+            <span class="drag-help">← このボタンをブックマークバーへドラッグ</span>
+          </div>
+
+          <div class="bookmarklet-copy-area">
+            <label for="bookmarklet-text">ドラッグできない場合は、以下のコードをコピーしてブックマークのURL欄に貼り付けてください：</label>
+            <div class="input-group">
+              <textarea id="bookmarklet-text" readonly placeholder="読み込み中..."></textarea>
+              <button type="button" id="btn-copy-bookmarklet" class="btn btn-secondary">コピー</button>
+            </div>
+            <span id="copy-message" class="copy-message" aria-live="polite"></span>
+          </div>
+
+          <div id="version-info" class="version-info">
+            バージョン: <span id="bookmarklet-version">読み込み中...</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="card highlight-card">
+        <h2>3. 機能充実版（Chrome拡張）のご案内</h2>
+        <p class="lead-text">より便利で快適に作業を行えるChrome拡張機能（β版）のご案内です。</p>
+        
+        <h3>何が良くなるのか</h3>
+        <ul class="feature-list">
+          <li><strong>自動で適用される</strong>: ポータルを開くだけで自動適用され、毎回ブックマークを押す必要がなくなります。</li>
+          <li><strong>サイドパネル表示</strong>: 画面の横に並べてマップを表示できます。</li>
+          <li><strong>外れない</strong>: 画面を再読込しても機能が外れません。</li>
+        </ul>
+
+        <h3>導入手順</h3>
+        <ol class="step-list">
+          <li>Chrome のアドレス欄に <code class="code-inline">chrome://extensions</code> と入力して開きます。</li>
+          <li>右上の「デベロッパー モード」のスイッチをオンにします。</li>
+          <li>画面左上の「パッケージ化されていない拡張機能を読み込む」ボタンを押します。</li>
+          <li>配布された拡張機能のフォルダを選択します。</li>
+          <li>管理ポータルの画面を開き直します（再読込します）。</li>
+        </ol>
+
+        <div class="alert alert-notice">
+          <p><strong>【ご注意】</strong></p>
+          <ul>
+            <li>Chromeの起動時に「デベロッパー モードの拡張機能」に関する確認ポップアップが表示される場合があります。</li>
+            <li>今後のアップデートにより、導入方法が変更される可能性があります。</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>4. 困ったとき</h2>
+        <ul class="trouble-list">
+          <li><strong>機能が動かない / 反応しない</strong><br>管理ポータルにログインする前にボタンを押していませんか？ログイン後に管理ポータル画面で実行してください。</li>
+          <li><strong>マップ画面が開かない</strong><br>ブラウザのポップアップブロックが有効になっていないか確認し、ブロックされている場合は許可してください。</li>
+          <li><strong>サイドパネルが開かない（Chrome拡張版）</strong><br>Chromeのツールバー右上にある拡張機能アイコン（パズルピースのマーク）を押し、一覧から本拡張機能を選択してください。</li>
+        </ul>
+      </section>
+
+      <section class="card security-card">
+        <h2>5. この拡張が何をしていないか（安心してお使いいただくために）</h2>
+        <p>本拡張機能は、安全面・プライバシー面に配慮して設計されています。</p>
+        <ul>
+          <li>管理ポータルのデータを<strong>書き換えません</strong>。データの読み取りと画面表示の変更のみを行います。</li>
+          <li>入力内容やログイン情報を<strong>外部へ送信しません</strong>。すべての処理はブラウザ内で完結します。</li>
+          <li>管理ポータル本体には<strong>一切手を加えていません</strong>。</li>
+        </ul>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>&copy; 管理ポータル 機能拡張 案内ページ</p>
+    </footer>
+  </div>
+</body>
+</html>

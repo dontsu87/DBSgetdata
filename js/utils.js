@@ -85,9 +85,20 @@ function getRestrictedArea() {
     return params.get('area');
 }
 
+function getRestrictedAreas() {
+    const params = new URLSearchParams(searchQuery);
+    if (params.has('kanriall')) {
+        return null;
+    }
+    const raw = params.get('areas');
+    if (!raw) return null;
+    const list = raw.split(',').map(value => value.trim()).filter(Boolean);
+    return list.length ? list : null;
+}
+
 function getRestrictedStatus() {
     const params = new URLSearchParams(searchQuery);
-    if (params.has('kanriall') || params.has('area')) {
+    if (params.has('kanriall') || params.has('area') || params.has('areas')) {
         return null;
     }
     return '利用可能';

@@ -1,0 +1,279 @@
+/* 基本スタイル */
+:root {
+  --primary-color: #0b5cab;
+  --primary-hover: #08447f;
+  --bg-color: #f4f6f9;
+  --card-bg: #ffffff;
+  --text-color: #333333;
+  --text-muted: #666666;
+  --border-color: #e1e5eb;
+  --border-radius: 8px;
+  --warning-bg: #fff9e6;
+  --warning-border: #ffe58f;
+  --warning-text: #8a6d3b;
+  --notice-bg: #f0f7ff;
+  --notice-border: #bae7ff;
+  --status-blue: #0b5cab;
+  --status-red: #d9534f;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+  line-height: 1.6;
+  color: var(--text-color);
+  background-color: var(--bg-color);
+  padding: 20px 15px;
+}
+
+.container {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+/* ヘッダー */
+.header {
+  background-color: var(--primary-color);
+  color: #ffffff;
+  padding: 24px 20px;
+  border-radius: var(--border-radius);
+  margin-bottom: 20px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.header h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+/* カード共通 */
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+}
+
+.card h2 {
+  font-size: 1.25rem;
+  color: var(--primary-color);
+  border-bottom: 2px solid var(--primary-color);
+  padding-bottom: 8px;
+  margin-bottom: 16px;
+}
+
+.card h3 {
+  font-size: 1.05rem;
+  margin: 16px 0 8px 0;
+  color: #222222;
+}
+
+.card p {
+  margin-bottom: 12px;
+}
+
+.card ul, .card ol {
+  margin-left: 20px;
+  margin-bottom: 12px;
+}
+
+.card li {
+  margin-bottom: 6px;
+}
+
+/* 強調カード */
+.highlight-card {
+  border-left: 5px solid var(--primary-color);
+}
+
+.lead-text {
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+/* ステータスインジケータ案内 */
+.status-indicator-info {
+  background: #f8f9fa;
+  border-left: 4px solid var(--primary-color);
+  padding: 12px 16px;
+  margin: 12px 0;
+  border-radius: 0 var(--border-radius) var(--border-radius) 0;
+}
+
+.status-indicator-info strong {
+  color: var(--status-blue);
+}
+
+/* アラートボックス */
+.alert {
+  padding: 12px 16px;
+  border-radius: 6px;
+  margin: 12px 0;
+  font-size: 0.95rem;
+}
+
+.alert-warning {
+  background-color: var(--warning-bg);
+  border: 1px solid var(--warning-border);
+  color: var(--warning-text);
+}
+
+.alert-notice {
+  background-color: var(--notice-bg);
+  border: 1px solid var(--notice-border);
+  color: #003a8c;
+}
+
+.alert p {
+  margin-bottom: 0;
+}
+
+/* ブックマークレットエリア */
+.bookmarklet-drag-area {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 16px 0;
+  padding: 16px;
+  background-color: #f0f4f9;
+  border-radius: 6px;
+}
+
+.btn {
+  display: inline-block;
+  font-weight: 600;
+  text-align: center;
+  vertical-align: middle;
+  cursor: pointer;
+  padding: 10px 20px;
+  font-size: 1rem;
+  border-radius: 6px;
+  text-decoration: none;
+  border: none;
+  transition: background-color 0.2s ease;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  color: #ffffff;
+  box-shadow: 0 2px 4px rgba(11, 92, 171, 0.3);
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-hover);
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  color: #ffffff;
+}
+
+.btn-secondary:hover {
+  background-color: #5a6268;
+}
+
+.drag-help {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.bookmarklet-copy-area {
+  margin-top: 16px;
+}
+
+.bookmarklet-copy-area label {
+  display: block;
+  font-size: 0.9rem;
+  margin-bottom: 6px;
+  color: var(--text-muted);
+}
+
+.input-group {
+  display: flex;
+  gap: 8px;
+}
+
+#bookmarklet-text {
+  flex: 1;
+  height: 42px;
+  padding: 8px 12px;
+  font-family: monospace, monospace;
+  font-size: 0.85rem;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  resize: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background-color: #f8f9fa;
+}
+
+.copy-message {
+  display: block;
+  font-size: 0.85rem;
+  color: #28a745;
+  margin-top: 4px;
+  min-height: 1.2em;
+}
+
+.version-info {
+  margin-top: 12px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-align: right;
+}
+
+/* リスト・コード表現 */
+.code-inline {
+  font-family: monospace, monospace;
+  background-color: #eef2f7;
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: #d63384;
+  font-size: 0.9em;
+}
+
+.step-list ol, ol.step-list {
+  padding-left: 20px;
+}
+
+.step-list li {
+  margin-bottom: 8px;
+}
+
+.trouble-list li {
+  margin-bottom: 12px;
+}
+
+.security-card ul {
+  list-style-type: check;
+}
+
+/* エラー状態・準備中メッセージ */
+.fallback-message {
+  padding: 16px;
+  background-color: #fff3cd;
+  border: 1px solid #ffeeba;
+  color: #856404;
+  border-radius: 6px;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* フッター */
+.footer {
+  text-align: center;
+  padding: 16px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}

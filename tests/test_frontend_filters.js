@@ -74,4 +74,18 @@ assert.deepEqual(
     ['AT異常全般', 'メンテナンス(手動)']
 );
 
-console.log('frontend area aliases and bike-prefix filters: ok');
+// 車両IDの昇順（自然順ソート）テスト
+const sampleBikes = [
+    { bike_id: 'TYO10' },
+    { bike_id: 'TYO2' },
+    { bike_id: 'TYO1' },
+    { bike_id: 'KWS100' },
+    { bike_id: 'KWS20' }
+];
+sampleBikes.sort((a, b) => (a.bike_id || '').localeCompare(b.bike_id || '', undefined, { numeric: true, sensitivity: 'base' }));
+assert.deepEqual(
+    sampleBikes.map(b => b.bike_id),
+    ['KWS20', 'KWS100', 'TYO1', 'TYO2', 'TYO10']
+);
+
+console.log('frontend area aliases and bike-prefix filters & bike sorting: ok');

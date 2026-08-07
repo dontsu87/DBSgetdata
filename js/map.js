@@ -694,6 +694,7 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
                 ));
             };
             const displayBikes = filterBikesByPrefix((matchingBikes.length > 0) ? matchingBikes : port.bikes);
+            displayBikes.sort((a, b) => (a.bike_id || '').localeCompare(b.bike_id || '', undefined, { numeric: true, sensitivity: 'base' }));
 
             const modelCounts = {};
             displayBikes.forEach(bike => {

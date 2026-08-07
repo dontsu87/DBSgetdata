@@ -579,6 +579,7 @@ def export_dashboard_files(ports_data):
     }
     
     for port_name, p_info in ports_data.items():
+        p_info["bikes"].sort(key=lambda b: str(b.get("bike_id", "")))
         for bike in p_info["bikes"]:
             lvl = bike["alert_level"]
             if lvl == 5:
