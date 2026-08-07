@@ -10,43 +10,24 @@
 <body>
   <div class="container">
     <header class="header">
-      <h1>管理ポータル 機能拡張のご案内</h1>
+      <h1>管理ポータル 機能拡張</h1>
+      <p class="subtitle">ドコモ・バイクシェア管理ポータルの使い勝手を向上するブラウザ拡張です</p>
     </header>
 
     <main class="content">
-      <section class="card">
-        <h2>1. いまお使いのもの（ブックマークレット版）</h2>
-        <p>ブックマークを押すことで、管理ポータルの画面上に以下の機能を追加できます。</p>
-        <ul>
-          <li>バッテリーマップを開く</li>
-          <li>一覧の並べ替え・絞り込み（見出し固定つき）</li>
-          <li>車両情報の表示件数を自動で最大にする（試験中）</li>
-          <li>「戻る」ボタンで1つ前に見ていた画面へ戻れる</li>
-          <li>表示条件などの折りたたみを既定で閉じる（ユーザ情報の画面は開いたまま）</li><li>一覧のリンクを別タブで開く（絞り込みが消えない）</li>
-        </ul>
-        <div class="status-indicator-info">
-          <p><strong>【適用状態の見分け方】</strong></p>
-          <p>画面右下のパネルが<strong>青くなっていれば適用中</strong>、<strong>赤に戻っていれば外れている</strong>状態です。</p>
-        </div>
-        <div class="alert alert-warning">
-          <p>※<strong>画面を再読込したら、もう一度ブックマークを押す必要があります。</strong></p>
-        </div>
-        <div class="alert">
-          <p><strong>【押す場所】</strong></p>
-          <ul>
-            <li><strong>管理ポータルを開いているとき</strong> — その場で機能が追加されます。</li>
-            <li><strong>それ以外のページのとき</strong> — 管理ポータルが新しいタブで開きます。
-              開いたタブで<strong>もう一度ブックマークを押してください</strong>。</li>
-          </ul>
-          <p>ブックマークレットは画面を移動すると消える仕組みのため、「開く」と「機能を追加する」を
-            一度にはできません。<strong>Chrome拡張版なら、ポータルを開くだけで自動で適用されます。</strong></p>
-        </div>
-      </section>
+      <!-- ===== 1. 導入（ブックマークレットの登録） ===== -->
+      <section class="card highlight-card" id="bookmarklet-section">
+        <h2>1. ブックマークレットを登録する</h2>
+        <p>最初に一度だけ、以下のブックマークレットをブラウザに登録してください。</p>
 
-      <section class="card" id="bookmarklet-section">
-        <h2>2. 最新版のブックマークレット</h2>
         <div id="bookmarklet-status-container">
-          <p>以下のリンクをブラウザのブックマークバーへドラッグ＆ドロップして登録してください。</p>
+          <h3>登録方法</h3>
+          <ol>
+            <li>下の <strong>「DBS拡張」ボタンをブックマークバーへドラッグ＆ドロップ</strong> してください。</li>
+            <li>管理ポータル（<code>mg.docomo-cycle.jp</code>）を開き、ログインします。</li>
+            <li>登録したブックマークをクリックすると、機能が追加されます。</li>
+          </ol>
+
           <div class="bookmarklet-drag-area">
             <a id="bookmarklet-link" href="#" class="btn btn-primary btn-drag">DBS拡張</a>
             <span class="drag-help">← このボタンをブックマークバーへドラッグ</span>
@@ -62,63 +43,85 @@
           </div>
 
           <div id="version-info" class="version-info">
-            バージョン: <span id="bookmarklet-version">読み込み中...</span>
+            <span id="bookmarklet-version">読み込み中...</span>
           </div>
         </div>
-      </section>
 
-      <section class="card highlight-card">
-        <h2>3. 機能充実版（Chrome拡張）のご案内</h2>
-        <p class="lead-text">より便利で快適に作業を行えるChrome拡張機能（β版）のご案内です。</p>
-        
-        <h3>何が良くなるのか</h3>
-        <ul class="feature-list">
-          <li><strong>自動で適用される</strong>: ポータルを開くだけで自動適用され、毎回ブックマークを押す必要がなくなります。</li>
-          <li><strong>サイドパネル表示</strong>: 画面の横に並べてマップを表示できます。</li>
-          <li><strong>外れない</strong>: 画面を再読込しても機能が外れません。</li>
-        </ul>
-
-        <h3>導入手順</h3>
-        <ol class="step-list">
-          <li>Chrome のアドレス欄に <code class="code-inline">chrome://extensions</code> と入力して開きます。</li>
-          <li>右上の「デベロッパー モード」のスイッチをオンにします。</li>
-          <li>画面左上の「パッケージ化されていない拡張機能を読み込む」ボタンを押します。</li>
-          <li>配布された拡張機能のフォルダを選択します。</li>
-          <li>管理ポータルの画面を開き直します（再読込します）。</li>
-        </ol>
-
-        <div class="alert alert-notice">
-          <p><strong>【ご注意】</strong></p>
+        <div class="alert alert-info">
+          <p><strong>【使い方】</strong></p>
           <ul>
-            <li>Chromeの起動時に「デベロッパー モードの拡張機能」に関する確認ポップアップが表示される場合があります。</li>
-            <li>今後のアップデートにより、導入方法が変更される可能性があります。</li>
+            <li><strong>管理ポータルを開いているとき</strong> — その場で機能が追加されます。画面右下のパネルが<strong>青くなれば適用中</strong>です。</li>
+            <li><strong>それ以外のページのとき</strong> — 管理ポータルが新しいタブで開きます。開いたタブで<strong>もう一度ブックマークを押してください</strong>。</li>
+            <li>画面を再読込すると機能は外れます。その場合は再度ブックマークを押してください（右下パネルが赤に戻っていれば未適用です）。</li>
           </ul>
         </div>
       </section>
 
+      <!-- ===== 2. 追加される機能 ===== -->
       <section class="card">
-        <h2>4. 困ったとき</h2>
-        <ul class="trouble-list">
-          <li><strong>機能が動かない / 反応しない</strong><br>管理ポータルにログインする前にボタンを押していませんか？ログイン後に管理ポータル画面で実行してください。</li>
-          <li><strong>押しても管理ポータルが開かない</strong><br>ブラウザのポップアップブロックで新しいタブが止められている可能性があります。その場合は同じタブで管理ポータルへ移動します。移動先で、もう一度ブックマークを押してください。</li>
-          <li><strong>マップ画面が開かない</strong><br>ブラウザのポップアップブロックが有効になっていないか確認し、ブロックされている場合は許可してください。</li>
-          <li><strong>サイドパネルが開かない（Chrome拡張版）</strong><br>Chromeのツールバー右上にある拡張機能アイコン（パズルピースのマーク）を押し、一覧から本拡張機能を選択してください。</li>
+        <h2>2. 追加される機能</h2>
+        <p>ブックマークレットを適用すると、管理ポータル上で以下の機能が使えるようになります。</p>
+        <ul>
+          <li><strong>バッテリーマップを開く</strong> — 左メニュー下部のボタンから、権限に応じたエリアのマップを表示</li>
+          <li><strong>一覧の並べ替え・絞り込み</strong> — 各列見出しの▲をクリックでソート、入力欄で絞り込み</li>
+          <li><strong>見出し行の固定</strong> — 下にスクロールしても列名が常に表示される</li>
+          <li><strong>表示条件の折りたたみ</strong> — 「表示条件」「一括車両状態変更」「一括車両操作」を既定で閉じる</li>
+          <li><strong>「戻る」ボタンで1つ前の画面へ</strong> — お客様情報を見ているときも前の画面に戻れる</li>
+          <li><strong>一覧のリンクを別タブで開く</strong> — 絞り込み結果を残したまま個別画面を確認できる</li>
+          <li><strong>車両情報の表示件数を最大化</strong>（試験中）</li>
         </ul>
       </section>
 
-      <section class="card security-card">
-        <h2>5. この拡張が何をしていないか（安心してお使いいただくために）</h2>
-        <p>本拡張機能は、安全面・プライバシー面に配慮して設計されています。</p>
+      <!-- ===== 3. Chrome拡張版のご案内 ===== -->
+      <section class="card">
+        <h2>3. より便利なChrome拡張版</h2>
+        <p>ブックマークレット版よりさらに快適なChrome拡張版もあります。</p>
+
+        <h3>ブックマークレット版との違い</h3>
         <ul>
-          <li>管理ポータルのデータを<strong>書き換えません</strong>。データの読み取りと画面表示の変更のみを行います。</li>
-          <li>入力内容やログイン情報を<strong>外部へ送信しません</strong>。すべての処理はブラウザ内で完結します。</li>
+          <li><strong>自動で適用</strong> — ポータルを開くだけで自動適用。毎回ブックマークを押す必要なし</li>
+          <li><strong>外れない</strong> — 画面を再読込しても機能が維持される</li>
+          <li><strong>サイドパネル表示</strong> — 画面横にマップを並べて表示できる</li>
+        </ul>
+
+        <h3>導入手順</h3>
+        <ol>
+          <li>Chrome のアドレス欄に <code>chrome://extensions</code> と入力して開く</li>
+          <li>右上の「デベロッパー モード」をオンにする</li>
+          <li>「パッケージ化されていない拡張機能を読み込む」を押す</li>
+          <li>配布された拡張機能のフォルダを選択する</li>
+          <li>管理ポータルを開き直す</li>
+        </ol>
+
+        <div class="alert">
+          <p>※Chrome起動時に「デベロッパー モードの拡張機能」に関する確認が表示される場合があります。</p>
+        </div>
+      </section>
+
+      <!-- ===== 4. 安全性について ===== -->
+      <section class="card security-card">
+        <h2>4. 安全性について</h2>
+        <ul>
+          <li>管理ポータルのデータを<strong>書き換えません</strong>。読み取りと画面表示の変更のみです。</li>
+          <li>入力内容やログイン情報を<strong>外部へ送信しません</strong>。すべてブラウザ内で完結します。</li>
           <li>管理ポータル本体には<strong>一切手を加えていません</strong>。</li>
+        </ul>
+      </section>
+
+      <!-- ===== 5. 困ったとき ===== -->
+      <section class="card">
+        <h2>5. 困ったとき</h2>
+        <ul>
+          <li><strong>機能が動かない</strong> — ログイン前に押していませんか？ ログイン後の画面で実行してください。</li>
+          <li><strong>管理ポータルが開かない</strong> — ポップアップブロックで新しいタブが止められている可能性があります。</li>
+          <li><strong>マップが開かない</strong> — ポップアップブロックを確認し、許可してください。</li>
+          <li><strong>サイドパネルが開かない（拡張版）</strong> — Chromeツールバー右上の拡張機能アイコン（パズルピース）から選択してください。</li>
         </ul>
       </section>
     </main>
 
     <footer class="footer">
-      <p>&copy; 管理ポータル 機能拡張 案内ページ</p>
+      <p>管理ポータル 機能拡張</p>
     </footer>
   </div>
 </body>
