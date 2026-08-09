@@ -13,6 +13,8 @@
 *.log
 *.json
 !manifest.json
+# 拡張のリモート更新に必須。*.json で除外されると配信が成立しない
+!ext/remote/latest.json
 dashboard_data.json
 dashboard_data.js
 output/
