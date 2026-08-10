@@ -60,6 +60,29 @@
                         </span>
                     </label>
                 </div>
+                <!-- ポート外専用モードトグルスイッチ -->
+                <div class="out-of-port-only-toggle-container">
+                    <label class="out-of-port-only-toggle-label" for="out-of-port-only-checkbox">
+                        <input type="checkbox" id="out-of-port-only-checkbox" style="display: none;">
+                        <span class="out-of-port-only-toggle-button">
+                            <span class="out-of-port-only-toggle-icon">📍</span>
+                            <span class="out-of-port-only-toggle-text">ポート外専用 OFF</span>
+                        </span>
+                    </label>
+                </div>
+                <!-- 提供外ポート表示トグルスイッチ -->
+                <!-- 既定ON: ドコモ・バイクシェアのサービス休止中は、ほぼ全ポートの
+                     service_state が「停止中」になるため、隠すと地図がほぼ空になる。
+                     サービスが正常再開したら、既定をOFF（提供外を隠す）に切り替える。 -->
+                <div class="out-of-service-toggle-container">
+                    <label class="out-of-service-toggle-label" for="out-of-service-checkbox">
+                        <input type="checkbox" id="out-of-service-checkbox" checked style="display: none;">
+                        <span class="out-of-service-toggle-button">
+                            <span class="out-of-service-toggle-icon">🚫</span>
+                            <span class="out-of-service-toggle-text">提供外 ON</span>
+                        </span>
+                    </label>
+                </div>
                 <!-- ポート選択モードトグルスイッチ -->
                 <div class="selection-mode-toggle-container">
                     <label class="selection-toggle-label" for="selection-mode-checkbox">
@@ -80,16 +103,6 @@
                         </span>
                     </label>
                 </div>
-                <!-- ポート外専用モードトグルスイッチ -->
-                <div class="out-of-port-only-toggle-container">
-                    <label class="out-of-port-only-toggle-label" for="out-of-port-only-checkbox">
-                        <input type="checkbox" id="out-of-port-only-checkbox" style="display: none;">
-                        <span class="out-of-port-only-toggle-button">
-                            <span class="out-of-port-only-toggle-icon">📍</span>
-                            <span class="out-of-port-only-toggle-text">ポート外専用 OFF</span>
-                        </span>
-                    </label>
-                </div>
                 <!-- ビューの初期状態リセットボタン -->
                 <button id="reset-view-btn" class="reset-view-button" title="表示状態（フィルターや地図位置など）を初期状態に戻します">
                     🔄 リセット
@@ -97,7 +110,7 @@
                 <!-- ヘルプボタン -->
                 <a href="docs/manual.html" target="_blank" class="help-button" title="使い方マニュアルを開く">❓ ヘルプ</a>
                 <!-- バージョン表示 -->
-                <span class="version-label" style="font-size: 10px; color: #94a3b8; font-family: monospace; font-weight: bold; align-self: center; margin-left: 4px;">ver.20260811065000</span>
+                <span class="version-label" style="font-size: 10px; color: #94a3b8; font-family: monospace; font-weight: bold; align-self: center; margin-left: 4px;">ver.20260811070900</span>
 
 
 

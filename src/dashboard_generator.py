@@ -384,7 +384,11 @@ def sync_port_area_master(df_merged):
     return master_data, gbfs_stations
 
 def load_public_port_coords():
-    """port_coords_master.json からマスターポート座標マップをロードします"""
+    """port_coords_master.json からマスターポート座標マップをロードします。
+
+    座標に加え、ポータルAPI由来の稼働状態(service_state)も保持する
+    （「サービス提供ポートのみ表示」モード等で使用）。
+    """
     coords = {}
     path = os.path.join(str(ROOT_DIR), "port_coords_master.json")
     if os.path.exists(path):
@@ -393,7 +397,11 @@ def load_public_port_coords():
                 data = json.load(f)
                 for p_name, item in data.items():
                     if item.get("lat") and item.get("lon"):
-                        coords[p_name] = (float(item["lat"]), float(item["lon"]))
+                        coords[p_name] = {
+                            "lat": float(item["lat"]),
+                            "lon": float(item["lon"]),
+                            "service_state": item.get("service_state") or None,
+                        }
         except Exception as e:
             print(f"Warning: port_coords_master.json からの座標マスタ読み込みに失敗しました: {e}")
     return coords
@@ -426,7 +434,13 @@ def aggregate_ports_data(df_merged, master_data, gbfs_stations):
         # GBFS配信が止まっている場合でも既知ポートの位置を安定させるため、
         # 個々の車両GPS（2）より先に信頼できる静的マスタを優先する。
         if not is_no_port and (is_empty_coord(lat) or is_empty_coord(lon)) and port_name in public_port_coords:
-            lat, lon = public_port_coords[port_name]
+            lat = public_port_coords[port_name]["lat"]
+            lon = public_port_coords[port_name]["lon"]
+
+        service_state = (
+            public_port_coords[port_name]["service_state"]
+            if (not is_no_port and port_name in public_port_coords) else None
+        )
 
         # 2. 車両位置緯度・経度からのフォールバック（マスタにも無い未知ポートの最終手段）
         # ポート単位の最初の行の車両GPSを採用するため、その車両が位置不整合（誤配置）だと
@@ -461,6 +475,7 @@ def aggregate_ports_data(df_merged, master_data, gbfs_stations):
                 "lat": float(lat) if (has_gps and lat is not None) else None,
                 "lon": float(lon) if (has_gps and lon is not None) else None,
                 "has_gps": has_gps,
+                "service_state": service_state,
                 "total_bikes": 0,
                 "max_alert_level": 0,
                 "alert_bikes_count": 0,
@@ -567,6 +582,7 @@ def aggregate_ports_data(df_merged, master_data, gbfs_stations):
                 "lat": s_lat,
                 "lon": s_lon,
                 "has_gps": True,
+                "service_state": public_port_coords.get(s_name, {}).get("service_state"),
                 "total_bikes": 0,
                 "max_alert_level": 0,
                 "alert_bikes_count": 0,

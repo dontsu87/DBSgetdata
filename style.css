@@ -1994,3 +1994,38 @@ body.worker-location-only #map [class*='port-marker-'] {
 .out-of-port-only-toggle-button:active {
     transform: scale(0.95);
 }
+
+/* 提供外ポート表示モード トグルボタンのスタイル */
+.out-of-service-toggle-container {
+    display: inline-flex;
+    align-items: center;
+    user-select: none;
+}
+
+.out-of-service-toggle-button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background-color: #334155;
+    color: #cbd5e1;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.out-of-service-toggle-label input[type="checkbox"]:checked + .out-of-service-toggle-button {
+    background: linear-gradient(135deg, #6d28d9 0%, #8b5cf6 100%);
+    color: #ffffff;
+    border-color: #a78bfa;
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.5);
+}
+
+.out-of-service-toggle-button:active {
+    transform: scale(0.95);
+}

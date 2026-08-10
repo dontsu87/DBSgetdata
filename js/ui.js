@@ -213,7 +213,8 @@ function initUIComponents() {
                     'unlocked_threshold_hours', 'unlocked_filter_enabled',
                     'is_port_selection_mode', 'selected_port_names',
                     'checked_legend_levels', 'selected_worker_mode',
-                    'out_of_port_only_mode', 'out_of_port_layer_active', 'position_mismatch_mode'
+                    'out_of_port_only_mode', 'out_of_port_layer_active', 'position_mismatch_mode',
+                    'out_of_service_visible'
                 ];
                 keysToRemove.forEach(key => localStorage.removeItem(key));
                 for (let i = localStorage.length - 1; i >= 0; i--) {
@@ -237,6 +238,20 @@ function initUIComponents() {
             isOutOfPortOnlyMode = outOfPortOnlyCheckbox.checked;
             saveToCache('out_of_port_only_mode', isOutOfPortOnlyMode);
             updateOutOfPortOnlyBtnUI(isOutOfPortOnlyMode);
+            updateFilterAndRender(false);
+        });
+    }
+
+    // --- 提供外ポート表示トグルスイッチ ---
+    const outOfServiceCheckbox = document.getElementById('out-of-service-checkbox');
+    if (outOfServiceCheckbox) {
+        outOfServiceCheckbox.checked = isOutOfServiceVisible;
+        updateOutOfServiceToggleUI(isOutOfServiceVisible);
+
+        outOfServiceCheckbox.addEventListener('change', function() {
+            isOutOfServiceVisible = outOfServiceCheckbox.checked;
+            saveToCache('out_of_service_visible', isOutOfServiceVisible);
+            updateOutOfServiceToggleUI(isOutOfServiceVisible);
             updateFilterAndRender(false);
         });
     }
@@ -623,7 +638,7 @@ function updatePrefixFilterUI(data) {
 
 // ポート外車両モーダルの生成と表示
 function showOutOfPortModal(data) {
-    data = preparePositionMismatchData(data);
+    data = preparePositionMismatchData(filterPortsByServiceState(data));
     const modal = document.getElementById('out-of-port-modal');
     const areaNameSpan = document.getElementById('out-of-port-area-name');
     const listBody = document.getElementById('out-of-port-list-body');
@@ -788,7 +803,7 @@ function showOutOfPortModal(data) {
 
 // ポート外（位置情報なし）車両数のカウント更新およびUI状態同期
 function updateOutOfPortCount(data) {
-    data = preparePositionMismatchData(data);
+    data = preparePositionMismatchData(filterPortsByServiceState(data));
     const countEl = document.getElementById('out-of-port-count');
     updateOutOfPortBtnUI(isOutOfPortMarkerActive);
     if (!countEl) return;
@@ -821,5 +836,12 @@ function updateOutOfPortOnlyBtnUI(enabled) {
     const textSpan = document.querySelector('.out-of-port-only-toggle-text');
     if (textSpan) {
         textSpan.textContent = enabled ? 'ポート外専用 ON' : 'ポート外専用 OFF';
+    }
+}
+
+function updateOutOfServiceToggleUI(enabled) {
+    const textSpan = document.querySelector('.out-of-service-toggle-text');
+    if (textSpan) {
+        textSpan.textContent = enabled ? '提供外 ON' : '提供外 OFF';
     }
 }

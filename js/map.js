@@ -295,6 +295,18 @@ function updateFilterAndRender(shouldFitBounds = true) {
     renderDashboardWithFilter(cachedDashboardData, checkedLevels, checkedStatuses, shouldFitBounds);
 }
 
+// 「提供外」トグルがOFFのとき、稼働状態が明確に「停止中」のポートを表示から除外する。
+// service_stateが無い（不明・仮想「ポート外」など）ポートは対象外として残す。
+function filterPortsByServiceState(data) {
+    if (isOutOfServiceVisible || !data || !Array.isArray(data.ports)) {
+        return data;
+    }
+    return {
+        ...data,
+        ports: data.ports.filter(port => port.service_state !== '停止中')
+    };
+}
+
 function preparePositionMismatchData(data) {
     if (!isPositionMismatchMode || !data || !Array.isArray(data.ports)) {
         return data;
@@ -375,7 +387,7 @@ function preparePositionMismatchData(data) {
     };
 }
 function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFitBounds = true) {
-    data = preparePositionMismatchData(data);
+    data = preparePositionMismatchData(filterPortsByServiceState(data));
     if (!data || !data.ports) return;
 
     // 自己申告データの有効期限切れ(2時間超)をクリーンアップ
