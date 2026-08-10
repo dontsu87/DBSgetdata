@@ -8,7 +8,7 @@
   global.DBSEXT = global.DBSEXT || {};
   var D = global.DBSEXT;
 
-  D.VERSION = '202608101818';
+  D.VERSION = '202608102022';
 
   D.CONFIG = {
     PORTAL_ORIGIN: 'https://mg.docomo-cycle.jp',
@@ -16,8 +16,12 @@
     GUIDE_URL:     'https://dontsu87.github.io/DBSgetdata/ext/',
     ACCENT:        '#0b5cab',   // 拡張適用中を示す青
     ACCENT_DARK:   '#083f75',
-    // マップアプリが知っている全エリア。これらを全部持っていれば ?kanriall を使う
+    // マップアプリが知っている全エリア（コードと名前）
     KNOWN_AREAS: ['金沢', '福井', '小松', '敦賀', '上田千曲広域', '出雲・松江・境港'],
+    KNOWN_AREA_CODES: ['FKI', 'KMT', 'KNZ', 'SNN', 'SPS', 'TRG'],
+    // エリアコード → 日本語名（手動選択UI用）
+    AREA_CODE_TO_NAME: { FKI: '福井', KMT: '小松', KNZ: '金沢', SNN: '上田千曲広域', SPS: '出雲・松江・境港', TRG: '敦賀' },
+    NAME_TO_CODE: { '福井': 'FKI', '小松': 'KMT', '金沢': 'KNZ', '上田千曲広域': 'SNN', '出雲・松江・境港': 'SPS', '敦賀': 'TRG' },
     MARKER_ATTR: 'data-dbsext'   // 冪等ガードに使う body の属性
   };
 })(typeof globalThis !== 'undefined' ? globalThis : window);
@@ -79,6 +83,9 @@
     'data-dbsext-beacons-status': 'own-root',
     'data-dbsext-vehicle-problems': 'own-root',
     'data-dbsext-vp-table': 'own-root',
+    // 「オリジナルに戻す」トグルボタン。own-root にする理由: 自前UI一括非表示の際、
+    // このボタン自身とその中身だけは closest() で除外して常に見えるようにする
+    'data-dbsext-original-view': 'own-root',
 
     // --- 自前UIだが入れ物ではないもの ---
     'data-dbsext-skin': 'own-leaf',            // <style> 要素そのもの
@@ -93,6 +100,7 @@
     'data-dbsext-beacons-area': 'own-leaf',
     'data-dbsext-beacons-link-a': 'own-leaf',
     'data-dbsext-beacons-btn': 'own-leaf',
+    'data-dbsext-original-view-btn': 'own-leaf',
 
     // --- ポータル要素に付けた目印（自前UIではない） ---
     'data-dbsext-tabled': 'mark',      // table-tools が .el-table に付ける
@@ -126,6 +134,17 @@
     var list = [];
     for (var name in ATTR_KIND) {
       if (ATTR_KIND[name] === 'own-root') list.push('[' + name + ']');
+    }
+    return list.join(',');
+  })();
+
+  // 自前UI**全部**（root + leaf）を指すセレクタ。
+  // 「オリジナルに戻す」表示（original-view.js）が、拡張の作った要素を
+  // 一括で隠すために使う。ここも `ATTR_KIND` から生成し、手書きの一覧を作らない。
+  var OWN_UI_SELECTOR_ALL = (function () {
+    var list = [];
+    for (var name in ATTR_KIND) {
+      if (ATTR_KIND[name] === 'own-root' || ATTR_KIND[name] === 'own-leaf') list.push('[' + name + ']');
     }
     return list.join(',');
   })();
@@ -212,7 +231,46 @@
     }
   }
 
+  // 適用の順序と、変化のたびに再適用するかどうか。
+  //
+  // **モジュールを1本足すときに直すのは、ここ1行と `module-order.mjs` だけ。**
+  // 以前は「この一覧」と「onContentChange の登録」を別々に書いていたため、
+  // 片方に足し忘れると **SPA遷移で二度と再適用されない**（しかも初回は動くので
+  // 気づけない）という壊れ方をした。両方をこの表から導く。
+  //
+  //   reapply: true  … ポータルの再描画で消える／画面ごとに要否が変わる
+  //   reapply: false … 一度きりでよい（head へのCSS挿入、保存領域の初期化）
+  var MODULES = [
+    { name: 'skin', reapply: false, get: function () { return D.skin; } },
+    { name: 'stateStore', reapply: false, get: function () { return D.stateStore; } },
+    { name: 'stateForms', reapply: true, get: function () { return D.stateForms; } },
+    // 車種情報はSPA遷移で入る画面。boot時には存在しない
+    { name: 'vehicleKinds', reapply: true, get: function () { return D.vehicleKinds; } },
+    { name: 'netStatus', reapply: true, get: function () { return D.netStatus; } },
+    { name: 'tableWrap', reapply: true, get: function () { return D.tableWrap; } },
+    { name: 'uiTweaks', reapply: true, get: function () { return D.uiTweaks; } },
+    // body直下の固定要素（消えないはず）だが、冪等なので保険として再適用する。
+    // 「boot時1回だけ」がボタン消失の原因だったため、同じ落とし穴を残さない。
+    { name: 'upsell', reapply: true, get: function () { return D.upsell; } },
+    { name: 'mapLauncher', reapply: true, get: function () { return D.mapLauncher; } },
+    { name: 'beacons', reapply: true, get: function () { return D.beacons; } },
+    { name: 'vehicleProblems', reapply: true, get: function () { return D.vehicleProblems; } },
+    { name: 'tableColumns', reapply: true, get: function () { return D.tableColumns; } },
+    { name: 'tableTools', reapply: true, get: function () { return D.tableTools; } },
+    // 「オリジナルに戻す」トグルボタン。body直下の固定要素
+    { name: 'originalView', reapply: true, get: function () { return D.originalView; } }
+  ];
+
+  function applyOne(entry, label) {
+    var mod = entry.get();
+    if (!mod || typeof mod.apply !== 'function') return;
+    runSuppressed(entry.name + '.apply' + label, function () { mod.apply(); });
+  }
+
   D.core = {
+    // 「オリジナルに戻す」表示（original-view.js）が使う。自前UI全部を指すセレクタ
+    OWN_UI_SELECTOR_ALL: OWN_UI_SELECTOR_ALL,
+
     /**
      * 統一ログ出力
      * @param {string} message ログメッセージ
@@ -251,40 +309,6 @@
         document.body.setAttribute(D.CONFIG.MARKER_ATTR, D.VERSION);
       }
 
-      // 適用の順序と、変化のたびに再適用するかどうか。
-      //
-      // **モジュールを1本足すときに直すのは、ここ1行と `module-order.mjs` だけ。**
-      // 以前は「この一覧」と「onContentChange の登録」を別々に書いていたため、
-      // 片方に足し忘れると **SPA遷移で二度と再適用されない**（しかも初回は動くので
-      // 気づけない）という壊れ方をした。両方をこの表から導く。
-      //
-      //   reapply: true  … ポータルの再描画で消える／画面ごとに要否が変わる
-      //   reapply: false … 一度きりでよい（head へのCSS挿入、保存領域の初期化）
-      var MODULES = [
-        { name: 'skin', reapply: false, get: function () { return D.skin; } },
-        { name: 'stateStore', reapply: false, get: function () { return D.stateStore; } },
-        { name: 'stateForms', reapply: true, get: function () { return D.stateForms; } },
-        // 車種情報はSPA遷移で入る画面。boot時には存在しない
-        { name: 'vehicleKinds', reapply: true, get: function () { return D.vehicleKinds; } },
-        { name: 'netStatus', reapply: true, get: function () { return D.netStatus; } },
-        { name: 'tableWrap', reapply: true, get: function () { return D.tableWrap; } },
-        { name: 'uiTweaks', reapply: true, get: function () { return D.uiTweaks; } },
-        // body直下の固定要素（消えないはず）だが、冪等なので保険として再適用する。
-        // 「boot時1回だけ」がボタン消失の原因だったため、同じ落とし穴を残さない。
-        { name: 'upsell', reapply: true, get: function () { return D.upsell; } },
-        { name: 'mapLauncher', reapply: true, get: function () { return D.mapLauncher; } },
-        { name: 'beacons', reapply: true, get: function () { return D.beacons; } },
-        { name: 'vehicleProblems', reapply: true, get: function () { return D.vehicleProblems; } },
-        { name: 'tableColumns', reapply: true, get: function () { return D.tableColumns; } },
-        { name: 'tableTools', reapply: true, get: function () { return D.tableTools; } }
-      ];
-
-      function applyOne(entry, label) {
-        var mod = entry.get();
-        if (!mod || typeof mod.apply !== 'function') return;
-        runSuppressed(entry.name + '.apply' + label, function () { mod.apply(); });
-      }
-
       // **先に監視を張ってから適用する。** 適用中の変化は runSuppressed が捨てる。
       // 再適用は表の順序どおりに回す（適用順に依存する組み合わせがあるため）。
       D.core.onContentChange(function () {
@@ -295,6 +319,19 @@
 
       for (var i = 0; i < MODULES.length; i++) {
         applyOne(MODULES[i], '');
+      }
+    },
+
+    /**
+     * reapply:true の全モジュールを、待たずにいますぐ再適用する。
+     *
+     * 通常はポータルのDOM変化を200msデバウンスで検知してから再適用するが、
+     * 「オリジナルに戻す」を解除した直後のように、**変化のきっかけがDOM変異
+     * ではなく自分の操作**である場面では、次の変化を待たずに即座に元へ戻したい。
+     */
+    reapplyAll: function () {
+      for (var r = 0; r < MODULES.length; r++) {
+        if (MODULES[r].reapply) applyOne(MODULES[r], ' reapplyAll');
       }
     },
 
@@ -4045,37 +4082,45 @@
         ? D.CONFIG.MAP_APP_URL
         : 'https://dontsu87.github.io/DBSgetdata/';
 
-      var knownAreas = (D.CONFIG && D.CONFIG.KNOWN_AREAS)
-        ? D.CONFIG.KNOWN_AREAS
-        : ['金沢', '福井', '小松', '敦賀', '上田千曲広域', '出雲・松江・境港'];
+      var knownCodes = (D.CONFIG && D.CONFIG.KNOWN_AREA_CODES)
+        ? D.CONFIG.KNOWN_AREA_CODES
+        : ['FKI', 'KMT', 'KNZ', 'SNN', 'SPS', 'TRG'];
 
       if (!areaList || !Array.isArray(areaList) || areaList.length === 0) {
         return null;
       }
 
-      // エリア名の抽出と重複除去
-      var names = [];
+      // エリアコードの抽出と重複除去（areaCode 優先、なければ areaName でフォールバック）
+      // コードは3文字のASCIIなので encodeURIComponent 不要 → QRコードがシンプルになる
+      var nameToCode = (D.CONFIG && D.CONFIG.NAME_TO_CODE)
+        ? D.CONFIG.NAME_TO_CODE
+        : { '福井': 'FKI', '小松': 'KMT', '金沢': 'KNZ', '上田千曲広域': 'SNN', '出雲・松江・境港': 'SPS', '敦賀': 'TRG' };
+
+      var codes = [];
       for (var i = 0; i < areaList.length; i++) {
         var item = areaList[i];
-        var name = '';
+        var code = '';
         if (typeof item === 'string') {
-          name = item;
+          // 文字列が渡された場合: コードそのものか、名前からコードへ逆引き
+          code = nameToCode[item] || item;
+        } else if (item && typeof item.areaCode === 'string' && item.areaCode.length > 0) {
+          code = item.areaCode;
         } else if (item && typeof item.areaName === 'string') {
-          name = item.areaName;
+          code = nameToCode[item.areaName] || item.areaName;
         }
-        if (name && names.indexOf(name) === -1) {
-          names.push(name);
+        if (code && codes.indexOf(code) === -1) {
+          codes.push(code);
         }
       }
 
-      if (names.length === 0) {
+      if (codes.length === 0) {
         return null;
       }
 
-      // KNOWN_AREAS を全件含んでいるかチェック
+      // knownCodes を全件含んでいるかチェック
       var hasAllKnown = true;
-      for (var j = 0; j < knownAreas.length; j++) {
-        if (names.indexOf(knownAreas[j]) === -1) {
+      for (var j = 0; j < knownCodes.length; j++) {
+        if (codes.indexOf(knownCodes[j]) === -1) {
           hasAllKnown = false;
           break;
         }
@@ -4085,26 +4130,21 @@
         return baseUrl + '?kanriall';
       }
 
-      // 順序の正規化（KNOWN_AREASの並び順に揃える）
-      names.sort(function (a, b) {
-        var idxA = knownAreas.indexOf(a);
-        var idxB = knownAreas.indexOf(b);
+      // 順序の正規化（knownCodesの並び順に揃える）
+      codes.sort(function (a, b) {
+        var idxA = knownCodes.indexOf(a);
+        var idxB = knownCodes.indexOf(b);
         if (idxA !== -1 && idxB !== -1) return idxA - idxB;
         if (idxA !== -1) return -1;
         if (idxB !== -1) return 1;
         return a.localeCompare(b);
       });
 
-      if (names.length === 1) {
-        return baseUrl + '?area=' + encodeURIComponent(names[0]);
+      if (codes.length === 1) {
+        return baseUrl + '?area=' + codes[0];
       }
 
-      var encodedParams = [];
-      for (var k = 0; k < names.length; k++) {
-        encodedParams.push(encodeURIComponent(names[k]));
-      }
-
-      return baseUrl + '?areas=' + encodedParams.join(',');
+      return baseUrl + '?areas=' + codes.join(',');
     },
 
     /**
@@ -4946,7 +4986,13 @@
                 names.push(name);
               }
             }
-            areaText.textContent = '表示範囲: ' + names.join(', ');
+            var codeToName2 = (D.CONFIG && D.CONFIG.AREA_CODE_TO_NAME) ? D.CONFIG.AREA_CODE_TO_NAME : {};
+            var displayNames = [];
+            for (var ni = 0; ni < names.length; ni++) {
+              var cn = codeToName2[names[ni]];
+              displayNames.push(cn ? names[ni] + ' ' + cn : names[ni]);
+            }
+            areaText.textContent = '表示範囲: ' + displayNames.join(', ');
           } else {
             showManualAreaSelection();
           }
@@ -4967,9 +5013,12 @@
       manualAreaContainer.innerHTML = '';
       manualAreaContainer.style.display = 'block';
 
-      var knownAreas = (D.CONFIG && D.CONFIG.KNOWN_AREAS)
-        ? D.CONFIG.KNOWN_AREAS
-        : ['金沢', '福井', '小松', '敦賀', '上田千曲広域', '出雲・松江・境港'];
+      var knownCodes = (D.CONFIG && D.CONFIG.KNOWN_AREA_CODES)
+        ? D.CONFIG.KNOWN_AREA_CODES
+        : ['FKI', 'KMT', 'KNZ', 'SNN', 'SPS', 'TRG'];
+      var codeToName = (D.CONFIG && D.CONFIG.AREA_CODE_TO_NAME)
+        ? D.CONFIG.AREA_CODE_TO_NAME
+        : { FKI: '福井', KMT: '小松', KNZ: '金沢', SNN: '上田千曲広域', SPS: '出雲・松江・境港', TRG: '敦賀' };
 
       var selectedMap = {};
 
@@ -4979,8 +5028,8 @@
       checkboxesDiv.style.gap = '8px';
       checkboxesDiv.style.marginTop = '8px';
 
-      for (var j = 0; j < knownAreas.length; j++) {
-        (function (areaName) {
+      for (var j = 0; j < knownCodes.length; j++) {
+        (function (areaCode) {
           var label = document.createElement('label');
           label.style.fontSize = '13px';
           label.style.cursor = 'pointer';
@@ -4990,17 +5039,17 @@
 
           var chk = document.createElement('input');
           chk.type = 'checkbox';
-          chk.value = areaName;
+          chk.value = areaCode;
           chk.addEventListener('change', function () {
             if (chk.checked) {
-              selectedMap[areaName] = true;
+              selectedMap[areaCode] = true;
             } else {
-              delete selectedMap[areaName];
+              delete selectedMap[areaCode];
             }
             var selectedList = [];
-            for (var k = 0; k < knownAreas.length; k++) {
-              if (selectedMap[knownAreas[k]]) {
-                selectedList.push(knownAreas[k]);
+            for (var k = 0; k < knownCodes.length; k++) {
+              if (selectedMap[knownCodes[k]]) {
+                selectedList.push(knownCodes[k]);
               }
             }
             var newUrl = D.areas.buildMapUrl(selectedList);
@@ -5008,9 +5057,10 @@
           });
 
           label.appendChild(chk);
-          label.appendChild(document.createTextNode(areaName));
+          var displayName = (codeToName[areaCode] || areaCode);
+          label.appendChild(document.createTextNode(areaCode + ' ' + displayName));
           checkboxesDiv.appendChild(label);
-        })(knownAreas[j]);
+        })(knownCodes[j]);
       }
 
       manualAreaContainer.appendChild(checkboxesDiv);
@@ -6379,6 +6429,19 @@
       fetchAndRender(panel, vehicleId);
     },
 
+    /**
+     * 「オリジナルに戻す」表示専用。自前パネルは（own-root として）別途隠れる前提で、
+     * 隠していたポータル標準の表だけを一時的に見せる。
+     */
+    peekShowAll: function () {
+      showOriginalTable();
+    },
+
+    /** 「オリジナルに戻す」を解除し、標準の表を再び隠して自前パネルへ戻す */
+    peekRestore: function () {
+      if (getVehicleIdFromUrl()) hideOriginalTable();
+    },
+
     // テスト用
     _clearCache: function () {
       cacheMap = Object.create(null);
@@ -6713,6 +6776,10 @@
     table.parentNode.insertBefore(bar, table);
   }
 
+  // 「オリジナルに戻す」表示中に、apply() が対象にした表と列を覚えておく。
+  // 保存済み設定（localStorage）には一切触れない一時的な表示切替のためだけに使う。
+  var lastProcessed = [];
+
   D.tableColumns = {
     ACTION_COLUMNS: ACTION_COLUMNS,
     STORAGE_FEATURE: STORAGE_FEATURE,
@@ -6730,6 +6797,7 @@
       if (!tables || tables.length === 0) return;
 
       var show = loadToggleState(screen);
+      lastProcessed = [];
 
       for (var t = 0; t < tables.length; t++) {
         var table = tables[t];
@@ -6740,12 +6808,31 @@
         // 対象列が1つも無ければ何もしない
         if (indices.length === 0) continue;
 
+        lastProcessed.push({ table: table, indices: indices, savedShow: show });
+
         (function (tbl, idxs) {
           ensureToggleUI(tbl, screen, show, function (newShow) {
             setColumnVisibility(tbl, idxs, newShow);
           });
           setColumnVisibility(tbl, idxs, show);
         })(table, indices);
+      }
+    },
+
+    /**
+     * 「オリジナルに戻す」表示専用。保存済みの表示設定は変えず、
+     * 一時的に全列を表示する（"たたむ" を選んでいても、覗いている間だけ戻す）。
+     */
+    peekShowAll: function () {
+      for (var i = 0; i < lastProcessed.length; i++) {
+        setColumnVisibility(lastProcessed[i].table, lastProcessed[i].indices, true);
+      }
+    },
+
+    /** 「オリジナルに戻す」を解除し、保存済みの表示設定へ戻す */
+    peekRestore: function () {
+      for (var i = 0; i < lastProcessed.length; i++) {
+        setColumnVisibility(lastProcessed[i].table, lastProcessed[i].indices, lastProcessed[i].savedShow);
       }
     }
   };
@@ -6770,6 +6857,8 @@
   var D = global.DBSEXT;
 
   var tableStates = {};
+  // 「オリジナルに戻す」表示中に、apply() が対象にした表を覚えておく
+  var lastProcessed = [];
 
   function kit() {
     return D.tableKit;
@@ -6942,6 +7031,7 @@
       if (!tables || tables.length === 0) return;
 
       var pathname = (typeof location !== 'undefined') ? location.pathname : '';
+      lastProcessed = [];
 
       for (var t = 0; t < tables.length; t++) {
         var table = tables[t];
@@ -7025,7 +7115,158 @@
 
         updateHeaderUI(ths, state);
         applyFilterAndSort(table, state, ths);
+        lastProcessed.push({ table: table, state: state, ths: ths });
+      }
+    },
+
+    /**
+     * 「オリジナルに戻す」表示専用。並べ替え・絞り込みの**設定は変えず**、
+     * 絞り込みで隠れている行だけを一時的にすべて見せる。
+     */
+    peekShowAll: function () {
+      for (var i = 0; i < lastProcessed.length; i++) {
+        var rows = lastProcessed[i].table.querySelectorAll('table.el-table__body tbody tr');
+        for (var r = 0; r < rows.length; r++) rows[r].style.display = '';
+      }
+    },
+
+    /** 「オリジナルに戻す」を解除し、保存済みの並べ替え・絞り込みへ戻す */
+    peekRestore: function () {
+      for (var i = 0; i < lastProcessed.length; i++) {
+        applyFilterAndSort(lastProcessed[i].table, lastProcessed[i].state, lastProcessed[i].ths);
       }
     }
+  };
+})(typeof globalThis !== 'undefined' ? globalThis : window);
+
+
+/**
+ * DBSEXT 「オリジナルに戻す」トグル
+ *
+ * なんらかの事情で拡張を適用していない素のポータル画面を見たい利用者のために、
+ * 拡張の見た目・追加UIを**一時的に**丸ごと隠すボタンを用意する。
+ *
+ * ---------------------------------------------------------------------------
+ * 設計方針
+ * ---------------------------------------------------------------------------
+ * ポータルのDOMは一切削除・移動しない（契約§6）。やることは2つだけ:
+ *
+ *   1. 拡張が挿入した <style> を無効化する（sticky・配色・サイドバー幅などが消える）
+ *   2. 拡張が作った要素（own-root / own-leaf、`core.js` の ATTR_KIND から機械的に
+ *      導く）を一括で非表示にする
+ *
+ * さらに、拡張が**隠していたポータル本来の表示**（車両詳細の標準表、たたんだ操作列、
+ * 絞り込みで隠れた行）は、隠す側のモジュール自身に「覗く／戻す」を持たせてある
+ * （`vehicleProblems.peekShowAll/peekRestore` 等）。ここから呼ぶだけで、
+ * **保存済みの利用者設定（列のたたみ状態など）には一切触れない**。
+ *
+ * 状態は保存しない。**ページを開き直せば必ず拡張適用に戻る。**
+ * 「オフにしたことを忘れて、拡張が壊れたと思われる」事故を避けるため。
+ */
+(function (global) {
+  'use strict';
+  var D = global.DBSEXT;
+
+  var HOST_ATTR = 'data-dbsext-original-view';
+  var BTN_ATTR = 'data-dbsext-original-view-btn';
+  var STYLE_IDS = ['dbsext-skin', 'dbsext-table-wrap-style', 'dbsext-table-columns-width'];
+
+  var active = false;
+
+  function setStylesEnabled(enabled) {
+    if (typeof document === 'undefined') return;
+    for (var i = 0; i < STYLE_IDS.length; i++) {
+      var el = document.getElementById(STYLE_IDS[i]);
+      if (el) el.disabled = !enabled;
+    }
+  }
+
+  /** 自前UI（root+leaf）を一括で隠す／戻す。トグルボタン自身は対象から外す */
+  function setOwnUiHidden(hidden) {
+    if (typeof document === 'undefined' || !D.core || !D.core.OWN_UI_SELECTOR_ALL) return;
+    var nodes = document.querySelectorAll(D.core.OWN_UI_SELECTOR_ALL);
+    for (var i = 0; i < nodes.length; i++) {
+      var node = nodes[i];
+      // トグルボタン自身（とその中身）は常に見えている必要がある
+      if (typeof node.closest === 'function' && node.closest('[' + HOST_ATTR + ']')) continue;
+      node.style.display = hidden ? 'none' : '';
+    }
+  }
+
+  /** 拡張が隠している「本来ポータルに見えるはずのもの」を覗く／戻す */
+  function peekEachModule(show) {
+    var method = show ? 'peekShowAll' : 'peekRestore';
+    var targets = [D.vehicleProblems, D.tableColumns, D.tableTools];
+    for (var i = 0; i < targets.length; i++) {
+      var mod = targets[i];
+      if (mod && typeof mod[method] === 'function') {
+        try { mod[method](); } catch (e) {
+          D.core.log('original-view: ' + method + ' 失敗: ' + (e && e.message ? e.message : e), true);
+        }
+      }
+    }
+  }
+
+  function updateButtonLabel(btn) {
+    btn.textContent = active ? '拡張表示に戻す' : 'オリジナル表示';
+    btn.title = active
+      ? 'クリックすると拡張の見た目・追加機能に戻ります'
+      : 'クリックすると拡張の変更前（素のポータル）を一時的に見られます';
+  }
+
+  function toggle(btn) {
+    active = !active;
+    setStylesEnabled(!active);
+    setOwnUiHidden(active);
+    peekEachModule(active);
+
+    if (!active) {
+      // オフに戻した直後は、次のDOM変化を待たずに拡張側の表示を即座に復元する
+      // （並べ替え・絞り込みの再適用、固定ボタン類の再配置など）
+      if (D.core && typeof D.core.reapplyAll === 'function') {
+        D.core.reapplyAll();
+      }
+    }
+
+    updateButtonLabel(btn);
+  }
+
+  function ensureButton() {
+    if (typeof document === 'undefined' || !document.body) return;
+    if (document.querySelector('[' + HOST_ATTR + ']')) return;
+
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.setAttribute(HOST_ATTR, '1');
+    btn.setAttribute(BTN_ATTR, '1');
+    btn.style.cssText = [
+      'position: fixed',
+      'right: 12px',
+      'bottom: 12px',
+      'z-index: 2147483000',
+      'background: rgba(0, 0, 0, 0.75)',
+      'color: #ffffff',
+      'border: none',
+      'border-radius: 20px',
+      'padding: 8px 16px',
+      'font-size: 12px',
+      'font-weight: bold',
+      'cursor: pointer',
+      'box-shadow: 0 2px 8px rgba(0,0,0,0.25)'
+    ].join(';');
+
+    updateButtonLabel(btn);
+    btn.addEventListener('click', function () { toggle(btn); });
+    document.body.appendChild(btn);
+  }
+
+  D.originalView = {
+    apply: function () {
+      ensureButton();
+    },
+
+    // テスト・診断用
+    _isActive: function () { return active; },
+    _reset: function () { active = false; }
   };
 })(typeof globalThis !== 'undefined' ? globalThis : window);

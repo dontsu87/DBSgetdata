@@ -1,8 +1,8 @@
 {
-  "version": "202608101920",
-  "bundle": "bundle-202608101920.js",
-  "sha256": "29db51362aacf6c83333131c21029708f4ed3128208929aa7678833df19dd9b9",
-  "signature": "OPCRsfy+APhPpshq+q7M4Jfb8kJzGm0xUFKB2g36GopXzUEQkxDeDhOSMquKbdNAgttJLqd1t2ufBFKIHCq/QA==",
+  "version": "202608102022",
+  "bundle": "bundle-202608102022.js",
+  "sha256": "758c62f97a57e15980c99bb3bae8e1e5a8827f8f323b194203ec3b8abed4c51b",
+  "signature": "a+1Sb69eJ2thxjn18HpLkUWi0h39R8+T/oXLZbigy23IPVV79rOw3SQS/Qqeyc+PxYb+ZMLEKEB/nUyC7VvVRg==",
   "minExtensionVersion": "0.1.0",
-  "changelog": "202608101800"
+  "changelog": "拡張版で「読み込み中」表示(MAINワールド経由)が動くことをテストで実証。オリジナル表示に戻すボタンを追加"
 }
