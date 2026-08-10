@@ -439,6 +439,7 @@ def aggregate_ports_data(df_merged, master_data, gbfs_stations):
         status = str(row['車両status']) if '車両status' in df_merged.columns else str(row['車両状態'])
         voltage = row['電圧']
         at_time = str(row['AT通知受信日時']) if not pd.isna(row['AT通知受信日時']) else ""
+        gps_datetime = str(row['車両位置測位日時']) if '車両位置測位日時' in df_merged.columns and not pd.isna(row['車両位置測位日時']) else ""
         
         s_id = row.get('station_id')
         s_id_str = ""
@@ -501,6 +502,7 @@ def aggregate_ports_data(df_merged, master_data, gbfs_stations):
                 "lv3": float(row['閾値_Lv3']) if pd.notna(row['閾値_Lv3']) else None
             },
             "at_time": at_time,
+            "gps_datetime": gps_datetime,
             "unlocked_started_at": unlocked_started_at,
             "consecutive_use_duration": consecutive_use_duration,
             "replace_original_volt": replace_orig_val,

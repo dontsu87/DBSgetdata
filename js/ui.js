@@ -757,11 +757,11 @@ function showOutOfPortModal(data) {
             tdStatus.innerText = bike.status;
             tr.appendChild(tdStatus);
             
-            // AT通信 td
+            // GPS測位 td
             const tdAtTime = document.createElement('td');
             tdAtTime.style.textAlign = 'center';
             tdAtTime.style.fontSize = '10px';
-            var atInfo = formatAtTime(bike.at_time);
+            var atInfo = formatAtTime(bike.gps_datetime || bike.at_time);
             tdAtTime.innerText = atInfo.text;
             if (atInfo.stale) {
                 tdAtTime.style.color = '#dc2626';

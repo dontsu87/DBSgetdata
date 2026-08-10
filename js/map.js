@@ -1596,7 +1596,7 @@ function renderOutOfPortDotMarkers(data) {
             const statusText = bike.status || '不明';
             const alertName = bike.alert_level_name || '正常';
             const displayedPortName = bike.mismatch_source_port || bike.displayed_port_name || '';
-            var atTimeInfo = formatAtTime(bike.at_time);
+            var atTimeInfo = formatAtTime(bike.gps_datetime || bike.at_time);
             var atTimeStyle = atTimeInfo.stale ? 'color:#dc2626; font-weight:bold;' : '';
 
             const popupHtml = `
@@ -1610,7 +1610,7 @@ function renderOutOfPortDotMarkers(data) {
                     </div>
                     <div style="font-size: 11px; color: #475569;">${isMismatch && displayedPortName ? '表示上のポート: <b>' + displayedPortName + '</b>' : ''}</div>
                     <div style="font-size: 11px; margin-top: 2px;">
-                        AT通信: <b style="${atTimeStyle}">${atTimeInfo.text}</b>${atTimeInfo.stale ? ' <span style="color:#dc2626; font-size:10px;">⚠️3時間以上</span>' : ''}
+                        GPS測位: <b style="${atTimeStyle}">${atTimeInfo.text}</b>${atTimeInfo.stale ? ' <span style="color:#dc2626; font-size:10px;">⚠️3時間以上</span>' : ''}
                     </div>
                     <div style="font-size: 11px; color: #475569;">
                         判定: <b style="color: ${isHighlighted ? '#dc2626' : '#2563eb'};">${alertName}</b>
