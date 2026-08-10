@@ -1508,7 +1508,10 @@ document.addEventListener('click', function(e) {
 function formatAtTime(raw) {
     if (!raw) return { text: '--', stale: false };
     try {
-        var d = new Date(raw.replace(/-/g, '/').replace('Z', ''));
+        var d = new Date(raw);
+        if (isNaN(d.getTime())) {
+            d = new Date(raw.replace(/-/g, '/').replace('Z', ''));
+        }
         if (isNaN(d.getTime())) return { text: '--', stale: false };
         var now = new Date();
         var stale = (now - d) > 3 * 60 * 60 * 1000;
