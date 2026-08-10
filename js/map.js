@@ -1626,6 +1626,7 @@ function renderOutOfPortDotMarkers(data) {
             const voltText = (bike.voltage != null) ? `${bike.voltage.toFixed(1)}V` : '--V';
             const statusText = bike.status || '不明';
             const alertName = bike.alert_level_name || '正常';
+            const displayedPortName = bike.mismatch_source_port || bike.displayed_port_name || '';
             const nearestPortText = bike.nearest_port_name
                 ? `実際の最寄りポート: <b>${bike.nearest_port_name}</b>（約${Math.round(bike.nearest_port_distance_m)}m）`
                 : `実際の最寄りポート: 100m以内になし`;
@@ -1641,6 +1642,7 @@ function renderOutOfPortDotMarkers(data) {
                         <span>電圧: <b>${voltText}</b></span>
                         <span>状態: <b>${statusText}</b></span>${isMismatch ? '<div style="color:#dc2626; font-weight:bold; margin-top:3px;">ポート位置不整合（実測位置を表示）</div>' : ''}
                     </div>
+                    <div style="font-size: 11px; color: #475569;">${isMismatch && displayedPortName ? '表示上のポート: <b>' + displayedPortName + '</b>' : ''}</div>
                     <div style="font-size: 11px; color: #475569;">${isMismatch ? nearestPortText : ''}</div>
                     <div style="font-size: 11px; margin-top: 2px;">
                         GPS測位: <b style="${atTimeStyle}">${atTimeInfo.text}</b>${atTimeInfo.stale ? ' <span style="color:#dc2626; font-size:10px;">⚠️3時間以上</span>' : ''}
