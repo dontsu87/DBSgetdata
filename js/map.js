@@ -1563,10 +1563,71 @@ function focusOutOfPortBike(bikeId) {
     if (modal) modal.style.display = 'none';
     return true;
 }
+// 近接する点(20m以内既定)を同一地点として1つのクラスタへまとめる
+function clusterNearbyPoints(items, thresholdM) {
+    const clusters = [];
+    items.forEach(item => {
+        const target = clusters.find(c => haversineMeters(c.lat, c.lon, item.lat, item.lon) <= thresholdM);
+        if (target) {
+            target.items.push(item);
+        } else {
+            clusters.push({ lat: item.lat, lon: item.lon, items: [item] });
+        }
+    });
+    return clusters;
+}
+
+// ポート外自転車1台分のポップアップ本文（複数台まとめ表示でも1台ずつ再利用する）
+function buildOutOfPortBikePopupSection(bike, isMismatch, isHighlighted) {
+    const voltText = (bike.voltage != null) ? `${bike.voltage.toFixed(1)}V` : '--V';
+    const statusText = bike.status || '不明';
+    const alertName = bike.alert_level_name || '正常';
+    const displayedPortName = bike.mismatch_source_port || bike.displayed_port_name || '';
+    const nearestPortText = bike.nearest_port_name
+        ? `実際の最寄りポート: <b>${bike.nearest_port_name}</b>（約${Math.round(bike.nearest_port_distance_m)}m）`
+        : `実際の最寄りポート: 100m以内になし`;
+    var atTimeInfo = formatAtTime(bike.gps_datetime || bike.at_time);
+    var atTimeStyle = atTimeInfo.stale ? 'color:#dc2626; font-weight:bold;' : '';
+
+    return `
+        <div style="font-size: 12px; font-family: sans-serif; padding: 2px;">
+            <div style="font-weight: bold; font-size: 13px; color: #0f172a; margin-bottom: 4px;">
+                🚲 ${bike.bike_id} <span style="font-size: 10px; color: #64748b; font-weight: normal;">(ポート外)</span>${isMismatch ? '<span style="color:#dc2626; font-weight:bold;">⚠️位置不整合</span>' : ''}
+            </div>
+            <div style="display: flex; gap: 8px; font-size: 11px; margin-bottom: 2px;">
+                <span>電圧: <b>${voltText}</b></span>
+                <span>状態: <b>${statusText}</b></span>${isMismatch ? '<div style="color:#dc2626; font-weight:bold; margin-top:3px;">ポート位置不整合（実測位置を表示）</div>' : ''}
+            </div>
+            <div style="font-size: 11px; color: #475569;">${isMismatch && displayedPortName ? '表示上のポート: <b>' + displayedPortName + '</b>' : ''}</div>
+            <div style="font-size: 11px; color: #475569;">${isMismatch ? nearestPortText : ''}</div>
+            <div style="font-size: 11px; margin-top: 2px;">
+                GPS測位: <b style="${atTimeStyle}">${atTimeInfo.text}</b>${atTimeInfo.stale ? ' <span style="color:#dc2626; font-size:10px;">⚠️3時間以上</span>' : ''}
+            </div>
+            <div style="font-size: 11px; color: #475569;">
+                判定: <b style="color: ${isHighlighted ? '#dc2626' : '#2563eb'};">${alertName}</b>
+            </div>
+        </div>
+    `;
+}
+
+// クラスタ（1台以上）のポップアップHTML。2台以上のときだけ見出しと仕切りを付ける
+function buildOutOfPortClusterPopupHtml(members) {
+    const sections = members
+        .map(m => buildOutOfPortBikePopupSection(m.bike, m.isMismatch, m.isHighlighted))
+        .join('<hr style="margin:6px 0; border:none; border-top:1px solid #e2e8f0;">');
+    if (members.length <= 1) {
+        return sections;
+    }
+    const header = `<div style="font-size:11px; font-weight:bold; color:#475569; padding:2px 2px 4px;">📍 近接する${members.length}台（${OUT_OF_PORT_CLUSTER_THRESHOLD_M}m以内）</div>`;
+    return `<div style="max-height:280px; overflow-y:auto;">${header}${sections}</div>`;
+}
+
 // ポート外自転車のドットマーカー描画処理
 function renderOutOfPortDotMarkers(data) {
     outOfPortBikeMarkers = {};
     if (!outOfPortMarkerGroup || !data || !data.ports) return;
+
+    const items = [];
 
     data.ports.forEach(port => {
         if (!port.bikes || port.bikes.length === 0) return;
@@ -1609,54 +1670,36 @@ function renderOutOfPortDotMarkers(data) {
 
             // 車両状態フィルタで「強調」のものは赤、そうでないものはオレンジ
             var isHighlighted = Array.isArray(checkedHighlightStatuses) && bike.status && checkedHighlightStatuses.indexOf(bike.status) >= 0;
-            var radius = isMismatch ? (isOutOfPortOnlyMode ? 12 : 9) : (isHighlighted ? (isOutOfPortOnlyMode ? 9 : 7) : (isOutOfPortOnlyMode ? 6 : 4));
-            var fillColor = isMismatch ? '#dc2626' : (isHighlighted ? '#ef4444' : '#f97316');
-            var color = isMismatch ? '#fef08a' : '#ffffff';
 
-            const dotMarker = L.circleMarker([bLat, bLon], {
-                radius: radius,
-                fillColor: fillColor,
-                color: color,
-                weight: isMismatch ? 3 : (isHighlighted ? 2 : 1.5),
-                opacity: 0.9,
-                fillOpacity: isMismatch ? 0.98 : (isHighlighted ? 0.95 : 0.85)
-            });
+            items.push({ bike: bike, lat: bLat, lon: bLon, isMismatch: isMismatch, isHighlighted: isHighlighted });
+        });
+    });
 
-            // ポップアップの設定
-            const voltText = (bike.voltage != null) ? `${bike.voltage.toFixed(1)}V` : '--V';
-            const statusText = bike.status || '不明';
-            const alertName = bike.alert_level_name || '正常';
-            const displayedPortName = bike.mismatch_source_port || bike.displayed_port_name || '';
-            const nearestPortText = bike.nearest_port_name
-                ? `実際の最寄りポート: <b>${bike.nearest_port_name}</b>（約${Math.round(bike.nearest_port_distance_m)}m）`
-                : `実際の最寄りポート: 100m以内になし`;
-            var atTimeInfo = formatAtTime(bike.gps_datetime || bike.at_time);
-            var atTimeStyle = atTimeInfo.stale ? 'color:#dc2626; font-weight:bold;' : '';
+    const clusters = clusterNearbyPoints(items, OUT_OF_PORT_CLUSTER_THRESHOLD_M);
 
-            const popupHtml = `
-                <div style="font-size: 12px; font-family: sans-serif; padding: 2px;">
-                    <div style="font-weight: bold; font-size: 13px; color: #0f172a; margin-bottom: 4px;">
-                        🚲 ${bike.bike_id} <span style="font-size: 10px; color: #64748b; font-weight: normal;">(ポート外)</span>${isMismatch ? '<span style="color:#dc2626; font-weight:bold;">⚠️位置不整合</span>' : ''}
-                    </div>
-                    <div style="display: flex; gap: 8px; font-size: 11px; margin-bottom: 2px;">
-                        <span>電圧: <b>${voltText}</b></span>
-                        <span>状態: <b>${statusText}</b></span>${isMismatch ? '<div style="color:#dc2626; font-weight:bold; margin-top:3px;">ポート位置不整合（実測位置を表示）</div>' : ''}
-                    </div>
-                    <div style="font-size: 11px; color: #475569;">${isMismatch && displayedPortName ? '表示上のポート: <b>' + displayedPortName + '</b>' : ''}</div>
-                    <div style="font-size: 11px; color: #475569;">${isMismatch ? nearestPortText : ''}</div>
-                    <div style="font-size: 11px; margin-top: 2px;">
-                        GPS測位: <b style="${atTimeStyle}">${atTimeInfo.text}</b>${atTimeInfo.stale ? ' <span style="color:#dc2626; font-size:10px;">⚠️3時間以上</span>' : ''}
-                    </div>
-                    <div style="font-size: 11px; color: #475569;">
-                        判定: <b style="color: ${isHighlighted ? '#dc2626' : '#2563eb'};">${alertName}</b>
-                    </div>
-                </div>
-            `;
+    clusters.forEach(cluster => {
+        const members = cluster.items;
+        const anyMismatch = members.some(m => m.isMismatch);
+        const anyHighlighted = members.some(m => m.isHighlighted);
 
-            dotMarker.bindPopup(popupHtml);
-            outOfPortMarkerGroup.addLayer(dotMarker);
-            if (bike.bike_id) {
-                outOfPortBikeMarkers[String(bike.bike_id)] = dotMarker;
+        var radius = anyMismatch ? (isOutOfPortOnlyMode ? 12 : 9) : (anyHighlighted ? (isOutOfPortOnlyMode ? 9 : 7) : (isOutOfPortOnlyMode ? 6 : 4));
+        var fillColor = anyMismatch ? '#dc2626' : (anyHighlighted ? '#ef4444' : '#f97316');
+        var color = anyMismatch ? '#fef08a' : '#ffffff';
+
+        const dotMarker = L.circleMarker([cluster.lat, cluster.lon], {
+            radius: radius,
+            fillColor: fillColor,
+            color: color,
+            weight: anyMismatch ? 3 : (anyHighlighted ? 2 : 1.5),
+            opacity: 0.9,
+            fillOpacity: anyMismatch ? 0.98 : (anyHighlighted ? 0.95 : 0.85)
+        });
+
+        dotMarker.bindPopup(buildOutOfPortClusterPopupHtml(members));
+        outOfPortMarkerGroup.addLayer(dotMarker);
+        members.forEach(m => {
+            if (m.bike.bike_id) {
+                outOfPortBikeMarkers[String(m.bike.bike_id)] = dotMarker;
             }
         });
     });
