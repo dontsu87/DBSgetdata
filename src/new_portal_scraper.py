@@ -256,6 +256,7 @@ def fetch_vehicle_location_details(
     base_url,
     known_port_names=None,
     include_port_vehicles=False,
+    mismatch_vehicle_ids=None,
     enabled=None,
     max_per_run=None,
     unlimited=False,
@@ -284,6 +285,11 @@ def fetch_vehicle_location_details(
 
     if known_port_names is None:
         known_port_names = _load_known_port_names()
+    mismatch_vehicle_ids = {
+        str(vehicle_id).strip()
+        for vehicle_id in (mismatch_vehicle_ids or ())
+        if str(vehicle_id).strip()
+    }
 
     target_count = 0
     attempted = 0
@@ -292,7 +298,12 @@ def fetch_vehicle_location_details(
     skipped_count = 0
 
     for row in rows:
-        target = include_port_vehicles or _is_out_of_port_row(row, known_port_names)
+        vehicle_code = str(row.get('vehicleUniqueCode') or '').strip()
+        target = (
+            include_port_vehicles
+            or vehicle_code in mismatch_vehicle_ids
+            or _is_out_of_port_row(row, known_port_names)
+        )
         row['vehicleLocationFetchFlag'] = 0
         row['vehicleGpsLatitude'] = None
         row['vehicleGpsLongitude'] = None
@@ -446,6 +457,7 @@ def scrape_all_vehicles_http(
     *,
     http_session=None,
     include_port_vehicles=False,
+    mismatch_vehicle_ids=None,
     unlimited_location=False,
     timeout=HTTP_TIMEOUT,
     sleep=time.sleep,
@@ -521,6 +533,7 @@ def scrape_all_vehicles_http(
             http_session=http_session,
             base_url=base_url,
             include_port_vehicles=include_port_vehicles,
+            mismatch_vehicle_ids=mismatch_vehicle_ids,
             unlimited=unlimited_location,
             sleep=sleep,
             timeout=timeout,

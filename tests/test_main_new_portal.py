@@ -13,6 +13,7 @@ def prepare(monkeypatch):
     monkeypatch.setattr(main.Config, "RUN_MODE", "")
     monkeypatch.setattr(main.Config, "validate", Mock())
     monkeypatch.setattr(main, "should_skip_scrape", Mock(return_value=False))
+    monkeypatch.setattr(main, "load_mismatch_vehicle_ids", Mock(return_value=set()))
     monkeypatch.setattr(
         main,
         "login_and_get_areas",
@@ -67,10 +68,24 @@ def test_run_scraping_hourly_mode_removes_location_cap_and_sets_cooldown(monkeyp
         include_port_vehicles=True,
         unlimited_location=True,
     )
-    mark_completed.assert_called_once_with(
-        main.Config.OUTPUT_DIR,
-        cooldown_sec=main.Config.VEHICLE_LOCATION_POST_FULL_COOLDOWN_SEC,
-    )
+    mark_completed.assert_called_once()
+    assert mark_completed.call_args.args == (main.Config.OUTPUT_DIR,)
+    mark_kwargs = mark_completed.call_args.kwargs
+    assert mark_kwargs["cooldown_sec"] == main.Config.VEHICLE_LOCATION_POST_FULL_COOLDOWN_SEC
+    assert isinstance(mark_kwargs["cooldown_started_at"], float)
+
+def test_run_scraping_passes_previous_mismatch_ids_to_five_minute_fetch(monkeypatch):
+    prepare(monkeypatch)
+    monkeypatch.setattr(main, "should_fetch_all_locations", Mock(return_value=False))
+    monkeypatch.setattr(main, "load_mismatch_vehicle_ids", Mock(return_value={"IN-001"}))
+    frame = pd.DataFrame({"識別番号": ["IN-001"]})
+    scrape = Mock(return_value=frame)
+    monkeypatch.setattr(main, "scrape_all_vehicles_http", scrape)
+    monkeypatch.setattr(main, "_finalize_scraping", Mock(return_value="output.csv"))
+
+    assert main.run_scraping(is_worker=False) is True
+    scrape.assert_called_once_with(mismatch_vehicle_ids={"IN-001"})
+
 
 def test_run_scraping_auth_failure_refreshes_once_then_retries_http(monkeypatch):
     prepare(monkeypatch)

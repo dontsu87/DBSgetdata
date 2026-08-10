@@ -1505,8 +1505,20 @@ document.addEventListener('click', function(e) {
     }
 });
 
+function focusOutOfPortBike(bikeId) {
+    const marker = outOfPortBikeMarkers && outOfPortBikeMarkers[String(bikeId)];
+    if (!marker || !map) return false;
+
+    const latlng = marker.getLatLng();
+    map.panTo(latlng, { animate: true });
+    marker.openPopup();
+    const modal = document.getElementById('out-of-port-modal');
+    if (modal) modal.style.display = 'none';
+    return true;
+}
 // ポート外自転車のドットマーカー描画処理
 function renderOutOfPortDotMarkers(data) {
+    outOfPortBikeMarkers = {};
     if (!outOfPortMarkerGroup || !data || !data.ports) return;
 
     data.ports.forEach(port => {
@@ -1567,6 +1579,7 @@ function renderOutOfPortDotMarkers(data) {
             const voltText = (bike.voltage != null) ? `${bike.voltage.toFixed(1)}V` : '--V';
             const statusText = bike.status || '不明';
             const alertName = bike.alert_level_name || '正常';
+            const displayedPortName = bike.mismatch_source_port || bike.displayed_port_name || '';
 
             const popupHtml = `
                 <div style="font-size: 12px; font-family: sans-serif; padding: 2px;">
@@ -1577,6 +1590,7 @@ function renderOutOfPortDotMarkers(data) {
                         <span>電圧: <b>${voltText}</b></span>
                         <span>状態: <b>${statusText}</b></span>${isMismatch ? '<div style="color:#dc2626; font-weight:bold; margin-top:3px;">ポート位置不整合（実測位置を表示）</div>' : ''}
                     </div>
+                    <div style="font-size: 11px; color: #475569;">${isMismatch && displayedPortName ? '表示上のポート: <b>' + displayedPortName + '</b>' : ''}</div>
                     <div style="font-size: 11px; color: #475569;">
                         判定: <b style="color: ${isHighlighted ? '#dc2626' : '#2563eb'};">${alertName}</b>
                     </div>
@@ -1585,6 +1599,9 @@ function renderOutOfPortDotMarkers(data) {
 
             dotMarker.bindPopup(popupHtml);
             outOfPortMarkerGroup.addLayer(dotMarker);
+            if (bike.bike_id) {
+                outOfPortBikeMarkers[String(bike.bike_id)] = dotMarker;
+            }
         });
     });
 }

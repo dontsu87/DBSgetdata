@@ -668,6 +668,7 @@ function showOutOfPortModal(data) {
                             outOfPortBikes.push({
                                 bike_id: bike.bike_id,
                                 port_name: bike.mismatch_source_port || port.port_name || 'ポート外',
+                                displayed_port_name: bike.mismatch_source_port || bike.displayed_port_name || '',
                                 voltage: bike.voltage,
                                 alert_level: bike.alert_level,
                                 alert_level_name: bike.alert_level_name,
@@ -693,6 +694,12 @@ function showOutOfPortModal(data) {
         
         outOfPortBikes.forEach(bike => {
             const tr = document.createElement('tr');
+            tr.dataset.bikeId = bike.bike_id || '';
+            tr.style.cursor = 'pointer';
+            tr.title = '地図上の車両位置へ移動';
+            tr.addEventListener('click', function() {
+                focusOutOfPortBike(bike.bike_id);
+            });
             if (bike.position_mismatch) {
                 tr.style.background = '#fee2e2';
                 tr.style.color = '#991b1b';
@@ -714,7 +721,9 @@ function showOutOfPortModal(data) {
                 const mismatchLabel = document.createElement('span');
                 mismatchLabel.style.color = '#dc2626';
                 mismatchLabel.style.fontWeight = 'bold';
-                mismatchLabel.innerText = '⚠️位置不整合';
+                mismatchLabel.innerText = bike.displayed_port_name
+                    ? '⚠️位置不整合（表示上のポート: ' + bike.displayed_port_name + '）'
+                    : '⚠️位置不整合';
                 tdPortPos.appendChild(mismatchLabel);
                 tdPortPos.appendChild(document.createElement('br'));
             }

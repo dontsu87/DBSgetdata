@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """車両位置詳細の1時間周期制御と、5分更新間の位置キャッシュ。"""
 
+import csv
 import json
 import time
 from pathlib import Path
@@ -60,6 +61,28 @@ def _write_object(path, payload):
     )
 
 
+def load_mismatch_vehicle_ids(output_dir):
+    """直近CSVのポート位置不整合フラグから、次回5分取得の対象IDを読み込みます。"""
+    files = sorted(Path(output_dir).glob("車両情報_*.csv"))
+    if not files:
+        return set()
+    latest = files[-1]
+    try:
+        with latest.open("r", encoding="utf-8-sig", newline="") as handle:
+            reader = csv.DictReader(handle)
+            if "識別番号" not in (reader.fieldnames or []):
+                return set()
+            if "ポート位置不整合" not in (reader.fieldnames or []):
+                return set()
+            return {
+                str(row.get("識別番号", "")).strip()
+                for row in reader
+                if str(row.get("ポート位置不整合", "")).strip().lower()
+                in ("true", "1", "yes", "on", "ポート位置不整合")
+            }
+    except (OSError, UnicodeError, csv.Error):
+        return set()
+
 def should_skip_scrape(output_dir, *, now=None):
     """全車両取得直後の10分クールダウン中か判定します。"""
     state = _read_object(_json_path(output_dir, HOURLY_STATE_FILENAME))
@@ -97,8 +120,18 @@ def has_location_fetch_schedule(output_dir):
     return True
 
 
-def mark_location_fetch_completed(output_dir, *, now=None, cooldown_sec=0):
-    """位置詳細を含むスクレイピングが正常完了した時刻を保存します。"""
+def mark_location_fetch_completed(
+    output_dir,
+    *,
+    now=None,
+    cooldown_sec=0,
+    cooldown_started_at=None,
+):
+    """位置詳細を含むスクレイピングが正常完了した時刻を保存します。
+
+    ``cooldown_started_at`` を指定した場合、全車両取得後の待機時間は
+    取得完了時ではなく取得開始時から数えます。
+    """
     current = time.time() if now is None else float(now)
     try:
         cooldown_sec = max(0, float(cooldown_sec))
@@ -106,7 +139,8 @@ def mark_location_fetch_completed(output_dir, *, now=None, cooldown_sec=0):
         cooldown_sec = 0
     state = {"last_completed_epoch": current}
     if cooldown_sec:
-        state["cooldown_until_epoch"] = current + cooldown_sec
+        cooldown_base = current if cooldown_started_at is None else float(cooldown_started_at)
+        state["cooldown_until_epoch"] = cooldown_base + cooldown_sec
     _write_object(_json_path(output_dir, HOURLY_STATE_FILENAME), state)
 
 

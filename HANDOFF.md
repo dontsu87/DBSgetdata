@@ -517,7 +517,7 @@ GitHub Actions の `Monitor DBS Scraper` は、Slack通知判定の前に
 
 ## 15. 車両位置詳細の1時間周期取得（2026-08-10）
 
-- 通常の5分更新は従来どおり、ポート外車両の位置詳細だけを取得する。既存の DBS_VEHICLE_LOCATION_FETCH_MAX_PER_RUN 上限も維持する。
+- 通常の5分更新は、ポート外車両に加えて、直近CSVでポート位置不整合フラグが立った車両の位置詳細も取得する。既存の DBS_VEHICLE_LOCATION_FETCH_MAX_PER_RUN 上限を共有する。
 - output/vehicle_location_hourly_state.json の成功時刻を基準に、1時間経過した5分更新だけ、ポート所属車両を含む全車両の位置詳細を取得する。この実行では位置詳細取得上限を解除する。
 - 5分更新で取得対象外となる車両の位置詳細は output/vehicle_location_cache.json から引き継ぎ、次の全車両取得まで表示・判定を維持する。両ファイルは出力領域のgit対象外である。
 - 実測位置は既存のポート表示座標（lat / lon）とは別の 車両位置緯度 / 車両位置経度 列として保持する。
@@ -527,7 +527,7 @@ GitHub Actions の `Monitor DBS Scraper` は、Slack通知判定の前に
 
 ## 16. 全車両取得後の10分クールダウン（2026-08-10）
 
-- 全車両位置取得が正常完了した時点から600秒間、次の5分タスクの車両スクレイピングを抑止する。
+- 全車両位置取得の開始時点から600秒間、次の5分タスクの車両スクレイピングを抑止する（取得完了後に残る時間だけ待機する）。
 - 抑止は output/vehicle_location_hourly_state.json の cooldown_until_epoch で管理し、Task Schedulerの周期自体は5分のまま維持する。
 - クールダウン中はメイン処理が終了し、日次GBFS判定も行わない。次の実行スロットで車両取得と日次判定を再開する。
 - GBFS取得は別Windowsタスクではなく、車両取得完了後に同一プロセスで last_gbfs_run.txt の日付を確認して最大1日1回実行する。したがって車両取得とGBFS取得が同時並行する実装ではない。

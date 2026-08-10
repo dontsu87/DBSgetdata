@@ -18,6 +18,7 @@ from src.vehicle_location_scheduler import (
     mark_location_fetch_completed,
     should_fetch_all_locations,
     update_vehicle_location_cache,
+    load_mismatch_vehicle_ids,
 )
 from src.area_inspector import inspect_area_page
 from src.worker_inspector import inspect_worker_login_page
@@ -171,7 +172,13 @@ def run_scraping(is_worker=False):
     if fetch_all_locations:
         print("新管理ポータルの読み取り専用APIから全エリアを取得します（1時間周期・ポート所属車両を含む・位置取得上限なし）...")
     else:
-        print("新管理ポータルの読み取り専用APIから全エリアを一括取得します（ポート外車両の位置詳細のみ）...")
+        print("新管理ポータルの読み取り専用APIから全エリアを一括取得します（ポート外車両と位置不整合車両の位置詳細）...")
+
+    mismatch_vehicle_ids = set()
+    if not fetch_all_locations:
+        mismatch_vehicle_ids = load_mismatch_vehicle_ids(Config.OUTPUT_DIR)
+        if mismatch_vehicle_ids:
+            print(f"前回の位置不整合フラグ車両を位置詳細取得対象へ追加します（{len(mismatch_vehicle_ids)}台）")
 
     def _scrape_current():
         if fetch_all_locations:
@@ -179,8 +186,13 @@ def run_scraping(is_worker=False):
                 include_port_vehicles=True,
                 unlimited_location=True,
             )
+        if mismatch_vehicle_ids:
+            return scrape_all_vehicles_http(
+                mismatch_vehicle_ids=mismatch_vehicle_ids,
+            )
         return scrape_all_vehicles_http()
 
+    full_fetch_started_at = time.time() if fetch_all_locations else None
     try:
         try:
             frame = _scrape_current()
@@ -208,6 +220,7 @@ def run_scraping(is_worker=False):
                     mark_location_fetch_completed(
                         Config.OUTPUT_DIR,
                         cooldown_sec=Config.VEHICLE_LOCATION_POST_FULL_COOLDOWN_SEC,
+                        cooldown_started_at=full_fetch_started_at,
                     )
                 elif not has_location_fetch_schedule(Config.OUTPUT_DIR):
                     mark_location_fetch_completed(Config.OUTPUT_DIR)

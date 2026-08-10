@@ -42,6 +42,7 @@ let isOutOfPortOnlyMode = loadFromCache('out_of_port_only_mode', false);
 let isPositionMismatchMode = loadFromCache('position_mismatch_mode', false);
 let isOutOfPortMarkerActive = true; // ポート外自転車の点は常時表示
 let outOfPortMarkerGroup = null;
+let outOfPortBikeMarkers = {};
 let selfReplacedBikes = {}; // { bike_id: { timestamp, alert_level, voltage } }
 
 // User interaction and auto-updating states

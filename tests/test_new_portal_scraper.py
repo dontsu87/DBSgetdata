@@ -251,6 +251,35 @@ def test_fetch_vehicle_location_details_collects_gps_and_audit_fields():
 
 
 
+def test_fetch_vehicle_location_details_includes_previous_mismatch_port_bikes():
+    rows = [
+        {'vehicleUniqueCode': 'IN-001', 'portName': '駅前', 'attachmentId': 'AT-001'},
+        {'vehicleUniqueCode': 'IN-002', 'portName': '駅前', 'attachmentId': 'AT-002'},
+    ]
+    http = FakeHttpSession([
+        FakeResponse(body={'gpsInfo': {
+            'gpsGlobalLocationLatitude': 36.577,
+            'gpsGlobalLocationLongitude': 136.647,
+        }}),
+    ])
+
+    portal.fetch_vehicle_location_details(
+        rows,
+        http_session=http,
+        base_url='https://mg.example/',
+        known_port_names={'駅前'},
+        mismatch_vehicle_ids={'IN-001'},
+        enabled=True,
+        max_per_run=10,
+        delay_ms=0,
+    )
+
+    assert len(http.calls) == 1
+    assert http.calls[0][0].endswith('/api/attachments/AT-001')
+    assert rows[0]['vehicleLocationFetchStatus'] == '取得成功'
+    assert rows[1]['vehicleLocationFetchStatus'] == '対象外'
+
+
 def test_fetch_vehicle_location_details_hourly_mode_includes_port_bikes_without_cap():
     rows = [
         {'vehicleUniqueCode': 'IN-001', 'portName': '駅前', 'attachmentId': 'AT-001'},

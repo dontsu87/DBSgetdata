@@ -21,8 +21,13 @@ def test_hourly_schedule_does_not_repeat_before_one_hour(tmp_path):
     assert should_fetch_all_locations(tmp_path, now=100 + 3600) is True
 
 
-def test_full_fetch_cooldown_delays_next_scrape_for_ten_minutes(tmp_path):
-    mark_location_fetch_completed(tmp_path, now=100, cooldown_sec=600)
+def test_full_fetch_cooldown_uses_fetch_start_time(tmp_path):
+    mark_location_fetch_completed(
+        tmp_path,
+        now=200,
+        cooldown_started_at=100,
+        cooldown_sec=600,
+    )
     assert should_skip_scrape(tmp_path, now=699) is True
     assert should_skip_scrape(tmp_path, now=700) is False
 
