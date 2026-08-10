@@ -8,7 +8,7 @@
   global.DBSEXT = global.DBSEXT || {};
   var D = global.DBSEXT;
 
-  D.VERSION = '202608100918';
+  D.VERSION = '202608100932';
 
   D.CONFIG = {
     PORTAL_ORIGIN: 'https://mg.docomo-cycle.jp',
@@ -243,6 +243,7 @@
         { name: 'skin', target: function () { return D.skin; } },
         { name: 'stateStore', target: function () { return D.stateStore; } },
         { name: 'stateForms', target: function () { return D.stateForms; } },
+        { name: 'vehicleKinds', target: function () { return D.vehicleKinds; } },
         { name: 'netStatus', target: function () { return D.netStatus; } },
         { name: 'tableWrap', target: function () { return D.tableWrap; } },
         { name: 'uiTweaks', target: function () { return D.uiTweaks; } },
@@ -257,6 +258,12 @@
       D.core.onContentChange(function () {
         if (D.stateForms && typeof D.stateForms.apply === 'function') {
           runSuppressed('stateForms.apply 再適用', function () { D.stateForms.apply(); });
+        }
+      });
+      // 車種情報はSPA遷移で入る画面。boot時には存在しないため、変化のたびに見る
+      D.core.onContentChange(function () {
+        if (D.vehicleKinds && typeof D.vehicleKinds.apply === 'function') {
+          runSuppressed('vehicleKinds.apply 再適用', function () { D.vehicleKinds.apply(); });
         }
       });
       D.core.onContentChange(function () {
@@ -1052,6 +1059,271 @@
     },
     _resetAppliedInTab: function () {
       appliedInTab = false;
+    }
+  };
+})(typeof globalThis !== 'undefined' ? globalThis : window);
+
+
+/**
+ * 車種情報画面（/areas/vehicle-kinds）の初期表示
+ *
+ * この画面は開いた直後だと**何も表示されていない**。エリアを選んで「検索」を
+ * 押して初めて中身が出る。エリアの選択肢が1つしかない利用者にとって、この
+ * 操作は毎回同じ結果にしかならないため、拡張が代わりに済ませておく。
+ *
+ * ---------------------------------------------------------------------------
+ * **選択肢がちょうど1つのときだけ**自動で選ぶ
+ * ---------------------------------------------------------------------------
+ * 2つ以上あるなら、どれを選ぶかは利用者の意思である。拡張が勝手に決めると
+ * 「自分が選んだつもりのない範囲」を見せることになり、しかも画面上は
+ * ふつうに検索済みに見えるため**間違いに気づけない**。
+ * だから複数あるときは何もせず、開いた選択肢も**閉じて元の見た目に戻す**。
+ *
+ * 押すのは「検索」だけである。解錠・再配置・メンテナンス等の操作系には
+ * 一切触れない（契約§6）。検索は読み取りであり、画面の状態も変えない。
+ */
+(function (global) {
+  'use strict';
+  var D = global.DBSEXT;
+
+  var TARGET_PATH = '/areas/vehicle-kinds';
+  var DROPDOWN_MAX_ATTEMPTS = 30; // 30回 × 50ms = 1.5秒
+  var AFTER_PICK_MS = 50;
+
+  // 画面ごとに1回だけ試す。SPA遷移でこの画面へ入り直したときは再び試す
+  var lastPath = null;
+  var triedOnThisScreen = false;
+  var running = false;
+
+  function log(message, isError) {
+    if (D && D.core && typeof D.core.log === 'function') {
+      D.core.log(message, isError);
+    }
+  }
+
+  function currentPath() {
+    if (typeof location === 'undefined' || !location.pathname) return '';
+    return location.pathname.replace(/\/+$/, '') || '/';
+  }
+
+  /**
+   * 隠れている要素か。
+   *
+   * Element Plus は閉じた選択肢リストを DOM に残したまま隠す。
+   * 隠れたリストを「開いている」と誤認すると、**見えていない選択肢を
+   * クリックしてしまう**（＝利用者の意図しないエリアが適用される）。
+   */
+  function isHiddenElement(el) {
+    for (var node = el; node; node = node.parentElement) {
+      var style = node.style;
+      if (style && (style.display === 'none' || style.visibility === 'hidden')) return true;
+      if (typeof getComputedStyle === 'function') {
+        var cs = getComputedStyle(node);
+        if (cs && (cs.display === 'none' || cs.visibility === 'hidden')) return true;
+      }
+    }
+    if (typeof el.getBoundingClientRect === 'function') {
+      var rect = el.getBoundingClientRect();
+      if (rect && rect.width === 0 && rect.height === 0) return true;
+    }
+    return false;
+  }
+
+  function visibleAll(selector) {
+    if (typeof document === 'undefined') return [];
+    var nodes = document.querySelectorAll(selector);
+    var out = [];
+    for (var i = 0; i < nodes.length; i++) {
+      if (!isHiddenElement(nodes[i])) out.push(nodes[i]);
+    }
+    return out;
+  }
+
+  /** 開いている選択肢リスト（Element Plus は body 直下へ出す） */
+  function getVisibleDropdowns() {
+    return visibleAll('.el-select-dropdown');
+  }
+
+  function labelTextOf(select) {
+    var item = (typeof select.closest === 'function') ? select.closest('.el-form-item') : null;
+    if (!item) return '';
+    var label = item.querySelector('.el-form-item__label');
+    return label ? (label.textContent || '').trim() : '';
+  }
+
+  /**
+   * エリアの選択欄を取る。
+   *
+   * 実測ではこの画面の選択欄は1つだけである。**複数見えたときは、
+   * エリアだと確信できるものが無い限り触らない。**別の条件欄を勝手に
+   * 変えるくらいなら、何もしない方がよい。
+   */
+  function getAreaSelect() {
+    var selects = visibleAll('.el-select');
+    if (selects.length === 0) return null;
+    if (selects.length === 1) return selects[0];
+    for (var i = 0; i < selects.length; i++) {
+      if (labelTextOf(selects[i]).indexOf('エリア') >= 0) return selects[i];
+    }
+    return null;
+  }
+
+  function getTrigger(select) {
+    return select.querySelector('.el-select__wrapper') ||
+      select.querySelector('.el-input__wrapper') ||
+      select.querySelector('input') ||
+      select;
+  }
+
+  /** すでに何か選ばれているか（利用者が選んだものを上書きしない） */
+  function hasSelectedValue(select) {
+    var picked = select.querySelector('.el-select__selected-item, .el-select__tags-text');
+    if (picked && (picked.textContent || '').trim()) return true;
+    var input = select.querySelector('input');
+    if (input && typeof input.value === 'string' && input.value.trim()) return true;
+    return false;
+  }
+
+  /** 選べる選択肢だけを返す（無効・非表示は除く） */
+  function getSelectableOptions(dropdown) {
+    var items = dropdown.querySelectorAll('.el-select-dropdown__item');
+    var out = [];
+    for (var i = 0; i < items.length; i++) {
+      var item = items[i];
+      if (item.classList && item.classList.contains('is-disabled')) continue;
+      if (isHiddenElement(item)) continue;
+      out.push(item);
+    }
+    return out;
+  }
+
+  function getSearchButton() {
+    if (typeof document === 'undefined') return null;
+    var buttons = document.querySelectorAll('button');
+    for (var i = 0; i < buttons.length; i++) {
+      var btn = buttons[i];
+      if ((btn.textContent || '').trim() !== '検索') continue;
+      if (btn.disabled) continue;
+      if (isHiddenElement(btn)) continue;
+      return btn;
+    }
+    return null;
+  }
+
+  /** すでに検索済み（表が出ている）なら触らない */
+  function alreadySearched() {
+    if (typeof document === 'undefined') return false;
+    var tables = document.querySelectorAll('.el-table');
+    for (var i = 0; i < tables.length; i++) {
+      if (tables[i].querySelectorAll('tbody tr').length > 0) return true;
+    }
+    return false;
+  }
+
+  function finish() {
+    running = false;
+  }
+
+  /** 選択肢リストが開いたあとの処理 */
+  function onDropdownReady(trigger, dropdown) {
+    var options = getSelectableOptions(dropdown);
+
+    if (options.length !== 1) {
+      // **開けたままにしない。** 利用者から見て「勝手に何か開いた」状態を残さない
+      trigger.click();
+      log('車種情報: エリアの選択肢が' + options.length + '件のため自動選択しません');
+      finish();
+      return;
+    }
+
+    var name = (options[0].textContent || '').trim();
+    options[0].click();
+
+    setTimeout(function () {
+      var btn = getSearchButton();
+      if (!btn) {
+        log('車種情報: 検索ボタンが見つからないため、選択のみで止めました', true);
+        finish();
+        return;
+      }
+      btn.click();
+      log('車種情報: エリア「' + name + '」を選んで検索しました');
+      finish();
+    }, AFTER_PICK_MS);
+  }
+
+  function openAndPick(select) {
+    var before = getVisibleDropdowns();
+    var trigger = getTrigger(select);
+    trigger.click();
+
+    var attempts = 0;
+    function poll() {
+      attempts++;
+      var now = getVisibleDropdowns();
+      var found = null;
+      for (var i = 0; i < now.length; i++) {
+        if (before.indexOf(now[i]) < 0) { found = now[i]; break; }
+      }
+      // 既存のリストが再利用されることもある。1つしか見えていないならそれで確定
+      if (!found && now.length === 1) found = now[0];
+
+      if (found) {
+        onDropdownReady(trigger, found);
+        return;
+      }
+      if (attempts < DROPDOWN_MAX_ATTEMPTS) {
+        setTimeout(poll, 50);
+        return;
+      }
+      log('車種情報: 選択肢が開かなかったため何もしません', true);
+      finish();
+    }
+
+    setTimeout(poll, 50);
+  }
+
+  D.vehicleKinds = {
+    apply: function () {
+      var path = currentPath();
+      if (lastPath !== path) {
+        lastPath = path;
+        triedOnThisScreen = false;
+      }
+      if (path !== TARGET_PATH) return;
+      if (triedOnThisScreen || running) return;
+      if (typeof document === 'undefined' || !document.body) return;
+
+      // すでに結果が出ているなら用は無い
+      if (alreadySearched()) {
+        triedOnThisScreen = true;
+        return;
+      }
+
+      var select = getAreaSelect();
+      // まだ描画されていないだけかもしれない。次の変化で改めて試す
+      if (!select) return;
+
+      if (hasSelectedValue(select)) {
+        triedOnThisScreen = true;
+        return;
+      }
+
+      // 利用者が自分で選択肢を開いている最中に割り込まない
+      if (getVisibleDropdowns().length > 0) return;
+
+      triedOnThisScreen = true;
+      running = true;
+      openAndPick(select);
+    },
+
+    _reset: function () {
+      lastPath = null;
+      triedOnThisScreen = false;
+      running = false;
+    },
+    _state: function () {
+      return { lastPath: lastPath, tried: triedOnThisScreen, running: running };
     }
   };
 })(typeof globalThis !== 'undefined' ? globalThis : window);
