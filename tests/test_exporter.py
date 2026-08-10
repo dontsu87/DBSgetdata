@@ -10,12 +10,16 @@ from src.exporter import export_to_onedrive
 class TestExporter(unittest.TestCase):
     def setUp(self):
         # 一時ディレクトリを作成してConfigに設定
+        self.original_output_dir = Config.OUTPUT_DIR
         self.test_dir = tempfile.mkdtemp()
         Config.OUTPUT_DIR = self.test_dir
 
 
     def tearDown(self):
-        # 一時ディレクトリを削除
+        # Configを元に戻してから一時ディレクトリを削除
+        # (他のテストが実在するOUTPUT_DIRを前提とするため、消し忘れると
+        #  以降のテストが削除済みパスを参照してしまう)
+        Config.OUTPUT_DIR = self.original_output_dir
         shutil.rmtree(self.test_dir)
 
     def test_export_to_onedrive(self):

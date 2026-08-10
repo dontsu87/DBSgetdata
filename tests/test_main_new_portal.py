@@ -13,6 +13,7 @@ def prepare(monkeypatch):
     monkeypatch.setattr(main.Config, "RUN_MODE", "")
     monkeypatch.setattr(main.Config, "validate", Mock())
     monkeypatch.setattr(main, "should_skip_scrape", Mock(return_value=False))
+    monkeypatch.setattr(main, "should_refresh_port_positions", Mock(return_value=False))
     monkeypatch.setattr(main, "load_mismatch_vehicle_ids", Mock(return_value=set()))
     monkeypatch.setattr(
         main,
@@ -169,4 +170,68 @@ def test_run_scraping_non_auth_failure_never_builds_browser(monkeypatch):
         main.run_scraping(is_worker=False)
 
     build_driver.assert_not_called()
-    finalize.assert_not_called()
+
+
+def test_run_scraping_refreshes_port_positions_and_skips_this_slot(monkeypatch):
+    prepare(monkeypatch)
+    monkeypatch.setattr(main.Config, "PORT_POSITION_REFRESH_ENABLED", True)
+    monkeypatch.setattr(main, "should_refresh_port_positions", Mock(return_value=True))
+    refresh = Mock(return_value=12)
+    monkeypatch.setattr(main, "refresh_port_coords_master", refresh)
+    mark_completed = Mock()
+    monkeypatch.setattr(main, "mark_port_position_refresh_completed", mark_completed)
+    extend_cooldown = Mock()
+    monkeypatch.setattr(main, "extend_scrape_cooldown", extend_cooldown)
+    scrape = Mock(side_effect=AssertionError("ポート位置更新スロットでは車両取得しない"))
+    monkeypatch.setattr(main, "scrape_all_vehicles_http", scrape)
+
+    assert main.run_scraping(is_worker=False) is False
+
+    refresh.assert_called_once_with(main.Config.OUTPUT_DIR)
+    mark_completed.assert_called_once_with(main.Config.OUTPUT_DIR)
+    scrape.assert_not_called()
+    extend_cooldown.assert_called_once()
+    assert extend_cooldown.call_args.args == (main.Config.OUTPUT_DIR,)
+    cooldown_kwargs = extend_cooldown.call_args.kwargs
+    assert cooldown_kwargs["cooldown_sec"] == main.Config.PORT_POSITION_POST_REFRESH_COOLDOWN_SEC
+    assert isinstance(cooldown_kwargs["cooldown_started_at"], float)
+
+
+def test_run_scraping_port_position_refresh_failure_still_sets_cooldown(monkeypatch):
+    prepare(monkeypatch)
+    monkeypatch.setattr(main.Config, "PORT_POSITION_REFRESH_ENABLED", True)
+    monkeypatch.setattr(main, "should_refresh_port_positions", Mock(return_value=True))
+    monkeypatch.setattr(
+        main, "refresh_port_coords_master",
+        Mock(side_effect=PortalApiError("HTTP 503")),
+    )
+    mark_completed = Mock()
+    monkeypatch.setattr(main, "mark_port_position_refresh_completed", mark_completed)
+    extend_cooldown = Mock()
+    monkeypatch.setattr(main, "extend_scrape_cooldown", extend_cooldown)
+    scrape = Mock(side_effect=AssertionError("ポート位置更新スロットでは車両取得しない"))
+    monkeypatch.setattr(main, "scrape_all_vehicles_http", scrape)
+
+    # 失敗しても例外は外へ伝播せず、このスロットは静かにスキップされる。
+    assert main.run_scraping(is_worker=False) is False
+
+    mark_completed.assert_not_called()
+    scrape.assert_not_called()
+    extend_cooldown.assert_called_once()
+
+
+def test_run_scraping_port_position_refresh_disabled_scrapes_normally(monkeypatch):
+    prepare(monkeypatch)
+    monkeypatch.setattr(main.Config, "PORT_POSITION_REFRESH_ENABLED", False)
+    monkeypatch.setattr(main, "should_refresh_port_positions", Mock(return_value=True))
+    refresh = Mock(side_effect=AssertionError("無効時はポート位置を更新しない"))
+    monkeypatch.setattr(main, "refresh_port_coords_master", refresh)
+    frame = pd.DataFrame({"識別番号": ["A-001"]})
+    scrape = Mock(return_value=frame)
+    monkeypatch.setattr(main, "scrape_all_vehicles_http", scrape)
+    monkeypatch.setattr(main, "_finalize_scraping", Mock())
+
+    main.run_scraping(is_worker=False)
+
+    refresh.assert_not_called()
+    scrape.assert_called_once_with()

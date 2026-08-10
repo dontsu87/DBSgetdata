@@ -98,6 +98,24 @@ class Config:
         'DBS_VEHICLE_LOCATION_POST_FULL_COOLDOWN_SEC', 600
     )
 
+    # ポート位置情報を管理ポータルAPIから定期更新する（GBFS配信停止時の代替情報源）。
+    PORT_POSITION_REFRESH_ENABLED = _bool_env(
+        'DBS_PORT_POSITION_REFRESH_ENABLED', True
+    )
+    # 既定は1日1回。
+    PORT_POSITION_REFRESH_INTERVAL_SEC = _int_env(
+        'DBS_PORT_POSITION_REFRESH_INTERVAL_SEC', 24 * 60 * 60
+    )
+    # ポートごとに個別GETが必要で時間がかかるため、5分周期の通常スクレイピングと
+    # 重ならないよう、取得開始時刻を起点に30分間クールダウンする。
+    PORT_POSITION_POST_REFRESH_COOLDOWN_SEC = _int_env(
+        'DBS_PORT_POSITION_POST_REFRESH_COOLDOWN_SEC', 30 * 60
+    )
+    # ポート詳細取得1件ごとの待機時間。車両位置詳細取得と同じ既定値に合わせる。
+    PORT_POSITION_FETCH_DELAY_MS = _int_env(
+        'DBS_PORT_POSITION_FETCH_DELAY_MS', 100
+    )
+
     # メール2段階認証コードの受け渡し (Power Automate → OneDrive 共有ファイル)
     # 詳細仕様: docs/email-2fa-power-automate-spec.md
     MAILCODE_SHARE_LINK = os.getenv("DBS_MAILCODE_SHARE_LINK", "")

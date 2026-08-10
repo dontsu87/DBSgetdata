@@ -110,6 +110,34 @@ def should_fetch_all_locations(output_dir, *, now=None, interval_sec=DEFAULT_INT
     return current - last_completed >= interval_sec
 
 
+def extend_scrape_cooldown(output_dir, *, now=None, cooldown_sec, cooldown_started_at=None):
+    """全車両取得の周期(last_completed_epoch)には触れず、通常スクレイピングの
+    クールダウン(cooldown_until_epoch)だけを延長する。
+
+    他の重い処理（例: ポート位置の定期更新）が完了した直後に、5分周期の
+    通常スクレイピングと重ならないよう一時的に間隔を空けたい場合に使う。
+    既存のクールダウンがこれより長く残っている場合は短縮しない。
+    """
+    path = _json_path(output_dir, HOURLY_STATE_FILENAME)
+    state = _read_object(path)
+    current = time.time() if now is None else float(now)
+    try:
+        cooldown_sec = max(0, float(cooldown_sec))
+    except (TypeError, ValueError):
+        cooldown_sec = 0
+    if not cooldown_sec:
+        return
+    cooldown_base = current if cooldown_started_at is None else float(cooldown_started_at)
+    new_until = cooldown_base + cooldown_sec
+
+    try:
+        existing_until = float(state.get("cooldown_until_epoch"))
+    except (TypeError, ValueError):
+        existing_until = 0
+    state["cooldown_until_epoch"] = max(existing_until, new_until)
+    _write_object(path, state)
+
+
 def has_location_fetch_schedule(output_dir):
     "初回の基準時刻が既に保存されているか確認します。"
     state = _read_object(_json_path(output_dir, HOURLY_STATE_FILENAME))

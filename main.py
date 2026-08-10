@@ -9,7 +9,7 @@ from src.config import Config
 from src.browser import build_driver
 from src.auth import login_and_get_areas, authenticate_new_portal
 from src.scraper import open_vehicle_page, scrape_vehicle_page
-from src.new_portal_scraper import PortalSessionError, scrape_all_vehicles_http
+from src.new_portal_scraper import PortalSessionError, PortalApiError, scrape_all_vehicles_http
 from src.exporter import export_to_onedrive, upload_to_onedrive_web
 from src.vehicle_location_scheduler import (
     merge_cached_vehicle_locations,
@@ -19,7 +19,13 @@ from src.vehicle_location_scheduler import (
     should_fetch_all_locations,
     update_vehicle_location_cache,
     load_mismatch_vehicle_ids,
+    extend_scrape_cooldown,
 )
+from src.port_position_scheduler import (
+    should_refresh_port_positions,
+    mark_port_position_refresh_completed,
+)
+from src.port_position_scraper import refresh_port_coords_master
 from src.area_inspector import inspect_area_page
 from src.worker_inspector import inspect_worker_login_page
 
@@ -163,6 +169,30 @@ def run_scraping(is_worker=False):
     if should_skip_scrape(Config.OUTPUT_DIR):
         print("全車両位置取得直後のクールダウン中のため、今回の車両スクレイピングをスキップします（次回スロットで再試行）。")
         return False
+
+    # ポート位置情報のポータルAPI定期更新（既定1日1回）。
+    # GBFS配信停止中の対症療法として、GBFSより先にこちらを正の情報源とする。
+    # ポートごとに個別GETが必要で時間がかかるため、このスロットは更新のみを行い、
+    # 開始時刻を起点に30分間クールダウンして5分周期の通常スクレイピングと重ならないようにする。
+    if Config.PORT_POSITION_REFRESH_ENABLED and should_refresh_port_positions(
+        Config.OUTPUT_DIR, interval_sec=Config.PORT_POSITION_REFRESH_INTERVAL_SEC
+    ):
+        print("--- ポート位置情報をポータルAPIから更新します（1日1回） ---")
+        port_refresh_started_at = time.time()
+        try:
+            updated_count = refresh_port_coords_master(Config.OUTPUT_DIR)
+            print(f"Success: ポート位置情報を更新しました（{updated_count}件）。")
+            mark_port_position_refresh_completed(Config.OUTPUT_DIR)
+        except (PortalSessionError, PortalApiError) as error:
+            print(f"Warning: ポート位置情報の更新に失敗しました。次回のスロットで再試行します: {error}")
+        finally:
+            extend_scrape_cooldown(
+                Config.OUTPUT_DIR,
+                cooldown_sec=Config.PORT_POSITION_POST_REFRESH_COOLDOWN_SEC,
+                cooldown_started_at=port_refresh_started_at,
+            )
+        return False
+
     print("=== ドコモ・バイクシェア 車両情報取得開始 ===")
 
     fetch_all_locations = should_fetch_all_locations(
