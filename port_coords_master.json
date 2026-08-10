@@ -3,43 +3,64 @@
     "lat": 36.402922,
     "lon": 136.452116,
     "area_name": "小松",
-    "station_id": "00001388"
+    "station_id": "00001388",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "01.敦賀駅": {
     "lat": 35.644981,
     "lon": 136.07549,
     "area_name": "敦賀",
-    "station_id": "00090001"
+    "station_id": "00090001",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "01.金沢駅(県立音楽堂横）": {
     "lat": 36.577185,
     "lon": 136.647628,
     "area_name": "金沢",
-    "station_id": "00089001"
+    "station_id": "00089001",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "02.小松空港【拠点ポート】": {
     "lat": 36.401718,
     "lon": 136.412634,
     "area_name": "小松",
-    "station_id": "00001389"
+    "station_id": "00001389",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "02.白銀交差点": {
     "lat": 35.647803,
     "lon": 136.072238,
     "area_name": "敦賀",
-    "station_id": "00090002"
+    "station_id": "00090002",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "02.福井駅自転車駐車場": {
     "lat": 36.062671,
     "lon": 136.223709,
     "area_name": "福井",
-    "station_id": "00001413"
+    "station_id": "00001413",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "02.金沢駅東A": {
     "lat": 36.5764,
     "lon": 136.649842,
     "area_name": "金沢",
-    "station_id": "00089002"
+    "station_id": "00089002",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "02_海野宿第一駐車場【とうみシェアサイクル】": {
     "lat": 36.36035,
@@ -51,121 +72,181 @@
     "lat": 36.408438,
     "lon": 136.445753,
     "area_name": "小松",
-    "station_id": "00001390"
+    "station_id": "00001390",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "03.武蔵": {
     "lat": 36.573534,
     "lon": 136.654453,
     "area_name": "金沢",
-    "station_id": "00089003"
+    "station_id": "00089003",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "03.気比神宮前": {
     "lat": 35.654665,
     "lon": 136.073554,
     "area_name": "敦賀",
-    "station_id": "00090003"
+    "station_id": "00090003",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "03.福井市立郷土歴史博物館（養浩館）": {
     "lat": 36.06817,
     "lon": 136.222623,
     "area_name": "福井",
-    "station_id": "00001414"
+    "station_id": "00001414",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "04.キッズパークつるが": {
     "lat": 35.653607,
     "lon": 136.069973,
     "area_name": "敦賀",
-    "station_id": "00090004"
+    "station_id": "00090004",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "04.中央公園（福井市役所）": {
     "lat": 36.064336,
     "lon": 136.219117,
     "area_name": "福井",
-    "station_id": "00001415"
+    "station_id": "00001415",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "04.小松市末広体育館（義経アリーナ）【拠点ポート】": {
     "lat": 36.40207,
     "lon": 136.441253,
     "area_name": "小松",
-    "station_id": "00001440"
+    "station_id": "00001440",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "04.近江町市場": {
     "lat": 36.570722,
     "lon": 136.656975,
     "area_name": "金沢",
-    "station_id": "00089004"
+    "station_id": "00089004",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "05.アル・プラザ小松【拠点ポート】": {
     "lat": 36.406143,
     "lon": 136.461121,
     "area_name": "小松",
-    "station_id": "00001392"
+    "station_id": "00001392",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "05.北庄城址（柴田神社）": {
     "lat": 36.060087,
     "lon": 136.219905,
     "area_name": "福井",
-    "station_id": "00001416"
+    "station_id": "00001416",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "05.敦賀市立博物館": {
     "lat": 35.656637,
     "lon": 136.069384,
     "area_name": "敦賀",
-    "station_id": "00090005"
+    "station_id": "00090005",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "05.金沢蓄音器館": {
     "lat": 36.571198,
     "lon": 136.662652,
     "area_name": "金沢",
-    "station_id": "00089005"
+    "station_id": "00089005",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "06.おさかな通り": {
     "lat": 35.656889,
     "lon": 136.06711,
     "area_name": "敦賀",
-    "station_id": "00090006"
+    "station_id": "00090006",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "06.イオンモール新小松【拠点ポート】": {
     "lat": 36.395411,
     "lon": 136.467373,
     "area_name": "小松",
-    "station_id": "00001393"
+    "station_id": "00001393",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "06.東山Ｂ・旧馬場小学校前": {
     "lat": 36.574532,
     "lon": 136.665891,
     "area_name": "金沢",
-    "station_id": "00089006"
+    "station_id": "00089006",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "06.福井商工会議所": {
     "lat": 36.055099,
     "lon": 136.213385,
     "area_name": "福井",
-    "station_id": "00001417"
+    "station_id": "00001417",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "07.きらめきみなと館": {
     "lat": 35.659922,
     "lon": 136.071365,
     "area_name": "敦賀",
-    "station_id": "00090007"
+    "station_id": "00090007",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "07.愛宕坂下駐車場": {
     "lat": 36.060227,
     "lon": 136.211091,
     "area_name": "福井",
-    "station_id": "00001418"
+    "station_id": "00001418",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "07.東山Ａ・秋聲のみち": {
     "lat": 36.571636,
     "lon": 136.665979,
     "area_name": "金沢",
-    "station_id": "00089007"
+    "station_id": "00089007",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "07.粟津駅【拠点ポート】": {
     "lat": 36.355927,
     "lon": 136.425238,
     "area_name": "小松",
-    "station_id": "00001395"
+    "station_id": "00001395",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "07_しなの鉄道大屋駅【とうみシェアサイクル】": {
     "lat": 36.369148,
@@ -177,1884 +258,2826 @@
     "lat": 36.57101,
     "lon": 136.667063,
     "area_name": "金沢",
-    "station_id": "00089008"
+    "station_id": "00089008",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "08.敦賀赤レンガ倉庫": {
     "lat": 35.661776,
     "lon": 136.074256,
     "area_name": "敦賀",
-    "station_id": "00090008"
+    "station_id": "00090008",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "08.木場潟公園中央園地【拠点ポート】": {
     "lat": 36.367034,
     "lon": 136.451582,
     "area_name": "小松",
-    "station_id": "00001396"
+    "station_id": "00001396",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "08.福井市グリフィス記念館": {
     "lat": 36.062931,
     "lon": 136.213895,
     "area_name": "福井",
-    "station_id": "00001419"
+    "station_id": "00001419",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "09.人道の港敦賀ムゼウム": {
     "lat": 35.662799,
     "lon": 136.073216,
     "area_name": "敦賀",
-    "station_id": "00090009"
+    "station_id": "00090009",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "09.粟津温泉総湯【拠点ポート】": {
     "lat": 36.331333,
     "lon": 136.44639,
     "area_name": "小松",
-    "station_id": "00001397"
+    "station_id": "00001397",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "09.錦公園（片町）": {
     "lat": 36.064786,
     "lon": 136.213783,
     "area_name": "福井",
-    "station_id": "00001420"
+    "station_id": "00001420",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "09.長土塀青少年交流センター": {
     "lat": 36.566926,
     "lon": 136.645188,
     "area_name": "金沢",
-    "station_id": "00089009"
+    "station_id": "00089009",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "10.文化ホール": {
     "lat": 36.566517,
     "lon": 136.65187,
     "area_name": "金沢",
-    "station_id": "00089010"
+    "station_id": "00089010",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "10.気比の松原": {
     "lat": 35.65596,
     "lon": 136.051981,
     "area_name": "敦賀",
-    "station_id": "00000772"
+    "station_id": "00000772",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "10.田原町駅広場": {
     "lat": 36.07465,
     "lon": 136.218235,
     "area_name": "福井",
-    "station_id": "00001421"
+    "station_id": "00001421",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "10.那谷寺【拠点ポート】": {
     "lat": 36.31341,
     "lon": 136.419806,
     "area_name": "小松",
-    "station_id": "00001398"
+    "station_id": "00001398",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "100.若松バス停前駐輪場": {
     "lat": 36.553937,
     "lon": 136.69042,
     "area_name": "金沢",
-    "station_id": "00000352"
+    "station_id": "00000352",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "101.ネッツトヨタ石川田上もりの里店": {
     "lat": 36.544754,
     "lon": 136.690079,
     "area_name": "金沢",
-    "station_id": "00001684"
+    "station_id": "00001684",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "102.中村町・満天の湯金沢店": {
     "lat": 36.560046,
     "lon": 136.643516,
     "area_name": "金沢",
-    "station_id": "00004118"
+    "station_id": "00004118",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "103.イオンタウン金沢示野": {
     "lat": 36.58068,
     "lon": 136.61581,
     "area_name": "金沢",
-    "station_id": "00004217"
+    "station_id": "00004217",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "104.浅野川すずかけ公園": {
     "lat": 36.55598,
     "lon": 136.68486,
     "area_name": "金沢",
-    "station_id": "00004334"
+    "station_id": "00004334",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "105.松村一丁目": {
     "lat": 36.59011,
     "lon": 136.61343,
     "area_name": "金沢",
-    "station_id": "00004387"
+    "station_id": "00004387",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "106.駅西新町・アプレシオ金沢駅西店": {
     "lat": 36.592915,
     "lon": 136.635325,
     "area_name": "金沢",
-    "station_id": "00004389"
+    "station_id": "00004389",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "107.ホテルマイステイズ金沢片町": {
     "lat": 36.559129,
     "lon": 136.65252,
     "area_name": "金沢",
-    "station_id": "00004484"
+    "station_id": "00004484",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "108.アルビスくらす杜の里店": {
     "lat": 36.559986,
     "lon": 136.683003,
     "area_name": "金沢",
-    "station_id": "00001682"
+    "station_id": "00001682",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "109.神宮寺Hikariラボ": {
     "lat": 36.582273,
     "lon": 136.667759,
     "area_name": "金沢",
-    "station_id": "00004652"
+    "station_id": "00004652",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "11.尾山神社前": {
     "lat": 36.566031,
     "lon": 136.654564,
     "area_name": "金沢",
-    "station_id": "00089011"
+    "station_id": "00089011",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "11.日本海さかな街": {
     "lat": 35.634316,
     "lon": 136.049646,
     "area_name": "敦賀",
-    "station_id": "00000773"
+    "station_id": "00000773",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "11.明峰駅【簡易ポート】": {
     "lat": 36.425015,
     "lon": 136.463318,
     "area_name": "小松",
-    "station_id": "00001399"
+    "station_id": "00001399",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "11.福井市観光交流センター": {
     "lat": 36.061156,
     "lon": 136.223334,
     "area_name": "福井",
-    "station_id": "00001905"
+    "station_id": "00001905",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "110.糸田新町会館": {
     "lat": 36.557551,
     "lon": 136.630475,
     "area_name": "金沢",
-    "station_id": "00004955"
+    "station_id": "00004955",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "111.元菊町・INOVA Kanazawa": {
     "lat": 36.573127,
     "lon": 136.644085,
     "area_name": "金沢",
-    "station_id": "00005033"
+    "station_id": "00005033",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "112.藤江南・からさわ旅館": {
     "lat": 36.582964,
     "lon": 136.623188,
     "area_name": "金沢",
-    "station_id": "00005938"
+    "station_id": "00005938",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "12.「安宅の関」こまつ勧進帳の里【簡易ポート】": {
     "lat": 36.419072,
     "lon": 136.417097,
     "area_name": "小松",
-    "station_id": "00001400"
+    "station_id": "00001400",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "12.敦賀市役所": {
     "lat": 35.645389,
     "lon": 136.056118,
     "area_name": "敦賀",
-    "station_id": "00001381"
+    "station_id": "00001381",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "12.福井大学": {
     "lat": 36.07681,
     "lon": 136.211926,
     "area_name": "福井",
-    "station_id": "00001906"
+    "station_id": "00001906",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "13.八の辻広場(八日市町）【簡易ポート】": {
     "lat": 36.40362,
     "lon": 136.449511,
     "area_name": "小松",
-    "station_id": "00001401"
+    "station_id": "00001401",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "13.柴田氏庭園": {
     "lat": 35.628349,
     "lon": 136.050317,
     "area_name": "敦賀",
-    "station_id": "00001907"
+    "station_id": "00001907",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "13.福井工業大学": {
     "lat": 36.06874,
     "lon": 136.194816,
     "area_name": "福井",
-    "station_id": "00001949"
+    "station_id": "00001949",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "13.長町": {
     "lat": 36.563054,
     "lon": 136.650498,
     "area_name": "金沢",
-    "station_id": "00089013"
+    "station_id": "00089013",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "14.ヨリバ": {
     "lat": 36.06019,
     "lon": 136.21784,
     "area_name": "福井",
-    "station_id": "00002704"
+    "station_id": "00002704",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "14.公立小松大学（末広キャンパス）【簡易ポート】": {
     "lat": 36.399731,
     "lon": 136.438505,
     "area_name": "小松",
-    "station_id": "00001402"
+    "station_id": "00001402",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "14.敦賀市総合運動公園": {
     "lat": 35.64219,
     "lon": 136.032981,
     "area_name": "敦賀",
-    "station_id": "00001908"
+    "station_id": "00001908",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "14.香林坊せせらぎ": {
     "lat": 36.562019,
     "lon": 136.652486,
     "area_name": "金沢",
-    "station_id": "00089014"
+    "station_id": "00089014",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "15.いしかわ四高記念公園前": {
     "lat": 36.563219,
     "lon": 136.654692,
     "area_name": "金沢",
-    "station_id": "00089015"
+    "station_id": "00089015",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "15.九谷セラミック・ラボラトリー【簡易ポート】": {
     "lat": 36.39281,
     "lon": 136.484018,
     "area_name": "小松",
-    "station_id": "00001403"
+    "station_id": "00001403",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "15.福井県庁（福井城址）": {
     "lat": 36.064364,
     "lon": 136.221637,
     "area_name": "福井",
-    "station_id": "00002637"
+    "station_id": "00002637",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "15.西福寺": {
     "lat": 35.656052,
     "lon": 136.031783,
     "area_name": "敦賀",
-    "station_id": "00001909"
+    "station_id": "00001909",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "16.TSURUGA POLT SQUARE otta": {
     "lat": 35.644772,
     "lon": 136.074507,
     "area_name": "敦賀",
-    "station_id": "00004678"
+    "station_id": "00004678",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "16.しいのき迎賓館・玉泉院丸庭園": {
     "lat": 36.563918,
     "lon": 136.65685,
     "area_name": "金沢",
-    "station_id": "00089016"
+    "station_id": "00089016",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "16.福井県国際交流会館": {
     "lat": 36.067275,
     "lon": 136.225669,
     "area_name": "福井",
-    "station_id": "00002638"
+    "station_id": "00002638",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "17.アルビス小松幸町店【簡易ポート】": {
     "lat": 36.391854,
     "lon": 136.451564,
     "area_name": "小松",
-    "station_id": "00005839"
+    "station_id": "00005839",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "17.福井春山合同庁舎": {
     "lat": 36.068311,
     "lon": 136.21764,
     "area_name": "福井",
-    "station_id": "00002639"
+    "station_id": "00002639",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "17.福井県敦賀合同庁舎": {
     "lat": 35.642993,
     "lon": 136.058129,
     "area_name": "敦賀",
-    "station_id": "00004676"
+    "station_id": "00004676",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "17.金沢21世紀美術館": {
     "lat": 36.561477,
     "lon": 136.657446,
     "area_name": "金沢",
-    "station_id": "00089017"
+    "station_id": "00089017",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "18.こまつドーム 駐輪場【簡易ポート】": {
     "lat": 36.338403,
     "lon": 136.43538,
     "area_name": "小松",
-    "station_id": "00001406"
+    "station_id": "00001406",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "18.敦賀市立看護大学": {
     "lat": 35.645078,
     "lon": 136.03411,
     "area_name": "敦賀",
-    "station_id": "00004675"
+    "station_id": "00004675",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "18.本多の森公園・国立工芸館": {
     "lat": 36.558578,
     "lon": 136.661897,
     "area_name": "金沢",
-    "station_id": "00089018"
+    "station_id": "00089018",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "19.えちぜん鉄道 福井口駅": {
     "lat": 36.070834,
     "lon": 136.233104,
     "area_name": "福井",
-    "station_id": "00002695"
+    "station_id": "00002695",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "19.ニューサンピア敦賀": {
     "lat": 35.637324,
     "lon": 136.057511,
     "area_name": "敦賀",
-    "station_id": "00004677"
+    "station_id": "00004677",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "19.日本自動車博物館【簡易ポート】": {
     "lat": 36.333531,
     "lon": 136.42963,
     "area_name": "小松",
-    "station_id": "00001407"
+    "station_id": "00001407",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "19.竪町広場": {
     "lat": 36.557653,
     "lon": 136.655177,
     "area_name": "金沢",
-    "station_id": "00089019"
+    "station_id": "00089019",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "20.ローソン本多町三丁目": {
     "lat": 36.557778,
     "lon": 136.659363,
     "area_name": "金沢",
-    "station_id": "00089020"
+    "station_id": "00089020",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "20.加賀伝統工芸村 ゆのくにの森【簡易ポート】": {
     "lat": 36.324219,
     "lon": 136.435758,
     "area_name": "小松",
-    "station_id": "00001408"
+    "station_id": "00001408",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "21.石引広見・大学病院前": {
     "lat": 36.555379,
     "lon": 136.671146,
     "area_name": "金沢",
-    "station_id": "00089021"
+    "station_id": "00089021",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "22.室生犀星記念館": {
     "lat": 36.559049,
     "lon": 136.648192,
     "area_name": "金沢",
-    "station_id": "00089022"
+    "station_id": "00089022",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "22.小松駅（コマツナイン）【拠点ポート】": {
     "lat": 36.401575,
     "lon": 136.453167,
     "area_name": "小松",
-    "station_id": "00001869"
+    "station_id": "00001869",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "23.にし茶屋街": {
     "lat": 36.557199,
     "lon": 136.647826,
     "area_name": "金沢",
-    "station_id": "00089023"
+    "station_id": "00089023",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "23.北國とおり町（龍助町）【簡易ポート】": {
     "lat": 36.40477,
     "lon": 136.448689,
     "area_name": "小松",
-    "station_id": "00001870"
+    "station_id": "00001870",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "24.土居原町南【簡易ポート】": {
     "lat": 36.396846,
     "lon": 136.451256,
     "area_name": "小松",
-    "station_id": "00005716"
+    "station_id": "00005716",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "24.金沢建築館": {
     "lat": 36.556011,
     "lon": 136.650972,
     "area_name": "金沢",
-    "station_id": "00089024"
+    "station_id": "00089024",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "25.寺町5丁目緑地": {
     "lat": 36.554685,
     "lon": 136.651864,
     "area_name": "金沢",
-    "station_id": "00089025"
+    "station_id": "00089025",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "25.桜木町交差点【簡易ポート】": {
     "lat": 36.406262,
     "lon": 136.441028,
     "area_name": "小松",
-    "station_id": "00005717"
+    "station_id": "00005717",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "26.猫橋交差点【拠点ポート】": {
     "lat": 36.400174,
     "lon": 136.44874,
     "area_name": "小松",
-    "station_id": "00002697"
+    "station_id": "00002697",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "26.野町駅": {
     "lat": 36.554072,
     "lon": 136.644416,
     "area_name": "金沢",
-    "station_id": "00089026"
+    "station_id": "00089026",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "27.スカイパークこまつ共生の丘【簡易ポート】": {
     "lat": 36.405016,
     "lon": 136.423213,
     "area_name": "小松",
-    "station_id": "00002698"
+    "station_id": "00002698",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "27.金沢未来のまち創造館": {
     "lat": 36.552902,
     "lon": 136.648425,
     "area_name": "金沢",
-    "station_id": "00089027"
+    "station_id": "00089027",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "28.小松グリーンホテル【簡易ポート】": {
     "lat": 36.419694,
     "lon": 136.433208,
     "area_name": "小松",
-    "station_id": "00002699"
+    "station_id": "00002699",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "28.小橋・おたふく": {
     "lat": 36.575955,
     "lon": 136.660963,
     "area_name": "金沢",
-    "station_id": "00089028"
+    "station_id": "00089028",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "29.かなざわはこまち": {
     "lat": 36.572064,
     "lon": 136.656882,
     "area_name": "金沢",
-    "station_id": "00089029"
+    "station_id": "00089029",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "29.日の出ふれあい公園【簡易ポート】": {
     "lat": 36.400261,
     "lon": 136.456242,
     "area_name": "小松",
-    "station_id": "00002700"
+    "station_id": "00002700",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "30.松ケ枝緑地": {
     "lat": 36.569846,
     "lon": 136.653221,
     "area_name": "金沢",
-    "station_id": "00089030"
+    "station_id": "00089030",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "30.沖町１号公園【簡易ポート】": {
     "lat": 36.396175,
     "lon": 136.460755,
     "area_name": "小松",
-    "station_id": "00003915"
+    "station_id": "00003915",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "31.NTTドコモ金沢大手町ビル": {
     "lat": 36.569484,
     "lon": 136.662582,
     "area_name": "金沢",
-    "station_id": "00089031"
+    "station_id": "00089031",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "32.金沢商工会議所": {
     "lat": 36.567493,
     "lon": 136.65625,
     "area_name": "金沢",
-    "station_id": "00089032"
+    "station_id": "00089032",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "33.片町・ホテルアマネク金沢": {
     "lat": 36.560481,
     "lon": 136.650635,
     "area_name": "金沢",
-    "station_id": "00089033"
+    "station_id": "00089033",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "34.兼六駐車場": {
     "lat": 36.565477,
     "lon": 136.663783,
     "area_name": "金沢",
-    "station_id": "00089034"
+    "station_id": "00089034",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "35.新竪町・桜橋": {
     "lat": 36.553907,
     "lon": 136.655908,
     "area_name": "金沢",
-    "station_id": "00089035"
+    "station_id": "00089035",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "36.寺町3丁目緑地": {
     "lat": 36.551299,
     "lon": 136.655043,
     "area_name": "金沢",
-    "station_id": "00089036"
+    "station_id": "00089036",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "37.東金沢駅東口": {
     "lat": 36.593306,
     "lon": 136.669673,
     "area_name": "金沢",
-    "station_id": "00089037"
+    "station_id": "00089037",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "38.西金沢駅東口": {
     "lat": 36.552686,
     "lon": 136.621474,
     "area_name": "金沢",
-    "station_id": "00089038"
+    "station_id": "00089038",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "39.金沢市民芸術村": {
     "lat": 36.568716,
     "lon": 136.639568,
     "area_name": "金沢",
-    "station_id": "00089039"
+    "station_id": "00089039",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "40.泉本町・日本海コンサルタント": {
     "lat": 36.550591,
     "lon": 136.639847,
     "area_name": "金沢",
-    "station_id": "00089040"
+    "station_id": "00089040",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "41.金沢駅西": {
     "lat": 36.579579,
     "lon": 136.646037,
     "area_name": "金沢",
-    "station_id": "00089041"
+    "station_id": "00089041",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "42.NTTドコモ西都ビル": {
     "lat": 36.593627,
     "lon": 136.627882,
     "area_name": "金沢",
-    "station_id": "00089070"
+    "station_id": "00089070",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "43.金沢港クルーズターミナル": {
     "lat": 36.607703,
     "lon": 136.615137,
     "area_name": "金沢",
-    "station_id": "00089043"
+    "station_id": "00089043",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "44.kuru.ru. 大野バイシクルベース": {
     "lat": 36.611315,
     "lon": 136.604932,
     "area_name": "金沢",
-    "station_id": "00089044"
+    "station_id": "00089044",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "45.金石バスターミナル前": {
     "lat": 36.601036,
     "lon": 136.594209,
     "area_name": "金沢",
-    "station_id": "00089045"
+    "station_id": "00089045",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "46.セブンイレブン金沢大手町店": {
     "lat": 36.569659,
     "lon": 136.660728,
     "area_name": "金沢",
-    "station_id": "00089049"
+    "station_id": "00089049",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "47.セブンイレブン金沢泉野町店": {
     "lat": 36.544785,
     "lon": 136.654136,
     "area_name": "金沢",
-    "station_id": "00089050"
+    "station_id": "00089050",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "48.セブンイレブン金沢京町店": {
     "lat": 36.581056,
     "lon": 136.656564,
     "area_name": "金沢",
-    "station_id": "00089051"
+    "station_id": "00089051",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "49.西金沢駅西口": {
     "lat": 36.553237,
     "lon": 136.62046,
     "area_name": "金沢",
-    "station_id": "00000218"
+    "station_id": "00000218",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "50.セブンイレブン金沢石川県庁前店": {
     "lat": 36.59625,
     "lon": 136.6265,
     "area_name": "金沢",
-    "station_id": "00089058"
+    "station_id": "00089058",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "51.セブンイレブン金沢芳斉2丁目店": {
     "lat": 36.573362,
     "lon": 136.647113,
     "area_name": "金沢",
-    "station_id": "00089054"
+    "station_id": "00089054",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "52.金沢駅西暫定駐輪場": {
     "lat": 36.578577,
     "lon": 136.645786,
     "area_name": "金沢",
-    "station_id": "00004097"
+    "station_id": "00004097",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "53.ファミリーマート金沢けやき通り店": {
     "lat": 36.582372,
     "lon": 136.640421,
     "area_name": "金沢",
-    "station_id": "00089055"
+    "station_id": "00089055",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "54.ファミリーマート金沢中央市場店": {
     "lat": 36.588257,
     "lon": 136.632698,
     "area_name": "金沢",
-    "station_id": "00089056"
+    "station_id": "00089056",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "55.天神高架橋下第２自転車駐輪場": {
     "lat": 36.559343,
     "lon": 136.67713,
     "area_name": "金沢",
-    "station_id": "00089057"
+    "station_id": "00089057",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "56.長田・金沢彩の庭ホテル": {
     "lat": 36.575763,
     "lon": 136.637299,
     "area_name": "金沢",
-    "station_id": "00000172"
+    "station_id": "00000172",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "57.竪町通り・OMO5金沢片町": {
     "lat": 36.560359,
     "lon": 136.653759,
     "area_name": "金沢",
-    "station_id": "00000717"
+    "station_id": "00000717",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "58.ファミリーマート東金沢駅前店": {
     "lat": 36.592083,
     "lon": 136.671209,
     "area_name": "金沢",
-    "station_id": "00089059"
+    "station_id": "00089059",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "59.ファミリーマート金沢幸町店": {
     "lat": 36.554839,
     "lon": 136.657245,
     "area_name": "金沢",
-    "station_id": "00089060"
+    "station_id": "00089060",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "60.ローソン金沢弥生店": {
     "lat": 36.548066,
     "lon": 136.648938,
     "area_name": "金沢",
-    "station_id": "00089061"
+    "station_id": "00089061",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "61.ローソン金沢泉店": {
     "lat": 36.547518,
     "lon": 136.64276,
     "area_name": "金沢",
-    "station_id": "00089062"
+    "station_id": "00089062",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "62.ローソン金沢野町一丁目店": {
     "lat": 36.556179,
     "lon": 136.648639,
     "area_name": "金沢",
-    "station_id": "00089063"
+    "station_id": "00089063",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "63.ローソン金沢芳斉二丁目店": {
     "lat": 36.573652,
     "lon": 136.649461,
     "area_name": "金沢",
-    "station_id": "00089064"
+    "station_id": "00089064",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "64.ローソン金沢駅西本町店": {
     "lat": 36.58359,
     "lon": 136.635317,
     "area_name": "金沢",
-    "station_id": "00089065"
+    "station_id": "00089065",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "65.ローソン金沢若宮町店": {
     "lat": 36.581424,
     "lon": 136.632034,
     "area_name": "金沢",
-    "station_id": "00089066"
+    "station_id": "00089066",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "66.ローソン金沢神宮寺二丁目店": {
     "lat": 36.585894,
     "lon": 136.66839,
     "area_name": "金沢",
-    "station_id": "00089067"
+    "station_id": "00089067",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "67.ファミリーマート金沢小立野店": {
     "lat": 36.547531,
     "lon": 136.678978,
     "area_name": "金沢",
-    "station_id": "00089069"
+    "station_id": "00089069",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "68.ファミリーマート金沢菊川店": {
     "lat": 36.552883,
     "lon": 136.663678,
     "area_name": "金沢",
-    "station_id": "00089072"
+    "station_id": "00089072",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "69.ファミリーマート金沢寺町店": {
     "lat": 36.548589,
     "lon": 136.657386,
     "area_name": "金沢",
-    "station_id": "00089073"
+    "station_id": "00089073",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "70.金沢市役所": {
     "lat": 36.560594,
     "lon": 136.656572,
     "area_name": "金沢",
-    "station_id": "00000779"
+    "station_id": "00000779",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "71.無量寺・アピタタウン金沢ベイ": {
     "lat": 36.600208,
     "lon": 136.616076,
     "area_name": "金沢",
-    "station_id": "00000780"
+    "station_id": "00000780",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "72.石川県庁": {
     "lat": 36.594204,
     "lon": 136.626491,
     "area_name": "金沢",
-    "station_id": "00000851"
+    "station_id": "00000851",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "73.石川県立図書館": {
     "lat": 36.547777,
     "lon": 136.68,
     "area_name": "金沢",
-    "station_id": "00000874"
+    "station_id": "00000874",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "74.石川県立能楽堂": {
     "lat": 36.560162,
     "lon": 136.663106,
     "area_name": "金沢",
-    "station_id": "00001193"
+    "station_id": "00001193",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "75.石川県立武道館": {
     "lat": 36.589306,
     "lon": 136.674271,
     "area_name": "金沢",
-    "station_id": "00001194"
+    "station_id": "00001194",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "76.いしかわ総合スポーツセンター": {
     "lat": 36.578046,
     "lon": 136.597897,
     "area_name": "金沢",
-    "station_id": "00001195"
+    "station_id": "00001195",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "77.金沢駅（金沢フォーラス横）": {
     "lat": 36.579723,
     "lon": 136.649338,
     "area_name": "金沢",
-    "station_id": "00004098"
+    "station_id": "00004098",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "78.此花町緑地": {
     "lat": 36.577124,
     "lon": 136.652214,
     "area_name": "金沢",
-    "station_id": "00004099"
+    "station_id": "00004099",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "79.ダイハツステーション長土塀": {
     "lat": 36.570134,
     "lon": 136.645319,
     "area_name": "金沢",
-    "station_id": "00004100"
+    "station_id": "00004100",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "80.香林坊にぎわい広場": {
     "lat": 36.562908,
     "lon": 136.652382,
     "area_name": "金沢",
-    "station_id": "00004101"
+    "station_id": "00004101",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "81.学生のまち市民交流館": {
     "lat": 36.56085,
     "lon": 136.65213,
     "area_name": "金沢",
-    "station_id": "00004102"
+    "station_id": "00004102",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "82.片町・新天地商店街": {
     "lat": 36.561123,
     "lon": 136.651334,
     "area_name": "金沢",
-    "station_id": "00004103"
+    "station_id": "00004103",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "83.長町二丁目緑地": {
     "lat": 36.564989,
     "lon": 136.646554,
     "area_name": "金沢",
-    "station_id": "00004104"
+    "station_id": "00004104",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "85.藤江北中央公園": {
     "lat": 36.589703,
     "lon": 136.622722,
     "area_name": "金沢",
-    "station_id": "00004105"
+    "station_id": "00004105",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "86.石川県工業試験場": {
     "lat": 36.594324,
     "lon": 136.620681,
     "area_name": "金沢",
-    "station_id": "00004106"
+    "station_id": "00004106",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "87.神田交通公園": {
     "lat": 36.561533,
     "lon": 136.630635,
     "area_name": "金沢",
-    "station_id": "00004107"
+    "station_id": "00004107",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "88.駅西本町・福井銀行金沢支店": {
     "lat": 36.579976,
     "lon": 136.637058,
     "area_name": "金沢",
-    "station_id": "00004108"
+    "station_id": "00004108",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "89.長田町公園": {
     "lat": 36.577616,
     "lon": 136.640935,
     "area_name": "金沢",
-    "station_id": "00004109"
+    "station_id": "00004109",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "90.諸江町・アル・プラザ金沢店": {
     "lat": 36.591258,
     "lon": 136.645556,
     "area_name": "金沢",
-    "station_id": "00004110"
+    "station_id": "00004110",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "91.北安江・安江住吉神社横": {
     "lat": 36.586889,
     "lon": 136.648988,
     "area_name": "金沢",
-    "station_id": "00004111"
+    "station_id": "00004111",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "92.広岡・スコール金沢": {
     "lat": 36.58215,
     "lon": 136.646575,
     "area_name": "金沢",
-    "station_id": "00004112"
+    "station_id": "00004112",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "93.城北市民運動公園": {
     "lat": 36.598866,
     "lon": 136.657854,
     "area_name": "金沢",
-    "station_id": "00001394"
+    "station_id": "00001394",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "94.東金沢駅西口": {
     "lat": 36.594058,
     "lon": 136.669848,
     "area_name": "金沢",
-    "station_id": "00004113"
+    "station_id": "00004113",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "95.鳴和駐輪場": {
     "lat": 36.587268,
     "lon": 136.675705,
     "area_name": "金沢",
-    "station_id": "00004119"
+    "station_id": "00004119",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "96.ネッツトヨタ石川元町店": {
     "lat": 36.58199,
     "lon": 136.663713,
     "area_name": "金沢",
-    "station_id": "00004120"
+    "station_id": "00004120",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "98.泉野おあしす広場": {
     "lat": 36.543696,
     "lon": 136.649739,
     "area_name": "金沢",
-    "station_id": "00004115"
+    "station_id": "00004115",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "99.海みらい図書館": {
     "lat": 36.594743,
     "lon": 136.603998,
     "area_name": "金沢",
-    "station_id": "00004116"
+    "station_id": "00004116",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "C-01.千曲市総合観光会館": {
     "lat": 36.478469,
     "lon": 138.145079,
     "area_name": "上田千曲広域",
-    "station_id": "00000817"
+    "station_id": "00000817",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "C-02.戸倉駅駐輪場": {
     "lat": 36.49249,
     "lon": 138.15289,
     "area_name": "上田千曲広域",
-    "station_id": "00000818"
+    "station_id": "00000818",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "C-03.千曲駅駐輪場": {
     "lat": 36.508889,
     "lon": 138.141667,
     "area_name": "上田千曲広域",
-    "station_id": "00000819"
+    "station_id": "00000819",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "C-04.屋代駅駐輪場": {
     "lat": 36.532941,
     "lon": 138.127805,
     "area_name": "上田千曲広域",
-    "station_id": "00000820"
+    "station_id": "00000820",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "C-05.千曲市役所": {
     "lat": 36.530747,
     "lon": 138.114479,
     "area_name": "上田千曲広域",
-    "station_id": "00000823"
+    "station_id": "00000823",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "C-06.姨捨駅駐輪場": {
     "lat": 36.503038,
     "lon": 138.092755,
     "area_name": "上田千曲広域",
-    "station_id": "00001060"
+    "station_id": "00001060",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "C-07.戸倉上山田温泉入口": {
     "lat": 36.483478,
     "lon": 138.140884,
     "area_name": "上田千曲広域",
-    "station_id": "00004738"
+    "station_id": "00004738",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "E07_臨時 石川県金沢港大野からくり記念館": {
     "lat": 36.618424,
     "lon": 136.605225,
     "area_name": "金沢",
-    "station_id": "00089068"
+    "station_id": "00089068",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "E12_臨時 イオンもりの里店": {
     "lat": 36.552681,
     "lon": 136.691265,
     "area_name": "金沢",
-    "station_id": "00001683"
+    "station_id": "00001683",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "E13_臨時 角間キャンパス北地区駐車場": {
     "lat": 36.551162,
     "lon": 136.712183,
     "area_name": "金沢",
-    "station_id": "00001685"
+    "station_id": "00001685",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "E14_臨時 角間キャンパス南地区駐車場": {
     "lat": 36.54614,
     "lon": 136.703719,
     "area_name": "金沢",
-    "station_id": "00001686"
+    "station_id": "00001686",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "E20_泉野出町・金沢市総合体育館": {
     "lat": 36.539791,
     "lon": 136.649422,
     "area_name": "金沢",
-    "station_id": "00006094"
+    "station_id": "00006094",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "E21_富樫・金沢南総合運動公園": {
     "lat": 36.539724,
     "lon": 136.643681,
     "area_name": "金沢",
-    "station_id": "00006095"
+    "station_id": "00006095",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "E22_円光寺・サンピア泉ヶ丘": {
     "lat": 36.53451,
     "lon": 136.649854,
     "area_name": "金沢",
-    "station_id": "00006096"
+    "station_id": "00006096",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "E23_西泉・事務キチ金沢店": {
     "lat": 36.544438,
     "lon": 136.634828,
     "area_name": "金沢",
-    "station_id": "00006097"
+    "station_id": "00006097",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "E24_石川ダイハツ横川店": {
     "lat": 36.542658,
     "lon": 136.626485,
     "area_name": "金沢",
-    "station_id": "00006098"
+    "station_id": "00006098",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "E25_有松児童遊園": {
     "lat": 36.540144,
     "lon": 136.636918,
     "area_name": "金沢",
-    "station_id": "00006099"
+    "station_id": "00006099",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "E26_久安殿屋敷公園": {
     "lat": 36.533909,
     "lon": 136.630622,
     "area_name": "金沢",
-    "station_id": "00006100"
+    "station_id": "00006100",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "E27_久安1丁目小公園": {
     "lat": 36.530322,
     "lon": 136.633484,
     "area_name": "金沢",
-    "station_id": "00006101"
+    "station_id": "00006101",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "N-01.IR野々市駅南口": {
     "lat": 36.541689,
     "lon": 136.598552,
     "area_name": "金沢",
-    "station_id": "00006082"
+    "station_id": "00006082",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "N-02.IR野々市駅北口": {
     "lat": 36.541777,
     "lon": 136.597853,
     "area_name": "金沢",
-    "station_id": "00006083"
+    "station_id": "00006083",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "N-03.野々市市スポーツセンター": {
     "lat": 36.540491,
     "lon": 136.612183,
     "area_name": "金沢",
-    "station_id": "00006084"
+    "station_id": "00006084",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "N-04.野々市中央バス停／横宮交差点": {
     "lat": 36.535791,
     "lon": 136.617006,
     "area_name": "金沢",
-    "station_id": "00006085"
+    "station_id": "00006085",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "N-05.太平寺バス停／フォルテ": {
     "lat": 36.532538,
     "lon": 136.6083,
     "area_name": "金沢",
-    "station_id": "00006086"
+    "station_id": "00006086",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "N-06.学びの杜ののいち カレード": {
     "lat": 36.528945,
     "lon": 136.608617,
     "area_name": "金沢",
-    "station_id": "00006087"
+    "station_id": "00006087",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "N-07.野々市市役所": {
     "lat": 36.519638,
     "lon": 136.608992,
     "area_name": "金沢",
-    "station_id": "00006088"
+    "station_id": "00006088",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "N-08.にぎわいの里ののいち カミーノ": {
     "lat": 36.532928,
     "lon": 136.619025,
     "area_name": "金沢",
-    "station_id": "00006089"
+    "station_id": "00006089",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "N-09.北陸鉄道石川線 野々市工大前駅": {
     "lat": 36.532421,
     "lon": 136.621533,
     "area_name": "金沢",
-    "station_id": "00006090"
+    "station_id": "00006090",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "N-10.金沢工業大学": {
     "lat": 36.529774,
     "lon": 136.626431,
     "area_name": "金沢",
-    "station_id": "00006093"
+    "station_id": "00006093",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "U-01.上田駅お城口水車前": {
     "lat": 36.397019,
     "lon": 138.250168,
     "area_name": "上田千曲広域",
-    "station_id": "00001111"
+    "station_id": "00001111",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "U-02.上田駅温泉口": {
     "lat": 36.396323,
     "lon": 138.249146,
     "area_name": "上田千曲広域",
-    "station_id": "00002723"
+    "station_id": "00002723",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "U-03.上田市観光会館": {
     "lat": 36.403216,
     "lon": 138.247279,
     "area_name": "上田千曲広域",
-    "station_id": "00000807"
+    "station_id": "00000807",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "U-04.上田市役所": {
     "lat": 36.402258,
     "lon": 138.248609,
     "area_name": "上田千曲広域",
-    "station_id": "00002724"
+    "station_id": "00002724",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "U-05.セブンイレブン上田城大手門店": {
     "lat": 36.401062,
     "lon": 138.252338,
     "area_name": "上田千曲広域",
-    "station_id": "00001529"
+    "station_id": "00001529",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "U-06.北国街道柳町南": {
     "lat": 36.40465,
     "lon": 138.25367,
     "area_name": "上田千曲広域",
-    "station_id": "00000808"
+    "station_id": "00000808",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "U-07.中央公民館": {
     "lat": 36.40013,
     "lon": 138.25977,
     "area_name": "上田千曲広域",
-    "station_id": "00000809"
+    "station_id": "00000809",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "U-08.アリオ上田": {
     "lat": 36.39827,
     "lon": 138.2458,
     "area_name": "上田千曲広域",
-    "station_id": "00000810"
+    "station_id": "00000810",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "U-09.イオンスタイル上田": {
     "lat": 36.39241,
     "lon": 138.25809,
     "area_name": "上田千曲広域",
-    "station_id": "00000811"
+    "station_id": "00000811",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "U-10.ユーメイト": {
     "lat": 36.40638,
     "lon": 138.25855,
     "area_name": "上田千曲広域",
-    "station_id": "00001864"
+    "station_id": "00001864",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "U-11.信濃国分寺駅": {
     "lat": 36.37891,
     "lon": 138.27339,
     "area_name": "上田千曲広域",
-    "station_id": "00000812"
+    "station_id": "00000812",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "U-12.三好町駅": {
     "lat": 36.391752,
     "lon": 138.235079,
     "area_name": "上田千曲広域",
-    "station_id": "00002725"
+    "station_id": "00002725",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "U-13.赤坂上駅": {
     "lat": 36.391385,
     "lon": 138.227576,
     "area_name": "上田千曲広域",
-    "station_id": "00002726"
+    "station_id": "00002726",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "U-14.上田原駅": {
     "lat": 36.39054,
     "lon": 138.22147,
     "area_name": "上田千曲広域",
-    "station_id": "00002727"
+    "station_id": "00002727",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "U-15.下之郷駅": {
     "lat": 36.36297,
     "lon": 138.21735,
     "area_name": "上田千曲広域",
-    "station_id": "00000813"
+    "station_id": "00000813",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "U-16.寺下駅": {
     "lat": 36.383657,
     "lon": 138.216372,
     "area_name": "上田千曲広域",
-    "station_id": "00004086"
+    "station_id": "00004086",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "U-17.別所温泉駅": {
     "lat": 36.35318,
     "lon": 138.16195,
     "area_name": "上田千曲広域",
-    "station_id": "00000815"
+    "station_id": "00000815",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "U-18.大学前駅": {
     "lat": 36.370851,
     "lon": 138.215356,
     "area_name": "上田千曲広域",
-    "station_id": "00004087"
+    "station_id": "00004087",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "U-19.上田城跡北駐車場": {
     "lat": 36.405197,
     "lon": 138.247118,
     "area_name": "上田千曲広域",
-    "station_id": "00004088"
+    "station_id": "00004088",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "U-20.西部公民館": {
     "lat": 36.412222,
     "lon": 138.240562,
     "area_name": "上田千曲広域",
-    "station_id": "00005681"
+    "station_id": "00005681",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "U-21.信州上田医療センター前": {
     "lat": 36.411807,
     "lon": 138.250755,
     "area_name": "上田千曲広域",
-    "station_id": "00005682"
+    "station_id": "00005682",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "U-22.大星神社": {
     "lat": 36.413166,
     "lon": 138.255322,
     "area_name": "上田千曲広域",
-    "station_id": "00005683"
+    "station_id": "00005683",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "U-23.上田城跡公園南": {
     "lat": 36.402706,
     "lon": 138.243336,
     "area_name": "上田千曲広域",
-    "station_id": "00005684"
+    "station_id": "00005684",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "U-24.城南公民館": {
     "lat": 36.396242,
     "lon": 138.225685,
     "area_name": "上田千曲広域",
-    "station_id": "00005685"
+    "station_id": "00005685",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "U-25.サントミューゼ": {
     "lat": 36.398765,
     "lon": 138.243657,
     "area_name": "上田千曲広域",
-    "station_id": "00005686"
+    "station_id": "00005686",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "U-26.北国街道柳町正面": {
     "lat": 36.406063,
     "lon": 138.253859,
     "area_name": "上田千曲広域",
-    "station_id": "00005687"
+    "station_id": "00005687",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "U-27.海野町": {
     "lat": 36.399729,
     "lon": 138.255438,
     "area_name": "上田千曲広域",
-    "station_id": "00005688"
+    "station_id": "00005688",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "U-28.藤本つむぎ工房": {
     "lat": 36.396711,
     "lon": 138.259135,
     "area_name": "上田千曲広域",
-    "station_id": "00005689"
+    "station_id": "00005689",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "U-29.バーガーキング 上田常田店": {
     "lat": 36.39432,
     "lon": 138.261051,
     "area_name": "上田千曲広域",
-    "station_id": "00005690"
+    "station_id": "00005690",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "U-30.城下駅": {
     "lat": 36.392683,
     "lon": 138.242769,
     "area_name": "上田千曲広域",
-    "station_id": "00005691"
+    "station_id": "00005691",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "U-31.長野大学": {
     "lat": 36.368779,
     "lon": 138.223982,
     "area_name": "上田千曲広域",
-    "station_id": "00005692"
+    "station_id": "00005692",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "U-32.上田城跡公園西": {
     "lat": 36.404615,
     "lon": 138.242478,
     "area_name": "上田千曲広域",
-    "station_id": "00005693"
+    "station_id": "00005693",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "【臨時】ふくみち": {
     "lat": 36.062701,
     "lon": 136.219231,
     "area_name": "福井",
-    "station_id": "00002843"
+    "station_id": "00002843",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "【臨時】アートまちかど": {
     "lat": 36.538389,
     "lon": 138.124778,
     "area_name": "上田千曲広域",
-    "station_id": "00003452"
+    "station_id": "00003452",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "【臨時】パリオCiTY": {
     "lat": 36.062804,
     "lon": 136.240577,
     "area_name": "福井",
-    "station_id": "00004488"
+    "station_id": "00004488",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "【臨時】幾久公園": {
     "lat": 36.082174,
     "lon": 136.22163,
     "area_name": "福井",
-    "station_id": "00004751"
+    "station_id": "00004751",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "【臨時】福井南郵便局": {
     "lat": 36.04521,
     "lon": 136.22709,
     "area_name": "福井",
-    "station_id": "00004057"
+    "station_id": "00004057",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "【臨時】福井市立みどり図書館": {
     "lat": 36.052106,
     "lon": 136.191973,
     "area_name": "福井",
-    "station_id": "00005576"
+    "station_id": "00005576",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "【臨時】福井県立病院": {
     "lat": 36.069425,
     "lon": 136.240053,
     "area_name": "福井",
-    "station_id": "00004679"
+    "station_id": "00004679",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "【臨時】福井県護国神社": {
     "lat": 36.081518,
     "lon": 136.218017,
     "area_name": "福井",
-    "station_id": "00003556"
+    "station_id": "00003556",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "【臨時】福井運動公園": {
     "lat": 36.051868,
     "lon": 136.184979,
     "area_name": "福井",
-    "station_id": "00002842"
+    "station_id": "00002842",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "【臨時】稲荷山宿・蔵し館": {
     "lat": 36.538484,
     "lon": 138.104868,
     "area_name": "上田千曲広域",
-    "station_id": "00005998"
+    "station_id": "00005998",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "【臨時】西公園": {
     "lat": 36.069416,
     "lon": 136.212244,
     "area_name": "福井",
-    "station_id": "00004449"
+    "station_id": "00004449",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "【臨時】赤十字前駅": {
     "lat": 36.048293,
     "lon": 136.216147,
     "area_name": "福井",
-    "station_id": "00004059"
+    "station_id": "00004059",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "【臨時】越前花堂駅": {
     "lat": 36.03898,
     "lon": 136.217758,
     "area_name": "福井",
-    "station_id": "00004058"
+    "station_id": "00004058",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "【臨時】えちぜん鉄道 福大前西福井駅": {
     "lat": 36.074076,
     "lon": 136.210617,
     "area_name": "福井",
-    "station_id": "00005999"
+    "station_id": "00005999",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "【臨時】えちぜん鉄道 八ツ島駅": {
     "lat": 36.086509,
     "lon": 136.205937,
     "area_name": "福井",
-    "station_id": "00006025"
+    "station_id": "00006025",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "01.ウェルカムセンター（福井市観光案内所）": {
     "lat": 36.061486,
     "lon": 136.222531,
     "area_name": "福井",
-    "station_id": "00001412"
+    "station_id": "00001412",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "出雲倉庫テスト用": {
     "lat": 36.576801,
     "lon": 136.625307,
     "area_name": "小松",
-    "station_id": "00006045"
+    "station_id": "00006045",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "【臨時】えちぜん鉄道 越前開発駅": {
     "lat": 36.075644,
     "lon": 136.241678,
     "area_name": "福井",
-    "station_id": "00006026"
+    "station_id": "00006026",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "【臨時】福井市美術館": {
     "lat": 36.03951,
     "lon": 136.234715,
     "area_name": "福井",
-    "station_id": "00003088"
+    "station_id": "00003088",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "【臨時】フェニックスプラザ": {
     "lat": 36.074081,
     "lon": 136.218108,
     "area_name": "福井",
-    "station_id": "00003172"
+    "station_id": "00003172",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "【臨時】一乗谷・朝倉氏遺跡": {
     "lat": 35.997586,
     "lon": 136.292911,
     "area_name": "福井",
-    "station_id": "00001830"
+    "station_id": "00001830",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "テスト_【有明】検査用": {
     "lat": 35.6313,
     "lon": 139.7958,
     "area_name": "敦賀",
-    "station_id": "00005374"
+    "station_id": "00005374",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "00.【臨時】ふくい桜まつり": {
     "lat": 36.060242,
     "lon": 136.21581,
     "area_name": "福井",
-    "station_id": "00001492"
+    "station_id": "00001492",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "テスト_立合検査用": {
     "lat": 35.55961,
     "lon": 139.74615,
     "area_name": "小松",
-    "station_id": "00001383"
+    "station_id": "00001383",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "18.福井県福井合同庁舎": {
     "lat": 36.072789,
     "lon": 136.224643,
     "area_name": "福井",
-    "station_id": "00002640"
+    "station_id": "00002640",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "【臨時】福井市中央卸売市場(ふくい鮮いちば)": {
     "lat": 36.088816,
     "lon": 136.245949,
     "area_name": "福井",
-    "station_id": "00001950"
+    "station_id": "00001950",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "【臨時】トレタス": {
     "lat": 36.098616,
     "lon": 136.24679,
     "area_name": "福井",
-    "station_id": "00003174"
+    "station_id": "00003174",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "KMT-000.小松基地航空祭臨時ポート": {
     "lat": 36.389761,
     "lon": 136.416883,
     "area_name": "小松",
-    "station_id": "00001931"
+    "station_id": "00001931",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "【臨時】WaiWaiまつり（里山みらい館）": {
     "lat": 36.401746,
     "lon": 136.538882,
     "area_name": "小松",
-    "station_id": "00004956"
+    "station_id": "00004956",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "試乗体験会用ポート": {
     "lat": 36.400908,
     "lon": 136.452325,
     "area_name": "小松",
-    "station_id": "00005786"
+    "station_id": "00005786",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "まちのり事務局TEST": {
     "lat": 36.57686,
     "lon": 136.65132,
     "area_name": "小松",
-    "station_id": "00002535"
+    "station_id": "00002535",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "テスト用臨時ポート": {
     "lat": 36.060509,
     "lon": 136.22371,
     "area_name": "小松",
-    "station_id": "00001423"
+    "station_id": "00001423",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "KMT-000.憩いの森臨時ポート（KUTANI BASE）": {
     "lat": 36.385753,
     "lon": 136.484126,
     "area_name": "小松",
-    "station_id": "00001637"
+    "station_id": "00001637",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "17.道の駅こまつ木場潟【簡易ポート】": {
     "lat": 36.36988,
     "lon": 136.46261,
     "area_name": "小松",
-    "station_id": "00001405"
+    "station_id": "00001405",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "21.里山自然学校こまつ滝ヶ原【簡易ポート】": {
     "lat": 36.297476,
     "lon": 136.424462,
     "area_name": "小松",
-    "station_id": "00001409"
+    "station_id": "00001409",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "16.ハニベ巌窟院【簡易ポート】": {
     "lat": 36.40152,
     "lon": 136.526105,
     "area_name": "小松",
-    "station_id": "00001404"
+    "station_id": "00001404",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "25.加賀国府ものがたり館【簡易ポート】": {
     "lat": 36.411876,
     "lon": 136.517107,
     "area_name": "小松",
-    "station_id": "00001933"
+    "station_id": "00001933",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "24.小松市埋蔵文化財センター【簡易ポート】": {
     "lat": 36.381777,
     "lon": 136.537091,
     "area_name": "小松",
-    "station_id": "00001932"
+    "station_id": "00001932",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "大野もろみ蔵通り": {
     "lat": 36.611316,
     "lon": 136.604884,
     "area_name": "金沢",
-    "station_id": "00089047"
+    "station_id": "00089047",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "E11_臨時 姉妹都市公園": {
     "lat": 36.59104,
     "lon": 136.635045,
     "area_name": "金沢",
-    "station_id": "00004313"
+    "station_id": "00004313",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "02.金沢駅東B": {
     "lat": 36.576489,
     "lon": 136.649985,
     "area_name": "金沢",
-    "station_id": "00004095"
+    "station_id": "00004095",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "Machi Guard/金沢市職員専用自転車・駐輪場": {
     "lat": 36.560756,
     "lon": 136.656483,
     "area_name": "金沢",
-    "station_id": "00005996"
+    "station_id": "00005996",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "97.西泉駅": {
     "lat": 36.553397,
     "lon": 136.633824,
     "area_name": "金沢",
-    "station_id": "00004114"
+    "station_id": "00004114",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "テスト_立会検査用": {
     "lat": 35.6313,
     "lon": 139.7958,
     "area_name": "金沢",
-    "station_id": "00002908"
+    "station_id": "00002908",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "北國花火大会専用（金沢市消防訓練場）": {
     "lat": 36.569621,
     "lon": 136.631726,
     "area_name": "金沢",
-    "station_id": "00004528"
+    "station_id": "00004528",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "E03＿臨時　宮腰緑地": {
     "lat": 36.60341,
     "lon": 136.59364,
     "area_name": "金沢",
-    "station_id": "00004735"
+    "station_id": "00004735",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "E04_臨時　玉川公園": {
     "lat": 36.56856,
     "lon": 136.651062,
     "area_name": "金沢",
-    "station_id": "00004805"
+    "station_id": "00004805",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "E09_臨時 かがやきフェス（金沢歌劇座）": {
     "lat": 36.559248,
     "lon": 136.659061,
     "area_name": "金沢",
-    "station_id": "00004806"
+    "station_id": "00004806",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "E10_臨時 かがやきフェス（金沢AZU)": {
     "lat": 36.556477,
     "lon": 136.657052,
     "area_name": "金沢",
-    "station_id": "00004807"
+    "station_id": "00004807",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "E02_臨時　みそやちょう広場": {
     "lat": 36.602627,
     "lon": 136.591851,
     "area_name": "金沢",
-    "station_id": "00004734"
+    "station_id": "00004734",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "保管倉庫_西金沢駅２Ｆ駐輪場": {
     "lat": 35.85635,
     "lon": 139.94534,
     "area_name": "金沢",
-    "station_id": "00002923"
+    "station_id": "00002923",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "【臨時】まちのり事務局": {
     "lat": 36.576834,
     "lon": 136.651472,
     "area_name": "金沢",
-    "station_id": "00089048"
+    "station_id": "00089048",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "E01.西部緑地公園": {
     "lat": 36.577836,
     "lon": 136.60525,
     "area_name": "金沢",
-    "station_id": "00089046"
+    "station_id": "00089046",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "E17_臨時 かないわ銭五": {
     "lat": 36.60128,
     "lon": 136.59349,
     "area_name": "金沢",
-    "station_id": "00001883"
+    "station_id": "00001883",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "E19_臨時 金沢工業大学（夢考房裏バイク駐車場内）": {
     "lat": 36.532055,
     "lon": 136.63035,
     "area_name": "金沢",
-    "station_id": "00001938"
+    "station_id": "00001938",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "49.セブンイレブン金沢袋町店": {
     "lat": 36.572639,
     "lon": 136.656222,
     "area_name": "金沢",
-    "station_id": "00089052"
+    "station_id": "00089052",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "00.試験用ポート": {
     "lat": 35.63165,
     "lon": 139.78828,
     "area_name": "金沢",
-    "station_id": "00001656"
+    "station_id": "00001656",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "E08_石川県銭屋五兵衛記念館・大野湊神社": {
     "lat": 36.596667,
     "lon": 136.596648,
     "area_name": "金沢",
-    "station_id": "00000879"
+    "station_id": "00000879",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "E18_臨時 野々市工大前駅": {
     "lat": 36.532241,
     "lon": 136.621604,
     "area_name": "金沢",
-    "station_id": "00001937"
+    "station_id": "00001937",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "52.セブンイレブン金沢浅野本町店": {
     "lat": 36.584562,
     "lon": 136.663595,
     "area_name": "金沢",
-    "station_id": "00089053"
+    "station_id": "00089053",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "E9_臨時 社会実験・マメサロン": {
     "lat": 36.55488,
     "lon": 136.68213,
     "area_name": "金沢",
-    "station_id": "00001072"
+    "station_id": "00001072",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "12.兼六園": {
     "lat": 36.563685,
     "lon": 136.663071,
     "area_name": "金沢",
-    "station_id": "00089012"
+    "station_id": "00089012",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "記念式典試乗会専用（金沢市庁舎前広場）": {
     "lat": 36.561561,
     "lon": 136.656976,
     "area_name": "金沢",
-    "station_id": "00001935"
+    "station_id": "00001935",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "42.NTTドコモ西都ビル-A": {
     "lat": 36.592956,
     "lon": 136.628967,
     "area_name": "金沢",
-    "station_id": "00089042"
+    "station_id": "00089042",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "E05_臨時 サイガワリバーサイドアクト": {
     "lat": 36.554972,
     "lon": 136.654583,
     "area_name": "金沢",
-    "station_id": "00089071"
+    "station_id": "00089071",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "保管倉庫_出雲倉庫": {
     "lat": 36.576832,
     "lon": 136.62534,
     "area_name": "金沢",
-    "station_id": "00003916"
+    "station_id": "00003916",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "U-000.信州ブリリアントアリーズ応援ポート": {
     "lat": 36.368519,
     "lon": 138.229179,
     "area_name": "上田千曲広域",
-    "station_id": "00004919"
+    "station_id": "00004919",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "【臨時】上田城千本桜祭り": {
     "lat": 36.404965,
     "lon": 138.245221,
     "area_name": "上田千曲広域",
-    "station_id": "00005788"
+    "station_id": "00005788",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "【臨時】戸倉宿サクラケアパーク（戸倉宿キティパーク）": {
     "lat": 36.494038,
     "lon": 138.155963,
     "area_name": "上田千曲広域",
-    "station_id": "00004147"
+    "station_id": "00004147",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "R6_U-18.＋519worklodge": {
     "lat": 36.363883,
     "lon": 138.234242,
     "area_name": "上田千曲広域",
-    "station_id": "00000806"
+    "station_id": "00000806",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "R6_U-16.塩田町駅": {
     "lat": 36.36098,
     "lon": 138.19868,
     "area_name": "上田千曲広域",
-    "station_id": "00000814"
+    "station_id": "00000814",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "C-00.千曲市あんずの里観光会館": {
     "lat": 36.521746,
     "lon": 138.156485,
     "area_name": "上田千曲広域",
-    "station_id": "00001564"
+    "station_id": "00001564",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "【臨時】上田染谷丘高校試乗会": {
     "lat": 36.409226,
     "lon": 138.261565,
     "area_name": "上田千曲広域",
-    "station_id": "00001863"
+    "station_id": "00001863",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "【臨時】信州大学繊維学部": {
     "lat": 36.392912,
     "lon": 138.260216,
     "area_name": "上田千曲広域",
-    "station_id": "00002204"
+    "station_id": "00002204",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "R5_U-12.塩田の館": {
     "lat": 36.339619,
     "lon": 138.19027,
     "area_name": "上田千曲広域",
-    "station_id": "00001527"
+    "station_id": "00001527",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "R5_C-04.綿半スーパーセンター千曲店": {
     "lat": 36.50921,
     "lon": 138.134043,
     "area_name": "上田千曲広域",
-    "station_id": "00000821"
+    "station_id": "00000821",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "99_動作確認用（テスト）": {
     "lat": 36.44757,
     "lon": 138.207439,
     "area_name": "上田千曲広域",
-    "station_id": "00001281"
+    "station_id": "00001281",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "98_【有明】動作確認用（テスト）": {
     "lat": 35.631423,
     "lon": 139.788618,
     "area_name": "上田千曲広域",
-    "station_id": "00001293"
+    "station_id": "00001293",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "R5_U-11.山王山公園": {
     "lat": 36.343314,
     "lon": 138.199332,
     "area_name": "上田千曲広域",
-    "station_id": "00000816"
+    "station_id": "00000816",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "R5_U-13.北向観音堂参道前": {
     "lat": 36.350961,
     "lon": 138.155627,
     "area_name": "上田千曲広域",
-    "station_id": "00001528"
+    "station_id": "00001528",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "R5_C-10.千曲市武水別神社神官　松田邸": {
     "lat": 36.519019,
     "lon": 138.102464,
     "area_name": "上田千曲広域",
-    "station_id": "00000825"
+    "station_id": "00000825",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "R5_C-09.千曲市ふる里漫画館": {
     "lat": 36.536585,
     "lon": 138.10302,
     "area_name": "上田千曲広域",
-    "station_id": "00000824"
+    "station_id": "00000824",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "R5_C-06.千曲市森将軍塚古墳館": {
     "lat": 36.534604,
     "lon": 138.137532,
     "area_name": "上田千曲広域",
-    "station_id": "00000822"
+    "station_id": "00000822",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "R5_C-13.さらしなの里古代体験パーク": {
     "lat": 36.499988,
     "lon": 138.113751,
     "area_name": "上田千曲広域",
-    "station_id": "00001565"
+    "station_id": "00001565",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "R5_C-11.千曲市日本遺産センター": {
     "lat": 36.5045,
     "lon": 138.09478,
     "area_name": "上田千曲広域",
-    "station_id": "00000826"
+    "station_id": "00000826",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "U-000.上田城紅葉まつり 会場臨時ポート": {
     "lat": 36.402015,
     "lon": 138.244641,
     "area_name": "上田千曲広域",
-    "station_id": "00002111"
+    "station_id": "00002111",
+    "service_state": "停止中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "U-000.上田城跡北観光駐車場": {
     "lat": 36.405226,
     "lon": 138.247162,
     "area_name": "上田千曲広域",
-    "station_id": "00002112"
+    "station_id": "00002112",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "C-01a.千曲市総合観光会館": {
     "lat": 36.47863,
     "lon": 138.144715,
     "area_name": "上田千曲広域",
-    "station_id": "00002633"
+    "station_id": "00002633",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "【臨時】森将軍塚古墳館": {
     "lat": 36.534768,
     "lon": 138.137521,
     "area_name": "上田千曲広域",
-    "station_id": "00003482"
+    "station_id": "00003482",
+    "service_state": "停止中",
+    "publish_flag": false,
+    "port_abolish_date_time": null
   },
   "M05.塩見縄手": {
     "lat": 35.478819,
     "lon": 133.04884,
     "area_name": "出雲・松江・境港",
-    "station_id": "00005053"
+    "station_id": "00005053",
+    "service_state": "運用中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "M02.松江しんじ湖温泉駅": {
     "lat": 35.46747,
     "lon": 133.04609,
     "area_name": "出雲・松江・境港",
-    "station_id": "00005051"
+    "station_id": "00005051",
+    "service_state": "運用中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "I01.出雲市駅": {
     "lat": 35.361058,
     "lon": 132.75609,
     "area_name": "出雲・松江・境港",
-    "station_id": "00004254"
+    "station_id": "00004254",
+    "service_state": "運用中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "M07.岸公園": {
     "lat": 35.46042,
     "lon": 133.053501,
     "area_name": "出雲・松江・境港",
-    "station_id": "00005369"
+    "station_id": "00005369",
+    "service_state": "運用中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "M01.松江駅 松江テルサ前": {
     "lat": 35.464305,
     "lon": 133.062334,
     "area_name": "出雲・松江・境港",
-    "station_id": "00004999"
+    "station_id": "00004999",
+    "service_state": "運用中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "M04.堀川遊覧船 ふれあい広場乗船場": {
     "lat": 35.47827,
     "lon": 133.04593,
     "area_name": "出雲・松江・境港",
-    "station_id": "00005052"
+    "station_id": "00005052",
+    "service_state": "運用中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "M03.松江城 大手前広場": {
     "lat": 35.47356,
     "lon": 133.05205,
     "area_name": "出雲・松江・境港",
-    "station_id": "00005050"
+    "station_id": "00005050",
+    "service_state": "運用中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "I08.旧大社駅": {
     "lat": 35.386752,
     "lon": 132.690003,
     "area_name": "出雲・松江・境港",
-    "station_id": "00005871"
+    "station_id": "00005871",
+    "service_state": "運用中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "M06.カラコロ工房": {
     "lat": 35.47041,
     "lon": 133.05329,
     "area_name": "出雲・松江・境港",
-    "station_id": "00005054"
+    "station_id": "00005054",
+    "service_state": "運用中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "M08.くにびきメッセ": {
     "lat": 35.469553,
     "lon": 133.065811,
     "area_name": "出雲・松江・境港",
-    "station_id": "00005328"
+    "station_id": "00005328",
+    "service_state": "運用中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "M10.玉造温泉ゆ～ゆ": {
     "lat": 35.416822,
     "lon": 133.009743,
     "area_name": "出雲・松江・境港",
-    "station_id": "00005371"
+    "station_id": "00005371",
+    "service_state": "運用中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "M09.玉造温泉駅": {
     "lat": 35.430964,
     "lon": 133.011418,
     "area_name": "出雲・松江・境港",
-    "station_id": "00005370"
+    "station_id": "00005370",
+    "service_state": "運用中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "I07.みせん広場": {
     "lat": 35.397262,
     "lon": 132.692425,
     "area_name": "出雲・松江・境港",
-    "station_id": "00003494"
+    "station_id": "00003494",
+    "service_state": "運用中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "I06.雲州平田駅": {
     "lat": 35.432337,
     "lon": 132.823433,
     "area_name": "出雲・松江・境港",
-    "station_id": "00003493"
+    "station_id": "00003493",
+    "service_state": "運用中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "I02.出雲大社前駅": {
     "lat": 35.393227,
     "lon": 132.687136,
     "area_name": "出雲・松江・境港",
-    "station_id": "00003197"
+    "station_id": "00003197",
+    "service_state": "運用中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "I03.荘原駅": {
     "lat": 35.393891,
     "lon": 132.867971,
     "area_name": "出雲・松江・境港",
-    "station_id": "00003198"
+    "station_id": "00003198",
+    "service_state": "運用中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "I04.小田駅": {
     "lat": 35.284568,
     "lon": 132.629317,
     "area_name": "出雲・松江・境港",
-    "station_id": "00003199"
+    "station_id": "00003199",
+    "service_state": "運用中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   },
   "I05.GARB CLIFF TERRACE Izumo": {
     "lat": 35.304307,
     "lon": 132.645922,
     "area_name": "出雲・松江・境港",
-    "station_id": "00003312"
+    "station_id": "00003312",
+    "service_state": "運用中",
+    "publish_flag": true,
+    "port_abolish_date_time": null
   }
 }

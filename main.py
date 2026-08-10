@@ -173,7 +173,7 @@ def run_scraping(is_worker=False):
     # ポート位置情報のポータルAPI定期更新（既定1日1回）。
     # GBFS配信停止中の対症療法として、GBFSより先にこちらを正の情報源とする。
     # ポートごとに個別GETが必要で時間がかかるため、このスロットは更新のみを行い、
-    # 開始時刻を起点に30分間クールダウンして5分周期の通常スクレイピングと重ならないようにする。
+    # 開始時刻を起点に15分間クールダウンして5分周期の通常スクレイピングと重ならないようにする。
     if Config.PORT_POSITION_REFRESH_ENABLED and should_refresh_port_positions(
         Config.OUTPUT_DIR, interval_sec=Config.PORT_POSITION_REFRESH_INTERVAL_SEC
     ):

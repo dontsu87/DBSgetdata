@@ -11,6 +11,13 @@ GBFS配信（ドコモ・バイクシェアのシステム休止に伴い停止�
   `globalLocationLatitude` / `globalLocationLongitude` が含まれる。
   そのためポートごとに個別GETが必要（1エリアあたり数十〜百数十件）。
 
+個別詳細には `serviceState`（例: "休止中"）・`publishFlag`・
+`portAbolishDateTime` も含まれるため、あわせて保存する。現時点では
+提供状態にかかわらず全ポートを表示に使うが、ドコモ・バイクシェアの
+サービスが正常再開した際に「サービス提供ポートのみ表示」モードを
+追加できるよう、判定に必要な生データをここで温存しておく
+（フィルタ自体は未実装。判定基準はサービス再開時の実データを見て決める）。
+
 すべてGETのみ。書き込み系リクエストは発行しない。
 """
 
@@ -127,6 +134,9 @@ def fetch_all_port_positions(http_session, base_url, *, delay_ms=100, timeout=No
                 "lon": lon,
                 "area_name": area_name,
                 "station_id": _format_station_id(detail.get("portUniqueCode")),
+                "service_state": str(detail.get("serviceState") or "").strip(),
+                "publish_flag": detail.get("publishFlag"),
+                "port_abolish_date_time": detail.get("portAbolishDateTime"),
             }
             fetched += 1
 

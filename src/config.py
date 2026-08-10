@@ -107,9 +107,9 @@ class Config:
         'DBS_PORT_POSITION_REFRESH_INTERVAL_SEC', 24 * 60 * 60
     )
     # ポートごとに個別GETが必要で時間がかかるため、5分周期の通常スクレイピングと
-    # 重ならないよう、取得開始時刻を起点に30分間クールダウンする。
+    # 重ならないよう、取得開始時刻を起点に15分間クールダウンする。
     PORT_POSITION_POST_REFRESH_COOLDOWN_SEC = _int_env(
-        'DBS_PORT_POSITION_POST_REFRESH_COOLDOWN_SEC', 30 * 60
+        'DBS_PORT_POSITION_POST_REFRESH_COOLDOWN_SEC', 15 * 60
     )
     # ポート詳細取得1件ごとの待機時間。車両位置詳細取得と同じ既定値に合わせる。
     PORT_POSITION_FETCH_DELAY_MS = _int_env(
