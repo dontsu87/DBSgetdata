@@ -669,6 +669,8 @@ function showOutOfPortModal(data) {
                                 bike_id: bike.bike_id,
                                 port_name: bike.mismatch_source_port || port.port_name || 'ポート外',
                                 displayed_port_name: bike.mismatch_source_port || bike.displayed_port_name || '',
+                                nearest_port_name: bike.nearest_port_name || null,
+                                nearest_port_distance_m: (typeof bike.nearest_port_distance_m === 'number') ? bike.nearest_port_distance_m : null,
                                 voltage: bike.voltage,
                                 alert_level: bike.alert_level,
                                 alert_level_name: bike.alert_level_name,
@@ -728,8 +730,14 @@ function showOutOfPortModal(data) {
                     : '⚠️位置不整合';
                 tdPortPos.appendChild(mismatchLabel);
                 tdPortPos.appendChild(document.createElement('br'));
+
+                const nearestText = bike.nearest_port_name
+                    ? '実際の最寄りポート: ' + bike.nearest_port_name + '（約' + Math.round(bike.nearest_port_distance_m) + 'm）'
+                    : '実際の最寄りポート: 100m以内になし';
+                tdPortPos.appendChild(document.createTextNode(nearestText));
+            } else {
+                tdPortPos.appendChild(document.createTextNode(bike.port_name));
             }
-            tdPortPos.appendChild(document.createTextNode(bike.port_name));
             tr.appendChild(tdPortPos);
             
             // バッテリー残量 td (電圧値 + 警告バッジ)

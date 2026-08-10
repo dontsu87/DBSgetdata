@@ -300,6 +300,13 @@ function preparePositionMismatchData(data) {
         return data;
     }
 
+    // 実際の最寄りポート探索の候補: GPS座標を持つ実在ポート（ポート外の仮想ポートは除く）
+    const candidatePorts = data.ports.filter(p =>
+        p.has_gps !== false && p.lat !== null && p.lat !== undefined &&
+        p.lon !== null && p.lon !== undefined &&
+        !(p.port_name && p.port_name.includes('ポート外'))
+    );
+
     const normalPorts = [];
     const mismatchByArea = {};
     data.ports.forEach(port => {
@@ -311,11 +318,20 @@ function preparePositionMismatchData(data) {
                 return;
             }
 
+            const vehicleLat = bike.vehicle_lat ?? bike.lat ?? null;
+            const vehicleLon = bike.vehicle_lon ?? bike.lon ?? null;
+            const nearest = findNearestPort(
+                vehicleLat, vehicleLon, candidatePorts,
+                bike.area_name || port.area_name, NEAREST_PORT_THRESHOLD_M
+            );
+
             const movedBike = {
                 ...bike,
-                lat: bike.vehicle_lat ?? bike.lat ?? null,
-                lon: bike.vehicle_lon ?? bike.lon ?? null,
-                mismatch_source_port: port.port_name || '不明'
+                lat: vehicleLat,
+                lon: vehicleLon,
+                mismatch_source_port: port.port_name || '不明',
+                nearest_port_name: nearest ? nearest.port_name : null,
+                nearest_port_distance_m: nearest ? nearest.distance_m : null
             };
             mismatchBikes.push(movedBike);
         });
@@ -1598,7 +1614,9 @@ function renderOutOfPortDotMarkers(data) {
             const voltText = (bike.voltage != null) ? `${bike.voltage.toFixed(1)}V` : '--V';
             const statusText = bike.status || '不明';
             const alertName = bike.alert_level_name || '正常';
-            const displayedPortName = bike.mismatch_source_port || bike.displayed_port_name || '';
+            const nearestPortText = bike.nearest_port_name
+                ? `実際の最寄りポート: <b>${bike.nearest_port_name}</b>（約${Math.round(bike.nearest_port_distance_m)}m）`
+                : `実際の最寄りポート: 100m以内になし`;
             var atTimeInfo = formatAtTime(bike.gps_datetime || bike.at_time);
             var atTimeStyle = atTimeInfo.stale ? 'color:#dc2626; font-weight:bold;' : '';
 
@@ -1611,7 +1629,7 @@ function renderOutOfPortDotMarkers(data) {
                         <span>電圧: <b>${voltText}</b></span>
                         <span>状態: <b>${statusText}</b></span>${isMismatch ? '<div style="color:#dc2626; font-weight:bold; margin-top:3px;">ポート位置不整合（実測位置を表示）</div>' : ''}
                     </div>
-                    <div style="font-size: 11px; color: #475569;">${isMismatch && displayedPortName ? '表示上のポート: <b>' + displayedPortName + '</b>' : ''}</div>
+                    <div style="font-size: 11px; color: #475569;">${isMismatch ? nearestPortText : ''}</div>
                     <div style="font-size: 11px; margin-top: 2px;">
                         GPS測位: <b style="${atTimeStyle}">${atTimeInfo.text}</b>${atTimeInfo.stale ? ' <span style="color:#dc2626; font-size:10px;">⚠️3時間以上</span>' : ''}
                     </div>

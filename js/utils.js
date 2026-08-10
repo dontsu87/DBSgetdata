@@ -108,3 +108,34 @@ function isKindaiMode() {
     const params = new URLSearchParams(searchQuery);
     return params.has('kindai');
 }
+
+function haversineMeters(lat1, lon1, lat2, lon2) {
+    const radiusM = 6371000;
+    const toRad = (deg) => deg * Math.PI / 180;
+    const dPhi = toRad(lat2 - lat1);
+    const dLambda = toRad(lon2 - lon1);
+    const a = Math.sin(dPhi / 2) ** 2 +
+        Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLambda / 2) ** 2;
+    return 2 * radiusM * Math.asin(Math.min(1, Math.sqrt(a)));
+}
+
+// 実測GPS座標(lat, lon)に最も近い実在ポート(GPS座標を持つポート)を、同一エリア内から探す。
+// maxDistanceM以内に見つからなければnullを返す。
+function findNearestPort(lat, lon, ports, areaName, maxDistanceM) {
+    if (lat === null || lat === undefined || lon === null || lon === undefined) return null;
+    const targetArea = normalizeAreaName(areaName);
+    let nearestPort = null;
+    let nearestDistance = Infinity;
+    (ports || []).forEach(port => {
+        if (port.has_gps === false || port.lat === null || port.lat === undefined || port.lon === null || port.lon === undefined) return;
+        if (port.port_name && port.port_name.includes('ポート外')) return;
+        if (targetArea && normalizeAreaName(port.area_name) !== targetArea) return;
+        const distance = haversineMeters(lat, lon, port.lat, port.lon);
+        if (distance < nearestDistance) {
+            nearestDistance = distance;
+            nearestPort = port;
+        }
+    });
+    if (!nearestPort || nearestDistance > maxDistanceM) return null;
+    return { port_name: nearestPort.port_name, distance_m: nearestDistance };
+}
