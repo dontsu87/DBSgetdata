@@ -1505,6 +1505,22 @@ document.addEventListener('click', function(e) {
     }
 });
 
+function formatAtTime(raw) {
+    if (!raw) return { text: '--', stale: false };
+    try {
+        var d = new Date(raw.replace(/-/g, '/').replace('Z', ''));
+        if (isNaN(d.getTime())) return { text: '--', stale: false };
+        var now = new Date();
+        var stale = (now - d) > 3 * 60 * 60 * 1000;
+        var pad = function(n) { return n < 10 ? '0' + n : '' + n; };
+        var text = d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate())
+            + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+        return { text: text, stale: stale, full: d };
+    } catch(e) {
+        return { text: '--', stale: false };
+    }
+}
+
 function focusOutOfPortBike(bikeId) {
     const marker = outOfPortBikeMarkers && outOfPortBikeMarkers[String(bikeId)];
     if (!marker || !map) return false;
@@ -1580,6 +1596,8 @@ function renderOutOfPortDotMarkers(data) {
             const statusText = bike.status || '不明';
             const alertName = bike.alert_level_name || '正常';
             const displayedPortName = bike.mismatch_source_port || bike.displayed_port_name || '';
+            var atTimeInfo = formatAtTime(bike.at_time);
+            var atTimeStyle = atTimeInfo.stale ? 'color:#dc2626; font-weight:bold;' : '';
 
             const popupHtml = `
                 <div style="font-size: 12px; font-family: sans-serif; padding: 2px;">
@@ -1591,6 +1609,9 @@ function renderOutOfPortDotMarkers(data) {
                         <span>状態: <b>${statusText}</b></span>${isMismatch ? '<div style="color:#dc2626; font-weight:bold; margin-top:3px;">ポート位置不整合（実測位置を表示）</div>' : ''}
                     </div>
                     <div style="font-size: 11px; color: #475569;">${isMismatch && displayedPortName ? '表示上のポート: <b>' + displayedPortName + '</b>' : ''}</div>
+                    <div style="font-size: 11px; margin-top: 2px;">
+                        AT通信: <b style="${atTimeStyle}">${atTimeInfo.text}</b>${atTimeInfo.stale ? ' <span style="color:#dc2626; font-size:10px;">⚠️3時間以上</span>' : ''}
+                    </div>
                     <div style="font-size: 11px; color: #475569;">
                         判定: <b style="color: ${isHighlighted ? '#dc2626' : '#2563eb'};">${alertName}</b>
                     </div>

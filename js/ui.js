@@ -673,6 +673,7 @@ function showOutOfPortModal(data) {
                                 alert_level: bike.alert_level,
                                 alert_level_name: bike.alert_level_name,
                                 status: bike.status,
+                                at_time: bike.at_time || '',
                                 position_mismatch: !!bike.port_position_mismatch
                             });
                         }
@@ -755,6 +756,18 @@ function showOutOfPortModal(data) {
             tdStatus.style.textAlign = 'center';
             tdStatus.innerText = bike.status;
             tr.appendChild(tdStatus);
+            
+            // AT通信 td
+            const tdAtTime = document.createElement('td');
+            tdAtTime.style.textAlign = 'center';
+            tdAtTime.style.fontSize = '10px';
+            var atInfo = formatAtTime(bike.at_time);
+            tdAtTime.innerText = atInfo.text;
+            if (atInfo.stale) {
+                tdAtTime.style.color = '#dc2626';
+                tdAtTime.style.fontWeight = 'bold';
+            }
+            tr.appendChild(tdAtTime);
             
             listBody.appendChild(tr);
         });
