@@ -8,7 +8,7 @@
   global.DBSEXT = global.DBSEXT || {};
   var D = global.DBSEXT;
 
-  D.VERSION = '202608101034';
+  D.VERSION = '202608101818';
 
   D.CONFIG = {
     PORTAL_ORIGIN: 'https://mg.docomo-cycle.jp',
@@ -37,70 +37,62 @@
   // 自前のDOM操作中は監視を止めるための入れ子カウンタ
   var applying = 0;
 
-  // **自前のUIそのもの**だけを列挙する。
-  // ここに `[data-dbsext]`(bodyの適用済みマーカー)や `[data-dbsext-tabled]`
-  // (ポータルのテーブルに目印を付けただけのもの)を入れてはいけない。
-  // 入れると、その配下で起きるポータル由来の変化まで「自分の変更」と誤判定し、
-  // SPA遷移後に table-tools が二度と再適用されなくなる。
-  var OWN_UI_SELECTOR = [
-    '[data-dbsext-upsell]',
-    '[data-dbsext-launcher]',
-    '[data-dbsext-launcher-panel]',
-    '[data-dbsext-skin]',
-    '[data-dbsext-net-status]',
-    '[data-dbsext-state-forms]',
-    '[data-dbsext-table-columns]',
-    '[data-dbsext-beacons-panel]',
-    '[data-dbsext-beacons-native-modal]',
-    '[data-dbsext-beacons-link]',
-    '[data-dbsext-beacons-link-a]'
-  ].join(',');
-
-  // **ポータルの要素に付けた「目印」**。自前UIではない。
+  // **`data-dbsext-*` 属性の分類表。新しい属性を足したら、必ずここに登録する。**
   //
-  // 拡張は自分が作った要素にも、ポータルの既存要素にも `data-dbsext-*` を付ける。
-  // 前者は自前UI（その中の変化は自分の仕業）だが、**後者はポータルの要素であり、
-  // その中で起きる変化は外部の変化である**。
+  //   'own-root' … 拡張が作った**入れ物**。中に注釈の無い子孫（tbody/tr/td 等）を持つ。
+  //                `closest()` の対象になる（＝子孫の変化も自分の仕業と判定できる）
+  //   'own-leaf' … 拡張が作った要素だが、中に自前の子孫構造を持たない（印・入力欄など）
+  //   'mark'     … **ポータルの既存要素**に付ける目印（中の変化は外部の変化）
+  //
+  // 分類を間違えると、
+  // 「SPAで表が差し替わっても再適用されない」または「自己発火で無限ループ」になる。
   //
   // ここを区別せず「`data-dbsext-` で始まる属性があれば自前UI」と判定すると、
   // `.el-table`（`data-dbsext-tabled` / `data-dbsext-wrap` が付く）を対象にした
   // MutationRecord が全部「自分の仕業」になり、**SPAが表を差し替えても
   // table-tools が再適用されない**。過去に同じ性質の欠陥を1件出している
   // （`isDbsextNode` が祖先を遡り、body配下すべてを自前と誤判定していた）。
-  // **`data-dbsext-*` 属性の分類表。新しい属性を足したら、必ずここに登録する。**
   //
-  //   'own'    … 拡張が作った要素に付ける（その中の変化は自分の仕業）
-  //   'mark'   … **ポータルの既存要素**に付ける目印（中の変化は外部の変化）
-  //
-  // 登録漏れは `verify.mjs` が落とす。分類を間違えると、
-  // 「SPAで表が差し替わっても再適用されない」または「自己発火で無限ループ」になる。
+  // 逆に **`own-root` の登録を忘れると**、その入れ物の中で自分が起こした変化が
+  // 「外部の変化」と誤判定され、**キーを1文字打つたびに全モジュールの再適用が走る**。
+  // 実際に `data-dbsext-vehicle-problems` でこれが起きていた（2026-08-10 実測で検出）。
+  // 原因は、この表と `OWN_UI_SELECTOR` を**手で二重管理**していたこと。
+  // そこで **`OWN_UI_SELECTOR` はこの表から生成する**（下）。もう片方だけ直すことはできない。
   var ATTR_KIND = {
-    // --- 自前UI ---
-    'data-dbsext-upsell': 'own',
-    'data-dbsext-launcher': 'own',
-    'data-dbsext-launcher-panel': 'own',
-    'data-dbsext-skin': 'own',
-    'data-dbsext-net-status': 'own',
-    'data-dbsext-loading-mask': 'own',
-    'data-dbsext-top-indicator': 'own',
-    'data-dbsext-error-banner': 'own',
-    'data-dbsext-state-forms': 'own',
-    'data-dbsext-table-columns': 'own',
-    'data-dbsext-action-toggle': 'own',
-    'data-dbsext-sort': 'own',
-    'data-dbsext-filter': 'own',
-    'data-dbsext-collapse-hint': 'own',
-    'data-dbsext-top-scrollbar': 'own',        // 見出しの上に置く横スクロールバー
-    'data-dbsext-top-scrollbar-inner': 'own',  // その中身（幅合わせ用）
-    'data-dbsext-synced': 'own',               // 同期の登録済み印（自前要素に付く）
-    'data-dbsext-beacons-panel': 'own',
-    'data-dbsext-beacons-native-modal': 'own',
-    'data-dbsext-beacons-area': 'own',
-    'data-dbsext-beacons-link': 'own',
-    'data-dbsext-beacons-link-a': 'own',
-    'data-dbsext-beacons-btn': 'own',
-    'data-dbsext-beacons-table': 'own',
-    'data-dbsext-beacons-status': 'own',
+    // --- 自前UIの入れ物（closest の対象） ---
+    'data-dbsext-upsell': 'own-root',
+    'data-dbsext-launcher': 'own-root',
+    'data-dbsext-launcher-panel': 'own-root',
+    'data-dbsext-net-status': 'own-root',
+    'data-dbsext-loading-mask': 'own-root',
+    'data-dbsext-top-indicator': 'own-root',
+    'data-dbsext-error-banner': 'own-root',
+    'data-dbsext-state-forms': 'own-root',
+    'data-dbsext-table-columns': 'own-root',
+    'data-dbsext-top-scrollbar': 'own-root',   // 見出しの上に置く横スクロールバー
+    'data-dbsext-beacons-panel': 'own-root',
+    // **ポータルの標準表を包む**入れ物。中身はポータルのDOMだが、
+    // モーダル表示中はこちらが主導権を持つため own として扱う（従来からの挙動）。
+    'data-dbsext-beacons-native-modal': 'own-root',
+    'data-dbsext-beacons-link': 'own-root',
+    'data-dbsext-beacons-table': 'own-root',
+    'data-dbsext-beacons-status': 'own-root',
+    'data-dbsext-vehicle-problems': 'own-root',
+    'data-dbsext-vp-table': 'own-root',
+
+    // --- 自前UIだが入れ物ではないもの ---
+    'data-dbsext-skin': 'own-leaf',            // <style> 要素そのもの
+    'data-dbsext-action-toggle': 'own-leaf',
+    'data-dbsext-sort': 'own-leaf',
+    'data-dbsext-filter': 'own-leaf',
+    'data-dbsext-filter-min': 'own-leaf',      // 数値絞り込みの「以上」
+    'data-dbsext-filter-max': 'own-leaf',      // 数値絞り込みの「以下」
+    'data-dbsext-collapse-hint': 'own-leaf',
+    'data-dbsext-top-scrollbar-inner': 'own-leaf',
+    'data-dbsext-synced': 'own-leaf',          // 同期の登録済み印（自前要素に付く）
+    'data-dbsext-beacons-area': 'own-leaf',
+    'data-dbsext-beacons-link-a': 'own-leaf',
+    'data-dbsext-beacons-btn': 'own-leaf',
 
     // --- ポータル要素に付けた目印（自前UIではない） ---
     'data-dbsext-tabled': 'mark',      // table-tools が .el-table に付ける
@@ -110,12 +102,33 @@
     'data-dbsext-orig-table-width': 'mark',  // table-columns が表に控える元の幅
     'data-dbsext-newtab': 'mark',      // ui-tweaks が一覧の a に付ける処理済み印
     'data-dbsext-collapsed': 'mark',   // ui-tweaks が折りたたみ見出しに付ける処理済み印
+    // 全家族共通の表マーカー（値は portal / custom）。見た目のCSSはすべてこれを見る。
+    // **`own` にしてはいけない。** ポータルが描画した表にも付けるため、own に分類すると
+    // ポータル表を対象にした変化が全部「自分の仕業」になり、
+    // **SPAが表を差し替えても再適用されなくなる**（core の冒頭に書いた事故そのもの）。
+    'data-dbsext-table': 'mark',
+    // 自前表を包むスクロール領域。自前UIにしか付かないが、
+    // 中身（自前表）は own-root を持つので closest の対象にする必要は無い。
+    'data-dbsext-table-scroll': 'own-leaf',
     // 配信版（user script）が document_start で documentElement に置く合図。
     // **ポータルの要素に付ける印**なので own ではない。
     // これを own に分類すると、documentElement を対象にした変化が
     // すべて「自分の仕業」として捨てられる。
     'data-dbsext-remote-claim': 'mark'
   };
+
+  // **`ATTR_KIND` から生成する。手で書かない。**
+  // ここに `[data-dbsext]`(bodyの適用済みマーカー)や `[data-dbsext-tabled]`
+  // (ポータルのテーブルに目印を付けただけのもの)が入ってはいけない。
+  // 入ると、その配下で起きるポータル由来の変化まで「自分の変更」と誤判定し、
+  // SPA遷移後に table-tools が二度と再適用されなくなる。
+  var OWN_UI_SELECTOR = (function () {
+    var list = [];
+    for (var name in ATTR_KIND) {
+      if (ATTR_KIND[name] === 'own-root') list.push('[' + name + ']');
+    }
+    return list.join(',');
+  })();
 
   function hasOwnAttribute(node) {
     if (!node || node.nodeType !== 1 || !node.attributes) return false;
@@ -238,81 +251,50 @@
         document.body.setAttribute(D.CONFIG.MARKER_ATTR, D.VERSION);
       }
 
-      // 各モジュールの順次適用（失敗しても個別catchで後続を継続）
-      var moduleOrder = [
-        { name: 'skin', target: function () { return D.skin; } },
-        { name: 'stateStore', target: function () { return D.stateStore; } },
-        { name: 'stateForms', target: function () { return D.stateForms; } },
-        { name: 'vehicleKinds', target: function () { return D.vehicleKinds; } },
-        { name: 'netStatus', target: function () { return D.netStatus; } },
-        { name: 'tableWrap', target: function () { return D.tableWrap; } },
-        { name: 'uiTweaks', target: function () { return D.uiTweaks; } },
-        { name: 'upsell', target: function () { return D.upsell; } },
-        { name: 'mapLauncher', target: function () { return D.mapLauncher; } },
-        { name: 'beacons', target: function () { return D.beacons; } },
-        { name: 'tableColumns', target: function () { return D.tableColumns; } },
-        { name: 'tableTools', target: function () { return D.tableTools; } }
+      // 適用の順序と、変化のたびに再適用するかどうか。
+      //
+      // **モジュールを1本足すときに直すのは、ここ1行と `module-order.mjs` だけ。**
+      // 以前は「この一覧」と「onContentChange の登録」を別々に書いていたため、
+      // 片方に足し忘れると **SPA遷移で二度と再適用されない**（しかも初回は動くので
+      // 気づけない）という壊れ方をした。両方をこの表から導く。
+      //
+      //   reapply: true  … ポータルの再描画で消える／画面ごとに要否が変わる
+      //   reapply: false … 一度きりでよい（head へのCSS挿入、保存領域の初期化）
+      var MODULES = [
+        { name: 'skin', reapply: false, get: function () { return D.skin; } },
+        { name: 'stateStore', reapply: false, get: function () { return D.stateStore; } },
+        { name: 'stateForms', reapply: true, get: function () { return D.stateForms; } },
+        // 車種情報はSPA遷移で入る画面。boot時には存在しない
+        { name: 'vehicleKinds', reapply: true, get: function () { return D.vehicleKinds; } },
+        { name: 'netStatus', reapply: true, get: function () { return D.netStatus; } },
+        { name: 'tableWrap', reapply: true, get: function () { return D.tableWrap; } },
+        { name: 'uiTweaks', reapply: true, get: function () { return D.uiTweaks; } },
+        // body直下の固定要素（消えないはず）だが、冪等なので保険として再適用する。
+        // 「boot時1回だけ」がボタン消失の原因だったため、同じ落とし穴を残さない。
+        { name: 'upsell', reapply: true, get: function () { return D.upsell; } },
+        { name: 'mapLauncher', reapply: true, get: function () { return D.mapLauncher; } },
+        { name: 'beacons', reapply: true, get: function () { return D.beacons; } },
+        { name: 'vehicleProblems', reapply: true, get: function () { return D.vehicleProblems; } },
+        { name: 'tableColumns', reapply: true, get: function () { return D.tableColumns; } },
+        { name: 'tableTools', reapply: true, get: function () { return D.tableTools; } }
       ];
 
-      // 先に監視を張ってから適用する。適用中の変化は runSuppressed が捨てる
+      function applyOne(entry, label) {
+        var mod = entry.get();
+        if (!mod || typeof mod.apply !== 'function') return;
+        runSuppressed(entry.name + '.apply' + label, function () { mod.apply(); });
+      }
+
+      // **先に監視を張ってから適用する。** 適用中の変化は runSuppressed が捨てる。
+      // 再適用は表の順序どおりに回す（適用順に依存する組み合わせがあるため）。
       D.core.onContentChange(function () {
-        if (D.stateForms && typeof D.stateForms.apply === 'function') {
-          runSuppressed('stateForms.apply 再適用', function () { D.stateForms.apply(); });
-        }
-      });
-      // 車種情報はSPA遷移で入る画面。boot時には存在しないため、変化のたびに見る
-      D.core.onContentChange(function () {
-        if (D.vehicleKinds && typeof D.vehicleKinds.apply === 'function') {
-          runSuppressed('vehicleKinds.apply 再適用', function () { D.vehicleKinds.apply(); });
-        }
-      });
-      D.core.onContentChange(function () {
-        if (D.netStatus && typeof D.netStatus.apply === 'function') {
-          runSuppressed('netStatus.apply 再適用', function () { D.netStatus.apply(); });
-        }
-      });
-      D.core.onContentChange(function () {
-        if (D.tableWrap && typeof D.tableWrap.apply === 'function') {
-          runSuppressed('tableWrap.apply 再適用', function () { D.tableWrap.apply(); });
-        }
-      });
-      D.core.onContentChange(function () {
-        if (D.uiTweaks && typeof D.uiTweaks.apply === 'function') {
-          runSuppressed('uiTweaks.apply 再適用', function () { D.uiTweaks.apply(); });
-        }
-      });
-      // body直下の固定要素（消えないはず）だが、冪等なので保険として再適用しておく。
-      // 「boot時1回だけ」がボタン消失の原因だったため、同じ落とし穴を残さない。
-      D.core.onContentChange(function () {
-        if (D.mapLauncher && typeof D.mapLauncher.apply === 'function') {
-          runSuppressed('mapLauncher.apply 再適用', function () { D.mapLauncher.apply(); });
-        }
-        if (D.beacons && typeof D.beacons.apply === 'function') {
-          runSuppressed('beacons.apply 再適用', function () { D.beacons.apply(); });
-        }
-        if (D.upsell && typeof D.upsell.apply === 'function') {
-          runSuppressed('upsell.apply 再適用', function () { D.upsell.apply(); });
-        }
-      });
-      D.core.onContentChange(function () {
-        if (D.tableColumns && typeof D.tableColumns.apply === 'function') {
-          runSuppressed('tableColumns.apply 再適用', function () { D.tableColumns.apply(); });
-        }
-      });
-      D.core.onContentChange(function () {
-        if (D.tableTools && typeof D.tableTools.apply === 'function') {
-          runSuppressed('tableTools.apply 再適用', function () { D.tableTools.apply(); });
+        for (var r = 0; r < MODULES.length; r++) {
+          if (MODULES[r].reapply) applyOne(MODULES[r], ' 再適用');
         }
       });
 
-      for (var i = 0; i < moduleOrder.length; i++) {
-        var item = moduleOrder[i];
-        var mod = item.target();
-        if (mod && typeof mod.apply === 'function') {
-          (function (name, target) {
-            runSuppressed(name + '.apply', function () { target.apply(); });
-          })(item.name, mod);
-        }
+      for (var i = 0; i < MODULES.length; i++) {
+        applyOne(MODULES[i], '');
       }
     },
 
@@ -1351,21 +1333,16 @@
  * 通信監視、読み込み中マスク表示、エラー・セッション切れ通知を担当
  *
  * ---------------------------------------------------------------------------
- * **既知の制約: Chrome拡張版（β）およびリモート配信版（USER_SCRIPT world）では、この機能はポータルの通信を捉えられない。**
+ * **拡張版（β）・リモート配信版での動作方式:**
  *
- * content script および user script は隔離ワールド（ISOLATED / USER_SCRIPT）で動くため、ここで差し替えるのは
- * 「隔離ワールドの `window.fetch` / `XMLHttpRequest`」であって、
- * ポータル本体（Nuxt）が呼ぶ MAIN ワールドの同名APIではない。
- * したがって β（拡張版・リモート配信版）では読み込み中マスク・通信エラー・セッション切れが**出ない**。
+ * 拡張の content script / user script は隔離ワールド（ISOLATED / USER_SCRIPT）で動くため、
+ * このモジュールが直接ポータル本体（MAIN ワールド）の fetch / XHR を捕捉することはできない。
+ * 代わりに、MAIN ワールドに注入された傍受スクリプト（net-status-main.js）が
+ * fetch / XHR をラップして DOM カスタムイベント（`dbsext:main-fetch-start` /
+ * `dbsext:main-fetch-end`）を発火し、このモジュールはそれを購読する。
  *
- * **ブックマークレット版（α）はページのメインワールドで動くため、正しく機能する。**
- * 現在の配布の主軸は α なので、当面はこの制約を受け入れる。
- *
- * β で有効にするには `manifest.json` の content_scripts を2つに分ける必要がある:
- *   - 隔離ワールド: platform-extension.js（`chrome.*` を使うため MAIN では動かない）
- *   - MAIN ワールド: net-status.js（`"world": "MAIN"` を指定）
- * ただし両ワールドで `DBSEXT` 名前空間が別々になるため、
- * boot の流れと状態の持ち方を設計し直す必要がある。**安易に world を足さないこと。**
+ * ブックマークレット版（α）はページの MAIN ワールドで動くため、
+ * 従来どおり fetch / XHR を直接ラップして機能する。
  *
  * 出典: 独立監査 T-20260808-AUDIT 指摘5 / T-20260809-REMOTE-AUDIT R-07。HANDOFF.md にも記録済み。
  * ---------------------------------------------------------------------------
@@ -1386,6 +1363,7 @@
   var elapsedTimer = null;
   var requestStartTime = 0;
   var isMaskVisible = false;
+  var mainWorldListening = false;
 
   function updateLoadingText(elapsedSec) {
     var text = '読み込み中…';
@@ -1761,12 +1739,46 @@
     XMLHttpRequest.prototype.send = newSend;
   }
 
+  /**
+   * MAIN ワールドの傍受スクリプト（net-status-main.js）が発火する
+   * DOM カスタムイベントを購読する。
+   * 拡張版（β）およびリモート配信版で使われる。
+   */
+  function listenToMainWorldEvents() {
+    if (mainWorldListening) return;
+    if (typeof document === 'undefined') return;
+    mainWorldListening = true;
+
+    document.addEventListener('dbsext:main-fetch-start', function () {
+      onRequestStart();
+    });
+
+    document.addEventListener('dbsext:main-fetch-end', function (e) {
+      onRequestEnd();
+      var detail = (e && e.detail) || {};
+      var status = detail.status;
+      if (status === 401 || status === 403) {
+        showBanner('ログインが切れました。再度ログインしてください', true);
+      } else if (status >= 400) {
+        showBanner('通信に失敗しました（HTTP ' + status + '）。再読込してください', false);
+      } else if (detail.error) {
+        handleGenericError();
+      }
+    });
+  }
+
   D.netStatus = {
     LOADING_DELAY_MS: LOADING_DELAY_MS,
 
     apply: function () {
-      wrapFetch();
-      wrapXHR();
+      // 拡張版（β）またはリモート配信版: MAIN ワールドからの DOM イベントを購読
+      if (D.platform && (D.platform.kind === 'extension' || D.platform.isUserScript)) {
+        listenToMainWorldEvents();
+      } else {
+        // ブックマークレット版（α）: fetch / XHR を直接ラップ
+        wrapFetch();
+        wrapXHR();
+      }
 
       if (isMaskVisible && activeRequests > 0) {
         renderMask();
@@ -1807,11 +1819,269 @@
    * WCAG 2.1 AA コントラスト比検証用の宣言表
    * テスト（test_skin_contrast.js）で機械照合する
    */
-  var CONTRAST_PAIRS = [
-    { name: '表ヘッダ', fg: '#2f3438', bg: '#d9d9d9' },
-    { name: 'データなし', fg: '#5a5e66', bg: '#ffffff' },
-    { name: '見出し（画面タイトル）', fg: '#303133', bg: '#ffffff' }
-  ];
+  /**
+   * 表の見た目の値。**表に関する色・寸法はここだけで決める。**
+   *
+   * 以前は家族ごと（ポータル表 / ビーコン一覧 / 問題申告一覧）にCSSを書いていたため、
+   * 同じ「自前表」なのに見た目が食い違っていた（2026-08-10 実測）:
+   *   見出し背景 #d9d9d9(灰) vs accent(青) / 文字 14px vs 13px / z-index 3 vs 2 …
+   * 片方を直してももう片方へ伝播しないので、値を1箇所へ集約した。
+   *
+   * 値の選び方: **すでに根拠のある方**を採った。
+   *   headerBg/headerFg … WCAG AA 8.91 を実測済み（CONTRAST_PAIRS）。青×白ではなくこちら
+   *   headerPadY 4px    … 見出しが 89px まで伸びて「一度に見える行数が減る」と指摘された分
+   *   fontSize 14px     … Element Plus の既定。ポータル表の見た目を動かさずに済む
+   */
+  function tableTokens(accent) {
+    return {
+      accent: accent,
+      headerBg: '#d9d9d9',
+      headerFg: '#2f3438',
+      cellFg: '#303133',
+      rowOdd: '#ffffff',
+      rowEven: '#f7f9fc',
+      rowHover: '#e8f1fb',
+      border: '#c8ccd4',
+      fontSize: '14px',
+      headerPadY: '4px',
+      cellPadY: '6px',
+      padX: '12px',
+      linkFg: '#2563eb',
+      emptyFg: '#5a5e66',
+      // 先頭列固定の重なり順。操作列のボタン等に負けず、
+      // ビーコンのネイティブモーダル(1400番台)より十分低い値
+      zHeaderCol: 20,
+      zBodyCol: 15,
+      zStickyHeader: 10
+    };
+  }
+
+  var CONTRAST_PAIRS = (function () {
+    var t = tableTokens('#0b5cab');
+    return [
+      { name: '表ヘッダ', fg: t.headerFg, bg: t.headerBg },
+      { name: 'データなし', fg: t.emptyFg, bg: t.rowOdd },
+      { name: '見出し（画面タイトル）', fg: t.cellFg, bg: t.rowOdd }
+    ];
+  })();
+
+  /**
+   * 全家族に共通の表スタイル。
+   *
+   * 目印 `data-dbsext-table` は3家族すべての `<table>` に付く。
+   *   "portal" … ポータルが描画した表（ヘッダ表とボディ表の2枚）
+   *   "custom" … 拡張が描画した表（ビーコン一覧 / 問題申告一覧）
+   *
+   * **家族による違いは、この関数の中で属性値によって分岐させる。**
+   * 別ブロックに切り出すと、また食い違いが始まる。
+   */
+  function tableCss(t) {
+    return [
+      '/* === 表の共通スタイル（全家族） ================================== */',
+      '[data-dbsext-table] {',
+      '  font-size: ' + t.fontSize + ' !important;',
+      '  font-variant-numeric: tabular-nums !important;',
+      '}',
+      '',
+      '/* 見出し: 固定 ＋ コントラスト（WCAG AA 8.91）＋ 高さを詰める。',
+      '   自前のソート矢印と絞り込み欄を足すと見出しが高くなる。実機では 89px まで',
+      '   伸びて「不必要に広い」と指摘された。表は縦にも長いので、',
+      '   **見出しが高いほど一度に見える行数が減る**。 */',
+      '[data-dbsext-table] th {',
+      '  position: sticky !important;',
+      '  top: 0 !important;',
+      '  z-index: ' + t.zStickyHeader + ' !important;',
+      '  color: ' + t.headerFg + ' !important;',
+      '  background-color: ' + t.headerBg + ' !important;',
+      '  font-weight: 600 !important;',
+      '  padding-top: ' + t.headerPadY + ' !important;',
+      '  padding-bottom: ' + t.headerPadY + ' !important;',
+      '  line-height: 1.3 !important;',
+      '  vertical-align: top !important;',
+      '  text-align: left !important;',
+      '  border-bottom: 1px solid ' + t.border + ' !important;',
+      '  border-color: ' + t.border + ' !important;',
+      '}',
+      '[data-dbsext-table] th .cell {',
+      '  line-height: 1.3 !important;',
+      '  padding-top: 0 !important;',
+      '  padding-bottom: 0 !important;',
+      '}',
+      '',
+      '/* 横余白は家族で違う。**ポータル表には足さない。**',
+      '   ポータルの th/td は内側に `.cell` を持ち、そちらが横余白を持っている。',
+      '   ここで足すと二重になり、ただでさえ横に長い表がさらに広がる。 */',
+      '[data-dbsext-table="custom"] th,',
+      '[data-dbsext-table="custom"] td {',
+      '  padding-left: ' + t.padX + ' !important;',
+      '  padding-right: ' + t.padX + ' !important;',
+      '}',
+      '[data-dbsext-table="custom"] {',
+      '  width: 100% !important;',
+      '  border-collapse: collapse !important;',
+      '  background-color: ' + t.rowOdd + ' !important;',
+      '}',
+      '[data-dbsext-table="custom"] td {',
+      '  padding-top: ' + t.cellPadY + ' !important;',
+      '  padding-bottom: ' + t.cellPadY + ' !important;',
+      '  color: ' + t.cellFg + ' !important;',
+      '  border: 1px solid ' + t.border + ' !important;',
+      '}',
+      '[data-dbsext-table="portal"] td {',
+      '  border-bottom: 1px solid ' + t.border + ' !important;',
+      '  border-color: ' + t.border + ' !important;',
+      '}',
+      '',
+      '/* ゼブラとホバー（案E）。全家族で同じ配色にする */',
+      '[data-dbsext-table] tbody tr:nth-child(odd) td {',
+      '  background-color: ' + t.rowOdd + ' !important;',
+      '}',
+      '[data-dbsext-table] tbody tr:nth-child(even) td {',
+      '  background-color: ' + t.rowEven + ' !important;',
+      '}',
+      '[data-dbsext-table] tbody tr:hover td,',
+      '[data-dbsext-table] tbody tr.hover-row td {',
+      '  background-color: ' + t.rowHover + ' !important;',
+      '}',
+      '',
+      '/* --- 先頭列の固定（案3） ------------------------------------------',
+      '   z-index は意図して高めにしてある（2026-08-10）。',
+      '   車両情報以外の表（操作列を隠す機能が無く、常に幅広い操作ボタン列が並ぶ）で、',
+      '   横スクロール中に先頭列が操作列の裏へ回り込んで見えなくなる報告があった。',
+      '   `position: static` な通常セルは本来スタッキング文脈を作らないはずだが、',
+      '   操作列のボタン/ドロップダウンがEP側で独自の position+z-index を持つ場合に',
+      '   先頭列が負ける。表内で確実に勝つ値まで引き上げてある。',
+      '',
+      '   **固定する列数は家族で違う。** ポータル表は先頭がチェックボックス列(44px)で、',
+      '   識別番号は2列目にある。自前表にチェックボックス列は無いので1列だけ固定する。 */',
+      '[data-dbsext-table] th:first-child {',
+      '  position: sticky !important;',
+      '  left: 0 !important;',
+      '  z-index: ' + t.zHeaderCol + ' !important;',
+      '  background-color: ' + t.headerBg + ' !important;',
+      '}',
+      '[data-dbsext-table] td:first-child {',
+      '  position: sticky !important;',
+      '  left: 0 !important;',
+      '  z-index: ' + t.zBodyCol + ' !important;',
+      '}',
+      '[data-dbsext-table="portal"] th:nth-child(2) {',
+      '  position: sticky !important;',
+      '  left: 44px !important;',
+      '  z-index: ' + t.zHeaderCol + ' !important;',
+      '  background-color: ' + t.headerBg + ' !important;',
+      '  box-shadow: 2px 0 4px -2px rgba(0,0,0,0.12);',
+      '}',
+      '[data-dbsext-table="portal"] td:nth-child(2) {',
+      '  position: sticky !important;',
+      '  left: 44px !important;',
+      '  z-index: ' + t.zBodyCol + ' !important;',
+      '  box-shadow: 2px 0 4px -2px rgba(0,0,0,0.12);',
+      '}',
+      '[data-dbsext-table="custom"] td:first-child {',
+      '  box-shadow: 2px 0 4px -2px rgba(0,0,0,0.12);',
+      '}',
+      '/* 固定セルは背景が透けると下の行が見えてしまうため、不透明を保つ */',
+      '[data-dbsext-table] tbody tr:nth-child(odd) td:first-child,',
+      '[data-dbsext-table="portal"] tbody tr:nth-child(odd) td:nth-child(2) {',
+      '  background-color: ' + t.rowOdd + ' !important;',
+      '}',
+      '[data-dbsext-table] tbody tr:nth-child(even) td:first-child,',
+      '[data-dbsext-table="portal"] tbody tr:nth-child(even) td:nth-child(2) {',
+      '  background-color: ' + t.rowEven + ' !important;',
+      '}',
+      '[data-dbsext-table] tbody tr:hover td:first-child,',
+      '[data-dbsext-table] tbody tr.hover-row td:first-child,',
+      '[data-dbsext-table="portal"] tbody tr:hover td:nth-child(2),',
+      '[data-dbsext-table="portal"] tbody tr.hover-row td:nth-child(2) {',
+      '  background-color: ' + t.rowHover + ' !important;',
+      '}',
+      '',
+      '/* ポータル標準の車両状態色を、車両識別番号セルだけに残す。',
+      '   実機確認（2026-08-09）:',
+      '     bg-green = rgb(168, 240, 122) / bg-brown = rgb(197, 149, 107)',
+      '     bg-red   = rgb(255, 99, 71)',
+      '   行全体の着色はゼブラ表示と競合するため復元せず、sticky な第2列だけへ反映する。',
+      '   **自前表に対応する概念が無いため、ここはポータル固有のままでよい。** */',
+      '[data-dbsext-table="portal"] tbody tr.bg-green td:nth-child(2) {',
+      '  background-color: rgb(168, 240, 122) !important;',
+      '}',
+      '[data-dbsext-table="portal"] tbody tr.bg-brown td:nth-child(2) {',
+      '  background-color: rgb(197, 149, 107) !important;',
+      '}',
+      '[data-dbsext-table="portal"] tbody tr.bg-red td:nth-child(2) {',
+      '  background-color: rgb(255, 99, 71) !important;',
+      '}',
+      '',
+      '/* === 見出しの操作UI（並べ替え・絞り込み）========================',
+      '   ポータル表も自前表も**同じ見た目**にする。',
+      '   以前は table-tools がインラインstyleで、自前表がCSSクラスで',
+      '   別々に指定しており、同じ機能なのに見た目が違っていた。 */',
+      '[data-dbsext-sort] {',
+      '  display: inline-block !important;',
+      '  margin-left: 4px !important;',
+      '  font-size: 11px !important;',
+      '  cursor: pointer !important;',
+      '  user-select: none !important;',
+      '  color: ' + t.headerFg + ' !important;',
+      '}',
+      '.dbsext-th-sort {',
+      '  display: block !important;',
+      '  width: 100% !important;',
+      '  padding: 0 0 4px !important;',
+      '  border: 0 !important;',
+      '  background: transparent !important;',
+      '  color: ' + t.headerFg + ' !important;',
+      '  font: inherit !important;',
+      '  font-weight: 600 !important;',
+      '  text-align: left !important;',
+      '  cursor: pointer !important;',
+      '  white-space: nowrap !important;',
+      '}',
+      '.dbsext-th-filters {',
+      '  display: flex !important;',
+      '  gap: 3px !important;',
+      '  margin-top: 2px !important;',
+      '  line-height: 0 !important;',
+      '}',
+      '[data-dbsext-filter],',
+      '[data-dbsext-filter-min],',
+      '[data-dbsext-filter-max] {',
+      '  box-sizing: border-box !important;',
+      '  width: 100% !important;',
+      '  min-width: 0 !important;',
+      '  height: 18px !important;',
+      '  padding: 0 4px !important;',
+      '  border: 1px solid ' + t.border + ' !important;',
+      '  border-radius: 3px !important;',
+      '  background-color: ' + t.rowOdd + ' !important;',
+      '  color: ' + t.cellFg + ' !important;',
+      '  font-size: 11px !important;',
+      '  line-height: 16px !important;',
+      '}',
+      '.dbsext-cell-link {',
+      '  border: 0 !important;',
+      '  padding: 0 !important;',
+      '  background: transparent !important;',
+      '  color: ' + t.linkFg + ' !important;',
+      '  font: inherit !important;',
+      '  text-decoration: underline !important;',
+      '  cursor: pointer !important;',
+      '}',
+      '.dbsext-table-empty {',
+      '  padding: 20px 12px !important;',
+      '  color: ' + t.emptyFg + ' !important;',
+      '  text-align: center !important;',
+      '  background-color: ' + t.rowOdd + ' !important;',
+      '}',
+      '/* 表を包むスクロール領域（自前表用）。ポータル表は table-wrap.js が担当 */',
+      '[data-dbsext-table-scroll] {',
+      '  overflow: auto !important;',
+      '  max-width: 100% !important;',
+      '  max-height: 70vh !important;',
+      '}'
+    ];
+  }
 
   D.skin = {
     styleId: 'dbsext-skin',
@@ -1830,6 +2100,7 @@
       }
 
       var accent = (D.CONFIG && D.CONFIG.ACCENT) ? D.CONFIG.ACCENT : '#0b5cab';
+      var t = tableTokens(accent);
 
       var css = [
         ':root {',
@@ -1855,54 +2126,18 @@
         '.border-primary { border-color: ' + accent + ' !important; }',
         '',
         '/* 案A: コントラスト改善（実測値に基づく WCAG 2.1 AA 適合） */',
-        '/* 表ヘッダ文字色 (WCAG AA 8.91) */',
-        'table.el-table__header th,',
-        '.el-table__header-wrapper th,',
-        '.el-table th {',
-        '  color: #2f3438 !important;',
-        '  background-color: #d9d9d9 !important;',
-        '  font-weight: 600 !important;',
-        '  border-bottom: 1px solid #c8ccd4 !important;',
-        '}',
-        '',
         '/* 「データなし」文字色 (WCAG AA 6.51) */',
         '.el-table__empty-text {',
-        '  color: #5a5e66 !important;',
-        '  background-color: #ffffff !important;',
+        '  color: ' + t.emptyFg + ' !important;',
+        '  background-color: ' + t.rowOdd + ' !important;',
         '}',
         '',
         '/* 画面タイトル見出し (WCAG AA 13.02) */',
         'h1.page-title,',
         '.main h1,',
         'main h1 {',
-        '  color: #303133 !important;',
+        '  color: ' + t.cellFg + ' !important;',
         '  font-weight: 600 !important;',
-        '}',
-        '',
-        '/* 表の罫線コントラスト */',
-        'table.el-table__header th,',
-        'table.el-table__body td,',
-        '.el-table td,',
-        '.el-table th.is-leaf {',
-        '  border-bottom: 1px solid #c8ccd4 !important;',
-        '  border-color: #c8ccd4 !important;',
-        '}',
-        '',
-        '/* --- 見出し行を詰める -------------------------------------------------',
-        '   自前のソート矢印と絞り込み欄を足すと見出しが高くなる。',
-        '   実機では 89px まで伸びており「不必要に広い」と指摘された。',
-        '   表は縦にも長いので、**見出しが高いほど一度に見える行数が減る**。',
-        '   セルの上下余白を詰めて、増えた分を相殺する。 */',
-        'table.el-table__header th {',
-        '  padding-top: 4px !important;',
-        '  padding-bottom: 4px !important;',
-        '  line-height: 1.3 !important;',
-        '  vertical-align: top !important;',
-        '}',
-        'table.el-table__header th .cell {',
-        '  line-height: 1.3 !important;',
-        '  padding-top: 0 !important;',
-        '  padding-bottom: 0 !important;',
         '}',
         '',
         '/* --- 画面分割で使うときの横幅 ------------------------------------------',
@@ -1957,79 +2192,10 @@
         '  padding: 10px 8px !important;',
         '}',
         '',
-        '/* 案E: ゼブラとホバー強調 */',
-        '.el-table__body tr:nth-child(odd) td {',
-        '  background-color: #ffffff !important;',
-        '}',
-        '.el-table__body tr:nth-child(even) td {',
-        '  background-color: #f7f9fc !important;',
-        '}',
-        '.el-table__body tr:hover td,',
-        '.el-table__body tr.hover-row td {',
-        '  background-color: #e8f1fb !important;',
-        '}',
-        '',
-        '/* 案3: 先頭列（チェックボックス・車両識別番号）の sticky 固定',
-        '   z-indexは意図して高めにしてある（2026-08-10）。',
-        '   車両情報以外の表（操作列を隠す機能が無く、常に幅広い操作ボタン列が',
-        '   並ぶ）で、横スクロール中に先頭列が操作列の裏へ回り込んで見えなくなる',
-        '   report があった。position: static な通常セルは本来スタッキング文脈を',
-        '   作らないはずだが、操作列のボタン/ドロップダウンがEP側で独自の',
-        '   position+z-indexを持つ場合に先頭列が負ける。表内で確実に勝つよう、',
-        '   ビーコンのネイティブモーダル(1400番台)よりは十分低い値まで引き上げた。 */',
-        'table.el-table__header th:first-child {',
-        '  position: sticky !important;',
-        '  left: 0 !important;',
-        '  z-index: 20 !important;',
-        '  background-color: #d9d9d9 !important;',
-        '}',
-        'table.el-table__header th:nth-child(2) {',
-        '  position: sticky !important;',
-        '  left: 44px !important;',
-        '  z-index: 20 !important;',
-        '  background-color: #d9d9d9 !important;',
-        '  box-shadow: 2px 0 4px -2px rgba(0,0,0,0.12);',
-        '}',
-        'table.el-table__body td:first-child {',
-        '  position: sticky !important;',
-        '  left: 0 !important;',
-        '  z-index: 15 !important;',
-        '}',
-        'table.el-table__body td:nth-child(2) {',
-        '  position: sticky !important;',
-        '  left: 44px !important;',
-        '  z-index: 15 !important;',
-        '  box-shadow: 2px 0 4px -2px rgba(0,0,0,0.12);',
-        '}',
-        '.el-table__body tr:nth-child(odd) td:first-child,',
-        '.el-table__body tr:nth-child(odd) td:nth-child(2) {',
-        '  background-color: #ffffff !important;',
-        '}',
-        '.el-table__body tr:nth-child(even) td:first-child,',
-        '.el-table__body tr:nth-child(even) td:nth-child(2) {',
-        '  background-color: #f7f9fc !important;',
-        '}',
-        '.el-table__body tr:hover td:first-child,',
-        '.el-table__body tr:hover td:nth-child(2),',
-        '.el-table__body tr.hover-row td:first-child,',
-        '.el-table__body tr.hover-row td:nth-child(2) {',
-        '  background-color: #e8f1fb !important;',
-        '}',
-        '',
-        '/* ポータル標準の車両状態色を、車両識別番号セルだけに残す。',
-        '   実機確認（2026-08-09）:',
-        '     bg-green = rgb(168, 240, 122) / bg-brown = rgb(197, 149, 107)',
-        '     bg-red   = rgb(255, 99, 71)',
-        '   行全体の着色はゼブラ表示と競合するため復元せず、sticky な第2列だけへ反映する。 */',
-        'table.el-table__body tr.bg-green td:nth-child(2) {',
-        '  background-color: rgb(168, 240, 122) !important;',
-        '}',
-        'table.el-table__body tr.bg-brown td:nth-child(2) {',
-        '  background-color: rgb(197, 149, 107) !important;',
-        '}',
-        'table.el-table__body tr.bg-red td:nth-child(2) {',
-        '  background-color: rgb(255, 99, 71) !important;',
-        '}',
+        // ===================================================================
+        // 表の共通スタイル。**表の見た目はここだけで決める。**
+        // ===================================================================
+      ].concat(tableCss(t)).concat([
         '',
         '/* --- ビーコン一覧拡張パネル --------------------------------------------- */',
         '[data-dbsext-beacons-panel] {',
@@ -2064,10 +2230,9 @@
         '  background-color: #a0cfff !important;',
         '  cursor: not-allowed !important;',
         '}',
+        '/* スクロールと見た目は共通側（[data-dbsext-table-scroll]）が持つ。',
+        '   ここは配置だけ。 */',
         '[data-dbsext-beacons-panel] .dbsext-beacons-table-wrap {',
-        '  overflow: auto !important;',
-        '  max-width: 100% !important;',
-        '  max-height: 70vh !important;',
         '  margin-top: 12px !important;',
         '}',
         '[data-dbsext-beacons-panel] .dbsext-beacons-warn {',
@@ -2088,75 +2253,10 @@
         '  margin-bottom: 12px !important;',
         '  font-size: 13px !important;',
         '}',
-        '/* 自作ビーコン表の専用スタイル */',
+        '/* ビーコン一覧の表は横に長いので、最低幅だけ与える。',
+        '   色・余白・固定などの見た目は共通側（[data-dbsext-table]）が持つ。 */',
         '[data-dbsext-beacons-table] {',
-        '  width: 100% !important;',
-        '  border-collapse: collapse !important;',
         '  min-width: 1100px !important;',
-        '  font-size: 14px !important;',
-        '}',
-        '[data-dbsext-beacons-table] th {',
-        '  position: sticky !important;',
-        '  top: 0 !important;',
-        '  z-index: 3 !important;',
-        '  background-color: #d9d9d9 !important;',
-        '  color: #2f3438 !important;',
-        '  font-weight: 600 !important;',
-        '  padding: 8px 12px !important;',
-        '  border: 1px solid #c8ccd4 !important;',
-        '  text-align: left !important;',
-        '  vertical-align: top !important;',
-        '}',
-        '[data-dbsext-beacons-table] .dbsext-beacons-sort {',
-        '  display: block !important;',
-        '  width: 100% !important;',
-        '  padding: 2px 0 6px !important;',
-        '  border: 0 !important;',
-        '  background: transparent !important;',
-        '  color: #2f3438 !important;',
-        '  font: inherit !important;',
-        '  font-weight: 600 !important;',
-        '  text-align: left !important;',
-        '  cursor: pointer !important;',
-        '  white-space: nowrap !important;',
-        '}',
-        '[data-dbsext-beacons-table] .dbsext-beacons-filter {',
-        '  display: block !important;',
-        '  box-sizing: border-box !important;',
-        '  width: 100% !important;',
-        '  min-width: 110px !important;',
-        '  padding: 5px 7px !important;',
-        '  border: 1px solid #a8adb5 !important;',
-        '  border-radius: 3px !important;',
-        '  background-color: #ffffff !important;',
-        '  color: #303133 !important;',
-        '  font-size: 13px !important;',
-        '}',
-        '[data-dbsext-beacons-table] td {',
-        '  padding: 8px 12px !important;',
-        '  border: 1px solid #c8ccd4 !important;',
-        '  font-variant-numeric: tabular-nums !important;',
-        '  color: #303133 !important;',
-        '}',
-        '[data-dbsext-beacons-table] .dbsext-beacons-code-link {',
-        '  border: 0 !important;',
-        '  padding: 0 !important;',
-        '  background: transparent !important;',
-        '  color: #2563eb !important;',
-        '  font: inherit !important;',
-        '  text-decoration: underline !important;',
-        '  cursor: pointer !important;',
-        '}',
-        '[data-dbsext-beacons-table] tr:nth-child(even) td {',
-        '  background-color: #f7f9fc !important;',
-        '}',
-        '[data-dbsext-beacons-table] tr:hover td {',
-        '  background-color: #e8f1fb !important;',
-        '}',
-        '[data-dbsext-beacons-table] .dbsext-beacons-empty {',
-        '  padding: 20px 12px !important;',
-        '  color: #5a5e66 !important;',
-        '  text-align: center !important;',
         '}',
         '[data-dbsext-beacons-native-modal] {',
         '  display: contents !important;',
@@ -2218,8 +2318,37 @@
         '  background: #ffffff !important;',
         '  color: ' + accent + ' !important;',
         '  cursor: pointer !important;',
+        '}',
+        '',
+        '/* --- vehicle-problems 自前テーブル --- */',
+        '[data-dbsext-vehicle-problems] {',
+        '  margin: 16px 0 !important;',
+        '}',
+        '[data-dbsext-vehicle-problems] .dbsext-vp-header {',
+        '  display: flex !important;',
+        '  align-items: center !important;',
+        '  gap: 16px !important;',
+        '  margin-bottom: 8px !important;',
+        '}',
+        '[data-dbsext-vehicle-problems] .dbsext-vp-header h3 {',
+        '  margin: 0 !important;',
+        '  font-size: 16px !important;',
+        '  font-weight: bold !important;',
+        '}',
+        '[data-dbsext-vehicle-problems] .dbsext-vp-status {',
+        '  font-size: 12px !important;',
+        '  color: #666 !important;',
+        '}',
+        '[data-dbsext-vehicle-problems] .dbsext-vp-error {',
+        '  font-size: 12px !important;',
+        '  color: #d9534f !important;',
+        '}',
+        '/* スクロールと見た目は共通側が持つ。ここは枠線と高さの好みだけ。 */',
+        '[data-dbsext-vehicle-problems] .dbsext-vp-table-wrap {',
+        '  max-height: 60vh !important;',
+        '  border: 1px solid ' + t.border + ' !important;',
         '}'
-      ].join('\n');
+      ]).join('\n');
 
       var styleEl = document.createElement('style');
       styleEl.id = D.skin.styleId;
@@ -2228,6 +2357,555 @@
 
       document.head.appendChild(styleEl);
     }
+  };
+})(typeof globalThis !== 'undefined' ? globalThis : window);
+
+
+/**
+ * DBSEXT 表の共通コア（table-kit）
+ *
+ * ---------------------------------------------------------------------------
+ * なぜ「共通の基底クラス」ではなく「共通コア＋アダプタ」なのか
+ * ---------------------------------------------------------------------------
+ * 表は2種類あり、**行の持ち主が違う**。
+ *
+ *   ポータル表 … ポータルが描画済みの <tr>。行の中に **Vueのイベントハンドラを持つ
+ *                 操作ボタン**（解錠・再配置・メンテナンス）が入っている。
+ *                 並べ替えは appendChild で並べ直す。絞り込みは display:none。
+ *   自前表     … 配列データから拡張が描画する。並べ替え・絞り込みは再描画。
+ *
+ * ポータル表を「再描画」にすると操作ボタンのVueハンドラが壊れる。
+ * これは契約§6「ポータルの既存DOMを削除・移動しない」に正面から反する
+ * （`tests/test_table_columns.js` が `btn.customProp === 'unmodified'` で検証済み）。
+ *
+ * したがって**行をどう動かすかは共有できない**。共有するのはここに置いた4つだけ:
+ *
+ *   1. compare()            … 並び順の決め方（自然順・数値・ポート名の特別扱い）
+ *   2. matchesFilter()      … 絞り込みの判定（文字列 / 数値の範囲）
+ *   3. buildHeaderControls()… 見出しの操作UI（同じマークアップ・同じCSS）
+ *   4. createState()        … 状態の持ち方
+ *
+ * これで「同じ改修がすべての表へ伝播する」ことと、
+ * 「ポータルDOMを壊さない」ことを両立させる。
+ */
+(function (global) {
+  'use strict';
+  var D = global.DBSEXT;
+
+  // ---------------------------------------------------------------------------
+  // 絞り込みの種類
+  //
+  // **列によって、文字列の部分一致より「以上・以下」の方が役に立つ。**
+  // 電圧やバッテリー残量は「3.5V以下だけ見たい」という使い方をする。
+  // ここを1箇所の宣言表にしておけば、現場からの要望に応じて
+  // **1行足すだけ**で切り替えられる。
+  // ---------------------------------------------------------------------------
+
+  var FILTER_TEXT = 'text';
+  var FILTER_NUMBER = 'number';
+
+  /**
+   * 列名 → 絞り込みの種類。**ここが唯一の宣言場所。**
+   *
+   * 判定は「完全一致」ではなく「見出しがこの語を含むか」で行う。
+   * 実際の見出しは `ビーコンバッテリー残量[%]` のように単位や修飾が付くため、
+   * 完全一致にすると**1列も一致せず、静かに文字列絞り込みのままになる**
+   * （table-columns で同じ失敗を1度している）。
+   *
+   * 追加するときは、**部分一致で他の列を巻き込まないか**を確かめること。
+   * 例: `残量` は良いが `量` だけにすると `交通量` のような列まで数値扱いになる。
+   */
+  var NUMERIC_COLUMN_HINTS = [
+    '電圧',
+    'バッテリー',
+    '残量',
+    '台数',
+    'ラック数'
+  ];
+
+  /** 見出し名から絞り込みの種類を決める */
+  function filterKindFor(columnLabel) {
+    var label = String(columnLabel == null ? '' : columnLabel);
+    for (var i = 0; i < NUMERIC_COLUMN_HINTS.length; i++) {
+      if (label.indexOf(NUMERIC_COLUMN_HINTS[i]) >= 0) return FILTER_NUMBER;
+    }
+    return FILTER_TEXT;
+  }
+
+  /**
+   * セルの文字列から数値を取り出す。
+   *
+   * 実データには単位や記号が混ざる（`3.9V` / `80%` / `1,200`）。
+   * また値が無い行は `ー` や空文字で表される。
+   * **取り出せなければ null を返す。0 と混同してはいけない。**
+   */
+  function toNumber(text) {
+    if (text === null || text === undefined) return null;
+    if (typeof text === 'number') return isFinite(text) ? text : null;
+    var cleaned = String(text).replace(/,/g, '');
+    var m = cleaned.match(/-?\d+(?:\.\d+)?/);
+    if (!m) return null;
+    var n = Number(m[0]);
+    return isFinite(n) ? n : null;
+  }
+
+  // ---------------------------------------------------------------------------
+  // 並び順
+  // ---------------------------------------------------------------------------
+
+  /**
+   * ポート名の並び順キー。`A-12` のような英字＋番号を、
+   * 英字→数値の順で自然に並べる。数値部分を持たないものは後ろへ。
+   */
+  function portSortKey(name) {
+    if (name === null || name === undefined) return [1, '', 0, ''];
+    var str = String(name);
+    var m = str.trim().match(/^\s*([A-Za-z]*)-?(\d+)/);
+    if (m) return [0, m[1].toUpperCase(), Number(m[2]), str];
+    return [1, '', 0, str];
+  }
+
+  function comparePortKeys(a, b) {
+    if (a[0] !== b[0]) return a[0] - b[0];
+    if (a[1] !== b[1]) return a[1].localeCompare(b[1]);
+    if (a[2] !== b[2]) return a[2] - b[2];
+    return a[3].localeCompare(b[3], undefined, { numeric: true, sensitivity: 'base' });
+  }
+
+  function isPortColumn(label) {
+    return label === 'ポート名' || label === 'ポート';
+  }
+
+  /**
+   * 2つのセル値を比べる。
+   *
+   * @param {string} a
+   * @param {string} b
+   * @param {object} [opts] columnLabel … 列名（ポート名の特別扱いに使う）
+   *                        numeric     … 数値として比べる（列全体が数値のとき）
+   */
+  function compare(a, b, opts) {
+    var options = opts || {};
+    var textA = a === null || a === undefined ? '' : String(a).trim();
+    var textB = b === null || b === undefined ? '' : String(b).trim();
+
+    if (isPortColumn(options.columnLabel)) {
+      return comparePortKeys(portSortKey(textA), portSortKey(textB));
+    }
+    if (options.numeric) {
+      // 空欄は一番小さいものとして扱う（並べたときに端へ寄る）
+      var numA = textA === '' ? -Infinity : Number(textA);
+      var numB = textB === '' ? -Infinity : Number(textB);
+      if (!isFinite(numA)) numA = -Infinity;
+      if (!isFinite(numB)) numB = -Infinity;
+      return numA - numB;
+    }
+    return textA.localeCompare(textB, undefined, { numeric: true, sensitivity: 'base' });
+  }
+
+  /** 列の値がすべて数値として扱えるか（空欄は無視。1つも値が無ければ false） */
+  function isNumericColumn(values) {
+    var seen = 0;
+    for (var i = 0; i < values.length; i++) {
+      var text = values[i] === null || values[i] === undefined ? '' : String(values[i]).trim();
+      if (text === '') continue;
+      seen++;
+      if (isNaN(Number(text))) return false;
+    }
+    return seen > 0;
+  }
+
+  // ---------------------------------------------------------------------------
+  // 絞り込みの判定
+  // ---------------------------------------------------------------------------
+
+  /**
+   * 1セルが絞り込み条件に合うか。
+   *
+   * @param {string} cellText セルの表示文字列
+   * @param {object} cond     { kind, text } または { kind, min, max }
+   * @returns {boolean}
+   */
+  function matchesFilter(cellText, cond) {
+    if (!cond) return true;
+
+    if (cond.kind === FILTER_NUMBER) {
+      var hasMin = cond.min !== '' && cond.min !== null && cond.min !== undefined;
+      var hasMax = cond.max !== '' && cond.max !== null && cond.max !== undefined;
+      if (!hasMin && !hasMax) return true;
+
+      var value = toNumber(cellText);
+      // **値が無い行は、範囲を指定した時点で対象外。**
+      // `ー`（電圧なし）は「3.5以上」を満たしようがない。
+      // ここで通すと、絞り込んだのに空の行が並んで意味をなさなくなる。
+      if (value === null) return false;
+
+      if (hasMin) {
+        var min = toNumber(cond.min);
+        if (min !== null && value < min) return false;
+      }
+      if (hasMax) {
+        var max = toNumber(cond.max);
+        if (max !== null && value > max) return false;
+      }
+      return true;
+    }
+
+    var needle = String(cond.text == null ? '' : cond.text);
+    if (needle === '') return true;
+    var hay = cellText === null || cellText === undefined ? '' : String(cellText);
+    return hay.toLocaleLowerCase().indexOf(needle.toLocaleLowerCase()) >= 0;
+  }
+
+  /** 条件が1つでも入っているか */
+  function hasAnyCondition(conditions) {
+    for (var key in conditions) {
+      var cond = conditions[key];
+      if (!cond) continue;
+      if (cond.kind === FILTER_NUMBER) {
+        if ((cond.min !== '' && cond.min != null) || (cond.max !== '' && cond.max != null)) return true;
+      } else if (cond.text) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // ---------------------------------------------------------------------------
+  // 状態
+  // ---------------------------------------------------------------------------
+
+  function createState() {
+    return {
+      sortColIndex: null,
+      sortOrder: null,      // 'asc' | 'desc'
+      conditions: {}        // 列番号 -> { kind, text } / { kind, min, max }
+    };
+  }
+
+  function conditionFor(state, colIndex, columnLabel) {
+    if (!state.conditions[colIndex]) {
+      state.conditions[colIndex] = { kind: filterKindFor(columnLabel), text: '', min: '', max: '' };
+    }
+    return state.conditions[colIndex];
+  }
+
+  // ---------------------------------------------------------------------------
+  // 見出しの操作UI
+  // ---------------------------------------------------------------------------
+
+  function makeInput(attrName, placeholder, title) {
+    var input = document.createElement('input');
+    input.type = 'text';
+    input.setAttribute(attrName, '1');
+    input.placeholder = placeholder;
+    if (title) input.title = title;
+    // クリックやキー操作がポータルの並べ替え等へ伝わらないようにする
+    input.addEventListener('click', function (e) { e.stopPropagation(); });
+    input.addEventListener('keydown', function (e) { e.stopPropagation(); });
+    return input;
+  }
+
+  /**
+   * 見出しへ「並べ替え」と「絞り込み」を足す。**全家族で同じものを使う。**
+   *
+   * 見た目はCSS（skin.js）が持つ。ここではマークアップと配線だけ。
+   *
+   * @param {object} spec
+   *   columnLabel … 列名（絞り込みの種類の判定に使う）
+   *   sortMode    … 'indicator'（見出し文字の隣に▲を足す）/ 'button'（見出し全体をボタンに）
+   *   onSort      … 並べ替えが押された
+   *   onFilter    … 絞り込みが変わった（引数は条件オブジェクト）
+   * @returns {object} { sortEl, filterWrap, condition, syncFromState }
+   */
+  function buildHeaderControls(spec) {
+    var columnLabel = spec.columnLabel || '';
+    var kind = filterKindFor(columnLabel);
+    var condition = { kind: kind, text: '', min: '', max: '' };
+
+    // --- 並べ替え ---
+    var sortEl;
+    if (spec.sortMode === 'button') {
+      sortEl = document.createElement('button');
+      sortEl.type = 'button';
+      sortEl.className = 'dbsext-th-sort';
+      sortEl.title = 'クリックで並べ替え';
+      sortEl.textContent = columnLabel;
+    } else {
+      sortEl = document.createElement('span');
+      sortEl.setAttribute('data-dbsext-sort', '1');
+      sortEl.textContent = ' ▲';
+      sortEl.style.opacity = '0.3';
+    }
+    sortEl.addEventListener('click', function (e) {
+      e.stopPropagation();
+      if (typeof spec.onSort === 'function') spec.onSort();
+    });
+
+    // --- 絞り込み ---
+    var filterWrap = document.createElement('div');
+    filterWrap.className = 'dbsext-th-filters';
+
+    var inputs = [];
+    function notify() {
+      if (typeof spec.onFilter === 'function') spec.onFilter(condition);
+    }
+
+    if (kind === FILTER_NUMBER) {
+      // 「以上」「以下」の2欄。**空欄は「制限なし」**
+      var minInput = makeInput('data-dbsext-filter-min', '以上', columnLabel + ' がこの値以上');
+      var maxInput = makeInput('data-dbsext-filter-max', '以下', columnLabel + ' がこの値以下');
+      minInput.addEventListener('input', function () { condition.min = minInput.value; notify(); });
+      maxInput.addEventListener('input', function () { condition.max = maxInput.value; notify(); });
+      filterWrap.appendChild(minInput);
+      filterWrap.appendChild(maxInput);
+      inputs.push({ key: 'min', el: minInput }, { key: 'max', el: maxInput });
+    } else {
+      var textInput = makeInput('data-dbsext-filter', '絞り込み', columnLabel + ' で絞り込み');
+      textInput.addEventListener('input', function () { condition.text = textInput.value; notify(); });
+      filterWrap.appendChild(textInput);
+      inputs.push({ key: 'text', el: textInput });
+    }
+
+    return {
+      sortEl: sortEl,
+      filterWrap: filterWrap,
+      condition: condition,
+      kind: kind,
+      /** 状態側の値を入力欄へ反映する（再適用で作り直したときのため） */
+      syncFromState: function (saved) {
+        if (!saved) return;
+        for (var i = 0; i < inputs.length; i++) {
+          var key = inputs[i].key;
+          var value = saved[key] === undefined || saved[key] === null ? '' : String(saved[key]);
+          if (inputs[i].el.value !== value) inputs[i].el.value = value;
+          condition[key] = value;
+        }
+      },
+      /** 並べ替えの表示を更新する（indicator のときだけ意味がある） */
+      updateSortIndicator: function (isActive, order) {
+        if (spec.sortMode === 'button') {
+          sortEl.textContent = columnLabel + (isActive ? (order === 'asc' ? ' ▲' : ' ▼') : '');
+          return;
+        }
+        sortEl.textContent = isActive ? (order === 'asc' ? ' ▲' : ' ▼') : ' ▲';
+        sortEl.style.opacity = isActive ? '1' : '0.3';
+      }
+    };
+  }
+
+  D.tableKit = {
+    FILTER_TEXT: FILTER_TEXT,
+    FILTER_NUMBER: FILTER_NUMBER,
+    NUMERIC_COLUMN_HINTS: NUMERIC_COLUMN_HINTS,
+
+    filterKindFor: filterKindFor,
+    toNumber: toNumber,
+    compare: compare,
+    isNumericColumn: isNumericColumn,
+    isPortColumn: isPortColumn,
+    portSortKey: portSortKey,
+    matchesFilter: matchesFilter,
+    hasAnyCondition: hasAnyCondition,
+    createState: createState,
+    conditionFor: conditionFor,
+    buildHeaderControls: buildHeaderControls
+  };
+})(typeof globalThis !== 'undefined' ? globalThis : window);
+
+
+/**
+ * DBSEXT 自前表（データ駆動）のアダプタ
+ *
+ * 配列データと列定義から表を描く。並べ替え・絞り込みは**再描画**で行う。
+ * 判定ロジック（並び順・絞り込み・見出しUI）は `table-kit` が持つ。
+ *
+ * ---------------------------------------------------------------------------
+ * なぜ切り出したか
+ * ---------------------------------------------------------------------------
+ * ビーコン一覧と問題申告一覧（拡張）が**112行中87行まで同じコード**を持っていた
+ * （2026-08-10 実測）。差分は「セルをリンクにするかどうか」と空表の文言だけ。
+ * その結果、片方だけ直した改修が伝播せず、**同じ「自前表」なのに見た目が
+ * 食い違っていた**（見出しが灰と青、文字が14pxと13px…）。
+ *
+ * ここに1つ置き、違いは**列定義のセルレンダラ**として渡す。
+ *
+ * **ポータル表には使えない。** あちらは行の中にVueのイベントハンドラを持つ
+ * 操作ボタンがあり、再描画すると壊れる（契約§6）。ポータル表は table-tools。
+ */
+(function (global) {
+  'use strict';
+  var D = global.DBSEXT;
+
+  function kit() {
+    return D.tableKit;
+  }
+
+  function clear(node) {
+    while (node.firstChild) node.removeChild(node.firstChild); // dbsext:own-ui
+  }
+
+  /**
+   * 表を描いて container へ入れる。
+   *
+   * @param {object} spec
+   *   container   … 描画先（中身は消して作り直す）
+   *   rows        … データ配列
+   *   columns     … [{ label, value(row), render(td, row) }]
+   *                 render を渡すとセルの中身を自前で作れる（リンク等）
+   *   tableAttrs  … 表に付ける属性 { 'data-dbsext-beacons-table': '1', ... }
+   *   emptyText   … 絞り込み結果が0件のときの文言
+   *   initialSort … { columnIndex, direction } 省略時は並べ替えなし
+   * @returns {object} { table, refresh }
+   */
+  function render(spec) {
+    var container = spec.container;
+    var rows = spec.rows || [];
+    var columns = spec.columns || [];
+    if (!container) return null;
+
+    clear(container);
+
+    var table = document.createElement('table');
+    // **全家族共通の目印。見た目のCSSはすべてこれを見る（skin.js の tableCss）。**
+    // これが無いと、ヘッダ固定もゼブラも横スクロールも一切効かない。
+    table.setAttribute('data-dbsext-table', 'custom');
+    if (spec.tableAttrs) {
+      for (var attr in spec.tableAttrs) {
+        table.setAttribute(attr, spec.tableAttrs[attr]);
+      }
+    }
+
+    var thead = document.createElement('thead');
+    var headerRow = document.createElement('tr');
+    var tbody = document.createElement('tbody');
+
+    var state = kit().createState();
+    if (spec.initialSort && typeof spec.initialSort.columnIndex === 'number') {
+      state.sortColIndex = spec.initialSort.columnIndex;
+      state.sortOrder = spec.initialSort.direction === 'desc' ? 'desc' : 'asc';
+    }
+
+    var controlsByColumn = [];
+
+    function valueOf(column, row) {
+      var v = column.value ? column.value(row) : '';
+      return v === null || v === undefined ? '' : String(v);
+    }
+
+    function updateSortIndicators() {
+      for (var i = 0; i < controlsByColumn.length; i++) {
+        controlsByColumn[i].updateSortIndicator(state.sortColIndex === i, state.sortOrder);
+      }
+    }
+
+    function refresh() {
+      clear(tbody);
+
+      // --- 絞り込み ---
+      var kept = [];
+      for (var i = 0; i < rows.length; i++) {
+        var ok = true;
+        for (var c = 0; c < columns.length; c++) {
+          if (!kit().matchesFilter(valueOf(columns[c], rows[i]), state.conditions[c])) {
+            ok = false;
+            break;
+          }
+        }
+        if (ok) kept.push({ row: rows[i], originalIndex: i });
+      }
+
+      // --- 並べ替え ---
+      if (state.sortColIndex !== null && state.sortColIndex !== undefined) {
+        var col = columns[state.sortColIndex];
+        if (col) {
+          var values = [];
+          for (var v = 0; v < kept.length; v++) values.push(valueOf(col, kept[v].row));
+          var opts = {
+            columnLabel: col.label,
+            numeric: !kit().isPortColumn(col.label) && kit().isNumericColumn(values)
+          };
+          var direction = state.sortOrder === 'desc' ? -1 : 1;
+          kept.sort(function (a, b) {
+            var cmp = kit().compare(valueOf(col, a.row), valueOf(col, b.row), opts);
+            // **同じ値のときは元の並びを保つ。** ここを入れないと、
+            // 再描画のたびに同値の行が入れ替わって見える
+            if (cmp === 0) return a.originalIndex - b.originalIndex;
+            return cmp * direction;
+          });
+        }
+      }
+
+      if (kept.length === 0) {
+        var emptyRow = document.createElement('tr');
+        var emptyCell = document.createElement('td');
+        emptyCell.setAttribute('colspan', String(columns.length));
+        emptyCell.className = 'dbsext-table-empty';
+        emptyCell.textContent = spec.emptyText || '条件に一致する行はありません。';
+        emptyRow.appendChild(emptyCell);
+        tbody.appendChild(emptyRow);
+        return;
+      }
+
+      for (var r = 0; r < kept.length; r++) {
+        var tr = document.createElement('tr');
+        for (var k = 0; k < columns.length; k++) {
+          var td = document.createElement('td');
+          if (typeof columns[k].render === 'function') {
+            // セルの中身を自前で作る（リンク・ボタン等）
+            columns[k].render(td, kept[r].row);
+          } else {
+            // **必ず textContent。** APIの文字列からHTMLを作らない
+            td.textContent = valueOf(columns[k], kept[r].row);
+          }
+          tr.appendChild(td);
+        }
+        tbody.appendChild(tr);
+      }
+    }
+
+    // --- 見出し ---
+    for (var h = 0; h < columns.length; h++) {
+      (function (columnIndex) {
+        var th = document.createElement('th');
+        var controls = kit().buildHeaderControls({
+          columnLabel: columns[columnIndex].label,
+          sortMode: 'button',
+          onSort: function () {
+            if (state.sortColIndex === columnIndex) {
+              state.sortOrder = state.sortOrder === 'asc' ? 'desc' : 'asc';
+            } else {
+              state.sortColIndex = columnIndex;
+              state.sortOrder = 'asc';
+            }
+            updateSortIndicators();
+            refresh();
+          },
+          onFilter: function (condition) {
+            state.conditions[columnIndex] = condition;
+            refresh();
+          }
+        });
+        state.conditions[columnIndex] = controls.condition;
+        controlsByColumn.push(controls);
+        th.appendChild(controls.sortEl);
+        th.appendChild(controls.filterWrap);
+        headerRow.appendChild(th);
+      })(h);
+    }
+
+    updateSortIndicators();
+    thead.appendChild(headerRow);
+    table.appendChild(thead);
+    table.appendChild(tbody);
+    container.appendChild(table);
+    refresh();
+
+    return { table: table, refresh: refresh, state: state };
+  }
+
+  D.customTable = {
+    render: render
   };
 })(typeof globalThis !== 'undefined' ? globalThis : window);
 
@@ -2336,6 +3014,34 @@
       '}',
       '.el-table.' + SCROLL_CLASS + ' .el-scrollbar__wrap::-webkit-scrollbar-corner {',
       '  background: #e8e8e8;',
+      '}',
+
+      /* --- 自前表のスクロール領域にも同じバーを出す --------------------------
+         従来ここは `.el-table` 起点だけで書かれていたため、
+         **ビーコン一覧・問題申告一覧（拡張）には横スクロールバーが付いていなかった**。
+         自前表は `[data-dbsext-table-scroll]` を持つ（skin.js が overflow を与える）。
+         同じ配色・同じ太さにして、どの表でも操作感を揃える。
+      ---------------------------------------------------------------------- */
+      '[data-dbsext-table-scroll] {',
+      '  scrollbar-width: auto !important;',
+      '  scrollbar-color: #8a9099 #e8e8e8 !important;',
+      '}',
+      '[data-dbsext-table-scroll]::-webkit-scrollbar {',
+      '  display: block !important;',
+      '  width: 12px;',
+      '  height: 12px;',
+      '}',
+      '[data-dbsext-table-scroll]::-webkit-scrollbar-track {',
+      '  background: #e8e8e8;',
+      '  border-radius: 5px;',
+      '}',
+      '[data-dbsext-table-scroll]::-webkit-scrollbar-thumb {',
+      '  background: #a0a0a0;',
+      '  border-radius: 5px;',
+      '  border: 2px solid #e8e8e8;',
+      '}',
+      '[data-dbsext-table-scroll]::-webkit-scrollbar-thumb:hover {',
+      '  background: #707070;',
       '}',
 
       /* 見出しの上に置く操作用の帯。常に見える横スクロールバー */
@@ -2510,10 +3216,26 @@
         // 幅は列の出し入れやリサイズで変わるので、**毎回**合わせ直す
         refreshTopScrollbar(table);
 
-        if (table.classList.contains(SCROLL_CLASS)) continue;
-
         var headerTable = table.querySelector('table.el-table__header');
         var bodyTable = table.querySelector('table.el-table__body');
+
+        // **全家族に共通の目印。見た目のCSSはすべてこれを見る（skin.js）。**
+        // ポータルの表は見出しとボディが別々の <table> なので、両方に付ける。
+        //
+        // **毎回付け直す。** SPAは外側の `.el-table` を残したまま内側の <table> だけを
+        // 差し替えることがある。「初回だけ」にすると、差し替え後の表から目印が消え、
+        // **その表だけ見た目が素に戻る**（この種の取りこぼしは過去に何度も出している）。
+        //
+        // **見出し表・ボディ表だけでなく、配下の <table> をすべて対象にする。**
+        // 集約前のCSSは `.el-table th` という総当たりも持っていた。
+        // 固定列版（`.el-table__fixed-*`）やフッタ表が現れたとき、
+        // 2枚だけを見ていると**その表だけ配色が素に戻る**。
+        var innerTables = table.querySelectorAll('table');
+        for (var n = 0; n < innerTables.length; n++) {
+          innerTables[n].setAttribute('data-dbsext-table', 'portal');
+        }
+
+        if (table.classList.contains(SCROLL_CLASS)) continue;
         if (!headerTable || !bodyTable) continue;
 
         table.classList.add(SCROLL_CLASS);
@@ -4813,6 +5535,8 @@
 
     var tableWrap = document.createElement('div');
     tableWrap.className = 'dbsext-beacons-table-wrap';
+    // 横スクロールバーの見た目は table-wrap.js が共通で与える
+    tableWrap.setAttribute('data-dbsext-table-scroll', '1');
     panel.appendChild(tableWrap);
 
     if (insertion.targetSibling) {
@@ -4970,15 +5694,27 @@
       return;
     }
 
-    var table = document.createElement('table');
-    table.setAttribute('data-dbsext-beacons-table', '1');
-
-    var thead = document.createElement('thead');
-    var headerRow = document.createElement('tr');
-    var tbody = document.createElement('tbody');
-
     var columns = [
-      { label: 'ビーコン識別番号', value: function (item) { return item.portBeaconUniqueCode || item.portBeaconId || ''; } },
+      {
+        label: 'ビーコン識別番号',
+        value: function (item) { return item.portBeaconUniqueCode || item.portBeaconId || ''; },
+        render: function (td, item) {
+          var code = String(item.portBeaconUniqueCode || item.portBeaconId || '');
+          // 10桁の識別番号だけ、ポータル標準検索を開くボタンにする
+          if (!/^[A-Za-z0-9]{10}$/.test(code)) {
+            td.textContent = code;
+            return;
+          }
+          var codeButton = document.createElement('button');
+          codeButton.setAttribute('type', 'button');
+          codeButton.className = 'dbsext-cell-link';
+          codeButton.textContent = code;
+          codeButton.addEventListener('click', function () {
+            openNativeBeaconPopup(panel, code);
+          });
+          td.appendChild(codeButton);
+        }
+      },
       { label: 'ビーコン種別', value: function (item) { return formatBeaconType(item.beaconType); } },
       { label: 'ポート識別番号', value: function (item) { return item.portUniqueCode || ''; } },
       { label: 'ポート名', value: function (item) { return item.portNameJa || ''; } },
@@ -4992,120 +5728,20 @@
       } },
       { label: '最終受信日時', value: function (item) { return item.lastReceivedTs || ''; } }
     ];
-    var filters = [];
-    var sortButtons = [];
-    var sortColumn = -1;
-    var sortDirection = 1;
 
-    function updateSortLabels() {
-      for (var i = 0; i < sortButtons.length; i++) {
-        var suffix = '';
-        if (i === sortColumn) suffix = sortDirection === 1 ? ' ▲' : ' ▼';
-        sortButtons[i].textContent = columns[i].label + suffix;
-      }
-    }
-
-    function renderVisibleRows() {
-      while (tbody.firstChild) tbody.removeChild(tbody.firstChild); // dbsext:own-ui
-
-      var indexed = [];
-      for (var i = 0; i < sorted.length; i++) {
-        var matches = true;
-        for (var f = 0; f < columns.length; f++) {
-          var needle = String(filters[f].value || '').toLocaleLowerCase();
-          if (needle && String(columns[f].value(sorted[i])).toLocaleLowerCase().indexOf(needle) === -1) {
-            matches = false;
-            break;
-          }
-        }
-        if (matches) indexed.push({ item: sorted[i], originalIndex: i });
-      }
-
-      if (sortColumn >= 0) {
-        indexed.sort(function (a, b) {
-          var valueA = String(columns[sortColumn].value(a.item));
-          var valueB = String(columns[sortColumn].value(b.item));
-          var cmp = valueA.localeCompare(valueB, undefined, { numeric: true, sensitivity: 'base' });
-          if (cmp === 0) cmp = a.originalIndex - b.originalIndex;
-          return cmp * sortDirection;
-        });
-      }
-
-      if (indexed.length === 0) {
-        var emptyRow = document.createElement('tr');
-        var emptyCell = document.createElement('td');
-        emptyCell.setAttribute('colspan', String(columns.length));
-        emptyCell.className = 'dbsext-beacons-empty';
-        emptyCell.textContent = '絞り込み条件に一致するビーコンはありません。';
-        emptyRow.appendChild(emptyCell);
-        tbody.appendChild(emptyRow);
-        return;
-      }
-
-      for (var r = 0; r < indexed.length; r++) {
-        var tr = document.createElement('tr');
-        for (var c = 0; c < columns.length; c++) {
-          var td = document.createElement('td');
-          var cellValue = columns[c].value(indexed[r].item);
-          if (c === 0 && /^[A-Za-z0-9]{10}$/.test(String(cellValue))) {
-            var codeButton = document.createElement('button');
-            codeButton.setAttribute('type', 'button');
-            codeButton.className = 'dbsext-beacons-code-link';
-            codeButton.textContent = cellValue;
-            (function (beaconCode) {
-              codeButton.addEventListener('click', function () {
-                openNativeBeaconPopup(panel, beaconCode);
-              });
-            })(String(cellValue));
-            td.appendChild(codeButton);
-          } else {
-            td.textContent = cellValue;
-          }
-          tr.appendChild(td);
-        }
-        tbody.appendChild(tr);
-      }
-    }
-
-    for (var h = 0; h < columns.length; h++) {
-      (function (columnIndex) {
-        var th = document.createElement('th');
-        var sortButton = document.createElement('button');
-        sortButton.setAttribute('type', 'button');
-        sortButton.className = 'dbsext-beacons-sort';
-        sortButton.setAttribute('title', 'クリックで並べ替え');
-        sortButton.addEventListener('click', function () {
-          if (sortColumn === columnIndex) {
-            sortDirection = sortDirection * -1;
-          } else {
-            sortColumn = columnIndex;
-            sortDirection = 1;
-          }
-          updateSortLabels();
-          renderVisibleRows();
-        });
-        sortButtons.push(sortButton);
-        th.appendChild(sortButton);
-
-        var filterInput = document.createElement('input');
-        filterInput.setAttribute('type', 'text');
-        filterInput.className = 'dbsext-beacons-filter';
-        filterInput.setAttribute('placeholder', '絞り込み');
-        filterInput.setAttribute('aria-label', columns[columnIndex].label + 'で絞り込み');
-        filterInput.addEventListener('input', function () {
-          renderVisibleRows();
-        });
-        filters.push(filterInput);
-        th.appendChild(filterInput);
-        headerRow.appendChild(th);
-      })(h);
-    }
-    updateSortLabels();
-    thead.appendChild(headerRow);
-    table.appendChild(thead);
-    table.appendChild(tbody);
-    tableWrap.appendChild(table);
-    renderVisibleRows();
+    // 描画・並べ替え・絞り込みは custom-table が担う。
+    // 以前はここに約110行の自前実装があり、問題申告一覧とほぼ同じものだった
+    // （112行中87行が同一。片方だけ直した改修が伝播せず見た目が食い違っていた）。
+    //
+    // 電圧・バッテリー残量の列は、共通コアの宣言表により
+    // **「以上・以下」の数値絞り込み**になる。
+    D.customTable.render({
+      container: tableWrap,
+      rows: sorted,
+      columns: columns,
+      tableAttrs: { 'data-dbsext-beacons-table': '1' },
+      emptyText: '絞り込み条件に一致するビーコンはありません。'
+    });
   }
 
   function ensureAutoFetch(panel, selectedAreaId) {
@@ -5372,6 +6008,388 @@
   };
 })(typeof globalThis !== 'undefined' ? globalThis : window);
 
+
+/**
+ * DBSEXT 車両詳細問題申告モジュール
+ *
+ * /vehicles/{vehicleId} 画面で、ポータル標準の問題申告表を非表示にし、
+ * API レスポンスの problemOccurrences を1行1件に展開した
+ * 自前テーブルに差し替える。
+ *
+ * 自前テーブルの機能:
+ *   - ヘッダ固定（sticky）
+ *   - 列ごとの文字列フィルタ
+ *   - 列ごとの昇順／降順並び替え
+ *   - 画面表示時に自動取得
+ *
+ * 安全性:
+ *   - ポータルへの書き込み・更新系リクエストは一切発行しない
+ *   - 元の表は display:none で隠すのみ（DOMから除去しない）
+ *   - 自前UIは data-dbsext-vehicle-problems 属性で識別
+ */
+(function (global) {
+  'use strict';
+  var D = global.DBSEXT;
+
+  var CACHE_TTL_MS = 2 * 60 * 1000; // 2分
+  var PROBLEM_HEADER_SIGNATURE = '問題申告日時'; // 見出し判定用の特徴語
+  var PANEL_ATTR = 'data-dbsext-vehicle-problems';
+  var TABLE_ATTR = 'data-dbsext-vp-table';
+
+  var cacheMap = Object.create(null); // vehicleId -> { rows, timestamp }
+  var isFetching = false;
+  var currentVehicleId = null;
+  var currentGeneration = 0;
+  var activeGeneration = 0;
+
+  /**
+   * URLから車両IDを取得
+   */
+  function getVehicleIdFromUrl() {
+    if (typeof location === 'undefined') return null;
+    var m = location.pathname.match(/^\/vehicles\/([A-Za-z0-9:_-]+)$/);
+    return m ? m[1] : null;
+  }
+
+  /**
+   * 問題申告の表を探す（見出しに「問題申告日時」を含む .el-table）
+   */
+  function findProblemTable() {
+    if (typeof document === 'undefined') return null;
+    var tables = document.querySelectorAll('.el-table');
+    for (var i = 0; i < tables.length; i++) {
+      var hdr = tables[i].querySelector('table.el-table__header');
+      if (!hdr) continue;
+      var ths = hdr.querySelectorAll('thead th');
+      for (var j = 0; j < ths.length; j++) {
+        if ((ths[j].textContent || '').indexOf(PROBLEM_HEADER_SIGNATURE) !== -1) {
+          return tables[i];
+        }
+      }
+    }
+    return null;
+  }
+
+  /**
+   * 表の祖先で、非表示にしても画面レイアウトを壊さない適切なラッパーを探す
+   */
+  function findTableWrapper(table) {
+    if (!table) return null;
+    // .el-table の親をたどり、適切な区切りを探す
+    var cur = table.parentNode;
+    while (cur && cur !== document.body && cur !== document.documentElement) {
+      // Element Plus のテーブルは通常 mb-4 などのクラスを持つラッパー内
+      if (cur.classList && (cur.classList.contains('mb-4') || cur.classList.contains('py-4'))) {
+        return cur;
+      }
+      // .el-table の直接の親がなければ el-table 自身を返す
+      if (cur === table.parentNode && cur.childNodes.length === 1) {
+        cur = cur.parentNode;
+        continue;
+      }
+      cur = cur.parentNode;
+    }
+    return table;
+  }
+
+  /**
+   * 元の表を非表示にする
+   */
+  function hideOriginalTable() {
+    var table = findProblemTable();
+    if (!table) return false;
+    if (table.hasAttribute(PANEL_ATTR + '-hidden')) return true; // 既に非表示
+
+    var wrapper = findTableWrapper(table);
+    if (wrapper) {
+      wrapper.setAttribute(PANEL_ATTR + '-hidden', '1');
+      wrapper.style.display = 'none';
+    }
+    table.setAttribute(PANEL_ATTR + '-hidden', '1');
+    return true;
+  }
+
+  /**
+   * 元の表を再表示する
+   */
+  function showOriginalTable() {
+    var hidden = document.querySelectorAll('[' + PANEL_ATTR + '-hidden="1"]');
+    for (var i = 0; i < hidden.length; i++) {
+      hidden[i].style.display = '';
+      hidden[i].removeAttribute(PANEL_ATTR + '-hidden');
+    }
+  }
+
+  /**
+   * 自前パネルの挿入位置を探す（元の表の wrapper の後）
+   */
+  function findInsertionPoint() {
+    var table = findProblemTable();
+    if (!table) return null;
+    var wrapper = findTableWrapper(table);
+    if (wrapper && wrapper.parentNode) {
+      return { container: wrapper.parentNode, targetSibling: wrapper.nextSibling };
+    }
+    if (table.parentNode) {
+      return { container: table.parentNode, targetSibling: table.nextSibling };
+    }
+    return null;
+  }
+
+  /**
+   * 自前パネルが既にDOMに存在し、かつ現在の車両IDと一致しているか
+   */
+  function isPanelValid(panel, vehicleId) {
+    if (!panel || !vehicleId) return false;
+    if (typeof panel.isConnected === 'boolean' && !panel.isConnected) return false;
+    var root = panel;
+    while (root.parentNode) root = root.parentNode;
+    if (root !== document) return false;
+    return panel.getAttribute(PANEL_ATTR + '-vid') === vehicleId;
+  }
+
+  /**
+   * データ取得と表示
+   */
+  function fetchAndRender(panel, vehicleId) {
+    if (!vehicleId || isFetching) return;
+
+    currentGeneration++;
+    var gen = currentGeneration;
+    activeGeneration = gen;
+    isFetching = true;
+    currentVehicleId = vehicleId;
+
+    var statusDiv = panel.querySelector('[' + PANEL_ATTR + '-status]');
+    if (statusDiv) {
+      statusDiv.textContent = '読み込み中…';
+      statusDiv.className = 'dbsext-vp-status';
+    }
+
+    // キャッシュ確認
+    var now = Date.now();
+    var cached = cacheMap[vehicleId];
+    if (cached && (now - cached.timestamp < CACHE_TTL_MS)) {
+      isFetching = false;
+      currentVehicleId = null;
+      if (gen === currentGeneration && isPanelValid(panel, vehicleId)) {
+        renderTable(panel, cached.rows);
+      }
+      return;
+    }
+
+    // APIから取得
+    var url = '/api/vehicles/' + vehicleId + '/problems';
+    fetch(url, { credentials: 'include' })
+      .then(function (res) {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.json();
+      })
+      .then(function (items) {
+        if (!Array.isArray(items)) items = [];
+        // problemOccurrences を展開してフラットな行配列にする
+        var rows = [];
+        for (var i = 0; i < items.length; i++) {
+          var item = items[i];
+          var occs = item.problemOccurrences || [];
+          for (var j = 0; j < occs.length; j++) {
+            rows.push({
+              problemReportTs: item.problemReportTs || '',
+              userUniqueCode: item.userUniqueCode || '',
+              importanceCategory: occs[j].importanceCategory || '',
+              partNameJa: occs[j].partNameJa || '',
+              partCode: occs[j].partCode || '',
+              occurrenceNameJa: occs[j].occurrenceNameJa || '',
+              occurrenceCode: occs[j].occurrenceCode || '',
+              collectionStatus: item.collectionStatus || '',
+              collectionCompleteExecutionTs: item.collectionCompleteExecutionTs || ''
+            });
+          }
+        }
+
+        cacheMap[vehicleId] = { rows: rows, timestamp: Date.now() };
+
+        if (gen === currentGeneration && isPanelValid(panel, vehicleId)) {
+          isFetching = false;
+          currentVehicleId = null;
+          renderTable(panel, rows);
+        } else {
+          isFetching = false;
+          currentVehicleId = null;
+        }
+      })
+      .catch(function (err) {
+        if (gen === currentGeneration && isPanelValid(panel, vehicleId)) {
+          isFetching = false;
+          currentVehicleId = null;
+          if (statusDiv) {
+            statusDiv.textContent = '問題申告の取得に失敗しました: ' + (err && err.message ? err.message : String(err));
+            statusDiv.className = 'dbsext-vp-error';
+          }
+        } else {
+          isFetching = false;
+          currentVehicleId = null;
+        }
+      });
+  }
+
+  /**
+   * テーブルを描画
+   */
+  function renderTable(panel, rows) {
+    var statusDiv = panel.querySelector('[' + PANEL_ATTR + '-status]');
+    var tableWrap = panel.querySelector('[' + PANEL_ATTR + '-wrap]');
+    if (!tableWrap) return;
+
+    // 前回の表示をクリア
+    while (tableWrap.firstChild) tableWrap.removeChild(tableWrap.firstChild); // dbsext:own-ui
+
+    if (!rows || rows.length === 0) {
+      if (statusDiv) {
+        statusDiv.textContent = 'この車両の問題申告はありません。';
+        statusDiv.className = 'dbsext-vp-status';
+      }
+      return;
+    }
+
+    if (statusDiv) {
+      statusDiv.textContent = '全 ' + rows.length + ' 件（部位×事象を展開）';
+      statusDiv.className = 'dbsext-vp-status';
+    }
+
+    var columns = [
+      { label: '問題申告日時',    value: function (r) { return r.problemReportTs; } },
+      {
+        label: 'ユーザ識別番号',
+        value: function (r) { return r.userUniqueCode; },
+        render: function (td, r) {
+          var a = document.createElement('a');
+          a.setAttribute('href', '/users/' + (r.userUniqueCode || ''));
+          a.textContent = r.userUniqueCode || '';
+          a.className = 'dbsext-cell-link';
+          td.appendChild(a);
+        }
+      },
+      { label: '重要度',          value: function (r) { return r.importanceCategory; } },
+      { label: '部位',            value: function (r) { return r.partNameJa; } },
+      { label: '事象',            value: function (r) { return r.occurrenceNameJa; } },
+      { label: '回収状況',        value: function (r) { return r.collectionStatus; } },
+      { label: '回収完了日時',    value: function (r) { return r.collectionCompleteExecutionTs; } }
+    ];
+
+    // 描画・並べ替え・絞り込みは custom-table が担う。
+    // 以前はここに約110行の自前実装があり、ビーコン一覧とほぼ同じものだった。
+    D.customTable.render({
+      container: tableWrap,
+      rows: rows,
+      columns: columns,
+      tableAttrs: (function () { var a = {}; a[TABLE_ATTR] = '1'; return a; })(),
+      emptyText: '絞り込み条件に一致する申告はありません。'
+    });
+  }
+
+  /**
+   * 自前パネルを構築
+   */
+  function buildPanel(vehicleId) {
+    if (typeof document === 'undefined') return null;
+
+    var existing = document.querySelector('[' + PANEL_ATTR + '="1"]');
+    if (existing) {
+      // 車両が変わったら破棄して作り直す
+      if (existing.getAttribute(PANEL_ATTR + '-vid') !== vehicleId) {
+        if (existing.parentNode) existing.parentNode.removeChild(existing); // dbsext:own-ui
+        currentGeneration++;
+        isFetching = false;
+        currentVehicleId = null;
+      } else {
+        return existing;
+      }
+    }
+
+    var insertion = findInsertionPoint();
+    if (!insertion || !insertion.container) return null;
+
+    var panel = document.createElement('div');
+    panel.setAttribute(PANEL_ATTR, '1');
+    panel.setAttribute(PANEL_ATTR + '-vid', vehicleId);
+
+    var header = document.createElement('div');
+    header.className = 'dbsext-vp-header';
+
+    var h2 = document.createElement('h3');
+    h2.textContent = '問題申告一覧（拡張）';
+    header.appendChild(h2);
+
+    var statusDiv = document.createElement('div');
+    statusDiv.setAttribute(PANEL_ATTR + '-status', '1');
+    header.appendChild(statusDiv);
+
+    panel.appendChild(header);
+
+    var tableWrap = document.createElement('div');
+    tableWrap.setAttribute(PANEL_ATTR + '-wrap', '1');
+    tableWrap.className = 'dbsext-vp-table-wrap';
+    // 横スクロールバーの見た目は table-wrap.js が共通で与える
+    tableWrap.setAttribute('data-dbsext-table-scroll', '1');
+    panel.appendChild(tableWrap);
+
+    if (insertion.targetSibling) {
+      insertion.container.insertBefore(panel, insertion.targetSibling);
+    } else {
+      insertion.container.appendChild(panel);
+    }
+
+    return panel;
+  }
+
+  /**
+   * 画面離脱時の後片付け
+   */
+  function teardown() {
+    showOriginalTable();
+    var panel = document.querySelector('[' + PANEL_ATTR + '="1"]');
+    if (panel && panel.parentNode) {
+      panel.parentNode.removeChild(panel); // dbsext:own-ui
+    }
+    currentGeneration++;
+    isFetching = false;
+    currentVehicleId = null;
+  }
+
+  D.vehicleProblems = {
+    apply: function () {
+      if (typeof document === 'undefined' || !document.body) return;
+
+      var vehicleId = getVehicleIdFromUrl();
+
+      // 車両詳細画面以外では元の表を表示し自前パネルを撤去
+      if (!vehicleId) {
+        var panel = document.querySelector('[' + PANEL_ATTR + '="1"]');
+        if (panel) teardown();
+        return;
+      }
+
+      // 車両詳細画面: 元の表を隠し自前パネルを表示
+      if (!hideOriginalTable()) return; // 表が見つからなければ何もしない
+
+      var panel = buildPanel(vehicleId);
+      if (!panel) return;
+
+      fetchAndRender(panel, vehicleId);
+    },
+
+    // テスト用
+    _clearCache: function () {
+      cacheMap = Object.create(null);
+      currentGeneration++;
+      isFetching = false;
+      currentVehicleId = null;
+    },
+    _getVehicleIdFromUrl: getVehicleIdFromUrl,
+    _findProblemTable: findProblemTable
+  };
+})(typeof globalThis !== 'undefined' ? globalThis : window);
 
 /**
  * DBSEXT テーブル列制御モジュール
@@ -5736,7 +6754,16 @@
 
 /**
  * DBSEXT テーブルツール（並べ替え・絞り込み）モジュール
- * Element Plus el-table のヘッダに操作UIを追加し、並べ替え・絞り込みを行う
+ *
+ * **ポータル表むけのアダプタである。** 判定ロジック（並び順・絞り込み・見出しUI）は
+ * `table-kit` が持ち、ここは「ポータルのDOMをどう動かすか」だけを担う。
+ *
+ *   並べ替え … 既存の <tr> を appendChild で並べ直す
+ *   絞り込み … display:none で隠す
+ *
+ * **行を作り直してはいけない。** 行の中にはポータル（Vue）のイベントハンドラを持つ
+ * 操作ボタン（解錠・再配置・メンテナンス）が入っており、作り直すと壊れる。
+ * 契約§6「ポータルの既存DOMを削除・移動しない」。
  */
 (function (global) {
   'use strict';
@@ -5744,34 +6771,12 @@
 
   var tableStates = {};
 
-  function comparePortKeys(keyA, keyB) {
-    if (keyA[0] !== keyB[0]) return keyA[0] - keyB[0];
-    if (keyA[1] !== keyB[1]) return keyA[1].localeCompare(keyB[1]);
-    if (keyA[2] !== keyB[2]) return keyA[2] - keyB[2];
-    return keyA[3].localeCompare(keyB[3], undefined, { numeric: true, sensitivity: 'base' });
-  }
-
-  function portSortKey(name) {
-    if (name === null || name === undefined) {
-      return [1, '', 0, ''];
-    }
-    var str = String(name);
-    var trimmed = str.trim();
-    var m = trimmed.match(/^\s*([A-Za-z]*)-?(\d+)/);
-    if (m) {
-      var letters = m[1].toUpperCase();
-      var num = Number(m[2]);
-      return [0, letters, num, str];
-    } else {
-      return [1, '', 0, str];
-    }
+  function kit() {
+    return D.tableKit;
   }
 
   function hasActiveFilter(state) {
-    for (var fCol in state.filterValues) {
-      if (state.filterValues[fCol] && state.filterValues[fCol].length > 0) return true;
-    }
-    return false;
+    return kit().hasAnyCondition(state.conditions);
   }
 
   function rowCheckbox(row) {
@@ -5852,7 +6857,7 @@
 
     var trArray = Array.prototype.slice.call(trs);
 
-    // 1. 絞り込み処理
+    // 1. 絞り込み処理（判定は table-kit。文字列 / 数値の範囲を同じ入口で扱う）
     var filtering = hasActiveFilter(state);
 
     for (var i = 0; i < trArray.length; i++) {
@@ -5860,16 +6865,15 @@
       var show = true;
       if (filtering) {
         var cells = tr.children;
-        for (var colIdxStr in state.filterValues) {
-          var filterVal = state.filterValues[colIdxStr];
-          if (filterVal && filterVal.length > 0) {
-            var colIdx = Number(colIdxStr);
-            var cell = cells[colIdx];
-            var cellText = cell ? cell.textContent.trim() : '';
-            if (cellText.toLowerCase().indexOf(filterVal.toLowerCase()) === -1) {
-              show = false;
-              break;
-            }
+        for (var colIdxStr in state.conditions) {
+          var cond = state.conditions[colIdxStr];
+          if (!cond) continue;
+          var colIdx = Number(colIdxStr);
+          var cell = cells[colIdx];
+          var cellText = cell ? cell.textContent.trim() : '';
+          if (!kit().matchesFilter(cellText, cond)) {
+            show = false;
+            break;
           }
         }
       }
@@ -5886,46 +6890,25 @@
       var th = ths[sortCol];
       var colTitle = th ? (th.getAttribute('data-dbsext-orig-title') || th.textContent.trim()) : '';
 
-      var isPortCol = (colTitle === 'ポート名' || colTitle === 'ポート');
-
-      var isAllNumeric = true;
-      if (!isPortCol) {
-        var validCount = 0;
-        for (var j = 0; j < trArray.length; j++) {
-          var tdNode = trArray[j].children[sortCol];
-          var txt = tdNode ? tdNode.textContent.trim() : '';
-          if (txt !== '') {
-            validCount++;
-            if (isNaN(Number(txt))) {
-              isAllNumeric = false;
-              break;
-            }
-          }
-        }
-        if (validCount === 0) {
-          isAllNumeric = false;
-        }
+      // 列全体が数値なら数値として並べる。判定も比較も table-kit に任せる
+      var columnValues = [];
+      for (var j = 0; j < trArray.length; j++) {
+        var tdNode = trArray[j].children[sortCol];
+        columnValues.push(tdNode ? tdNode.textContent.trim() : '');
       }
+      var sortOpts = {
+        columnLabel: colTitle,
+        numeric: !kit().isPortColumn(colTitle) && kit().isNumericColumn(columnValues)
+      };
 
       trArray.sort(function (trA, trB) {
         var tdA = trA.children[sortCol];
         var tdB = trB.children[sortCol];
-        var textA = tdA ? tdA.textContent.trim() : '';
-        var textB = tdB ? tdB.textContent.trim() : '';
-
-        var res = 0;
-        if (isPortCol) {
-          var keyA = portSortKey(textA);
-          var keyB = portSortKey(textB);
-          res = comparePortKeys(keyA, keyB);
-        } else if (isAllNumeric) {
-          var numA = textA === '' ? -Infinity : Number(textA);
-          var numB = textB === '' ? -Infinity : Number(textB);
-          res = numA - numB;
-        } else {
-          res = textA.localeCompare(textB, undefined, { numeric: true, sensitivity: 'base' });
-        }
-
+        var res = kit().compare(
+          tdA ? tdA.textContent.trim() : '',
+          tdB ? tdB.textContent.trim() : '',
+          sortOpts
+        );
         return sortOrder === 'desc' ? -res : res;
       });
 
@@ -5937,33 +6920,16 @@
 
   function updateHeaderUI(ths, state) {
     for (var c = 0; c < ths.length; c++) {
-      var th = ths[c];
-
-      // ソート表示更新
-      var sortSpan = th.querySelector('[data-dbsext-sort]');
-      if (sortSpan) {
-        if (state.sortColIndex === c) {
-          sortSpan.textContent = state.sortOrder === 'asc' ? ' ▲' : ' ▼';
-          sortSpan.style.opacity = '1';
-        } else {
-          sortSpan.textContent = ' ▲';
-          sortSpan.style.opacity = '0.3';
-        }
-      }
-
-      // 絞り込み入力値同期
-      var filterInput = th.querySelector('[data-dbsext-filter]');
-      if (filterInput) {
-        var savedVal = state.filterValues[c] || '';
-        if (filterInput.value !== savedVal) {
-          filterInput.value = savedVal;
-        }
-      }
+      var controls = ths[c].__dbsextControls;
+      if (!controls) continue;
+      controls.updateSortIndicator(state.sortColIndex === c, state.sortOrder);
+      controls.syncFromState(state.conditions[c]);
     }
   }
 
   D.tableTools = {
-    portSortKey: portSortKey,
+    // 互換のため残す。実装は table-kit にある（自前表からも同じ順序を使うため）
+    portSortKey: function (name) { return kit().portSortKey(name); },
 
     // 検証用。DOMを伴うフィルタ／選択連動を実ブラウザ無しでも再現する。
     _applyFilterAndSort: applyFilterAndSort,
@@ -5991,16 +6957,12 @@
 
         var stateKey = pathname + '#' + t;
         if (!tableStates[stateKey]) {
-          tableStates[stateKey] = {
-            sortColIndex: null,
-            sortOrder: null,
-            filterValues: {}
-          };
+          tableStates[stateKey] = kit().createState();
 
           // 初回既定の並べ替え: ポート名またはポートの列があれば昇順1回
           for (var i = 0; i < ths.length; i++) {
             var title = ths[i].getAttribute('data-dbsext-orig-title') || ths[i].textContent.trim();
-            if (title === 'ポート名' || title === 'ポート') {
+            if (kit().isPortColumn(title)) {
               tableStates[stateKey].sortColIndex = i;
               tableStates[stateKey].sortOrder = 'asc';
               break;
@@ -6021,65 +6983,42 @@
               var origTitle = th.textContent.trim();
               th.setAttribute('data-dbsext-orig-title', origTitle);
 
-              // ソートトリガー
-              var sortSpan = document.createElement('span');
-              sortSpan.setAttribute('data-dbsext-sort', '1');
-              sortSpan.style.cursor = 'pointer';
-              sortSpan.style.userSelect = 'none';
-              sortSpan.style.marginLeft = '4px';
-              sortSpan.style.fontSize = '11px';
-              sortSpan.textContent = ' ▲';
-              sortSpan.style.opacity = '0.3';
-
-              sortSpan.addEventListener('click', function (e) {
-                e.stopPropagation();
-                if (state.sortColIndex === colIndex) {
-                  state.sortOrder = (state.sortOrder === 'asc') ? 'desc' : 'asc';
-                } else {
-                  state.sortColIndex = colIndex;
-                  state.sortOrder = 'asc';
-                }
-                updateHeaderUI(ths, state);
-                applyFilterAndSort(table, state, ths);
-              });
-
-              // 絞り込み入力
+              // 見出しの操作UIは table-kit が作る。**自前表とまったく同じもの**を使う。
+              // 見た目もCSS（skin.js）側で共通化してあるので、
+              // ここでインラインstyleを書き足さないこと。
               //
-              // **見出しの高さを増やしすぎないこと。**
-              // 実機では自前UIのせいで見出しが 89px まで伸びていた（現場から指摘）。
-              // 表は縦にも長いので、見出しが高いほど**一度に見える行数が減る**。
-              // 余白と文字を詰め、入力欄の高さを 18px に固定する。
-              var filterDiv = document.createElement('div');
-              filterDiv.style.marginTop = '2px';
-              filterDiv.style.lineHeight = '0';
-
-              var filterInput = document.createElement('input');
-              filterInput.type = 'text';
-              filterInput.setAttribute('data-dbsext-filter', '1');
-              filterInput.placeholder = '絞り込み';
-              filterInput.style.width = '100%';
-              filterInput.style.height = '18px';
-              filterInput.style.lineHeight = '16px';
-              filterInput.style.padding = '0 4px';
-              filterInput.style.fontSize = '11px';
-              filterInput.style.border = '1px solid #c8ccd4';
-              filterInput.style.borderRadius = '3px';
-              filterInput.style.boxSizing = 'border-box';
-
-              filterInput.addEventListener('click', function (e) {
-                e.stopPropagation();
-              });
-              filterInput.addEventListener('keydown', function (e) {
-                e.stopPropagation();
-              });
-              filterInput.addEventListener('input', function () {
-                state.filterValues[colIndex] = filterInput.value;
-                applyFilterAndSort(table, state, ths);
+              // 列によっては、文字列の部分一致より「以上・以下」の方が役に立つ
+              // （電圧・バッテリー残量など）。どの列を数値扱いにするかは
+              // table-kit の NUMERIC_COLUMN_HINTS に集約してある。
+              var controls = kit().buildHeaderControls({
+                columnLabel: origTitle,
+                sortMode: 'indicator',
+                onSort: function () {
+                  if (state.sortColIndex === colIndex) {
+                    state.sortOrder = (state.sortOrder === 'asc') ? 'desc' : 'asc';
+                  } else {
+                    state.sortColIndex = colIndex;
+                    state.sortOrder = 'asc';
+                  }
+                  updateHeaderUI(ths, state);
+                  applyFilterAndSort(table, state, ths);
+                },
+                onFilter: function (condition) {
+                  state.conditions[colIndex] = condition;
+                  applyFilterAndSort(table, state, ths);
+                }
               });
 
-              th.appendChild(sortSpan);
-              filterDiv.appendChild(filterInput);
-              th.appendChild(filterDiv);
+              // 既定の条件を状態側にも置いておく（種類だけ先に決まる）
+              if (!state.conditions[colIndex]) {
+                state.conditions[colIndex] = controls.condition;
+              } else {
+                controls.syncFromState(state.conditions[colIndex]);
+              }
+
+              th.__dbsextControls = controls;
+              th.appendChild(controls.sortEl);
+              th.appendChild(controls.filterWrap);
             })(c);
           }
         }
