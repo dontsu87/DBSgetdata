@@ -1,8 +1,8 @@
 {
-  "version": "202608101818",
-  "bundle": "bundle-202608101818.js",
-  "sha256": "1e8fce6c51f4c974a34aa448bd57b5a51c07a89eb723d2b6039bb1a0d7b8daef",
-  "signature": "S9bJa6c54dSb1fgUOhHVV5K3doEiPDS200tnsJKJb1m3xhKmFh+BgiRukLqE5cq1nFCH9M+QkOCBrEx6VnqjuQ==",
+  "version": "202608101920",
+  "bundle": "bundle-202608101920.js",
+  "sha256": "29db51362aacf6c83333131c21029708f4ed3128208929aa7678833df19dd9b9",
+  "signature": "OPCRsfy+APhPpshq+q7M4Jfb8kJzGm0xUFKB2g36GopXzUEQkxDeDhOSMquKbdNAgttJLqd1t2ufBFKIHCq/QA==",
   "minExtensionVersion": "0.1.0",
-  "changelog": "表のリファクタリング（見た目と振る舞いを共通化）＋電圧・バッテリー残量などの数値絞り込み（以上・以下）を追加"
+  "changelog": "202608101800"
 }
