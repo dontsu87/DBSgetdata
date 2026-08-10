@@ -8,7 +8,7 @@
   global.DBSEXT = global.DBSEXT || {};
   var D = global.DBSEXT;
 
-  D.VERSION = '202608100912';
+  D.VERSION = '202608100918';
 
   D.CONFIG = {
     PORTAL_ORIGIN: 'https://mg.docomo-cycle.jp',
