@@ -8,7 +8,7 @@
   global.DBSEXT = global.DBSEXT || {};
   var D = global.DBSEXT;
 
-  D.VERSION = '202608102022';
+  D.VERSION = '202608102052';
 
   D.CONFIG = {
     PORTAL_ORIGIN: 'https://mg.docomo-cycle.jp',
@@ -249,6 +249,9 @@
     { name: 'netStatus', reapply: true, get: function () { return D.netStatus; } },
     { name: 'tableWrap', reapply: true, get: function () { return D.tableWrap; } },
     { name: 'uiTweaks', reapply: true, get: function () { return D.uiTweaks; } },
+    // 車両情報1000件表示（拡張版限定・実ページ遷移方式）。
+    // エリア確定を待つ必要があるため reapply:true
+    { name: 'vehiclePageSize', reapply: true, get: function () { return D.vehiclePageSize; } },
     // body直下の固定要素（消えないはず）だが、冪等なので保険として再適用する。
     // 「boot時1回だけ」がボタン消失の原因だったため、同じ落とし穴を残さない。
     { name: 'upsell', reapply: true, get: function () { return D.upsell; } },
@@ -3612,6 +3615,12 @@
   function maximizePageSize() {
     if (typeof document === 'undefined') return;
     if (!isVehiclesPage()) return;
+    // 拡張版では vehicle-pagesize.js が「1000件表示（実ページ遷移方式）」を
+    // 別途担う。ここでのドロップダウン操作（最大500）は**ブックマークレット版
+    // 専用の代替手段**として残す。両方を同時に走らせると、ドロップダウンを
+    // 500へ変えている最中に vehicle-pagesize.js が遷移を起こす、といった
+    // 競合の余地が生まれるため、拡張版ではここを止める。
+    if (D.platform && (D.platform.kind === 'extension' || D.platform.isUserScript)) return;
     if (sizeRunning || sizeDoneFor[location.pathname]) return;
 
     // **`.el-pagination__sizes` の中の select だけを対象にする。**
@@ -3692,6 +3701,143 @@
     _state: function () {
       return { depth: depth, pendingBack: pendingBack, sizeDoneFor: sizeDoneFor };
     }
+  };
+})(typeof globalThis !== 'undefined' ? globalThis : window);
+
+
+/**
+ * DBSEXT 車両情報 1000台デフォルトモード
+ *
+ * **Chrome拡張版（同梱版・配信版）専用機能。ブックマークレット版では動かさない。**
+ *
+ * ---------------------------------------------------------------------------
+ * 経緯（2026-08-10 実機実測で確定）
+ * ---------------------------------------------------------------------------
+ * 過去2回、別の方式が失敗している。
+ *
+ *   1. `history.pushState`/`replaceState` で `page-size=1000` をURLへ注入する方式
+ *      → **URLは変わるがポータルは読まない**（表示は100のまま）。実機で確定済み（B-1）。
+ *   2. 上記を踏まえドロップダウンを実際に操作する方式に戻したが、
+ *      選択肢は `50/100/200/500` の4つしかなく、**1000は選べない**。
+ *
+ * **今回わかったこと**: `history.pushState` ではなく**本物のページ遷移**
+ * （`location.href`/`location.replace`）で `?page-size=1000` を含んだ状態で
+ * `/vehicles` を開くと、ポータルは実際に1000件表示で応答する
+ * （実機スクリーンショットで確認。ページャに「1000」と表示され、779件が
+ * 1ページに収まった）。**ただし遷移後に「検索」ボタンを押し直すと、
+ * ページサイズが100へ戻ってしまう**ため、遷移した状態をそのまま使い、
+ * 拡張側から検索ボタンを押してはいけない。
+ *
+ * 当時この方式を試したのはブックマークレット版のみで、
+ * **本物のページ遷移＝ブックマークレットが失われる**ため、実用にならなかった。
+ * 今は拡張機能自体が毎ページロードで確実に再注入されるため、
+ * 「遷移し直す」ことを機能の前提にできる。
+ *
+ * ---------------------------------------------------------------------------
+ * 発火条件（暴走・無限リロードを防ぐための歯止め）
+ * ---------------------------------------------------------------------------
+ *   - `/vehicles` にいる
+ *   - URLに `page-size` が**まだ十分な値で入っていない**（初回訪問、または
+ *     利用者が明示的にドロップダウンで小さい値へ変えた直後ではない状態）
+ *   - **エリアが選択済み**（未選択のまま遷移しても意味がなく、
+ *     「未選択」表示のままリロードを繰り返す事故を避ける）
+ *   - 同じ読み込みの中で一度試したら、たとえ失敗しても**再挑戦しない**
+ *     （エリア未選択が続く限り待ち、選択されたら初めて1回だけ遷移する）
+ */
+(function (global) {
+  'use strict';
+  var D = global.DBSEXT;
+
+  var DESIRED_PAGE_SIZE = 1000;
+  var AREA_LABEL_RE = /エリア(未選択|選択中)/;
+
+  var triedThisLoad = false;
+
+  function isVehiclesPage() {
+    return typeof location !== 'undefined' && /^\/vehicles(\/|$)/.test(location.pathname);
+  }
+
+  /**
+   * 現在のURLが「すでに十分なpage-sizeを持っている」か。
+   * 利用者がドロップダウンで500等へ手動で変えたときも、
+   * ポータルはURLへ書き戻す（実測）ため、この判定だけで両立できる。
+   */
+  function hasSufficientPageSize() {
+    if (typeof location === 'undefined') return true;
+    var m = location.search.match(/[?&]page-size=(\d+)/);
+    if (!m) return false;
+    return parseInt(m[1], 10) >= DESIRED_PAGE_SIZE;
+  }
+
+  /** state-forms.js と同じ判定（重複を避けるため揃えてある） */
+  function getHeaderAreaElement() {
+    if (typeof document === 'undefined') return null;
+    var exact = document.querySelector('p.col-span-3.cursor-pointer.text-right');
+    if (exact && AREA_LABEL_RE.test(exact.textContent || '')) return exact;
+
+    var candidates = document.querySelectorAll('.cursor-pointer');
+    var best = null;
+    var bestLen = Infinity;
+    for (var i = 0; i < candidates.length; i++) {
+      var el = candidates[i];
+      var text = (el.textContent || '').trim();
+      if (!AREA_LABEL_RE.test(text)) continue;
+      if (el.tagName === 'A') continue;
+      if (typeof el.querySelector === 'function' && el.querySelector('a[href]')) continue;
+      if (text.length < bestLen) {
+        bestLen = text.length;
+        best = el;
+      }
+    }
+    return best;
+  }
+
+  function isAreaSelected() {
+    var el = getHeaderAreaElement();
+    if (!el) return false;
+    var text = (el.textContent || '').trim();
+    return text.indexOf('未選択') === -1 && AREA_LABEL_RE.test(text);
+  }
+
+  /** 既存のクエリを保った上で page-size と page を差し替えたURLを組み立てる */
+  function buildTargetUrl() {
+    var params = new URLSearchParams(location.search);
+    params.set('page-size', String(DESIRED_PAGE_SIZE));
+    params.set('page', '1');
+    var query = params.toString();
+    return location.pathname + (query ? '?' + query : '');
+  }
+
+  function isExtensionPlatform() {
+    return !!(D.platform && (D.platform.kind === 'extension' || D.platform.isUserScript));
+  }
+
+  D.vehiclePageSize = {
+    DESIRED_PAGE_SIZE: DESIRED_PAGE_SIZE,
+
+    apply: function () {
+      if (typeof document === 'undefined' || typeof location === 'undefined') return;
+      if (!isExtensionPlatform()) return;   // ブックマークレット版では何もしない
+      if (!isVehiclesPage()) return;
+      if (triedThisLoad) return;
+      if (hasSufficientPageSize()) return;
+      if (!isAreaSelected()) return;        // エリアが決まるまで待つ（次の再適用で再確認）
+
+      triedThisLoad = true;
+      var target = buildTargetUrl();
+      if (D.core && typeof D.core.log === 'function') {
+        D.core.log('車両情報を1000件表示で開き直します: ' + target);
+      }
+      // 履歴を汚さない（戻るボタンで page-size=100 の状態へ戻らせない）
+      location.replace(target);
+    },
+
+    // テスト用
+    _reset: function () { triedThisLoad = false; },
+    _hasTriedThisLoad: function () { return triedThisLoad; },
+    _hasSufficientPageSize: hasSufficientPageSize,
+    _isAreaSelected: isAreaSelected,
+    _buildTargetUrl: buildTargetUrl
   };
 })(typeof globalThis !== 'undefined' ? globalThis : window);
 
