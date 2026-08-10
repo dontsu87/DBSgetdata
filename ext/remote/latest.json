@@ -1,8 +1,8 @@
 {
-  "version": "202608101034",
-  "bundle": "bundle-202608101034.js",
-  "sha256": "51f7b99b056ba72f066c04aea38f9b492e2cef6b79d2a504e71d5b5ae185e690",
-  "signature": "VXm1YdZoKiobU/5X+E986covjgvHromSjOo1zsZhO7I9neTGUVehDyrOPjC5E7WiuYArCklGJOkf4D2FByzNng==",
+  "version": "202608101627",
+  "bundle": "bundle-202608101627.js",
+  "sha256": "aed92d232620719a8fe230b706e15e406db8668b467515d43bc02d338fe0d775",
+  "signature": "JaWoAorlAtEWcMIw8eAClcmjaD6Iya4bZieGZbAd3TOZJCN3FRhhlRCMyFC2w/mZQGQFE8rl2RwM85w64bnupQ==",
   "minExtensionVersion": "0.1.0",
-  "changelog": "車両情報の操作列を既定表示に変更（たたむチェック方式）／先頭列固定のz-indexを引き上げ（他画面での不可視バグ対応）"
+  "changelog": "202608101627"
 }
