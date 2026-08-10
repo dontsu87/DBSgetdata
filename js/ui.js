@@ -674,6 +674,7 @@ function showOutOfPortModal(data) {
                                 alert_level_name: bike.alert_level_name,
                                 status: bike.status,
                                 at_time: bike.at_time || '',
+                                gps_datetime: bike.gps_datetime || '',
                                 position_mismatch: !!bike.port_position_mismatch
                             });
                         }
