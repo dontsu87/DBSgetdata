@@ -1,8 +1,8 @@
 {
-  "version": "202608100953",
-  "bundle": "bundle-202608100953.js",
-  "sha256": "a57a8996359a609af530919496660affe64a3da3cb7dd57075d4d1aa80b9a7e3",
-  "signature": "1isXDnb8QqWxuZQgWiJYtwEc226SQ9e1+WKFDDcm0/Ejima9ZfiZy7R3tPyMWZs8amFkaHZcsvLKmaGa9ft5/w==",
+  "version": "202608101034",
+  "bundle": "bundle-202608101034.js",
+  "sha256": "51f7b99b056ba72f066c04aea38f9b492e2cef6b79d2a504e71d5b5ae185e690",
+  "signature": "VXm1YdZoKiobU/5X+E986covjgvHromSjOo1zsZhO7I9neTGUVehDyrOPjC5E7WiuYArCklGJOkf4D2FByzNng==",
   "minExtensionVersion": "0.1.0",
-  "changelog": "別タブで開いたときに拡張カードへ出るエラーを解消（MutationObserverの監視開始失敗を捕捉）"
+  "changelog": "車両情報の操作列を既定表示に変更（たたむチェック方式）／先頭列固定のz-indexを引き上げ（他画面での不可視バグ対応）"
 }

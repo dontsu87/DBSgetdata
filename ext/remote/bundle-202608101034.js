@@ -8,7 +8,7 @@
   global.DBSEXT = global.DBSEXT || {};
   var D = global.DBSEXT;
 
-  D.VERSION = '202608100953';
+  D.VERSION = '202608101034';
 
   D.CONFIG = {
     PORTAL_ORIGIN: 'https://mg.docomo-cycle.jp',
@@ -1969,29 +1969,36 @@
         '  background-color: #e8f1fb !important;',
         '}',
         '',
-        '/* 案3: 先頭列（チェックボックス・車両識別番号）の sticky 固定 */',
+        '/* 案3: 先頭列（チェックボックス・車両識別番号）の sticky 固定',
+        '   z-indexは意図して高めにしてある（2026-08-10）。',
+        '   車両情報以外の表（操作列を隠す機能が無く、常に幅広い操作ボタン列が',
+        '   並ぶ）で、横スクロール中に先頭列が操作列の裏へ回り込んで見えなくなる',
+        '   report があった。position: static な通常セルは本来スタッキング文脈を',
+        '   作らないはずだが、操作列のボタン/ドロップダウンがEP側で独自の',
+        '   position+z-indexを持つ場合に先頭列が負ける。表内で確実に勝つよう、',
+        '   ビーコンのネイティブモーダル(1400番台)よりは十分低い値まで引き上げた。 */',
         'table.el-table__header th:first-child {',
         '  position: sticky !important;',
         '  left: 0 !important;',
-        '  z-index: 5 !important;',
+        '  z-index: 20 !important;',
         '  background-color: #d9d9d9 !important;',
         '}',
         'table.el-table__header th:nth-child(2) {',
         '  position: sticky !important;',
         '  left: 44px !important;',
-        '  z-index: 5 !important;',
+        '  z-index: 20 !important;',
         '  background-color: #d9d9d9 !important;',
         '  box-shadow: 2px 0 4px -2px rgba(0,0,0,0.12);',
         '}',
         'table.el-table__body td:first-child {',
         '  position: sticky !important;',
         '  left: 0 !important;',
-        '  z-index: 2 !important;',
+        '  z-index: 15 !important;',
         '}',
         'table.el-table__body td:nth-child(2) {',
         '  position: sticky !important;',
         '  left: 44px !important;',
-        '  z-index: 2 !important;',
+        '  z-index: 15 !important;',
         '  box-shadow: 2px 0 4px -2px rgba(0,0,0,0.12);',
         '}',
         '.el-table__body tr:nth-child(odd) td:first-child,',
@@ -5371,7 +5378,12 @@
  *
  * 目的: 車両情報（/vehicles）の横長テーブル問題に対処するため、
  * 普段使われない操作系5列（メンテナンス、AT管理、解錠、再配置、AT一体型車両操作）を
- * 既定で隠し、必要なときだけトグルで表示する。
+ * トグルで隠せるようにする。
+ *
+ * **既定は「表示」、チェックで「たたむ」（2026-08-10 変更）。**
+ * 当初は既定で隠す方式だったが、操作列がいきなり無いのは分かりにくいという
+ * 判断から反転した。状態は画面ごとに記憶する（stateStore / localStorage）ので、
+ * 一度「たたむ」を選べば次回以降もその状態で開く。
  *
  * 契約 §6 の遵守:
  * - DOMノードの削除・移動は一切行わない（display: none による表示制御のみ）
@@ -5425,7 +5437,7 @@
         }
       }
     } catch (e) {}
-    return false; // 既定は「隠す」（showActionCols = false）
+    return true; // 既定は「表示」（showActionCols = true）。たたむ操作は利用者の明示選択
   }
 
   function saveToggleState(screen, show) {
@@ -5634,6 +5646,12 @@
     if (style.textContent !== css) style.textContent = css;
   }
 
+  /**
+   * チェックボックスは「たたむ」の意味で出す（既定は表示のため）。
+   * `checked` と保存する `show` は**逆**になる。ここを混同すると、
+   * チェックを入れたのに列が消えない／消したのに戻らない、という
+   * 見た目と逆の動きになる。
+   */
   function ensureToggleUI(table, screen, show, onToggle) {
     if (!table || !table.parentNode) return;
 
@@ -5641,7 +5659,7 @@
     if (existing) {
       var input = existing.querySelector('[' + TOGGLE_INPUT_ATTR + ']');
       if (input) {
-        input.checked = show;
+        input.checked = !show;
       }
       return;
     }
@@ -5656,19 +5674,19 @@
     var checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
     checkbox.setAttribute(TOGGLE_INPUT_ATTR, '1');
-    checkbox.checked = show;
+    checkbox.checked = !show; // チェック = たたむ（非表示）
     checkbox.style.cssText = 'margin-right:6px; cursor:pointer; accent-color:#0b5cab; width:15px; height:15px;';
 
     checkbox.addEventListener('change', function () {
-      var newState = checkbox.checked;
-      saveToggleState(screen, newState);
+      var newShow = !checkbox.checked; // チェックONで「たたむ」= show:false
+      saveToggleState(screen, newShow);
       if (typeof onToggle === 'function') {
-        onToggle(newState);
+        onToggle(newShow);
       }
     });
 
     var span = document.createElement('span');
-    span.textContent = '操作列を表示';
+    span.textContent = '操作列をたたむ';
 
     label.appendChild(checkbox);
     label.appendChild(span);
