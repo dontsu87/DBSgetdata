@@ -15,86 +15,14 @@
     </header>
 
     <main class="content">
-      <!-- ===== 1. 導入（ブックマークレットの登録） ===== -->
-      <section class="card highlight-card" id="bookmarklet-section">
-        <h2>1. ブックマークレットを登録する</h2>
-        <p>最初に一度だけ、以下のブックマークレットをブラウザに登録してください。</p>
+      <!-- ===== 1. 導入（Chrome拡張） ===== -->
+      <section class="card highlight-card" id="extension-section">
+        <h2>1. Chrome拡張を導入する</h2>
+        <p><strong>いちばんおすすめの導入方法です。</strong>一度インストールすれば、管理ポータルを開くだけで自動的に機能が使えます。</p>
 
-        <div id="bookmarklet-status-container">
-          <h3>登録方法</h3>
-          <ol>
-            <li>下の <strong>「DBS拡張」ボタンをブックマークバーへドラッグ＆ドロップ</strong> してください。</li>
-            <li>管理ポータル（<code>mg.docomo-cycle.jp</code>）を開き、ログインします。</li>
-            <li>登録したブックマークをクリックすると、機能が追加されます。</li>
-          </ol>
-
-          <div class="bookmarklet-drag-area">
-            <a id="bookmarklet-link" href="#" class="btn btn-primary btn-drag">DBS拡張</a>
-            <span class="drag-help">← このボタンをブックマークバーへドラッグ</span>
-          </div>
-
-          
-        <div class="alert alert-success" id="update-notice">
-          <p><strong>更新しました: 2026年8月10日 19:20</strong></p>
-        </div>
-<div class="bookmarklet-copy-area">
-            <label for="bookmarklet-text">ドラッグできない場合は、以下のコードをコピーしてブックマークのURL欄に貼り付けてください：</label>
-            <div class="input-group">
-              <textarea id="bookmarklet-text" readonly placeholder="読み込み中..."></textarea>
-              <button type="button" id="btn-copy-bookmarklet" class="btn btn-secondary">コピー</button>
-            </div>
-            <span id="copy-message" class="copy-message" aria-live="polite"></span>
-          </div>
-
-          <div id="version-info" class="version-info">
-            <span id="bookmarklet-version">読み込み中...</span>
-          </div>
-        </div>
-
-        <div class="alert alert-info">
-          <p><strong>【使い方】</strong></p>
-          <ul>
-            <li><strong>管理ポータルを開いているとき</strong> — その場で機能が追加されます。画面右下のパネルが<strong>青くなれば適用中</strong>です。</li>
-            <li><strong>それ以外のページのとき</strong> — 管理ポータルが新しいタブで開きます。開いたタブで<strong>もう一度ブックマークを押してください</strong>。</li>
-            <li>画面を再読込すると機能は外れます。その場合は再度ブックマークを押してください（右下パネルが赤に戻っていれば未適用です）。</li>
-          </ul>
-        </div>
-      </section>
-
-      <!-- ===== 2. 追加される機能 ===== -->
-      <section class="card">
-        <h2>2. 追加される機能</h2>
-        <p>ブックマークレットを適用すると、管理ポータル上で以下の機能が使えるようになります。</p>
+        <h3>できること</h3>
         <ul>
-          <li><strong>バッテリーマップを開く</strong> — 左メニュー下部のボタンから、権限に応じたエリアのマップを表示</li>
-          <li><strong>一覧の並べ替え・絞り込み</strong> — ポータルの各一覧とビーコン一覧で、列見出しからソート・絞り込みができます。車両情報の見出し全選択は、絞り込み中に表示されている行だけを対象にします</li>
-          <li><strong>見出し行の固定</strong> — 下にスクロールしても列名が常に表示される</li>
-          <li><strong>見出し上の横スクロール</strong> — 表の上部から横へ移動でき、表本体と見出し列が同じ位置へ追随します。操作列の表示／非表示や画面差し替え後も表幅へ追随します</li>
-          <li><strong>表示条件の折りたたみ</strong> — 検索前に条件入力が必要な「ユーザ情報」を除き、「表示条件」「一括車両状態変更」「一括車両操作」を既定で閉じる</li>
-          <li><strong>「戻る」ボタンで1つ前の画面へ</strong> — お客様情報を見ているときも前の画面に戻れる</li>
-          <li><strong>一覧のリンクを別タブで開く</strong> — 絞り込み結果を残したまま個別画面を確認できる</li>
-          <li><strong>車両情報の表示件数を最大化</strong> — ページャの選択肢のうち最大（500件）を自動選択</li>
-          <li><strong>読み込み中の表示</strong> — 通信が0.25秒を超えると表に「読み込み中…」を重ねる。1秒を超えると経過秒数も表示（Chrome拡張版では自動で、ブックマークレット版ではクリック後に有効）</li>
-          <li><strong>通信エラー・ログイン切れのお知らせ</strong> — 失敗したことが分かる。自動での再送・再ログインは行いません</li>
-          <li><strong>操作列を既定で隠す</strong> — メンテナンス／AT管理／解錠／再配置／AT一体型車両操作の5列を隠し、表の横幅を詰める。「操作列を表示」で元に戻せます</li>
-          <li><strong>先頭列の固定</strong> — 横スクロールしても車両識別番号が左に残る</li>
-          <li><strong>車両状態を色で確認</strong> — ポータル標準の緑・茶・赤の状態色を、車両識別番号のセルだけに表示します</li>
-          <li><strong>車両詳細の問題申告を正しく表示</strong> — 問題申告から車両番号を選んで開く詳細画面の表を、部位・重要度・事象が正しく対応した見やすい表に差し替えます。ヘッダ固定・フィルタ・並び替えも完備</li>
-          <li><strong>エリア内ビーコン一覧</strong> — 左メニューの「ビーコン情報」からポータル標準の画面遷移を使って開けます。標準の新規登録欄を上に残し、選択エリア内の割当済みビーコンを固定ヘッダ・7列フィルタ・並び替え付きで自動表示します。画面表示時に自動取得し、必要なときは「再取得」で更新できます。10桁のビーコン識別番号を押すと、ポータル標準の検索結果をコンパクトなモーダルで表示します。モーダル中は背景を操作できません。編集途中で閉じた場合は、標準の「取消」で編集状態を解除してから閉じます（更新・削除・保存・登録は自動実行しません）</li>
-          <li><strong>文字を読みやすく</strong> — 表の見出しなどのコントラストをWCAG AA基準まで改善し、日本語フォント（BIZ UDPGothic）を指定</li>
-          <li><strong>サイドバーを狭く</strong> — 280px → 180px。表に使える幅が広がります</li>
-          <li><strong>エリア選択を覚える</strong> — 一度選んだエリアを次回から自動で適用します。<strong>適用したことは画面に表示され、1クリックで選び直せます</strong>（初回は自動適用しません）</li>
-        </ul>
-      </section>
-
-      <!-- ===== 3. Chrome拡張版のご案内 ===== -->
-      <section class="card">
-        <h2>3. より便利なChrome拡張版</h2>
-        <p>ブックマークレット版よりさらに快適なChrome拡張版もあります。</p>
-
-        <h3>ブックマークレット版との違い</h3>
-        <ul>
-          <li><strong>自動で適用</strong> — ポータルを開くだけで自動適用。毎回ブックマークを押す必要なし</li>
+          <li><strong>自動で適用</strong> — ポータルを開くだけで自動適用。毎回ボタンを押す必要なし</li>
           <li><strong>外れない</strong> — 画面を再読込しても機能が維持される</li>
           <li><strong>サイドパネル表示</strong> — 画面横にマップを並べて表示できる</li>
         </ul>
@@ -124,6 +52,78 @@
           </ul>
           <p>なお、拡張そのものの入れ替えが必要になるのは、まれな場合（数か月に一度程度）だけです。
             そのときは改めてご案内します。</p>
+        </div>
+      </section>
+
+      <!-- ===== 2. 追加される機能 ===== -->
+      <section class="card">
+        <h2>2. 追加される機能</h2>
+        <p>拡張機能（Chrome拡張版・ブックマークレット版）を適用すると、管理ポータル上で以下の機能が使えるようになります。</p>
+        <ul>
+          <li><strong>バッテリーマップを開く</strong> — 左メニュー下部のボタンから、権限に応じたエリアのマップを表示</li>
+          <li><strong>一覧の並べ替え・絞り込み</strong> — ポータルの各一覧とビーコン一覧で、列見出しからソート・絞り込みができます。車両情報の見出し全選択は、絞り込み中に表示されている行だけを対象にします</li>
+          <li><strong>見出し行の固定</strong> — 下にスクロールしても列名が常に表示される</li>
+          <li><strong>見出し上の横スクロール</strong> — 表の上部から横へ移動でき、表本体と見出し列が同じ位置へ追随します。操作列の表示／非表示や画面差し替え後も表幅へ追随します</li>
+          <li><strong>表示条件の折りたたみ</strong> — 検索前に条件入力が必要な「ユーザ情報」を除き、「表示条件」「一括車両状態変更」「一括車両操作」を既定で閉じる</li>
+          <li><strong>「戻る」ボタンで1つ前の画面へ</strong> — お客様情報を見ているときも前の画面に戻れる</li>
+          <li><strong>一覧のリンクを別タブで開く</strong> — 絞り込み結果を残したまま個別画面を確認できる</li>
+          <li><strong>車両情報の表示件数を最大化</strong> — ページャの選択肢のうち最大（500件）を自動選択</li>
+          <li><strong>読み込み中の表示</strong> — 通信が0.25秒を超えると表に「読み込み中…」を重ねる。1秒を超えると経過秒数も表示（Chrome拡張版では自動で、ブックマークレット版ではクリック後に有効）</li>
+          <li><strong>通信エラー・ログイン切れのお知らせ</strong> — 失敗したことが分かる。自動での再送・再ログインは行いません</li>
+          <li><strong>操作列を既定で隠す</strong> — メンテナンス／AT管理／解錠／再配置／AT一体型車両操作の5列を隠し、表の横幅を詰める。「操作列を表示」で元に戻せます</li>
+          <li><strong>先頭列の固定</strong> — 横スクロールしても車両識別番号が左に残る</li>
+          <li><strong>車両状態を色で確認</strong> — ポータル標準の緑・茶・赤の状態色を、車両識別番号のセルだけに表示します</li>
+          <li><strong>車両詳細の問題申告を正しく表示</strong> — 問題申告から車両番号を選んで開く詳細画面の表を、部位・重要度・事象が正しく対応した見やすい表に差し替えます。ヘッダ固定・フィルタ・並び替えも完備</li>
+          <li><strong>エリア内ビーコン一覧</strong> — 左メニューの「ビーコン情報」からポータル標準の画面遷移を使って開けます。標準の新規登録欄を上に残し、選択エリア内の割当済みビーコンを固定ヘッダ・7列フィルタ・並び替え付きで自動表示します。画面表示時に自動取得し、必要なときは「再取得」で更新できます。10桁のビーコン識別番号を押すと、ポータル標準の検索結果をコンパクトなモーダルで表示します。モーダル中は背景を操作できません。編集途中で閉じた場合は、標準の「取消」で編集状態を解除してから閉じます（更新・削除・保存・登録は自動実行しません）</li>
+          <li><strong>文字を読みやすく</strong> — 表の見出しなどのコントラストをWCAG AA基準まで改善し、日本語フォント（BIZ UDPGothic）を指定</li>
+          <li><strong>サイドバーを狭く</strong> — 280px → 180px。表に使える幅が広がります</li>
+          <li><strong>エリア選択を覚える</strong> — 一度選んだエリアを次回から自動で適用します。<strong>適用したことは画面に表示され、1クリックで選び直せます</strong>（初回は自動適用しません）</li>
+        </ul>
+      </section>
+
+      <!-- ===== 3. ブックマークレット版（代替の導入方法） ===== -->
+      <section class="card" id="bookmarklet-section">
+        <h2>3. ブックマークレット版（代替の導入方法）</h2>
+        <p>Chrome拡張機能をインストールできない環境（会社のポリシーなど）向けの代替手段です。拡張機能のインストール権限なしに、ブラウザへ登録するだけで使えます。</p>
+
+        <div id="bookmarklet-status-container">
+          <h3>登録方法</h3>
+          <ol>
+            <li>下の <strong>「DBS拡張」ボタンをブックマークバーへドラッグ＆ドロップ</strong> してください。</li>
+            <li>管理ポータル（<code>mg.docomo-cycle.jp</code>）を開き、ログインします。</li>
+            <li>登録したブックマークをクリックすると、機能が追加されます。</li>
+          </ol>
+
+          <div class="bookmarklet-drag-area">
+            <a id="bookmarklet-link" href="#" class="btn btn-primary btn-drag">DBS拡張</a>
+            <span class="drag-help">← このボタンをブックマークバーへドラッグ</span>
+          </div>
+
+
+        <div class="alert alert-success" id="update-notice">
+          <p><strong>更新しました: 2026年8月10日 19:20</strong></p>
+        </div>
+<div class="bookmarklet-copy-area">
+            <label for="bookmarklet-text">ドラッグできない場合は、以下のコードをコピーしてブックマークのURL欄に貼り付けてください：</label>
+            <div class="input-group">
+              <textarea id="bookmarklet-text" readonly placeholder="読み込み中..."></textarea>
+              <button type="button" id="btn-copy-bookmarklet" class="btn btn-secondary">コピー</button>
+            </div>
+            <span id="copy-message" class="copy-message" aria-live="polite"></span>
+          </div>
+
+          <div id="version-info" class="version-info">
+            <span id="bookmarklet-version">読み込み中...</span>
+          </div>
+        </div>
+
+        <div class="alert alert-info">
+          <p><strong>【使い方】</strong></p>
+          <ul>
+            <li><strong>管理ポータルを開いているとき</strong> — その場で機能が追加されます。画面右下のパネルが<strong>青くなれば適用中</strong>です。</li>
+            <li><strong>それ以外のページのとき</strong> — 管理ポータルが新しいタブで開きます。開いたタブで<strong>もう一度ブックマークを押してください</strong>。</li>
+            <li>画面を再読込すると機能は外れます。その場合は再度ブックマークを押してください（右下パネルが赤に戻っていれば未適用です）。</li>
+          </ul>
         </div>
       </section>
 
