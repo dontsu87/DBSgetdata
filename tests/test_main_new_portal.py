@@ -12,6 +12,7 @@ def prepare(monkeypatch):
     monkeypatch.setattr(main.Config, "LOGIN_URL", "https://mg-auth.example/login")
     monkeypatch.setattr(main.Config, "RUN_MODE", "")
     monkeypatch.setattr(main.Config, "validate", Mock())
+    monkeypatch.setattr(main, "should_skip_scrape", Mock(return_value=False))
     monkeypatch.setattr(
         main,
         "login_and_get_areas",
@@ -39,6 +40,37 @@ def test_run_scraping_valid_session_never_builds_browser(monkeypatch):
     finalize.assert_called_once()
     assert finalize.call_args.args[0] == [frame]
 
+
+def test_run_scraping_skips_during_post_full_cooldown(monkeypatch):
+    prepare(monkeypatch)
+    monkeypatch.setattr(main, "should_skip_scrape", Mock(return_value=True))
+    scrape = Mock(side_effect=AssertionError("クールダウン中は取得しない"))
+    monkeypatch.setattr(main, "scrape_all_vehicles_http", scrape)
+    assert main.run_scraping(is_worker=False) is False
+    scrape.assert_not_called()
+
+
+def test_run_scraping_hourly_mode_removes_location_cap_and_sets_cooldown(monkeypatch):
+    prepare(monkeypatch)
+    monkeypatch.setattr(main, "should_fetch_all_locations", Mock(return_value=True))
+    frame = pd.DataFrame({"識別番号": ["A-001"]})
+    scrape = Mock(return_value=frame)
+    monkeypatch.setattr(main, "scrape_all_vehicles_http", scrape)
+    monkeypatch.setattr(main, "_finalize_scraping", Mock(return_value="output.csv"))
+    update_cache = Mock()
+    mark_completed = Mock()
+    monkeypatch.setattr(main, "update_vehicle_location_cache", update_cache)
+    monkeypatch.setattr(main, "mark_location_fetch_completed", mark_completed)
+
+    assert main.run_scraping(is_worker=False) is True
+    scrape.assert_called_once_with(
+        include_port_vehicles=True,
+        unlimited_location=True,
+    )
+    mark_completed.assert_called_once_with(
+        main.Config.OUTPUT_DIR,
+        cooldown_sec=main.Config.VEHICLE_LOCATION_POST_FULL_COOLDOWN_SEC,
+    )
 
 def test_run_scraping_auth_failure_refreshes_once_then_retries_http(monkeypatch):
     prepare(monkeypatch)

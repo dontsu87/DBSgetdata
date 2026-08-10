@@ -507,6 +507,12 @@ def aggregate_ports_data(df_merged, master_data, gbfs_stations):
             "replace_increased_volt": replace_incr_val,
             "replaced_at": replaced_at,
             "area_name": normalize_area_name(row['エリア名']) if not pd.isna(row['エリア名']) else "その他",
+            "port_position_mismatch": (
+                str(row.get('ポート位置不整合', '')).strip().lower()
+                in ('true', '1', 'yes', 'on', 'ポート位置不整合')
+            ),
+            "vehicle_lat": float(row.get('車両位置緯度')) if ('車両位置緯度' in df_merged.columns and not is_empty_coord(row.get('車両位置緯度'))) else None,
+            "vehicle_lon": float(row.get('車両位置経度')) if ('車両位置経度' in df_merged.columns and not is_empty_coord(row.get('車両位置経度'))) else None,
             "lat": float(row.get('車両位置緯度')) if ('車両位置緯度' in df_merged.columns and not is_empty_coord(row.get('車両位置緯度'))) else (float(row.get('lat')) if (not is_empty_coord(row.get('lat'))) else None),
             "lon": float(row.get('車両位置経度')) if ('車両位置経度' in df_merged.columns and not is_empty_coord(row.get('車両位置経度'))) else (float(row.get('lon')) if (not is_empty_coord(row.get('lon'))) else None),
         }

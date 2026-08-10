@@ -85,6 +85,18 @@ class Config:
     VEHICLE_LOCATION_FETCH_DELAY_MS = _int_env(
         'DBS_VEHICLE_LOCATION_FETCH_DELAY_MS', 100
     )
+    # ポート所属車両を含む全車両の位置詳細取得は1時間周期で行う。
+    VEHICLE_LOCATION_FETCH_INTERVAL_SEC = _int_env(
+        'DBS_VEHICLE_LOCATION_FETCH_INTERVAL_SEC', 3600
+    )
+    # 実測GPSとポート座標の距離がこの値を超えた場合だけ別フラグを立てる。
+    VEHICLE_LOCATION_MISMATCH_THRESHOLD_M = _int_env(
+        'DBS_VEHICLE_LOCATION_MISMATCH_THRESHOLD_M', 100
+    )
+    # 全車両取得が完了した後、次の車両スクレイピングを10分間抑止する。
+    VEHICLE_LOCATION_POST_FULL_COOLDOWN_SEC = _int_env(
+        'DBS_VEHICLE_LOCATION_POST_FULL_COOLDOWN_SEC', 600
+    )
 
     # メール2段階認証コードの受け渡し (Power Automate → OneDrive 共有ファイル)
     # 詳細仕様: docs/email-2fa-power-automate-spec.md

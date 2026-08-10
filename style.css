@@ -1522,6 +1522,47 @@ header h1 {
     transform: scale(0.95);
 }
 
+/* ポート位置不整合モード トグル */
+.position-mismatch-container {
+    display: flex;
+    align-items: center;
+}
+
+.position-mismatch-label {
+    cursor: pointer;
+    user-select: none;
+}
+
+.position-mismatch-label input[type="checkbox"] {
+    display: none;
+}
+
+.position-mismatch-button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background-color: #334155;
+    color: #cbd5e1;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.position-mismatch-label input[type="checkbox"]:checked + .position-mismatch-button {
+    background: linear-gradient(135deg, #b91c1c 0%, #ef4444 100%);
+    color: #ffffff;
+    border-color: #f87171;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.5);
+}
+
+.position-mismatch-button:active {
+    transform: scale(0.95);
+}
 /* マップ上の作業員マーカーのスタイル */
 .worker-map-marker {
     background-color: #007aff;

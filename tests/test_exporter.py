@@ -53,7 +53,7 @@ class TestExporter(unittest.TestCase):
         self.assertEqual(len(loaded_df), 2)
         
         # カラム順序の検証
-        expected_columns = ['エリア名', '識別番号', '車両状態', 'ポート名', 'station_id', 'lat', 'lon', '電圧', 'AT通知受信日時', '連続利用開始日時', '同一ポート継続利用時間(秒)', '交換前電圧', '交換後電圧', '交換日時']
+        expected_columns = ['エリア名', '識別番号', '車両状態', 'ポート名', 'station_id', 'lat', 'lon', 'ポート位置不整合', '電圧', 'AT通知受信日時', '連続利用開始日時', '同一ポート継続利用時間(秒)', '交換前電圧', '交換後電圧', '交換日時']
         self.assertEqual(list(loaded_df.columns), expected_columns)
 
         # 内容の検証
@@ -62,5 +62,23 @@ class TestExporter(unittest.TestCase):
         self.assertEqual(loaded_df.iloc[0]['識別番号'], 'A-123')
         self.assertEqual(loaded_df.iloc[1]['識別番号'], 'B-456')
 
+
+    def test_port_position_mismatch_is_separate_from_vehicle_status(self):
+        from src.exporter import _add_port_position_mismatch_flag
+
+        frame = pd.DataFrame({
+            '識別番号': ['A-001', 'A-002', 'A-003'],
+            '車両状態': ['利用中', 'メンテナンス(手動)', '利用可能'],
+            'ポート名': ['駅前', '駅前', 'ポート外'],
+            'lat': [36.5770, 36.5770, ''],
+            'lon': [136.6470, 136.6470, ''],
+            '車両位置緯度': [36.5772, 36.5800, 36.5772],
+            '車両位置経度': [136.6472, 136.6500, 136.6472],
+        })
+
+        result = _add_port_position_mismatch_flag(frame)
+
+        assert list(result['ポート位置不整合']) == [False, True, False]
+        assert list(result['車両状態']) == ['利用中', 'メンテナンス(手動)', '利用可能']
 if __name__ == '__main__':
     unittest.main()

@@ -73,6 +73,26 @@ function initUIComponents() {
         unlockedFilterLabel.innerText = `${EMOJI_UNLOCKED} 未施錠未返却 (${unlockedThresholdHours.toFixed(1)}時間以上)`;
     }
 
+    // --- ポート位置不整合モードトグル ---
+    const positionMismatchCheckbox = document.getElementById('position-mismatch-checkbox');
+    const positionMismatchText = document.querySelector('.position-mismatch-text');
+    if (positionMismatchCheckbox) {
+        positionMismatchCheckbox.checked = isPositionMismatchMode;
+        updatePositionMismatchToggleUI(isPositionMismatchMode);
+        positionMismatchCheckbox.addEventListener('change', function() {
+            isPositionMismatchMode = positionMismatchCheckbox.checked;
+            saveToCache('position_mismatch_mode', isPositionMismatchMode);
+            updatePositionMismatchToggleUI(isPositionMismatchMode);
+            updateFilterAndRender(false);
+            updateOutOfPortCount(cachedDashboardData);
+        });
+    }
+
+    function updatePositionMismatchToggleUI(enabled) {
+        if (positionMismatchText) {
+            positionMismatchText.innerText = enabled ? '位置不整合抽出 ON' : '位置不整合抽出 OFF';
+        }
+    }
     // --- 右パネルのアコーディオン（折りたたみ）制御 ---
     const basemapHeader = document.getElementById('basemap-header-btn');
     const basemapPanel = document.getElementById('basemap-panel');
@@ -193,7 +213,7 @@ function initUIComponents() {
                     'unlocked_threshold_hours', 'unlocked_filter_enabled',
                     'is_port_selection_mode', 'selected_port_names',
                     'checked_legend_levels', 'selected_worker_mode',
-                    'out_of_port_only_mode', 'out_of_port_layer_active'
+                    'out_of_port_only_mode', 'out_of_port_layer_active', 'position_mismatch_mode'
                 ];
                 keysToRemove.forEach(key => localStorage.removeItem(key));
                 for (let i = localStorage.length - 1; i >= 0; i--) {
@@ -603,6 +623,7 @@ function updatePrefixFilterUI(data) {
 
 // ポート外車両モーダルの生成と表示
 function showOutOfPortModal(data) {
+    data = preparePositionMismatchData(data);
     const modal = document.getElementById('out-of-port-modal');
     const areaNameSpan = document.getElementById('out-of-port-area-name');
     const listBody = document.getElementById('out-of-port-list-body');
@@ -646,11 +667,12 @@ function showOutOfPortModal(data) {
 
                             outOfPortBikes.push({
                                 bike_id: bike.bike_id,
-                                port_name: port.port_name || 'ポート外',
+                                port_name: bike.mismatch_source_port || port.port_name || 'ポート外',
                                 voltage: bike.voltage,
                                 alert_level: bike.alert_level,
                                 alert_level_name: bike.alert_level_name,
-                                status: bike.status
+                                status: bike.status,
+                                position_mismatch: !!bike.port_position_mismatch
                             });
                         }
                     });
@@ -671,6 +693,12 @@ function showOutOfPortModal(data) {
         
         outOfPortBikes.forEach(bike => {
             const tr = document.createElement('tr');
+            if (bike.position_mismatch) {
+                tr.style.background = '#fee2e2';
+                tr.style.color = '#991b1b';
+                tr.style.fontWeight = 'bold';
+                tr.style.borderLeft = '5px solid #dc2626';
+            }
             
             // 車体番号 td
             const tdBikeId = document.createElement('td');
@@ -682,7 +710,15 @@ function showOutOfPortModal(data) {
             // データ上のポート位置 td
             const tdPortPos = document.createElement('td');
             tdPortPos.style.textAlign = 'center';
-            tdPortPos.innerText = bike.port_name;
+            if (bike.position_mismatch) {
+                const mismatchLabel = document.createElement('span');
+                mismatchLabel.style.color = '#dc2626';
+                mismatchLabel.style.fontWeight = 'bold';
+                mismatchLabel.innerText = '⚠️位置不整合';
+                tdPortPos.appendChild(mismatchLabel);
+                tdPortPos.appendChild(document.createElement('br'));
+            }
+            tdPortPos.appendChild(document.createTextNode(bike.port_name));
             tr.appendChild(tdPortPos);
             
             // バッテリー残量 td (電圧値 + 警告バッジ)
@@ -721,6 +757,7 @@ function showOutOfPortModal(data) {
 
 // ポート外（位置情報なし）車両数のカウント更新およびUI状態同期
 function updateOutOfPortCount(data) {
+    data = preparePositionMismatchData(data);
     const countEl = document.getElementById('out-of-port-count');
     updateOutOfPortBtnUI(isOutOfPortMarkerActive);
     if (!countEl) return;
@@ -731,7 +768,7 @@ function updateOutOfPortCount(data) {
             if (port.has_gps === false || port.lat === null || port.lon === null) {
                 if (port.bikes) {
                     port.bikes.forEach(bike => {
-                        if (bike.area_name === selectedArea) {
+                        if (normalizeAreaName(bike.area_name || port.area_name) === normalizeAreaName(selectedArea)) {
                             count++;
                         }
                     });

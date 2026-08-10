@@ -255,8 +255,10 @@ def fetch_vehicle_location_details(
     http_session,
     base_url,
     known_port_names=None,
+    include_port_vehicles=False,
     enabled=None,
     max_per_run=None,
+    unlimited=False,
     delay_ms=None,
     timeout=HTTP_TIMEOUT,
     sleep=time.sleep,
@@ -273,6 +275,8 @@ def fetch_vehicle_location_details(
         max_per_run = max(0, int(max_per_run))
     except (TypeError, ValueError):
         max_per_run = 0
+    if unlimited:
+        max_per_run = None
     try:
         delay_ms = max(0, int(delay_ms))
     except (TypeError, ValueError):
@@ -288,7 +292,7 @@ def fetch_vehicle_location_details(
     skipped_count = 0
 
     for row in rows:
-        target = _is_out_of_port_row(row, known_port_names)
+        target = include_port_vehicles or _is_out_of_port_row(row, known_port_names)
         row['vehicleLocationFetchFlag'] = 0
         row['vehicleGpsLatitude'] = None
         row['vehicleGpsLongitude'] = None
@@ -307,7 +311,7 @@ def fetch_vehicle_location_details(
             row['vehicleLocationFetchStatus'] = '停止中'
             skipped_count += 1
             continue
-        if attempted >= max_per_run:
+        if max_per_run is not None and attempted >= max_per_run:
             row['vehicleLocationFetchStatus'] = '上限超過'
             skipped_count += 1
             continue
@@ -441,6 +445,8 @@ def scrape_all_vehicles_http(
     session_path: Path = SESSION_FILE,
     *,
     http_session=None,
+    include_port_vehicles=False,
+    unlimited_location=False,
     timeout=HTTP_TIMEOUT,
     sleep=time.sleep,
 ) -> pd.DataFrame:
@@ -514,6 +520,8 @@ def scrape_all_vehicles_http(
             rows,
             http_session=http_session,
             base_url=base_url,
+            include_port_vehicles=include_port_vehicles,
+            unlimited=unlimited_location,
             sleep=sleep,
             timeout=timeout,
         )

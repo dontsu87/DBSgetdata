@@ -250,6 +250,38 @@ def test_fetch_vehicle_location_details_collects_gps_and_audit_fields():
     assert rows[1]['vehicleLocationFetchStatus'] == '対象外'
 
 
+
+def test_fetch_vehicle_location_details_hourly_mode_includes_port_bikes_without_cap():
+    rows = [
+        {'vehicleUniqueCode': 'IN-001', 'portName': '駅前', 'attachmentId': 'AT-001'},
+        {'vehicleUniqueCode': 'IN-002', 'portName': '駅前', 'attachmentId': 'AT-002'},
+    ]
+    http = FakeHttpSession([
+        FakeResponse(body={'gpsInfo': {
+            'gpsGlobalLocationLatitude': 36.577,
+            'gpsGlobalLocationLongitude': 136.647,
+        }}),
+        FakeResponse(body={'gpsInfo': {
+            'gpsGlobalLocationLatitude': 36.578,
+            'gpsGlobalLocationLongitude': 136.648,
+        }}),
+    ])
+
+    portal.fetch_vehicle_location_details(
+        rows,
+        http_session=http,
+        base_url='https://mg.example/',
+        known_port_names={'駅前'},
+        enabled=True,
+        max_per_run=1,
+        unlimited=True,
+        include_port_vehicles=True,
+        delay_ms=0,
+    )
+
+    assert len(http.calls) == 2
+    assert all(row['vehicleLocationFetchStatus'] == '取得成功' for row in rows)
+
 def test_fetch_vehicle_location_details_can_be_stopped_without_detail_calls():
     rows = [{
         'vehicleUniqueCode': 'OUT-001',

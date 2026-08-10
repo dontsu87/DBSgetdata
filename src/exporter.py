@@ -1,8 +1,67 @@
 # -*- coding: utf-8 -*-
 import os
+import json
+import math
 from datetime import datetime
 import pandas as pd
 from src.config import Config
+
+def _valid_coordinate(value):
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return False
+    return math.isfinite(number) and number != 0.0
+
+
+def _haversine_meters(lat1, lon1, lat2, lon2):
+    radius_m = 6371000.0
+    phi1, phi2 = math.radians(float(lat1)), math.radians(float(lat2))
+    d_phi = math.radians(float(lat2) - float(lat1))
+    d_lambda = math.radians(float(lon2) - float(lon1))
+    a = math.sin(d_phi / 2) ** 2
+    a += math.cos(phi1) * math.cos(phi2) * math.sin(d_lambda / 2) ** 2
+    return 2 * radius_m * math.asin(min(1.0, math.sqrt(a)))
+
+
+def _load_port_coordinate_master():
+    path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "port_coords_master.json")
+    try:
+        with open(path, "r", encoding="utf-8") as file:
+            payload = json.load(file)
+    except (OSError, UnicodeError, json.JSONDecodeError):
+        return {}
+    return payload if isinstance(payload, dict) else {}
+
+
+def _add_port_position_mismatch_flag(combined_df):
+    """車両状態を変更せず、実測GPSとポート座標の距離だけを別列へ記録します。"""
+    master = _load_port_coordinate_master()
+    threshold = max(0, int(Config.VEHICLE_LOCATION_MISMATCH_THRESHOLD_M))
+    flags = []
+    for _, row in combined_df.iterrows():
+        port_name = str(row.get("ポート名", "") or "").strip()
+        if not port_name or port_name in ("ポート外", "位置情報なし", "nan", "None"):
+            flags.append(False)
+            continue
+
+        port_lat = row.get("lat")
+        port_lon = row.get("lon")
+        master_item = master.get(port_name)
+        if (not _valid_coordinate(port_lat) or not _valid_coordinate(port_lon)) and isinstance(master_item, dict):
+            port_lat = master_item.get("lat")
+            port_lon = master_item.get("lon")
+
+        vehicle_lat = row.get("車両位置緯度")
+        vehicle_lon = row.get("車両位置経度")
+        if not all(_valid_coordinate(value) for value in (port_lat, port_lon, vehicle_lat, vehicle_lon)):
+            flags.append(False)
+            continue
+        flags.append(
+            _haversine_meters(port_lat, port_lon, vehicle_lat, vehicle_lon) > threshold
+        )
+    combined_df["ポート位置不整合"] = flags
+    return combined_df
 
 def export_to_onedrive(df_list: list[pd.DataFrame]) -> str:
     """
@@ -59,6 +118,8 @@ def export_to_onedrive(df_list: list[pd.DataFrame]) -> str:
         combined_df['station_id'] = ""
         combined_df['lat'] = ""
         combined_df['lon'] = ""
+
+    _add_port_position_mismatch_flag(combined_df)
 
     # --- 同一ポート継続利用時間の計算処理 ＆ バッテリー交換検知 ---
     import json
@@ -251,7 +312,7 @@ def export_to_onedrive(df_list: list[pd.DataFrame]) -> str:
     combined_df['交換日時'] = replace_time_list
 
     # カラム順序を整理 (新しく追加した station_id, lat, lon, AT種別, 連続利用開始日時, 同一ポート継続利用時間(秒), 交換前電圧, 交換後電圧, 交換日時 も含める)
-    columns_order = ['エリア名', '識別番号', '車両状態', 'ポート名', 'station_id', 'lat', 'lon', '位置詳細取得フラグ', '位置詳細取得状態', '車両位置緯度', '車両位置経度', '車両位置測位日時', '車両位置標高', '車両位置速度', '車両位置方位', '車両位置衛星数', '電圧', 'AT通知受信日時', 'AT種別', '連続利用開始日時', '同一ポート継続利用時間(秒)', '交換前電圧', '交換後電圧', '交換日時']
+    columns_order = ['エリア名', '識別番号', '車両状態', 'ポート名', 'station_id', 'lat', 'lon', '位置詳細取得フラグ', '位置詳細取得状態', '車両位置緯度', '車両位置経度', '車両位置測位日時', '車両位置標高', '車両位置速度', '車両位置方位', '車両位置衛星数', 'ポート位置不整合', '電圧', 'AT通知受信日時', 'AT種別', '連続利用開始日時', '同一ポート継続利用時間(秒)', '交換前電圧', '交換後電圧', '交換日時']
 
     # 存在するカラムのみで再配置
     columns_order = [col for col in columns_order if col in combined_df.columns]
@@ -690,7 +751,7 @@ def merge_and_upload_historical_logs(until_file: str) -> bool:
     
     # マージ処理
     df_list = []
-    keep_cols = ['エリア名', '識別番号', '車両状態', 'ポート名', 'station_id', 'lat', 'lon', '位置詳細取得フラグ', '位置詳細取得状態', '車両位置緯度', '車両位置経度', '車両位置測位日時', '車両位置標高', '車両位置速度', '車両位置方位', '車両位置衛星数', '電圧', 'AT通知受信日時', '連続利用開始日時', '同一ポート継続利用時間(秒)', '交換前電圧', '交換後電圧', '交換日時']
+    keep_cols = ['エリア名', '識別番号', '車両状態', 'ポート名', 'station_id', 'lat', 'lon', '位置詳細取得フラグ', '位置詳細取得状態', '車両位置緯度', '車両位置経度', '車両位置測位日時', '車両位置標高', '車両位置速度', '車両位置方位', '車両位置衛星数', 'ポート位置不整合', '電圧', 'AT通知受信日時', '連続利用開始日時', '同一ポート継続利用時間(秒)', '交換前電圧', '交換後電圧', '交換日時']
     
     print("Info: 過去ファイルの読み込みを開始します...")
     for idx, filepath in enumerate(csv_files):

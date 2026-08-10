@@ -11,6 +11,14 @@ from src.auth import login_and_get_areas, authenticate_new_portal
 from src.scraper import open_vehicle_page, scrape_vehicle_page
 from src.new_portal_scraper import PortalSessionError, scrape_all_vehicles_http
 from src.exporter import export_to_onedrive, upload_to_onedrive_web
+from src.vehicle_location_scheduler import (
+    merge_cached_vehicle_locations,
+    has_location_fetch_schedule,
+    should_skip_scrape,
+    mark_location_fetch_completed,
+    should_fetch_all_locations,
+    update_vehicle_location_cache,
+)
 from src.area_inspector import inspect_area_page
 from src.worker_inspector import inspect_worker_login_page
 
@@ -109,6 +117,7 @@ def _finalize_scraping(all_data, start_time):
         print(f"- 取得総行数  : {total_rows} 件")
         print(f"- 保存先パス  : {output_path}")
         print("処理が正常に完了しました。")
+        return output_path
     except Exception as error:
         print(f"Error: データの保存中にエラーが発生しました: {error}")
         raise
@@ -150,12 +159,31 @@ def run_scraping(is_worker=False):
         return
 
     start_time = datetime.now()
+    if should_skip_scrape(Config.OUTPUT_DIR):
+        print("全車両位置取得直後のクールダウン中のため、今回の車両スクレイピングをスキップします（次回スロットで再試行）。")
+        return False
     print("=== ドコモ・バイクシェア 車両情報取得開始 ===")
 
-    print("新管理ポータルの読み取り専用APIから全エリアを一括取得します...")
+    fetch_all_locations = should_fetch_all_locations(
+        Config.OUTPUT_DIR,
+        interval_sec=Config.VEHICLE_LOCATION_FETCH_INTERVAL_SEC,
+    )
+    if fetch_all_locations:
+        print("新管理ポータルの読み取り専用APIから全エリアを取得します（1時間周期・ポート所属車両を含む・位置取得上限なし）...")
+    else:
+        print("新管理ポータルの読み取り専用APIから全エリアを一括取得します（ポート外車両の位置詳細のみ）...")
+
+    def _scrape_current():
+        if fetch_all_locations:
+            return scrape_all_vehicles_http(
+                include_port_vehicles=True,
+                unlimited_location=True,
+            )
+        return scrape_all_vehicles_http()
+
     try:
         try:
-            frame = scrape_all_vehicles_http()
+            frame = _scrape_current()
         except PortalSessionError:
             print("Info: 保存セッションを更新するため、認証時だけブラウザを起動します。")
             driver = None
@@ -169,13 +197,26 @@ def run_scraping(is_worker=False):
                     except Exception:
                         pass
             # 再認証後も車両取得はHTTPで行う。再失敗時にブラウザを再起動しない。
-            frame = scrape_all_vehicles_http()
+            frame = _scrape_current()
 
-        _finalize_scraping([frame], start_time)
+        frame = merge_cached_vehicle_locations(frame, Config.OUTPUT_DIR)
+        output_path = _finalize_scraping([frame], start_time)
+        if output_path:
+            try:
+                update_vehicle_location_cache(frame, Config.OUTPUT_DIR)
+                if fetch_all_locations:
+                    mark_location_fetch_completed(
+                        Config.OUTPUT_DIR,
+                        cooldown_sec=Config.VEHICLE_LOCATION_POST_FULL_COOLDOWN_SEC,
+                    )
+                elif not has_location_fetch_schedule(Config.OUTPUT_DIR):
+                    mark_location_fetch_completed(Config.OUTPUT_DIR)
+            except Exception as location_state_error:
+                print(f"Warning: 車両位置取得の状態保存に失敗しました: {location_state_error}")
     except Exception as error:
         print(f"Error: 新管理ポータルの車両情報取得に失敗しました: {error}")
         raise
-    return
+    return True
 
     # ------------------------------------------------------------------
     # ここから下は閉鎖済み旧ポータルの参考実装。実行経路からは到達せず、
@@ -529,14 +570,25 @@ def main():
         if args.inspect:
             inspect_worker_login_page()
         else:
-            run_scraping(is_worker=True)
-            check_and_run_daily_gbfs()
+            scrape_completed = run_scraping(is_worker=True)
+            if scrape_completed is not False:
+                check_and_run_daily_gbfs()
     else:
         if args.inspect:
             inspect_area_page()
         else:
-            run_scraping(is_worker=False)
-            check_and_run_daily_gbfs()
+            scrape_completed = run_scraping(is_worker=False)
+            if scrape_completed is not False:
+                check_and_run_daily_gbfs()
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as error:
+        # 認証情報・例外本文を外部へ送らず、分類済みの理由だけSlackへ通知します。
+        try:
+            from src.failure_notifier import notify_scraper_failure
+            notify_scraper_failure(error)
+        except Exception as notify_error:
+            print(f"Warning: 障害通知処理でエラーが発生しました: {notify_error}")
+        raise
