@@ -8,7 +8,7 @@
   global.DBSEXT = global.DBSEXT || {};
   var D = global.DBSEXT;
 
-  D.VERSION = '202608100932';
+  D.VERSION = '202608100953';
 
   D.CONFIG = {
     PORTAL_ORIGIN: 'https://mg.docomo-cycle.jp',
@@ -329,7 +329,7 @@
         return;
       }
 
-      observer = new MutationObserver(function (mutations) {
+      var newObserver = new MutationObserver(function (mutations) {
         // 自前のDOM操作の最中に来た通知は無視する
         if (applying > 0) {
           return;
@@ -362,7 +362,24 @@
         }, 200);
       });
 
-      observer.observe(document.body, { childList: true, subtree: true });
+      // **実機で確認された例外への防御。**
+      // 「一覧から別タブで開く」で新しいタブを開いたとき、`document.body` は
+      // 真値（above のガードを通る）なのに `observe()` が
+      // 「Failed to execute 'observe' on 'MutationObserver': parameter 1 is not
+      // of type 'Node'」を投げることがある（Chromeのプリレンダー/BFCache採用時、
+      // 別レルムで作られた古いNode参照を渡してしまうと起きる既知の症状と推測）。
+      // ここを素通しにすると、その1行の例外だけで拡張カードに「エラー」が付き、
+      // 以後の再適用が全部止まる。**監視だけを諦め、直前までに済んだ初期適用
+      // （skinやtable-wrap等）はそのまま活かす。** 失敗時は observer を確定させず、
+      // 後から onContentChange が再び呼ばれれば取り直せるようにしておく。
+      try {
+        newObserver.observe(document.body, { childList: true, subtree: true });
+      } catch (e) {
+        D.core.log('onContentChange の監視開始に失敗: ' + (e && e.message ? e.message : e), true);
+        return;
+      }
+
+      observer = newObserver;
     }
   };
 })(typeof globalThis !== 'undefined' ? globalThis : window);
@@ -2454,8 +2471,17 @@
         }
       });
     });
-    
-    observer.observe(table, { attributes: true, attributeFilter: ['class'] });
+
+    // core.js と同じ理由の防御（別タブで開いたときに実機で確認された例外）。
+    // ここが失敗しても致命的ではない。すでに SCROLL_CLASS は付与済みなので
+    // 見た目はそのまま出る。**クラス監視だけを諦める。**
+    try {
+      observer.observe(table, { attributes: true, attributeFilter: ['class'] });
+    } catch (e) {
+      if (D.core && typeof D.core.log === 'function') {
+        D.core.log('table-wrap: クラス監視の開始に失敗: ' + (e && e.message ? e.message : e), true);
+      }
+    }
   }
 
   D.tableWrap = {
@@ -5250,7 +5276,15 @@
         clearTimeout(timer);
         resolve(result);
       });
-      observer.observe(observedRoot, { childList: true, subtree: true, characterData: true });
+      // core.js と同じ理由の防御（実機で確認された例外）。
+      // ここは Promise の executor 内なので、素通しにすると呼び出し元に
+      // 例外ではなく **rejectとして** 伝わる方が自然（呼び出し元は catch している）。
+      try {
+        observer.observe(observedRoot, { childList: true, subtree: true, characterData: true });
+      } catch (e) {
+        reject(new Error('標準検索結果の監視を開始できませんでした: ' + (e && e.message ? e.message : e)));
+        return;
+      }
       timer = setTimeout(function () {
         if (settled) return;
         settled = true;

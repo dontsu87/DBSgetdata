@@ -1,8 +1,8 @@
 {
-  "version": "202608100932",
-  "bundle": "bundle-202608100932.js",
-  "sha256": "48fad3354247a005933764e803e143d4f7c1733fd24d1654058d3aec8b8f1f30",
-  "signature": "dL8immU0su+eU2wOH3Ai/Ks9GcYknBsxrj3CicxyUwBvgY2gwrgjNU1SNHg9/Mf4fHKI0dRk7PELGoKMUPodJA==",
+  "version": "202608100953",
+  "bundle": "bundle-202608100953.js",
+  "sha256": "a57a8996359a609af530919496660affe64a3da3cb7dd57075d4d1aa80b9a7e3",
+  "signature": "1isXDnb8QqWxuZQgWiJYtwEc226SQ9e1+WKFDDcm0/Ejima9ZfiZy7R3tPyMWZs8amFkaHZcsvLKmaGa9ft5/w==",
   "minExtensionVersion": "0.1.0",
-  "changelog": "車種情報画面: エリアの選択肢が1件のときだけ自動で選んで検索する"
+  "changelog": "別タブで開いたときに拡張カードへ出るエラーを解消（MutationObserverの監視開始失敗を捕捉）"
 }
