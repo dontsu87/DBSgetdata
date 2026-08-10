@@ -8,7 +8,7 @@
   global.DBSEXT = global.DBSEXT || {};
   var D = global.DBSEXT;
 
-  D.VERSION = '202608100023';
+  D.VERSION = '202608100912';
 
   D.CONFIG = {
     PORTAL_ORIGIN: 'https://mg.docomo-cycle.jp',
@@ -109,7 +109,12 @@
     'data-dbsext-orig-width': 'mark',        // table-columns が col に控える元の幅
     'data-dbsext-orig-table-width': 'mark',  // table-columns が表に控える元の幅
     'data-dbsext-newtab': 'mark',      // ui-tweaks が一覧の a に付ける処理済み印
-    'data-dbsext-collapsed': 'mark'    // ui-tweaks が折りたたみ見出しに付ける処理済み印
+    'data-dbsext-collapsed': 'mark',   // ui-tweaks が折りたたみ見出しに付ける処理済み印
+    // 配信版（user script）が document_start で documentElement に置く合図。
+    // **ポータルの要素に付ける印**なので own ではない。
+    // これを own に分類すると、documentElement を対象にした変化が
+    // すべて「自分の仕業」として捨てられる。
+    'data-dbsext-remote-claim': 'mark'
   };
 
   function hasOwnAttribute(node) {
@@ -996,6 +1001,22 @@
      */
     apply: function () {
       attachManualCaptureListener();
+
+      // 安全弁 0: **トップ画面でしか自動適用しない**
+      //
+      // エリアを適用するとポータルが再描画され、**トップ画面へ戻される**。
+      // 一覧から「別タブで開く」で個別画面を開いた場合、そのタブはエリア未選択なので
+      // 自動適用が走り、**利用者が開こうとした画面が消えてトップに飛ばされる**
+      // （現場から報告された実害。ポート情報→ポート識別番号で再現）。
+      //
+      // 通常ポータルを開いたときの入口はトップ画面なので、そこだけで適用すれば足りる。
+      // SPA内で一覧へ移動する頃には、すでに適用済みになっている。
+      //
+      // **利用者が明示的に開いた画面を、拡張が勝手に別の画面へ移してはいけない。**
+      if (typeof location !== 'undefined' && location.pathname &&
+          location.pathname !== '/' && location.pathname !== '') {
+        return;
+      }
 
       // 安全弁 1: 同じタブで二度自動適用しない
       if (appliedInTab) {
