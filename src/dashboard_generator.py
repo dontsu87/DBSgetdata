@@ -421,16 +421,20 @@ def aggregate_ports_data(df_merged, master_data, gbfs_stations):
 
         lat = row.get('lat')
         lon = row.get('lon')
-        
-        # 1. 車両位置緯度・経度からのフォールバック
+
+        # 1. port_coords_master.json マスターポート位置情報からのフォールバック（実在ポートのみ）
+        # GBFS配信が止まっている場合でも既知ポートの位置を安定させるため、
+        # 個々の車両GPS（2）より先に信頼できる静的マスタを優先する。
+        if not is_no_port and (is_empty_coord(lat) or is_empty_coord(lon)) and port_name in public_port_coords:
+            lat, lon = public_port_coords[port_name]
+
+        # 2. 車両位置緯度・経度からのフォールバック（マスタにも無い未知ポートの最終手段）
+        # ポート単位の最初の行の車両GPSを採用するため、その車両が位置不整合（誤配置）だと
+        # ポート自体の表示位置が誤った位置へ引きずられる。マスタに載っているポートでは使わない。
         if is_empty_coord(lat) and '車両位置緯度' in df_merged.columns and not is_empty_coord(row.get('車両位置緯度')):
             lat = row.get('車両位置緯度')
         if is_empty_coord(lon) and '車両位置経度' in df_merged.columns and not is_empty_coord(row.get('車両位置経度')):
             lon = row.get('車両位置経度')
-            
-        # 2. port_coords_master.json マスターポート位置情報からのフォールバック（実在ポートのみ）
-        if not is_no_port and (is_empty_coord(lat) or is_empty_coord(lon)) and port_name in public_port_coords:
-            lat, lon = public_port_coords[port_name]
 
         # ポート外仮想ポートの場合は has_gps を False とする
         has_gps = (not is_no_port) and not (is_empty_coord(lat) or is_empty_coord(lon))
