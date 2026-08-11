@@ -1563,8 +1563,12 @@ function focusOutOfPortBike(bikeId) {
     if (modal) modal.style.display = 'none';
     return true;
 }
-// 近接する点(20m以内既定)を同一地点として1つのクラスタへまとめる
+// 近接する点(OUT_OF_PORT_CLUSTER_THRESHOLD_M 以内)を同一地点として1つのクラスタへまとめる
 function clusterNearbyPoints(items, thresholdM) {
+    // 各クラスタの代表点(lat/lon)は最初に入った点で固定し、以後の追加で動かさない
+    // (重心や直近点への追従にしない)。これにより、A-B・B-Cはthresholdm以内でも
+    // A-Cがthresholdmを超える「数珠つなぎ」で無制限に連結することがなく、
+    // クラスタ内の最大距離は必ず2*thresholdm以内に収まる。
     const clusters = [];
     items.forEach(item => {
         const target = clusters.find(c => haversineMeters(c.lat, c.lon, item.lat, item.lon) <= thresholdM);

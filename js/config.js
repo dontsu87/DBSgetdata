@@ -18,7 +18,7 @@ const NEAREST_PORT_THRESHOLD_M = 100;
 
 // ポート外自転車マーカーをこの距離(m)以内なら同一地点として統合し、
 // タップ時に複数台の情報をまとめてポップアップ表示する
-const OUT_OF_PORT_CLUSTER_THRESHOLD_M = 20;
+const OUT_OF_PORT_CLUSTER_THRESHOLD_M = 10;
 
 const KINDAI_PORTS_MASTER = {
     "00001685": { name: "E13_臨時 角間キャンパス北地区駐車場", lat: 36.5485, lon: 136.7025 },
