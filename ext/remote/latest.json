@@ -1,8 +1,8 @@
 {
-  "version": "202608121526",
-  "bundle": "bundle-202608121526.js",
-  "sha256": "6dcbdad6698725bc4e520816c26c2b3f1258de77004efc86e2b6384d35f33228",
-  "signature": "3BILczKz67eJbk3tvp+nwL7boDmRtouOGxhJoulfgwgzqo/8fm6FnIdFGpYTPK5lT9fmyEGakR70IuOWU4G9Mw==",
+  "version": "202608121555",
+  "bundle": "bundle-202608121555.js",
+  "sha256": "d7a980e93be4f63838402a11599a2bf056f8eab5a7a60f0a562c106f0f57252b",
+  "signature": "4FDROIdIBT4Yrm4anDqln/cR4vF7MYYq6pK9tZLi1oPhnM8hCmAHjnKc1jvUSMYMCHjDd1Lu4YwfBfEi1oXhAw==",
   "minExtensionVersion": "0.1.0",
-  "changelog": "ポート情報一括操作機能を追加（運用状態・公開設定）"
+  "changelog": "車両情報のユーザー識別番号からユーザー詳細を別タブで開く機能を追加"
 }
