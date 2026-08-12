@@ -1,8 +1,8 @@
 {
-  "version": "202608102052",
-  "bundle": "bundle-202608102052.js",
-  "sha256": "0c5119cb018ccd03f4d2a12151e553b2c39ba75233ccfcd07db40be761c650a6",
-  "signature": "LQ05wqjPeAJtXKpIt+OC3hyCzyCY1g42ACpkgCOCjPe1YDvj3r/BSkGnlgau/76qzdckzQzUIoCukPbDaevcFA==",
+  "version": "202608121526",
+  "bundle": "bundle-202608121526.js",
+  "sha256": "6dcbdad6698725bc4e520816c26c2b3f1258de77004efc86e2b6384d35f33228",
+  "signature": "3BILczKz67eJbk3tvp+nwL7boDmRtouOGxhJoulfgwgzqo/8fm6FnIdFGpYTPK5lT9fmyEGakR70IuOWU4G9Mw==",
   "minExtensionVersion": "0.1.0",
-  "changelog": "車両情報1000台デフォルトモードを追加（拡張版限定・実ページ遷移方式）"
+  "changelog": "ポート情報一括操作機能を追加（運用状態・公開設定）"
 }
