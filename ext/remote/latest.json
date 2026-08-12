@@ -1,8 +1,8 @@
 {
-  "version": "202608121636",
-  "bundle": "bundle-202608121636.js",
-  "sha256": "f00397b2716e0c42017ef493f2f80175e9c82fef99025411125b17881d878e45",
-  "signature": "xA0N0oeDAl1eNtql2aLoZVfxmy51VK9uJ6fNfTPI88jHKKzhgOo7OwBH+g6kwJblA8JcXp++XVowt7VJWO0YJw==",
+  "version": "202608121756",
+  "bundle": "bundle-202608121756.js",
+  "sha256": "aef32a638d0c1cb1d6587f61a2f8db87384eeef8f8fd63915d5653dda6c3f521",
+  "signature": "kuzm2rxiKXLZuHiDQCY/QTagNDCACwkBzNMH82uhHzBdWYiZ2OaAF5uKdliFH5lqrb9RJrSxkJKXaSR2jykxcg==",
   "minExtensionVersion": "0.1.0",
-  "changelog": "ポート一括操作: PUT時beaconIds省略でHTTP 503になる不具合を修正し、公開設定列を表に追加"
+  "changelog": "車両一覧のユーザー識別番号リンクをSPAのDOM再利用時にも安全に更新・解除"
 }
