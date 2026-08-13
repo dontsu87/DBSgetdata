@@ -40,9 +40,9 @@ let selectedPortNames = loadFromCache('selected_port_names', []);
 let isReplacedModeEnabled = loadFromCache('is_replaced_mode_enabled', true);
 let isOutOfPortOnlyMode = loadFromCache('out_of_port_only_mode', false);
 let isPositionMismatchMode = loadFromCache('position_mismatch_mode', false);
-// 既定ON: サービス休止中はほぼ全ポートが提供外になるため、隠すと地図が空になる。
-// サービス正常再開時はloadFromCacheの既定値をfalseへ切り替える。
-let isOutOfServiceVisible = loadFromCache('out_of_service_visible', true);
+// サービス再開後の既定はOFF: 停止中・利用者非公開の提供外ポートを隠す。
+// 利用者が明示的に保存した設定は尊重し、表示状態リセット時はキー削除によりOFFへ戻る。
+let isOutOfServiceVisible = loadFromCache('out_of_service_visible', false);
 let isOutOfPortMarkerActive = true; // ポート外自転車の点は常時表示
 let outOfPortMarkerGroup = null;
 let outOfPortBikeMarkers = {};

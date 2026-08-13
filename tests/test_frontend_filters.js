@@ -65,6 +65,11 @@ vm.runInContext(
     context,
     {filename: 'js/state.js'}
 );
+assert.equal(
+    vm.runInContext('isOutOfServiceVisible', context),
+    false,
+    'キャッシュなし・表示状態リセット後は提供外ポート表示がOFFであること'
+);
 const migratedHighlights = vm.runInContext(
     'Array.from(checkedHighlightStatuses)',
     context
