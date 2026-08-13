@@ -1,8 +1,5 @@
-{
-  "version": "202608130821",
-  "bundle": "bundle-202608130821.js",
-  "sha256": "36a32b3f881ed0d5a24ddcfebc4f6bae9e12f7d29a493822d06baa0af066c705",
-  "signature": "34HtyN8OdOMJ8RksQUiYSd6qmDjr+ZLoebpC4QQFslIWcSgP65TVfBm0r4VJ/15fQI1JjymCNkKUTADZim0oUQ==",
-  "minExtensionVersion": "0.1.0",
-  "changelog": "preview hardening validation"
+﻿{
+    "released_at":  "2026-08-13T00:59:53.6223691+00:00",
+    "bundle":  "bundle-202608130058.js",
+    "version":  "202608130058"
 }
