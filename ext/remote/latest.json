@@ -1,8 +1,8 @@
 {
-  "version": "202608131130",
-  "bundle": "bundle-202608131130.js",
-  "sha256": "07b56818ab6e40461764b881866f98cdc565b8db7fa92a8e6b1d9f0d32de986e",
-  "signature": "QiSXGSzkkFYB+d6DpI6OWzYqeDZQLMmbTH6DDHb6etePQgyNp/y6r4uq3cBe5XrblFsmMeu0hWOiygW094FLKw==",
+  "version": "202608131153",
+  "bundle": "bundle-202608131153.js",
+  "sha256": "eb6da71cb7a3e9b43669ae6032e75a2d65617772553fbbbd8c407c84e9f164ee",
+  "signature": "7juCl6bD4dXQyrDwY0VnL5LHCHAtcazF3lyK3oVk+4R+7RUX2rqrN4/6IENBJLbI8uXpt4gQHGOZvTWchhoL7g==",
   "minExtensionVersion": "0.1.0",
-  "changelog": "ポート一括操作: ビーコン紐付けをGET /api/ports/{id}/beaconsのportBeaconIdから正しく復元して保持するよう修正"
+  "changelog": "ポート一括操作: 6回目監査残指摘に対応(オリジナル表示回帰/同時実行制限/見出し同期/非公開マッピング実測/運用状態3値実測)"
 }
