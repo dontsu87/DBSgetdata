@@ -386,8 +386,8 @@ def sync_port_area_master(df_merged):
 def load_public_port_coords():
     """port_coords_master.json からマスターポート座標マップをロードします。
 
-    座標に加え、ポータルAPI由来の稼働状態(service_state)も保持する
-    （「サービス提供ポートのみ表示」モード等で使用）。
+    座標に加え、ポータルAPI由来の稼働状態(service_state)と
+    利用者公開設定(publish_flag)も保持する（提供外表示の判定で使用）。
     """
     coords = {}
     path = os.path.join(str(ROOT_DIR), "port_coords_master.json")
@@ -401,6 +401,7 @@ def load_public_port_coords():
                             "lat": float(item["lat"]),
                             "lon": float(item["lon"]),
                             "service_state": item.get("service_state") or None,
+                            "publish_flag": item.get("publish_flag"),
                         }
         except Exception as e:
             print(f"Warning: port_coords_master.json からの座標マスタ読み込みに失敗しました: {e}")
@@ -441,6 +442,10 @@ def aggregate_ports_data(df_merged, master_data, gbfs_stations):
             public_port_coords[port_name]["service_state"]
             if (not is_no_port and port_name in public_port_coords) else None
         )
+        publish_flag = (
+            public_port_coords[port_name].get("publish_flag")
+            if (not is_no_port and port_name in public_port_coords) else None
+        )
 
         # 2. 車両位置緯度・経度からのフォールバック（マスタにも無い未知ポートの最終手段）
         # ポート単位の最初の行の車両GPSを採用するため、その車両が位置不整合（誤配置）だと
@@ -476,6 +481,7 @@ def aggregate_ports_data(df_merged, master_data, gbfs_stations):
                 "lon": float(lon) if (has_gps and lon is not None) else None,
                 "has_gps": has_gps,
                 "service_state": service_state,
+                "publish_flag": publish_flag,
                 "total_bikes": 0,
                 "max_alert_level": 0,
                 "alert_bikes_count": 0,
@@ -583,6 +589,7 @@ def aggregate_ports_data(df_merged, master_data, gbfs_stations):
                 "lon": s_lon,
                 "has_gps": True,
                 "service_state": public_port_coords.get(s_name, {}).get("service_state"),
+                "publish_flag": public_port_coords.get(s_name, {}).get("publish_flag"),
                 "total_bikes": 0,
                 "max_alert_level": 0,
                 "alert_bikes_count": 0,

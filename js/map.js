@@ -295,15 +295,17 @@ function updateFilterAndRender(shouldFitBounds = true) {
     renderDashboardWithFilter(cachedDashboardData, checkedLevels, checkedStatuses, shouldFitBounds);
 }
 
-// 「提供外」トグルがOFFのとき、稼働状態が明確に「停止中」のポートを表示から除外する。
-// service_stateが無い（不明・仮想「ポート外」など）ポートは対象外として残す。
+// 「提供外」トグルがOFFのとき、停止中または利用者非公開のポートを表示から除外する。
+// 状態・公開設定が無い古いデータや仮想「ポート外」は、誤って隠さず従来どおり残す。
 function filterPortsByServiceState(data) {
     if (isOutOfServiceVisible || !data || !Array.isArray(data.ports)) {
         return data;
     }
     return {
         ...data,
-        ports: data.ports.filter(port => port.service_state !== '停止中')
+        ports: data.ports.filter(port =>
+            port.service_state !== '停止中' && port.publish_flag !== false
+        )
     };
 }
 
