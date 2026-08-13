@@ -1,8 +1,8 @@
 {
-  "version": "202608131102",
-  "bundle": "bundle-202608131102.js",
-  "sha256": "fc96448335d004a2d896901fcf166843f9bb8ea336a5956ff66c7db13207a5c8",
-  "signature": "Wm/s7/5CWyx8m5PoWTBjA9BAZikvuEKqyF9uR2DUENz+dMVestYrvXZ8f51YFIZmT7g9P//IpeFGypFyEk3YeA==",
+  "version": "202608131130",
+  "bundle": "bundle-202608131130.js",
+  "sha256": "07b56818ab6e40461764b881866f98cdc565b8db7fa92a8e6b1d9f0d32de986e",
+  "signature": "QiSXGSzkkFYB+d6DpI6OWzYqeDZQLMmbTH6DDHb6etePQgyNp/y6r4uq3cBe5XrblFsmMeu0hWOiygW094FLKw==",
   "minExtensionVersion": "0.1.0",
-  "changelog": "ポート一括操作: ビーコン紐付けポートへの誤書き込み(紐付け消失)を防止する安全装置を追加"
+  "changelog": "ポート一括操作: ビーコン紐付けをGET /api/ports/{id}/beaconsのportBeaconIdから正しく復元して保持するよう修正"
 }
