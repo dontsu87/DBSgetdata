@@ -1,8 +1,8 @@
 {
-  "version": "202608121756",
-  "bundle": "bundle-202608121756.js",
-  "sha256": "aef32a638d0c1cb1d6587f61a2f8db87384eeef8f8fd63915d5653dda6c3f521",
-  "signature": "kuzm2rxiKXLZuHiDQCY/QTagNDCACwkBzNMH82uhHzBdWYiZ2OaAF5uKdliFH5lqrb9RJrSxkJKXaSR2jykxcg==",
+  "version": "202608131102",
+  "bundle": "bundle-202608131102.js",
+  "sha256": "fc96448335d004a2d896901fcf166843f9bb8ea336a5956ff66c7db13207a5c8",
+  "signature": "Wm/s7/5CWyx8m5PoWTBjA9BAZikvuEKqyF9uR2DUENz+dMVestYrvXZ8f51YFIZmT7g9P//IpeFGypFyEk3YeA==",
   "minExtensionVersion": "0.1.0",
-  "changelog": "車両一覧のユーザー識別番号リンクをSPAのDOM再利用時にも安全に更新・解除"
+  "changelog": "ポート一括操作: ビーコン紐付けポートへの誤書き込み(紐付け消失)を防止する安全装置を追加"
 }
