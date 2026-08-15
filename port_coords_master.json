@@ -4,7 +4,7 @@
     "lon": 136.452116,
     "area_name": "小松",
     "station_id": "00001388",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -13,7 +13,7 @@
     "lon": 136.07549,
     "area_name": "敦賀",
     "station_id": "00090001",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -22,7 +22,7 @@
     "lon": 136.647628,
     "area_name": "金沢",
     "station_id": "00089001",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -31,7 +31,7 @@
     "lon": 136.412634,
     "area_name": "小松",
     "station_id": "00001389",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -40,7 +40,7 @@
     "lon": 136.072238,
     "area_name": "敦賀",
     "station_id": "00090002",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -49,7 +49,7 @@
     "lon": 136.223709,
     "area_name": "福井",
     "station_id": "00001413",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -58,7 +58,7 @@
     "lon": 136.649842,
     "area_name": "金沢",
     "station_id": "00089002",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -73,7 +73,7 @@
     "lon": 136.445753,
     "area_name": "小松",
     "station_id": "00001390",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -82,7 +82,7 @@
     "lon": 136.654453,
     "area_name": "金沢",
     "station_id": "00089003",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -91,7 +91,7 @@
     "lon": 136.073554,
     "area_name": "敦賀",
     "station_id": "00090003",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -100,7 +100,7 @@
     "lon": 136.222623,
     "area_name": "福井",
     "station_id": "00001414",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -109,7 +109,7 @@
     "lon": 136.069973,
     "area_name": "敦賀",
     "station_id": "00090004",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -118,7 +118,7 @@
     "lon": 136.219117,
     "area_name": "福井",
     "station_id": "00001415",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -127,7 +127,7 @@
     "lon": 136.441253,
     "area_name": "小松",
     "station_id": "00001440",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -136,7 +136,7 @@
     "lon": 136.656975,
     "area_name": "金沢",
     "station_id": "00089004",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -145,7 +145,7 @@
     "lon": 136.461121,
     "area_name": "小松",
     "station_id": "00001392",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -154,7 +154,7 @@
     "lon": 136.219905,
     "area_name": "福井",
     "station_id": "00001416",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -163,7 +163,7 @@
     "lon": 136.069384,
     "area_name": "敦賀",
     "station_id": "00090005",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -172,7 +172,7 @@
     "lon": 136.662652,
     "area_name": "金沢",
     "station_id": "00089005",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -181,7 +181,7 @@
     "lon": 136.06711,
     "area_name": "敦賀",
     "station_id": "00090006",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -190,7 +190,7 @@
     "lon": 136.467373,
     "area_name": "小松",
     "station_id": "00001393",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -199,7 +199,7 @@
     "lon": 136.665891,
     "area_name": "金沢",
     "station_id": "00089006",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -208,7 +208,7 @@
     "lon": 136.213385,
     "area_name": "福井",
     "station_id": "00001417",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -217,7 +217,7 @@
     "lon": 136.071365,
     "area_name": "敦賀",
     "station_id": "00090007",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -226,7 +226,7 @@
     "lon": 136.211091,
     "area_name": "福井",
     "station_id": "00001418",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -235,7 +235,7 @@
     "lon": 136.665979,
     "area_name": "金沢",
     "station_id": "00089007",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -244,7 +244,7 @@
     "lon": 136.425238,
     "area_name": "小松",
     "station_id": "00001395",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -259,7 +259,7 @@
     "lon": 136.667063,
     "area_name": "金沢",
     "station_id": "00089008",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -268,7 +268,7 @@
     "lon": 136.074256,
     "area_name": "敦賀",
     "station_id": "00090008",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -277,7 +277,7 @@
     "lon": 136.451582,
     "area_name": "小松",
     "station_id": "00001396",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -286,7 +286,7 @@
     "lon": 136.213895,
     "area_name": "福井",
     "station_id": "00001419",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -295,7 +295,7 @@
     "lon": 136.073216,
     "area_name": "敦賀",
     "station_id": "00090009",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -304,7 +304,7 @@
     "lon": 136.44639,
     "area_name": "小松",
     "station_id": "00001397",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -313,7 +313,7 @@
     "lon": 136.213783,
     "area_name": "福井",
     "station_id": "00001420",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -322,7 +322,7 @@
     "lon": 136.645188,
     "area_name": "金沢",
     "station_id": "00089009",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -331,7 +331,7 @@
     "lon": 136.65187,
     "area_name": "金沢",
     "station_id": "00089010",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -340,7 +340,7 @@
     "lon": 136.051981,
     "area_name": "敦賀",
     "station_id": "00000772",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -349,7 +349,7 @@
     "lon": 136.218235,
     "area_name": "福井",
     "station_id": "00001421",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -358,7 +358,7 @@
     "lon": 136.419806,
     "area_name": "小松",
     "station_id": "00001398",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -367,7 +367,7 @@
     "lon": 136.69042,
     "area_name": "金沢",
     "station_id": "00000352",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -376,7 +376,7 @@
     "lon": 136.690079,
     "area_name": "金沢",
     "station_id": "00001684",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -385,7 +385,7 @@
     "lon": 136.643516,
     "area_name": "金沢",
     "station_id": "00004118",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -394,7 +394,7 @@
     "lon": 136.61581,
     "area_name": "金沢",
     "station_id": "00004217",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -403,7 +403,7 @@
     "lon": 136.68486,
     "area_name": "金沢",
     "station_id": "00004334",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -412,7 +412,7 @@
     "lon": 136.61343,
     "area_name": "金沢",
     "station_id": "00004387",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -421,7 +421,7 @@
     "lon": 136.635325,
     "area_name": "金沢",
     "station_id": "00004389",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -430,7 +430,7 @@
     "lon": 136.65252,
     "area_name": "金沢",
     "station_id": "00004484",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -439,7 +439,7 @@
     "lon": 136.683003,
     "area_name": "金沢",
     "station_id": "00001682",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -448,7 +448,7 @@
     "lon": 136.667759,
     "area_name": "金沢",
     "station_id": "00004652",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -457,7 +457,7 @@
     "lon": 136.654564,
     "area_name": "金沢",
     "station_id": "00089011",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -466,7 +466,7 @@
     "lon": 136.049646,
     "area_name": "敦賀",
     "station_id": "00000773",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -475,7 +475,7 @@
     "lon": 136.463318,
     "area_name": "小松",
     "station_id": "00001399",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -484,7 +484,7 @@
     "lon": 136.223334,
     "area_name": "福井",
     "station_id": "00001905",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -493,7 +493,7 @@
     "lon": 136.630475,
     "area_name": "金沢",
     "station_id": "00004955",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -502,7 +502,7 @@
     "lon": 136.644085,
     "area_name": "金沢",
     "station_id": "00005033",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -511,7 +511,7 @@
     "lon": 136.623188,
     "area_name": "金沢",
     "station_id": "00005938",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -520,7 +520,7 @@
     "lon": 136.417097,
     "area_name": "小松",
     "station_id": "00001400",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -529,7 +529,7 @@
     "lon": 136.056118,
     "area_name": "敦賀",
     "station_id": "00001381",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -538,7 +538,7 @@
     "lon": 136.211926,
     "area_name": "福井",
     "station_id": "00001906",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -547,7 +547,7 @@
     "lon": 136.449511,
     "area_name": "小松",
     "station_id": "00001401",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -556,7 +556,7 @@
     "lon": 136.050317,
     "area_name": "敦賀",
     "station_id": "00001907",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -565,7 +565,7 @@
     "lon": 136.194816,
     "area_name": "福井",
     "station_id": "00001949",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -574,7 +574,7 @@
     "lon": 136.650498,
     "area_name": "金沢",
     "station_id": "00089013",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -583,7 +583,7 @@
     "lon": 136.21784,
     "area_name": "福井",
     "station_id": "00002704",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -592,7 +592,7 @@
     "lon": 136.438505,
     "area_name": "小松",
     "station_id": "00001402",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -601,7 +601,7 @@
     "lon": 136.032981,
     "area_name": "敦賀",
     "station_id": "00001908",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -610,7 +610,7 @@
     "lon": 136.652486,
     "area_name": "金沢",
     "station_id": "00089014",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -619,7 +619,7 @@
     "lon": 136.654692,
     "area_name": "金沢",
     "station_id": "00089015",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -628,7 +628,7 @@
     "lon": 136.484018,
     "area_name": "小松",
     "station_id": "00001403",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -637,7 +637,7 @@
     "lon": 136.221637,
     "area_name": "福井",
     "station_id": "00002637",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -646,7 +646,7 @@
     "lon": 136.031783,
     "area_name": "敦賀",
     "station_id": "00001909",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -655,7 +655,7 @@
     "lon": 136.074507,
     "area_name": "敦賀",
     "station_id": "00004678",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -664,7 +664,7 @@
     "lon": 136.65685,
     "area_name": "金沢",
     "station_id": "00089016",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -673,7 +673,7 @@
     "lon": 136.225669,
     "area_name": "福井",
     "station_id": "00002638",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -682,7 +682,7 @@
     "lon": 136.451564,
     "area_name": "小松",
     "station_id": "00005839",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -691,7 +691,7 @@
     "lon": 136.21764,
     "area_name": "福井",
     "station_id": "00002639",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -700,7 +700,7 @@
     "lon": 136.058129,
     "area_name": "敦賀",
     "station_id": "00004676",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -709,7 +709,7 @@
     "lon": 136.657446,
     "area_name": "金沢",
     "station_id": "00089017",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -718,7 +718,7 @@
     "lon": 136.43538,
     "area_name": "小松",
     "station_id": "00001406",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -727,7 +727,7 @@
     "lon": 136.03411,
     "area_name": "敦賀",
     "station_id": "00004675",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -736,7 +736,7 @@
     "lon": 136.661897,
     "area_name": "金沢",
     "station_id": "00089018",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -745,7 +745,7 @@
     "lon": 136.233104,
     "area_name": "福井",
     "station_id": "00002695",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -754,7 +754,7 @@
     "lon": 136.057511,
     "area_name": "敦賀",
     "station_id": "00004677",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -763,7 +763,7 @@
     "lon": 136.42963,
     "area_name": "小松",
     "station_id": "00001407",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -772,7 +772,7 @@
     "lon": 136.655177,
     "area_name": "金沢",
     "station_id": "00089019",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -781,7 +781,7 @@
     "lon": 136.659363,
     "area_name": "金沢",
     "station_id": "00089020",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -790,7 +790,7 @@
     "lon": 136.435758,
     "area_name": "小松",
     "station_id": "00001408",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -799,7 +799,7 @@
     "lon": 136.671146,
     "area_name": "金沢",
     "station_id": "00089021",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -808,7 +808,7 @@
     "lon": 136.648192,
     "area_name": "金沢",
     "station_id": "00089022",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -817,7 +817,7 @@
     "lon": 136.453167,
     "area_name": "小松",
     "station_id": "00001869",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -826,7 +826,7 @@
     "lon": 136.647826,
     "area_name": "金沢",
     "station_id": "00089023",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -835,7 +835,7 @@
     "lon": 136.448689,
     "area_name": "小松",
     "station_id": "00001870",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -844,7 +844,7 @@
     "lon": 136.451256,
     "area_name": "小松",
     "station_id": "00005716",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -853,7 +853,7 @@
     "lon": 136.650972,
     "area_name": "金沢",
     "station_id": "00089024",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -862,7 +862,7 @@
     "lon": 136.651864,
     "area_name": "金沢",
     "station_id": "00089025",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -871,7 +871,7 @@
     "lon": 136.441028,
     "area_name": "小松",
     "station_id": "00005717",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -880,7 +880,7 @@
     "lon": 136.44874,
     "area_name": "小松",
     "station_id": "00002697",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -889,7 +889,7 @@
     "lon": 136.644416,
     "area_name": "金沢",
     "station_id": "00089026",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -898,7 +898,7 @@
     "lon": 136.423213,
     "area_name": "小松",
     "station_id": "00002698",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -907,7 +907,7 @@
     "lon": 136.648425,
     "area_name": "金沢",
     "station_id": "00089027",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -916,7 +916,7 @@
     "lon": 136.433208,
     "area_name": "小松",
     "station_id": "00002699",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -925,7 +925,7 @@
     "lon": 136.660963,
     "area_name": "金沢",
     "station_id": "00089028",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -934,7 +934,7 @@
     "lon": 136.656882,
     "area_name": "金沢",
     "station_id": "00089029",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -943,7 +943,7 @@
     "lon": 136.456242,
     "area_name": "小松",
     "station_id": "00002700",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -952,7 +952,7 @@
     "lon": 136.653221,
     "area_name": "金沢",
     "station_id": "00089030",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -961,7 +961,7 @@
     "lon": 136.460755,
     "area_name": "小松",
     "station_id": "00003915",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -970,7 +970,7 @@
     "lon": 136.662582,
     "area_name": "金沢",
     "station_id": "00089031",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -979,7 +979,7 @@
     "lon": 136.65625,
     "area_name": "金沢",
     "station_id": "00089032",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -988,7 +988,7 @@
     "lon": 136.650635,
     "area_name": "金沢",
     "station_id": "00089033",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -997,7 +997,7 @@
     "lon": 136.663783,
     "area_name": "金沢",
     "station_id": "00089034",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1006,7 +1006,7 @@
     "lon": 136.655908,
     "area_name": "金沢",
     "station_id": "00089035",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1015,7 +1015,7 @@
     "lon": 136.655043,
     "area_name": "金沢",
     "station_id": "00089036",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1024,7 +1024,7 @@
     "lon": 136.669673,
     "area_name": "金沢",
     "station_id": "00089037",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1033,7 +1033,7 @@
     "lon": 136.621474,
     "area_name": "金沢",
     "station_id": "00089038",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1042,7 +1042,7 @@
     "lon": 136.639568,
     "area_name": "金沢",
     "station_id": "00089039",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1051,7 +1051,7 @@
     "lon": 136.639847,
     "area_name": "金沢",
     "station_id": "00089040",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1060,7 +1060,7 @@
     "lon": 136.646037,
     "area_name": "金沢",
     "station_id": "00089041",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1069,7 +1069,7 @@
     "lon": 136.627882,
     "area_name": "金沢",
     "station_id": "00089070",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1078,7 +1078,7 @@
     "lon": 136.615137,
     "area_name": "金沢",
     "station_id": "00089043",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1087,7 +1087,7 @@
     "lon": 136.604932,
     "area_name": "金沢",
     "station_id": "00089044",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1096,7 +1096,7 @@
     "lon": 136.594209,
     "area_name": "金沢",
     "station_id": "00089045",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1105,7 +1105,7 @@
     "lon": 136.660728,
     "area_name": "金沢",
     "station_id": "00089049",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1114,7 +1114,7 @@
     "lon": 136.654136,
     "area_name": "金沢",
     "station_id": "00089050",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1123,7 +1123,7 @@
     "lon": 136.656564,
     "area_name": "金沢",
     "station_id": "00089051",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1132,7 +1132,7 @@
     "lon": 136.62046,
     "area_name": "金沢",
     "station_id": "00000218",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1141,7 +1141,7 @@
     "lon": 136.6265,
     "area_name": "金沢",
     "station_id": "00089058",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1150,7 +1150,7 @@
     "lon": 136.647113,
     "area_name": "金沢",
     "station_id": "00089054",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1159,7 +1159,7 @@
     "lon": 136.645786,
     "area_name": "金沢",
     "station_id": "00004097",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1168,7 +1168,7 @@
     "lon": 136.640421,
     "area_name": "金沢",
     "station_id": "00089055",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1177,7 +1177,7 @@
     "lon": 136.632698,
     "area_name": "金沢",
     "station_id": "00089056",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1186,7 +1186,7 @@
     "lon": 136.67713,
     "area_name": "金沢",
     "station_id": "00089057",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1195,7 +1195,7 @@
     "lon": 136.637299,
     "area_name": "金沢",
     "station_id": "00000172",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1204,7 +1204,7 @@
     "lon": 136.653759,
     "area_name": "金沢",
     "station_id": "00000717",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1213,7 +1213,7 @@
     "lon": 136.671209,
     "area_name": "金沢",
     "station_id": "00089059",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1222,7 +1222,7 @@
     "lon": 136.657245,
     "area_name": "金沢",
     "station_id": "00089060",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1231,7 +1231,7 @@
     "lon": 136.648938,
     "area_name": "金沢",
     "station_id": "00089061",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1240,7 +1240,7 @@
     "lon": 136.64276,
     "area_name": "金沢",
     "station_id": "00089062",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1249,7 +1249,7 @@
     "lon": 136.648639,
     "area_name": "金沢",
     "station_id": "00089063",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1258,7 +1258,7 @@
     "lon": 136.649461,
     "area_name": "金沢",
     "station_id": "00089064",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1267,7 +1267,7 @@
     "lon": 136.635317,
     "area_name": "金沢",
     "station_id": "00089065",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1276,7 +1276,7 @@
     "lon": 136.632034,
     "area_name": "金沢",
     "station_id": "00089066",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1285,7 +1285,7 @@
     "lon": 136.66839,
     "area_name": "金沢",
     "station_id": "00089067",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1294,7 +1294,7 @@
     "lon": 136.678978,
     "area_name": "金沢",
     "station_id": "00089069",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1303,7 +1303,7 @@
     "lon": 136.663678,
     "area_name": "金沢",
     "station_id": "00089072",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1312,7 +1312,7 @@
     "lon": 136.657386,
     "area_name": "金沢",
     "station_id": "00089073",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1321,7 +1321,7 @@
     "lon": 136.656572,
     "area_name": "金沢",
     "station_id": "00000779",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1330,7 +1330,7 @@
     "lon": 136.616076,
     "area_name": "金沢",
     "station_id": "00000780",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1339,7 +1339,7 @@
     "lon": 136.626491,
     "area_name": "金沢",
     "station_id": "00000851",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1348,7 +1348,7 @@
     "lon": 136.68,
     "area_name": "金沢",
     "station_id": "00000874",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1357,7 +1357,7 @@
     "lon": 136.663106,
     "area_name": "金沢",
     "station_id": "00001193",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1366,7 +1366,7 @@
     "lon": 136.674271,
     "area_name": "金沢",
     "station_id": "00001194",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1375,7 +1375,7 @@
     "lon": 136.597897,
     "area_name": "金沢",
     "station_id": "00001195",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1384,7 +1384,7 @@
     "lon": 136.649338,
     "area_name": "金沢",
     "station_id": "00004098",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1393,7 +1393,7 @@
     "lon": 136.652214,
     "area_name": "金沢",
     "station_id": "00004099",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1402,7 +1402,7 @@
     "lon": 136.645319,
     "area_name": "金沢",
     "station_id": "00004100",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1411,7 +1411,7 @@
     "lon": 136.652382,
     "area_name": "金沢",
     "station_id": "00004101",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1420,7 +1420,7 @@
     "lon": 136.65213,
     "area_name": "金沢",
     "station_id": "00004102",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1429,7 +1429,7 @@
     "lon": 136.651334,
     "area_name": "金沢",
     "station_id": "00004103",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1438,7 +1438,7 @@
     "lon": 136.646554,
     "area_name": "金沢",
     "station_id": "00004104",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1447,7 +1447,7 @@
     "lon": 136.622722,
     "area_name": "金沢",
     "station_id": "00004105",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1456,7 +1456,7 @@
     "lon": 136.620681,
     "area_name": "金沢",
     "station_id": "00004106",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1465,7 +1465,7 @@
     "lon": 136.630635,
     "area_name": "金沢",
     "station_id": "00004107",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1474,7 +1474,7 @@
     "lon": 136.637058,
     "area_name": "金沢",
     "station_id": "00004108",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1483,7 +1483,7 @@
     "lon": 136.640935,
     "area_name": "金沢",
     "station_id": "00004109",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1492,7 +1492,7 @@
     "lon": 136.645556,
     "area_name": "金沢",
     "station_id": "00004110",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1501,7 +1501,7 @@
     "lon": 136.648988,
     "area_name": "金沢",
     "station_id": "00004111",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1510,7 +1510,7 @@
     "lon": 136.646575,
     "area_name": "金沢",
     "station_id": "00004112",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1519,7 +1519,7 @@
     "lon": 136.657854,
     "area_name": "金沢",
     "station_id": "00001394",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1528,7 +1528,7 @@
     "lon": 136.669848,
     "area_name": "金沢",
     "station_id": "00004113",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1537,7 +1537,7 @@
     "lon": 136.675705,
     "area_name": "金沢",
     "station_id": "00004119",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1546,7 +1546,7 @@
     "lon": 136.663713,
     "area_name": "金沢",
     "station_id": "00004120",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1555,7 +1555,7 @@
     "lon": 136.649739,
     "area_name": "金沢",
     "station_id": "00004115",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1564,7 +1564,7 @@
     "lon": 136.603998,
     "area_name": "金沢",
     "station_id": "00004116",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1573,7 +1573,7 @@
     "lon": 138.145079,
     "area_name": "上田千曲広域",
     "station_id": "00000817",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1582,7 +1582,7 @@
     "lon": 138.15289,
     "area_name": "上田千曲広域",
     "station_id": "00000818",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1591,7 +1591,7 @@
     "lon": 138.141667,
     "area_name": "上田千曲広域",
     "station_id": "00000819",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1600,7 +1600,7 @@
     "lon": 138.127805,
     "area_name": "上田千曲広域",
     "station_id": "00000820",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1609,7 +1609,7 @@
     "lon": 138.114479,
     "area_name": "上田千曲広域",
     "station_id": "00000823",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1618,7 +1618,7 @@
     "lon": 138.092755,
     "area_name": "上田千曲広域",
     "station_id": "00001060",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1627,7 +1627,7 @@
     "lon": 138.140884,
     "area_name": "上田千曲広域",
     "station_id": "00004738",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1636,7 +1636,7 @@
     "lon": 136.605225,
     "area_name": "金沢",
     "station_id": "00089068",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1645,7 +1645,7 @@
     "lon": 136.691265,
     "area_name": "金沢",
     "station_id": "00001683",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1654,7 +1654,7 @@
     "lon": 136.712183,
     "area_name": "金沢",
     "station_id": "00001685",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1663,7 +1663,7 @@
     "lon": 136.703719,
     "area_name": "金沢",
     "station_id": "00001686",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1672,7 +1672,7 @@
     "lon": 136.649422,
     "area_name": "金沢",
     "station_id": "00006094",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1681,7 +1681,7 @@
     "lon": 136.643681,
     "area_name": "金沢",
     "station_id": "00006095",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1690,7 +1690,7 @@
     "lon": 136.649854,
     "area_name": "金沢",
     "station_id": "00006096",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1699,7 +1699,7 @@
     "lon": 136.634828,
     "area_name": "金沢",
     "station_id": "00006097",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1708,7 +1708,7 @@
     "lon": 136.626485,
     "area_name": "金沢",
     "station_id": "00006098",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1717,7 +1717,7 @@
     "lon": 136.636918,
     "area_name": "金沢",
     "station_id": "00006099",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1726,7 +1726,7 @@
     "lon": 136.630622,
     "area_name": "金沢",
     "station_id": "00006100",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1735,7 +1735,7 @@
     "lon": 136.633484,
     "area_name": "金沢",
     "station_id": "00006101",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1744,7 +1744,7 @@
     "lon": 136.598552,
     "area_name": "金沢",
     "station_id": "00006082",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1753,7 +1753,7 @@
     "lon": 136.597853,
     "area_name": "金沢",
     "station_id": "00006083",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1762,7 +1762,7 @@
     "lon": 136.612183,
     "area_name": "金沢",
     "station_id": "00006084",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1771,7 +1771,7 @@
     "lon": 136.617006,
     "area_name": "金沢",
     "station_id": "00006085",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1780,7 +1780,7 @@
     "lon": 136.6083,
     "area_name": "金沢",
     "station_id": "00006086",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1789,7 +1789,7 @@
     "lon": 136.608617,
     "area_name": "金沢",
     "station_id": "00006087",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1798,7 +1798,7 @@
     "lon": 136.608992,
     "area_name": "金沢",
     "station_id": "00006088",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1807,7 +1807,7 @@
     "lon": 136.619025,
     "area_name": "金沢",
     "station_id": "00006089",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1816,7 +1816,7 @@
     "lon": 136.621533,
     "area_name": "金沢",
     "station_id": "00006090",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1825,7 +1825,7 @@
     "lon": 136.626431,
     "area_name": "金沢",
     "station_id": "00006093",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1834,7 +1834,7 @@
     "lon": 138.250168,
     "area_name": "上田千曲広域",
     "station_id": "00001111",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1843,7 +1843,7 @@
     "lon": 138.249146,
     "area_name": "上田千曲広域",
     "station_id": "00002723",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1852,7 +1852,7 @@
     "lon": 138.247279,
     "area_name": "上田千曲広域",
     "station_id": "00000807",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1861,7 +1861,7 @@
     "lon": 138.248609,
     "area_name": "上田千曲広域",
     "station_id": "00002724",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1870,7 +1870,7 @@
     "lon": 138.252338,
     "area_name": "上田千曲広域",
     "station_id": "00001529",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1879,7 +1879,7 @@
     "lon": 138.25367,
     "area_name": "上田千曲広域",
     "station_id": "00000808",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1888,7 +1888,7 @@
     "lon": 138.25977,
     "area_name": "上田千曲広域",
     "station_id": "00000809",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1897,7 +1897,7 @@
     "lon": 138.2458,
     "area_name": "上田千曲広域",
     "station_id": "00000810",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1906,7 +1906,7 @@
     "lon": 138.25809,
     "area_name": "上田千曲広域",
     "station_id": "00000811",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1915,7 +1915,7 @@
     "lon": 138.25855,
     "area_name": "上田千曲広域",
     "station_id": "00001864",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1924,7 +1924,7 @@
     "lon": 138.27339,
     "area_name": "上田千曲広域",
     "station_id": "00000812",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1933,7 +1933,7 @@
     "lon": 138.235079,
     "area_name": "上田千曲広域",
     "station_id": "00002725",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1942,7 +1942,7 @@
     "lon": 138.227576,
     "area_name": "上田千曲広域",
     "station_id": "00002726",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1951,7 +1951,7 @@
     "lon": 138.22147,
     "area_name": "上田千曲広域",
     "station_id": "00002727",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1960,7 +1960,7 @@
     "lon": 138.21735,
     "area_name": "上田千曲広域",
     "station_id": "00000813",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1969,7 +1969,7 @@
     "lon": 138.216372,
     "area_name": "上田千曲広域",
     "station_id": "00004086",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1978,7 +1978,7 @@
     "lon": 138.16195,
     "area_name": "上田千曲広域",
     "station_id": "00000815",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1987,7 +1987,7 @@
     "lon": 138.215356,
     "area_name": "上田千曲広域",
     "station_id": "00004087",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -1996,7 +1996,7 @@
     "lon": 138.247118,
     "area_name": "上田千曲広域",
     "station_id": "00004088",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -2005,7 +2005,7 @@
     "lon": 138.240562,
     "area_name": "上田千曲広域",
     "station_id": "00005681",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -2014,7 +2014,7 @@
     "lon": 138.250755,
     "area_name": "上田千曲広域",
     "station_id": "00005682",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -2023,7 +2023,7 @@
     "lon": 138.255322,
     "area_name": "上田千曲広域",
     "station_id": "00005683",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -2032,7 +2032,7 @@
     "lon": 138.243336,
     "area_name": "上田千曲広域",
     "station_id": "00005684",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -2041,7 +2041,7 @@
     "lon": 138.225685,
     "area_name": "上田千曲広域",
     "station_id": "00005685",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -2050,7 +2050,7 @@
     "lon": 138.243657,
     "area_name": "上田千曲広域",
     "station_id": "00005686",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -2059,7 +2059,7 @@
     "lon": 138.253859,
     "area_name": "上田千曲広域",
     "station_id": "00005687",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -2068,7 +2068,7 @@
     "lon": 138.255438,
     "area_name": "上田千曲広域",
     "station_id": "00005688",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -2077,7 +2077,7 @@
     "lon": 138.259135,
     "area_name": "上田千曲広域",
     "station_id": "00005689",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -2086,7 +2086,7 @@
     "lon": 138.261051,
     "area_name": "上田千曲広域",
     "station_id": "00005690",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -2095,7 +2095,7 @@
     "lon": 138.242769,
     "area_name": "上田千曲広域",
     "station_id": "00005691",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -2104,7 +2104,7 @@
     "lon": 138.223982,
     "area_name": "上田千曲広域",
     "station_id": "00005692",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -2113,7 +2113,7 @@
     "lon": 138.242478,
     "area_name": "上田千曲広域",
     "station_id": "00005693",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -2122,7 +2122,7 @@
     "lon": 136.219231,
     "area_name": "福井",
     "station_id": "00002843",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -2131,7 +2131,7 @@
     "lon": 138.124778,
     "area_name": "上田千曲広域",
     "station_id": "00003452",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -2140,7 +2140,7 @@
     "lon": 136.240577,
     "area_name": "福井",
     "station_id": "00004488",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -2149,7 +2149,7 @@
     "lon": 136.22163,
     "area_name": "福井",
     "station_id": "00004751",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -2158,7 +2158,7 @@
     "lon": 136.22709,
     "area_name": "福井",
     "station_id": "00004057",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -2167,7 +2167,7 @@
     "lon": 136.191973,
     "area_name": "福井",
     "station_id": "00005576",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -2176,7 +2176,7 @@
     "lon": 136.240053,
     "area_name": "福井",
     "station_id": "00004679",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -2185,7 +2185,7 @@
     "lon": 136.218017,
     "area_name": "福井",
     "station_id": "00003556",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -2194,7 +2194,7 @@
     "lon": 136.184979,
     "area_name": "福井",
     "station_id": "00002842",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -2203,7 +2203,7 @@
     "lon": 138.104868,
     "area_name": "上田千曲広域",
     "station_id": "00005998",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -2212,7 +2212,7 @@
     "lon": 136.212244,
     "area_name": "福井",
     "station_id": "00004449",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -2221,7 +2221,7 @@
     "lon": 136.216147,
     "area_name": "福井",
     "station_id": "00004059",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -2230,7 +2230,7 @@
     "lon": 136.217758,
     "area_name": "福井",
     "station_id": "00004058",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -2257,7 +2257,7 @@
     "lon": 136.222531,
     "area_name": "福井",
     "station_id": "00001412",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -2428,7 +2428,7 @@
     "lon": 136.424462,
     "area_name": "小松",
     "station_id": "00001409",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -2437,7 +2437,7 @@
     "lon": 136.526105,
     "area_name": "小松",
     "station_id": "00001404",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": true,
     "port_abolish_date_time": null
   },
@@ -2491,7 +2491,7 @@
     "lon": 136.656483,
     "area_name": "金沢",
     "station_id": "00005996",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": false,
     "port_abolish_date_time": null
   },
@@ -2509,7 +2509,7 @@
     "lon": 139.7958,
     "area_name": "金沢",
     "station_id": "00002908",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": false,
     "port_abolish_date_time": null
   },
@@ -2572,7 +2572,7 @@
     "lon": 139.94534,
     "area_name": "金沢",
     "station_id": "00002923",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": false,
     "port_abolish_date_time": null
   },
@@ -2581,7 +2581,7 @@
     "lon": 136.651472,
     "area_name": "金沢",
     "station_id": "00089048",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": false,
     "port_abolish_date_time": null
   },
@@ -2626,7 +2626,7 @@
     "lon": 139.78828,
     "area_name": "金沢",
     "station_id": "00001656",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": false,
     "port_abolish_date_time": null
   },
@@ -2707,7 +2707,7 @@
     "lon": 136.62534,
     "area_name": "金沢",
     "station_id": "00003916",
-    "service_state": "停止中",
+    "service_state": "運用中",
     "publish_flag": false,
     "port_abolish_date_time": null
   },
@@ -3078,6 +3078,15 @@
     "station_id": "00003312",
     "service_state": "運用中",
     "publish_flag": true,
+    "port_abolish_date_time": null
+  },
+  "テスト-【小松倉庫】立会検査用": {
+    "lat": 34.751984,
+    "lon": 135.537766,
+    "area_name": "出雲・松江・境港",
+    "station_id": "00007325",
+    "service_state": "運用中",
+    "publish_flag": false,
     "port_abolish_date_time": null
   }
 }

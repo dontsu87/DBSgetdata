@@ -48,7 +48,8 @@ def _format_station_id(value):
         return text
 
 
-def _load_master(path: Path = MASTER_PATH) -> dict:
+def _load_master(path: Path = None) -> dict:
+    path = MASTER_PATH if path is None else Path(path)
     if not path.is_file():
         return {}
     try:
@@ -58,7 +59,8 @@ def _load_master(path: Path = MASTER_PATH) -> dict:
     return data if isinstance(data, dict) else {}
 
 
-def _write_master(data: dict, path: Path = MASTER_PATH) -> None:
+def _write_master(data: dict, path: Path = None) -> None:
+    path = MASTER_PATH if path is None else Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_suffix(path.suffix + ".tmp")
     temporary.write_text(
@@ -142,6 +144,90 @@ def fetch_all_port_positions(http_session, base_url, *, delay_ms=100, timeout=No
 
     print(f"Info: ポータルAPIからポート位置を取得しました（成功 {fetched} 件 / 失敗 {failed} 件）。")
     return results
+
+
+def fetch_all_port_service_states(http_session, base_url, *, timeout=None):
+    """一覧APIだけで全エリアの ``{ポート名: serviceState}`` を取得する。
+
+    座標更新のようなポートごとの詳細GETは行わない。エリア一覧1回と
+    エリアごとのポート一覧GETだけを使うため、1時間周期でも軽量に実行できる。
+    一部エリアの取得に失敗した場合は、そのエリアを飛ばして取得済み分を返す。
+    """
+    kwargs = {} if timeout is None else {"timeout": timeout}
+    areas = _as_list(_get_json(http_session, urljoin(base_url, "api/areas"), **kwargs))
+    if not isinstance(areas, list):
+        raise PortalApiError("エリア一覧の形式が不正です")
+
+    results = {}
+    failed_areas = 0
+    for area in areas:
+        area_id = area.get("areaId") if isinstance(area, dict) else None
+        if not area_id:
+            continue
+        area_name = str(
+            (area.get("areaName") if isinstance(area, dict) else "") or ""
+        ).strip()
+        try:
+            ports = _as_list(_get_json(
+                http_session,
+                urljoin(base_url, "api/ports/bulk"),
+                params={"areaIds": area_id},
+                **kwargs,
+            ))
+        except (PortalApiError, PortalSessionError) as error:
+            failed_areas += 1
+            print(f"Warning: ポート状態一覧の取得に失敗しました（エリア: {area_name}）: {error}")
+            continue
+        if not isinstance(ports, list):
+            failed_areas += 1
+            continue
+
+        for port in ports:
+            if not isinstance(port, dict):
+                continue
+            name = str(port.get("portNameJa") or "").strip()
+            state = str(port.get("serviceState") or "").strip()
+            if name and state:
+                results[name] = state
+
+    print(
+        "Info: ポータルAPIの一覧からポート状態を取得しました"
+        f"（成功 {len(results)} 件 / 失敗エリア {failed_areas} 件）。"
+    )
+    if not results:
+        raise PortalApiError("ポート状態を1件も取得できませんでした")
+    return results
+
+
+def refresh_port_service_states(output_dir=None, *, session_path=None) -> int:
+    """一覧APIの運用状態だけを既存ポートマスターへマージ保存する。
+
+    座標など既存フィールドは維持し、マスターに存在する同名ポートだけを更新する。
+    戻り値は ``service_state`` を取得値で確認・更新できた件数。
+    """
+    del output_dir  # 予約: 将来的にセッションファイル位置を変える場合に使用
+    session_kwargs = {} if session_path is None else {"session_path": session_path}
+    http_session = build_http_session(**session_kwargs)
+    try:
+        states = fetch_all_port_service_states(http_session, app_url())
+    finally:
+        http_session.close()
+
+    if not states:
+        return 0
+
+    master = _load_master()
+    matched = 0
+    for name, state in states.items():
+        entry = master.get(name)
+        if not isinstance(entry, dict):
+            continue
+        entry["service_state"] = state
+        matched += 1
+
+    if matched:
+        _write_master(master)
+    return matched
 
 
 def refresh_port_coords_master(output_dir=None, *, session_path=None) -> int:

@@ -25,7 +25,10 @@ from src.port_position_scheduler import (
     should_refresh_port_positions,
     mark_port_position_refresh_completed,
 )
-from src.port_position_scraper import refresh_port_coords_master
+from src.port_position_scraper import (
+    refresh_port_coords_master,
+    refresh_port_service_states,
+)
 from src.area_inspector import inspect_area_page
 from src.worker_inspector import inspect_worker_login_page
 
@@ -242,6 +245,17 @@ def run_scraping(is_worker=False):
             frame = _scrape_current()
 
         frame = merge_cached_vehicle_locations(frame, Config.OUTPUT_DIR)
+
+        # 1時間周期の全車両位置取得に合わせ、一覧APIだけでポートの運用状態を更新する。
+        # 座標用の個別詳細GETは日次更新のままとし、ここでは発行しない。
+        # 状態更新に失敗しても車両データと地図の生成は継続する。
+        if fetch_all_locations:
+            try:
+                updated_states = refresh_port_service_states(Config.OUTPUT_DIR)
+                print(f"Success: ポート運用状態を更新しました（{updated_states}件）。")
+            except (PortalSessionError, PortalApiError) as error:
+                print(f"Warning: ポート運用状態の更新に失敗しました。車両取得は継続します: {error}")
+
         output_path = _finalize_scraping([frame], start_time)
         if output_path:
             try:

@@ -299,10 +299,12 @@ def fetch_vehicle_location_details(
 
     for row in rows:
         vehicle_code = str(row.get('vehicleUniqueCode') or '').strip()
+        vehicle_state = str(row.get('vehicleState') or '').strip()
         target = (
             include_port_vehicles
             or vehicle_code in mismatch_vehicle_ids
             or _is_out_of_port_row(row, known_port_names)
+            or vehicle_state in ('USING', '利用中')
         )
         row['vehicleLocationFetchFlag'] = 0
         row['vehicleGpsLatitude'] = None

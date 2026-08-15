@@ -310,7 +310,24 @@ function filterPortsByServiceState(data) {
 }
 
 function preparePositionMismatchData(data) {
-    if (!isPositionMismatchMode || !data || !Array.isArray(data.ports)) {
+    if (!data || !Array.isArray(data.ports)) {
+        return data;
+    }
+
+    // 位置不整合としてポートから切り離すかどうかの判定
+    const shouldMismatchBike = (bike) => {
+        if (!bike || !bike.port_position_mismatch) return false;
+        if (isPositionMismatchMode) return true;
+        // 位置不整合モードOFF時でも、「利用中」車両のみは過剰検知防止・現地確認の混乱防止のため対象とする
+        const status = String(bike.status || '');
+        return status.includes('利用中');
+    };
+
+    // 対象となる不整合車両が1台でもあるかチェック（無ければ早期リターン）
+    const hasAnyMismatch = data.ports.some(port =>
+        Array.isArray(port.bikes) && port.bikes.some(shouldMismatchBike)
+    );
+    if (!hasAnyMismatch) {
         return data;
     }
 
@@ -327,7 +344,7 @@ function preparePositionMismatchData(data) {
         const normalBikes = [];
         const mismatchBikes = [];
         (port.bikes || []).forEach(bike => {
-            if (!bike.port_position_mismatch) {
+            if (!shouldMismatchBike(bike)) {
                 normalBikes.push(bike);
                 return;
             }

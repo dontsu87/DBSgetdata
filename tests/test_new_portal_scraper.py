@@ -337,3 +337,44 @@ def test_fetch_vehicle_location_details_can_be_stopped_without_detail_calls():
 def test_scrape_all_vehicles_rejects_missing_required_fields():
     with pytest.raises(RuntimeError, match="必須項目"):
         scrape_all_vehicles(FakeDriver({"rows": [{"vehicleUniqueCode": "A-001"}]}))
+
+
+def test_fetch_vehicle_location_details_targets_using_vehicles():
+    rows = [
+        {
+            'vehicleUniqueCode': 'USING-001',
+            'vehicleState': 'USING',
+            'portName': '駅前',
+            'attachmentId': 'AT-001',
+        },
+        {
+            'vehicleUniqueCode': 'USABLE-002',
+            'vehicleState': 'USABLE',
+            'portName': '駅前',
+            'attachmentId': 'AT-002',
+        },
+    ]
+    http = FakeHttpSession([
+        FakeResponse(body={'gpsInfo': {
+            'gpsGlobalLocationLatitude': 36.577,
+            'gpsGlobalLocationLongitude': 136.647,
+        }}),
+    ])
+
+    portal.fetch_vehicle_location_details(
+        rows,
+        http_session=http,
+        base_url='https://mg.example/',
+        known_port_names={'駅前'},
+        enabled=True,
+        max_per_run=10,
+        include_port_vehicles=False,
+        mismatch_vehicle_ids=set(),
+        delay_ms=0,
+    )
+
+    assert len(http.calls) == 1
+    assert rows[0]['vehicleLocationFetchStatus'] == '取得成功'
+    assert rows[0]['vehicleGpsLatitude'] == 36.577
+    assert rows[1]['vehicleLocationFetchStatus'] == '対象外'
+
