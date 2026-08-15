@@ -1681,7 +1681,10 @@ function renderOutOfPortDotMarkers(data) {
                 if (!isPrefixMatch) return;
             }
 
-            // 「利用中」「一時駐輪」は基本非表示、強調ONの場合のみ表示
+            // 「利用中」「一時駐輪」の表示判定:
+            // - 強調ON (isUsingHighlighted) の場合は表示
+            // - 位置不整合抽出モードON (isPositionMismatchMode) かつ isMismatch の場合は表示（乗り捨て捜索用）
+            // - 位置不整合抽出モードOFFのときは、isMismatchであっても利用中は通常走行・利用中のためマップ上には非表示（ノイズ防止）
             var isMismatch = !!bike.port_position_mismatch;
             var isUsingStatus = bike.status && (
                 bike.status.indexOf('利用中') >= 0 || bike.status.indexOf('一時駐輪') >= 0
@@ -1689,7 +1692,10 @@ function renderOutOfPortDotMarkers(data) {
             var isUsingHighlighted = Array.isArray(checkedHighlightStatuses) && checkedHighlightStatuses.some(function(hs) {
                 return hs && (hs.indexOf('利用中') >= 0 || hs.indexOf('一時駐輪') >= 0);
             });
-            if (isUsingStatus && !isUsingHighlighted && !isMismatch) return;
+            if (isUsingStatus) {
+                const showInMismatchMode = isPositionMismatchMode && isMismatch;
+                if (!isUsingHighlighted && !showInMismatchMode) return;
+            }
 
             // 車両状態フィルタで「強調」のものは赤、そうでないものはオレンジ
             var isHighlighted = Array.isArray(checkedHighlightStatuses) && bike.status && checkedHighlightStatuses.indexOf(bike.status) >= 0;

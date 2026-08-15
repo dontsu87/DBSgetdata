@@ -96,4 +96,50 @@ assert.equal(normalPortOn.bikes[0].bike_id, 'KNZ003');
 assert.equal(mismatchPortOn.bikes.length, 2, 'ポート外には不整合フラグのある KNZ001, KNZ002 の両方が移動する');
 assert.equal(JSON.stringify(mismatchPortOn.bikes.map(b => b.bike_id)), JSON.stringify(['KNZ001', 'KNZ002']));
 
-console.log('preparePositionMismatchData: using vehicle mismatch & mode toggle tests passed successfully');
+// 3. renderOutOfPortDotMarkers の描画判定テスト
+vm.runInContext(`
+    selectedArea = '金沢';
+    isAllPrefixesChecked = true;
+    checkedHighlightStatuses = [];
+    outOfPortMarkerGroup = {
+        clearLayers: () => {},
+        addLayer: () => {}
+    };
+    L = {
+        circleMarker: () => ({
+            bindPopup: () => ({ on: () => {} }),
+            on: () => {}
+        }),
+        divIcon: () => ({}),
+        marker: () => ({
+            bindPopup: () => ({ on: () => {} }),
+            on: () => {}
+        })
+    };
+`, context);
+
+context.resultOff = resultOff;
+context.resultOn = resultOn;
+
+// 3-1. 位置不整合モード OFF 時: 「利用中」の KNZ001 はポート外ドットとして描画されない（非表示）
+vm.runInContext('isPositionMismatchMode = false', context);
+vm.runInContext('renderOutOfPortDotMarkers(resultOff)', context);
+const markersOff = vm.runInContext('Object.keys(outOfPortBikeMarkers)', context);
+assert.equal(markersOff.includes('KNZ001'), false, '位置不整合モードOFF時は利用中KNZ001はマップ上に非表示');
+
+// 3-2. 位置不整合モード ON 時: 「利用中」の KNZ001 もポート外ドットとして描画される（乗り捨て捜索用）
+vm.runInContext('isPositionMismatchMode = true', context);
+vm.runInContext('renderOutOfPortDotMarkers(resultOn)', context);
+const markersOn = vm.runInContext('Object.keys(outOfPortBikeMarkers)', context);
+assert.equal(markersOn.includes('KNZ001'), true, '位置不整合モードON時は利用中KNZ001もマップ上に表示');
+assert.equal(markersOn.includes('KNZ002'), true, '位置不整合モードON時は利用可能KNZ002もマップ上に表示');
+
+// 3-3. 位置不整合モード OFF でも「利用中」がステータス強調されている場合は表示される
+vm.runInContext('isPositionMismatchMode = false', context);
+vm.runInContext('checkedHighlightStatuses = ["利用中"]', context);
+vm.runInContext('renderOutOfPortDotMarkers(resultOff)', context);
+const markersHighlighted = vm.runInContext('Object.keys(outOfPortBikeMarkers)', context);
+assert.equal(markersHighlighted.includes('KNZ001'), true, '強調ON時は位置不整合モードOFFでも利用中KNZ001が表示される');
+
+console.log('preparePositionMismatchData & renderOutOfPortDotMarkers: all tests passed successfully');
+
