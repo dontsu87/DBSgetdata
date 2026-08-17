@@ -1,8 +1,8 @@
 {
-  "version": "202608171938",
-  "bundle": "bundle-202608171938.js",
-  "sha256": "39ddd2d72094b85d992f407d324b8dea84972a3f4acf75cce5034e35aef76c9d",
-  "signature": "27i6RbOVJhgOAhek5e52X20PicXZ8BXPAQYs5bsTe0pOnElbz3DSgGASI5KzZqseRRTehSeRh3mgTjHFPdvjSg==",
+  "version": "202608172012",
+  "bundle": "bundle-202608172012.js",
+  "sha256": "8c0dcae0916fbc58cdb8011c8dd418715e2dd166aa353e7d512d46e5c327f6a5",
+  "signature": "t/Hg0SNloMlsMjNjvt7DlRSEDpWtQw27MRSJP38XfHW0M6XWOSs4Uq91CrKiA4gU1J8oKJoQNKeZXGt0obDRNw==",
   "minExtensionVersion": "0.1.1",
-  "changelog": "preview hardening validation"
+  "changelog": "W1改変前(202608131830)の内容へ戻す。版番号のみ前進"
 }
