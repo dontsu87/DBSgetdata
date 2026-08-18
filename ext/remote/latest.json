@@ -1,8 +1,8 @@
 {
-  "version": "202608131153",
-  "bundle": "bundle-202608131153.js",
-  "sha256": "eb6da71cb7a3e9b43669ae6032e75a2d65617772553fbbbd8c407c84e9f164ee",
-  "signature": "7juCl6bD4dXQyrDwY0VnL5LHCHAtcazF3lyK3oVk+4R+7RUX2rqrN4/6IENBJLbI8uXpt4gQHGOZvTWchhoL7g==",
+  "version": "202608182210",
+  "bundle": "bundle-202608182210.js",
+  "sha256": "c6903695a5cc6921120039a4d00cb3d4edc1b213f0311793a1e26be472001442",
+  "signature": "/l6mJgbrtKFzBQQ3C/kjE7wwaJtktte8bmjbk9EPJOiw3sY8EZv4eZSlr3NzkojTTXdoXuy41+JOadEHlEjtCg==",
   "minExtensionVersion": "0.1.0",
-  "changelog": "ポート一括操作: 6回目監査残指摘に対応(オリジナル表示回帰/同時実行制限/見出し同期/非公開マッピング実測/運用状態3値実測)"
+  "changelog": "拡張機能0.1.1への更新案内（0.1.0互換配信）"
 }
