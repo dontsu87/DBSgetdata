@@ -15,6 +15,31 @@
     </header>
 
     <main class="content">
+      <section class="card critical-update" id="important-update" aria-labelledby="important-update-title">
+        <p class="update-badge">重要なお知らせ</p>
+        <h2 id="important-update-title">新機能を使うには拡張機能を 0.1.1 へ更新してください</h2>
+        <p class="update-lead">通常の機能更新とは異なり、今回はChrome拡張本体の更新が必要です。旧版 0.1.0 も引き続き従来機能を利用できますが、下記の新機能は更新後に有効になります。</p>
+        <p><a href="dbs-portal-ext.zip" class="btn btn-update">⬇ 最新版 0.1.1 をダウンロード</a></p>
+        <h3>すでに旧版を利用している場合</h3>
+        <ol class="update-steps">
+          <li>上のボタンから最新版ZIPをダウンロードし、展開します。</li>
+          <li>現在Chromeへ読み込んでいる拡張フォルダの中身を、展開した最新版で上書きします。</li>
+          <li><code>chrome://extensions</code> を開き、「DBS管理ポータル拡張」の再読み込みボタンを押します。</li>
+          <li>「詳細」でバージョンが <strong>0.1.1</strong> になったことを確認し、管理ポータルを開き直します。</li>
+        </ol>
+        <p class="update-note">更新までの間も旧版向け配信は継続します。更新案内が表示されても、従来機能が直ちに使えなくなることはありません。</p>
+      </section>
+
+      <section class="card new-features" id="new-features">
+        <h2>今回追加された新機能</h2>
+        <ul>
+          <li><strong>車両情報からユーザ情報へ直接移動</strong> — ユーザ識別番号をリンク化し、7種類の会員区分に応じた正しいユーザ詳細画面を別タブで開きます。</li>
+          <li><strong>会員区分・ユーザIDを車両情報へ追加</strong> — 車両に紐づくユーザを取得し、会員区分とユーザIDを一覧へ表示します。</li>
+          <li><strong>大量データにも対応</strong> — 最大1,000件へ拡張された車両一覧でも、後から読み込まれた行を含む全行へユーザ情報を反映します。</li>
+          <li><strong>車両情報表を見やすく改善</strong> — 列幅と表示順を整え、表示条件を初期状態で折りたたみ、先頭のチェック列から不要な絞り込み欄を除きました。</li>
+        </ul>
+      </section>
+
       <!-- ===== 1. 導入（Chrome拡張） ===== -->
       <section class="card highlight-card" id="extension-section">
         <h2>1. Chrome拡張を導入する</h2>
@@ -41,8 +66,8 @@
 
         <div class="alert alert-info">
           <p><strong>【更新方法】</strong></p>
-          <p><strong>機能の更新は自動で届きます。</strong>管理ポータルを開き直すだけで最新になります。
-            ZIPを取り直す必要はありません。</p>
+          <p><strong>通常の機能更新は自動で届きます。</strong>管理ポータルを開き直すだけで最新になります。</p>
+          <p>ただし、今回の0.1.1のように<strong>拡張本体の更新が必要</strong>と案内された場合は、このページ上部の手順に従って最新版ZIPへ更新してください。</p>
           <p>画面右上のパネルに、いま何で動いているかが小さく表示されます。</p>
           <ul>
             <li><strong>配信版</strong> — 最新の配信を受け取って動いています（正常）</li>
@@ -68,6 +93,7 @@
           <li><strong>「戻る」ボタンで1つ前の画面へ</strong> — お客様情報を見ているときも前の画面に戻れる</li>
           <li><strong>一覧のリンクを別タブで開く</strong> — 絞り込み結果を残したまま個別画面を確認できる</li>
           <li><strong>車両情報の表示件数を最大化</strong> — ページャの選択肢のうち最大（500件）を自動選択</li>
+          <li><strong>車両情報のユーザ連携</strong>（0.1.1の新機能） — ユーザ識別番号から、会員区分に応じたユーザ詳細を別タブで開けます。会員区分とユーザIDも一覧へ追加し、最大1,000件の読み込み後まで含めて反映します</li>
           <li><strong>読み込み中の表示</strong> — 通信が0.25秒を超えると表に「読み込み中…」を重ねる。1秒を超えると経過秒数も表示（Chrome拡張版では自動で、ブックマークレット版ではクリック後に有効）</li>
           <li><strong>通信エラー・ログイン切れのお知らせ</strong> — 失敗したことが分かる。自動での再送・再ログインは行いません</li>
           <li><strong>操作列を既定で隠す</strong> — メンテナンス／AT管理／解錠／再配置／AT一体型車両操作の5列を隠し、表の横幅を詰める。「操作列を表示」で元に戻せます</li>

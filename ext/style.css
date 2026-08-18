@@ -15,6 +15,8 @@
   --notice-border: #bae7ff;
   --status-blue: #0b5cab;
   --status-red: #d9534f;
+  --critical-red: #a32900;
+  --critical-bg: #fff0d9;
 }
 
 * {
@@ -93,6 +95,72 @@ body {
 /* 強調カード */
 .highlight-card {
   border-left: 5px solid var(--primary-color);
+}
+
+/* 拡張本体の更新が必要なときの最優先案内 */
+.critical-update {
+  border: 4px solid var(--critical-red);
+  background: var(--critical-bg);
+  box-shadow: 0 6px 18px rgba(102, 28, 0, 0.22);
+}
+
+.critical-update h2 {
+  color: #7a2100;
+  border-bottom-color: var(--critical-red);
+  font-size: 1.4rem;
+}
+
+.update-badge {
+  display: inline-block;
+  margin-bottom: 10px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--critical-red);
+  color: #ffffff;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+.update-lead {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.btn-update {
+  width: 100%;
+  padding: 13px 20px;
+  background: #b93600;
+  color: #ffffff;
+  font-size: 1.08rem;
+  box-shadow: 0 3px 7px rgba(102, 28, 0, 0.3);
+}
+
+.btn-update:hover {
+  background: #8d2905;
+}
+
+.update-steps {
+  background: #ffffff;
+  border: 1px solid #e3a277;
+  border-radius: 6px;
+  padding: 12px 16px 12px 38px;
+}
+
+.update-note {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-left: 4px solid #b96a00;
+  background: #fff8eb;
+  font-weight: 600;
+}
+
+.new-features {
+  border-left: 5px solid #16834a;
+}
+
+.new-features h2 {
+  color: #126b3e;
+  border-bottom-color: #16834a;
 }
 
 .lead-text {
