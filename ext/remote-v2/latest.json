@@ -1,8 +1,8 @@
 {
-  "version": "202608182249",
-  "bundle": "bundle-202608182249.js",
-  "sha256": "d4d106ad88d7a510ee3df051b3692d73e161554751645e008dd20f524550ac98",
-  "signature": "B07+AHWIy2xOo1oK2313XJd/mXZqbXUAT/g/+t/XnGghJHJVAWTJss7SH5jG5Rf9g3Hjq5mC44+teO1BeWcglg==",
+  "version": "202608182313",
+  "bundle": "bundle-202608182313.js",
+  "sha256": "c4b53dc317602d7af0904db96919e74f489eb6daf93bec83d0e230d40c103705",
+  "signature": "h2XzVmQGsrDqEwGrVqvRpmDS/IPk6QIqO/6RcEYoUHLat7CwpE5rCNTNPEk7lvHdLhumPDCr8Up8PfeKK8p3fA==",
   "minExtensionVersion": "0.1.1",
-  "changelog": "車両情報の表示条件を1000件読み込み到達後に一度だけ畳み、手動展開後は維持"
+  "changelog": "車両情報の1000件DOM完成後、読み込みマスク解除直前に表示条件を畳み、Vue反映後にマスク解除"
 }
