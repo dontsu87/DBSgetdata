@@ -1,8 +1,8 @@
 {
-  "version": "202608182210",
-  "bundle": "bundle-202608182210.js",
-  "sha256": "b80cbb2434223a9b18c26ac590751afcefe2280eac37a6f7f2e92e01657d0812",
-  "signature": "upGSOdTnpvXKryQvQD32x0vHnYQRJq6ZDZyFoW+PaM2NeeJFO2AZEvkf1xLrJ+tv7CDVb3paxgRzhTdbWHvKsw==",
+  "version": "202608182226",
+  "bundle": "bundle-202608182226.js",
+  "sha256": "6cff06bf704f7117a78494996d5e69ab4f73a7ef09ba84a35c42cc8afbe44aaf",
+  "signature": "fkehZDUlzaanplpoR+dSu8n+Z6VwvuPk28Fu5KeQliF01Wj5/8CRsC9mlm9mf15Kpbi6kW3bWpU4un2R8NYi6g==",
   "minExtensionVersion": "0.1.1",
-  "changelog": "車両情報のユーザ識別番号リンク、会員区分・ユーザID表示、最大1000件の全行反映、表レイアウト改善"
+  "changelog": "表示条件などを初回だけ畳み手動展開を維持。0.1.1では未使用の診断送信同意案内を無効化"
 }
