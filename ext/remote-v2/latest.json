@@ -1,8 +1,8 @@
 {
-  "version": "202608182226",
-  "bundle": "bundle-202608182226.js",
-  "sha256": "6cff06bf704f7117a78494996d5e69ab4f73a7ef09ba84a35c42cc8afbe44aaf",
-  "signature": "fkehZDUlzaanplpoR+dSu8n+Z6VwvuPk28Fu5KeQliF01Wj5/8CRsC9mlm9mf15Kpbi6kW3bWpU4un2R8NYi6g==",
+  "version": "202608182249",
+  "bundle": "bundle-202608182249.js",
+  "sha256": "d4d106ad88d7a510ee3df051b3692d73e161554751645e008dd20f524550ac98",
+  "signature": "B07+AHWIy2xOo1oK2313XJd/mXZqbXUAT/g/+t/XnGghJHJVAWTJss7SH5jG5Rf9g3Hjq5mC44+teO1BeWcglg==",
   "minExtensionVersion": "0.1.1",
-  "changelog": "表示条件などを初回だけ畳み手動展開を維持。0.1.1では未使用の診断送信同意案内を無効化"
+  "changelog": "車両情報の表示条件を1000件読み込み到達後に一度だけ畳み、手動展開後は維持"
 }
