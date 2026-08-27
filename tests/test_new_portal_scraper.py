@@ -55,10 +55,11 @@ class FakeHttpSession:
         return response
 
 
-def vehicle(code, state="USABLE", port="駅前", voltage="41.2"):
+def vehicle(code, state="USABLE", port="駅前", voltage="41.2", abnormal_state=""):
     return {
         "vehicleUniqueCode": code,
         "vehicleState": state,
+        "attachmentAbnormalState": abnormal_state,
         "portName": port,
         "batteryElectricVoltage": voltage,
         "dataReceivedTs": "2026-08-02T01:00:00Z",
@@ -377,4 +378,25 @@ def test_fetch_vehicle_location_details_targets_using_vehicles():
     assert rows[0]['vehicleLocationFetchStatus'] == '取得成功'
     assert rows[0]['vehicleGpsLatitude'] == 36.577
     assert rows[1]['vehicleLocationFetchStatus'] == '対象外'
+
+
+def test_state_label_breakdown_for_attachment_abnormal():
+    # 既知のAT異常詳細ステータスが正しい日本語にマッピングされること
+    assert portal._state_label("ATTACHMENT_ABNORMAL", "ELECTRIC_VOLTAGE_VALUE_BELOW_THRESHOLD") == "AT異常(電圧値閾値未満)"
+    assert portal._state_label("ATTACHMENT_ABNORMAL", "NO_AT_NOTIFICATION_RECEIVED") == "AT異常(AT通知受信なし)"
+    assert portal._state_label("ATTACHMENT_ABNORMAL", "NOT_USING_LOCK_STATE") == "AT異常(非利用中解錠状態)"
+    assert portal._state_label("ATTACHMENT_ABNORMAL", "SUSPECTED_LOCK_BREAKDOWN") == "AT異常(鍵故障疑い)"
+    assert portal._state_label("ATTACHMENT_ABNORMAL", "IMPROPER_USING_START_PROCESS") == "AT異常（利用開始処理不正）"
+    assert portal._state_label("ATTACHMENT_ABNORMAL", "INCORRECT_PORT_PLACEMENT") == "AT異常(ポート内位置不正)"
+    assert portal._state_label("ATTACHMENT_ABNORMAL", "WATER_INGRESS_DETECTION") == "AT異常(浸水検知)"
+    assert portal._state_label("ATTACHMENT_ABNORMAL", "READER_BREAKDOWN") == "AT異常(リーダー故障)"
+    assert portal._state_label("ATTACHMENT_ABNORMAL", "PASSWORD_ENTRY_WARNING") == "AT異常(パスコード入力警告)"
+    assert portal._state_label("ATTACHMENT_ABNORMAL", "OTHERS") == "AT異常(その他)"
+    # 未知のコードや空の場合は「AT異常全般」にフォールバックすること
+    assert portal._state_label("ATTACHMENT_ABNORMAL", "") == "AT異常全般"
+    assert portal._state_label("ATTACHMENT_ABNORMAL", "UNKNOWN_CODE") == "AT異常全般"
+    # AT異常以外のステータスは通常のマッピングが行われること
+    assert portal._state_label("USABLE") == "利用可能"
+    assert portal._state_label("MANUAL_MAINTENANCE") == "メンテナンス(手動)"
+
 

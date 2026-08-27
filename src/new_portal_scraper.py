@@ -2,7 +2,6 @@
 """刷新後の管理ポータルから、読み取り専用GET APIで車両情報を取得する。"""
 
 import json
-import glob
 import os
 import re
 import time
@@ -31,6 +30,19 @@ VEHICLE_STATE_LABELS = {
     "MANUAL_MAINTENANCE_NOTE": "メンテナンス(手動特記)",
     "ATTACHMENT_ABNORMAL": "AT異常全般",
     "SCRAPPED": "削除済み",
+}
+
+ATTACHMENT_ABNORMAL_LABELS = {
+    "IMPROPER_USING_START_PROCESS": "AT異常（利用開始処理不正）",
+    "INCORRECT_PORT_PLACEMENT": "AT異常(ポート内位置不正)",
+    "NOT_USING_LOCK_STATE": "AT異常(非利用中解錠状態)",
+    "ELECTRIC_VOLTAGE_VALUE_BELOW_THRESHOLD": "AT異常(電圧値閾値未満)",
+    "WATER_INGRESS_DETECTION": "AT異常(浸水検知)",
+    "SUSPECTED_LOCK_BREAKDOWN": "AT異常(鍵故障疑い)",
+    "READER_BREAKDOWN": "AT異常(リーダー故障)",
+    "PASSWORD_ENTRY_WARNING": "AT異常(パスコード入力警告)",
+    "NO_AT_NOTIFICATION_RECEIVED": "AT異常(AT通知受信なし)",
+    "OTHERS": "AT異常(その他)",
 }
 
 HTTP_TIMEOUT = (10, 30)
@@ -96,6 +108,7 @@ const done = arguments[arguments.length - 1];
           attachmentId: vehicle.attachmentId ?? '',
           vehicleUniqueCode: vehicle.vehicleUniqueCode ?? '',
           vehicleState: vehicle.vehicleState ?? '',
+          attachmentAbnormalState: vehicle.attachmentAbnormalState ?? '',
           portName: vehicle.portName ?? '',
           batteryElectricVoltage: vehicle.batteryElectricVoltage ?? null,
           dataReceivedTs: vehicle.dataReceivedTs ?? '',
@@ -111,9 +124,14 @@ const done = arguments[arguments.length - 1];
 })().catch(error => done({error: error.name + ': ' + error.message}));
 """
 
-def _state_label(value: str) -> str:
-    value = str(value or "").strip()
-    return VEHICLE_STATE_LABELS.get(value, value)
+def _state_label(vehicle_state: str, abnormal_state: str = "") -> str:
+    v_state = str(vehicle_state or "").strip()
+    ab_state = str(abnormal_state or "").strip()
+    if v_state == "ATTACHMENT_ABNORMAL":
+        if ab_state in ATTACHMENT_ABNORMAL_LABELS:
+            return ATTACHMENT_ABNORMAL_LABELS[ab_state]
+        return "AT異常全般"
+    return VEHICLE_STATE_LABELS.get(v_state, v_state)
 
 
 def _safe_endpoint(url: str) -> str:
@@ -207,8 +225,8 @@ def _as_list(body):
 
 
 def _load_known_port_names(output_dir=None):
-    "既知のポート名セット（port_coords_master.json および最新GBFS）を返す。"
-    output_dir = output_dir or Config.OUTPUT_DIR
+    "管理ポータルの完全スナップショットから既知のポート名セットを返す。"
+    del output_dir  # 後方互換の引数。ポート正本は管理ポータルスナップショットのみ。
     known_ports = set()
 
     # 1. port_coords_master.json からの全既知ポート名
@@ -221,30 +239,16 @@ def _load_known_port_names(output_dir=None):
         except Exception:
             pass
 
-    # 2. 最新GBFSからのポート名追加
-    files = sorted(glob.glob(os.path.join(str(output_dir), 'gbfs_stations_*.csv')))
-    if files:
-        try:
-            stations = pd.read_csv(files[-1], encoding='utf-8-sig')
-            if 'name' in stations.columns:
-                known_ports.update([
-                    str(value).strip()
-                    for value in stations['name'].dropna()
-                    if str(value).strip()
-                ])
-        except Exception:
-            pass
-
     return known_ports if known_ports else None
 
 
 def _is_out_of_port_row(row, known_port_names):
-    "フロントエンドの「ポート外」（GBFSに対応する座標が無い）に近い判定。"
+    "フロントエンドの「ポート外」（管理ポータルに存在しない）に近い判定。"
     port_name = str(row.get('portName') or '').strip()
     if not port_name:
         return True
     if known_port_names is None:
-        # GBFSが無い場合は、一覧APIだけで確実に判定できる空欄に限定する。
+        # スナップショットが無い場合は、一覧APIだけで確実に判定できる空欄に限定する。
         return False
     return port_name not in known_port_names
 
@@ -417,6 +421,7 @@ def _frame_from_rows(rows) -> pd.DataFrame:
         return pd.DataFrame(columns=list(source_columns.values()))
 
     optional_defaults = {
+        'attachmentAbnormalState': '',
         'vehicleLocationFetchFlag': 0,
         'vehicleLocationFetchStatus': '未取得',
         'vehicleGpsLatitude': None,
@@ -440,8 +445,12 @@ def _frame_from_rows(rows) -> pd.DataFrame:
         raise PortalApiError(
             f"車両情報APIの必須項目が不足しています: {', '.join(sorted(missing))}"
         )
+    resolved_labels = [
+        _state_label(st, ab)
+        for st, ab in zip(frame["vehicleState"], frame["attachmentAbnormalState"])
+    ]
     frame = frame.rename(columns=source_columns)[list(source_columns.values())]
-    frame["車両状態"] = frame["車両状態"].map(_state_label)
+    frame["車両状態"] = resolved_labels
     frame["電圧"] = pd.to_numeric(frame["電圧"], errors="coerce")
     frame['位置詳細取得フラグ'] = pd.to_numeric(
         frame['位置詳細取得フラグ'], errors='coerce'
@@ -516,6 +525,7 @@ def scrape_all_vehicles_http(
                         "areaName": area_name,
                         "vehicleUniqueCode": vehicle.get("vehicleUniqueCode", ""),
                         "vehicleState": vehicle.get("vehicleState", ""),
+                        "attachmentAbnormalState": vehicle.get("attachmentAbnormalState", ""),
                         "portName": vehicle.get("portName", ""),
                         "batteryElectricVoltage": vehicle.get("batteryElectricVoltage"),
                         "dataReceivedTs": vehicle.get("dataReceivedTs", ""),

@@ -11,10 +11,16 @@ let checkedHighlightStatuses = [];
 let checkedPrefixes = []; 
 let isAllPrefixesChecked = true; 
 
-const DEFAULT_HIGHLIGHT_STATUSES = ['AT異常全般', 'メンテナンス(手動)'];
+const DEFAULT_HIGHLIGHT_STATUSES = [
+    'AT異常(AT通知受信なし)',
+    'AT異常(電圧値閾値未満)',
+    'メンテナンス(手動)'
+];
 const LEGACY_STATUS_ALIASES = {
-    'AT異常(AT通知受信なし)': 'AT異常全般',
-    'AT異常(電池なし)': 'AT異常全般',
+    'AT異常(電池なし)': 'AT異常(電圧値閾値未満)',
+    'AT異常（電池なし）': 'AT異常(電圧値閾値未満)',
+    'AT異常（AT通知受信なし）': 'AT異常(AT通知受信なし)',
+    'AT異常（AT受信通知なし）': 'AT異常(AT通知受信なし)',
     'メンテナンス(アラート付)': 'メンテナンス(手動)'
 };
 
@@ -25,9 +31,15 @@ if (cachedHighlight === null) {
     saveToCache('checked_highlight_statuses', checkedHighlightStatuses);
 } else {
     if (Array.isArray(cachedHighlight)) {
-        checkedHighlightStatuses = Array.from(new Set(
-            cachedHighlight.map(status => LEGACY_STATUS_ALIASES[status] || status)
-        ));
+        const migrated = [];
+        for (const status of cachedHighlight) {
+            if (status === 'AT異常全般') {
+                migrated.push('AT異常(AT通知受信なし)', 'AT異常(電圧値閾値未満)');
+            } else {
+                migrated.push(LEGACY_STATUS_ALIASES[status] || status);
+            }
+        }
+        checkedHighlightStatuses = Array.from(new Set(migrated));
         saveToCache('checked_highlight_statuses', checkedHighlightStatuses);
     } else {
         checkedHighlightStatuses = [];

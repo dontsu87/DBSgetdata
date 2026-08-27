@@ -76,7 +76,44 @@ const migratedHighlights = vm.runInContext(
 );
 assert.deepEqual(
     Array.from(migratedHighlights),
-    ['AT異常全般', 'メンテナンス(手動)']
+    ['AT異常(電圧値閾値未満)', 'メンテナンス(手動)']
+);
+
+const storage2 = new Map();
+storage2.set(
+    'checked_highlight_statuses',
+    JSON.stringify(['AT異常全般', 'メンテナンス(手動)'])
+);
+const context2 = vm.createContext({
+    console,
+    navigator: {maxTouchPoints: 0},
+    URLSearchParams,
+    window: {location: {search: ''}},
+    document: {querySelector: () => null},
+    localStorage: {
+        getItem: key => storage2.has(key) ? storage2.get(key) : null,
+        setItem: (key, value) => storage2.set(key, String(value))
+    }
+});
+for (const relativePath of ['js/config.js', 'js/utils.js']) {
+    vm.runInContext(
+        fs.readFileSync(path.join(root, relativePath), 'utf8'),
+        context2,
+        {filename: relativePath}
+    );
+}
+vm.runInContext(
+    fs.readFileSync(path.join(root, 'js/state.js'), 'utf8'),
+    context2,
+    {filename: 'js/state.js'}
+);
+const migratedFromGeneral = vm.runInContext(
+    'Array.from(checkedHighlightStatuses)',
+    context2
+);
+assert.deepEqual(
+    Array.from(migratedFromGeneral),
+    ['AT異常(AT通知受信なし)', 'AT異常(電圧値閾値未満)', 'メンテナンス(手動)']
 );
 
 // 車両IDの昇順（自然順ソート）テスト

@@ -34,7 +34,7 @@ def run_test():
             const mockData = {
                 "updated_at": "2026-06-09 13:41:26",
                 "total_ports_count": 1,
-                "total_alert_bikes": 2,
+                "total_alert_bikes": 3,
                 "ports": [
                     {
                         "port_name": "テストポート",
@@ -42,11 +42,11 @@ def run_test():
                         "station_id": "00001412",
                         "lat": 36.061486,
                         "lon": 136.222531,
-                        "total_bikes": 2,
+                        "total_bikes": 3,
                         "bikes": [
                             {
                                 "bike_id": "TEST-AT-1",
-                                "status": "AT異常全般",
+                                "status": "AT異常(AT通知受信なし)",
                                 "model_name": "DD",
                                 "voltage": 33.5,
                                 "alert_level": 5,
@@ -57,6 +57,17 @@ def run_test():
                             },
                             {
                                 "bike_id": "TEST-AT-2",
+                                "status": "AT異常(電圧値閾値未満)",
+                                "model_name": "DD",
+                                "voltage": 31.5,
+                                "alert_level": 5,
+                                "alert_level_name": "最低",
+                                "is_unregistered": false,
+                                "at_time": "2026-06-08 11:30:00",
+                                "consecutive_use_duration": 0
+                            },
+                            {
+                                "bike_id": "TEST-AT-3",
                                 "status": "メンテナンス(手動)",
                                 "model_name": "DD",
                                 "voltage": 32.5,
@@ -111,8 +122,12 @@ def run_test():
             print(f"リセット後のローカルストレージ値: {cached}")
 
             # 各チェックボックスの状態をDOMから直接取得
-            is_at_error_highlighted = page.evaluate("""() => {
-                const el = Array.from(document.querySelectorAll('.status-highlight')).find(el => el.value === 'AT異常全般');
+            is_at_no_notice_highlighted = page.evaluate("""() => {
+                const el = Array.from(document.querySelectorAll('.status-highlight')).find(el => el.value === 'AT異常(AT通知受信なし)');
+                return el ? el.checked : null;
+            }""")
+            is_at_voltage_highlighted = page.evaluate("""() => {
+                const el = Array.from(document.querySelectorAll('.status-highlight')).find(el => el.value === 'AT異常(電圧値閾値未満)');
                 return el ? el.checked : null;
             }""")
             is_maintenance_highlighted = page.evaluate("""() => {
@@ -120,10 +135,12 @@ def run_test():
                 return el ? el.checked : null;
             }""")
             
-            print(f"AT異常全般の強調チェック状態: {is_at_error_highlighted}")
+            print(f"AT異常(AT通知受信なし)の強調チェック状態: {is_at_no_notice_highlighted}")
+            print(f"AT異常(電圧値閾値未満)の強調チェック状態: {is_at_voltage_highlighted}")
             print(f"メンテナンス(手動)の強調チェック状態: {is_maintenance_highlighted}")
             
-            assert is_at_error_highlighted is True, "AT異常全般の強調表示チェックが入っていません"
+            assert is_at_no_notice_highlighted is True, "AT異常(AT通知受信なし)の強調表示チェックが入っていません"
+            assert is_at_voltage_highlighted is True, "AT異常(電圧値閾値未満)の強調表示チェックが入っていません"
             assert is_maintenance_highlighted is True, "メンテナンス(手動)の強調表示チェックが入っていません"
             
             # スクリーンショットを撮影して目視確認できるようにする

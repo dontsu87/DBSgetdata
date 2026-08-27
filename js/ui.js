@@ -402,7 +402,8 @@ function initStatusFilter(data) {
 
     // 特定の重要なステータスは、実データに一切含まれていなくても常にフィルターに表示させる
     const alwaysVisibleStatuses = [
-        'AT異常全般',
+        'AT異常(AT通知受信なし)',
+        'AT異常(電圧値閾値未満)',
         'メンテナンス(手動)'
     ];
     alwaysVisibleStatuses.forEach(s => statuses.add(s));

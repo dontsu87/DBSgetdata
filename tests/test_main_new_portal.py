@@ -16,6 +16,7 @@ def prepare(monkeypatch):
     monkeypatch.setattr(main, "should_refresh_port_positions", Mock(return_value=False))
     monkeypatch.setattr(main, "load_mismatch_vehicle_ids", Mock(return_value=set()))
     monkeypatch.setattr(main, "refresh_port_service_states", Mock(return_value=0))
+    monkeypatch.setattr(main, "should_fetch_all_locations", Mock(return_value=False))
     monkeypatch.setattr(
         main,
         "login_and_get_areas",
