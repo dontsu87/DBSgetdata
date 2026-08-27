@@ -2,6 +2,7 @@
 import os
 import json
 import math
+import glob
 from datetime import datetime
 import pandas as pd
 from src.config import Config
@@ -32,6 +33,35 @@ def _load_port_coordinate_master():
     except (OSError, UnicodeError, json.JSONDecodeError):
         return {}
     return payload if isinstance(payload, dict) else {}
+
+
+def _normalize_station_id(value):
+    value = str(value or "").strip()
+    if not value:
+        return ""
+    try:
+        return f"{int(value):08d}"
+    except (TypeError, ValueError):
+        return value
+
+
+def _find_port_master_entry(master, port_name, station_id=None):
+    direct = master.get(port_name)
+    target_station_id = _normalize_station_id(station_id)
+    if isinstance(direct, dict):
+        direct_station_id = _normalize_station_id(direct.get("station_id"))
+        if not target_station_id or not direct_station_id or direct_station_id == target_station_id:
+            return direct
+
+    candidates = [
+        item for item in master.values()
+        if isinstance(item, dict) and item.get("port_name") == port_name
+    ]
+    if target_station_id:
+        for item in candidates:
+            if _normalize_station_id(item.get("station_id")) == target_station_id:
+                return item
+    return candidates[0] if candidates else None
 
 
 def _add_port_position_mismatch_flag(combined_df):
@@ -66,7 +96,8 @@ def _add_port_position_mismatch_flag(combined_df):
 def export_to_onedrive(df_list: list[pd.DataFrame]) -> str:
     """
     全エリアのDataFrameリストを受け取り、1つのCSVに統合してOneDriveへ保存します。
-    結合の際、最新のGBFSデータ（ポート情報）から `station_id` や `lat`(緯度), `lon`(経度) を紐付けて列追加します。
+    結合の際、管理ポータルの完全スナップショットから `station_id` や
+    `lat`(緯度), `lon`(経度) を紐付けて列追加します。
     引数:
         df_list (list of pd.DataFrame): 各エリアのスクレイピングデータ
     戻り値:
@@ -79,45 +110,42 @@ def export_to_onedrive(df_list: list[pd.DataFrame]) -> str:
     # 全データを統合
     combined_df = pd.concat(df_list, ignore_index=True)
 
-    # --- GBFS ポート情報との紐付け処理 ---
-    import glob
-    # output/ ディレクトリ内の最新の gbfs_stations_*.csv を検索
-    gbfs_files = sorted(glob.glob(os.path.join(Config.OUTPUT_DIR, "gbfs_stations_*.csv")))
-    if gbfs_files:
-        latest_gbfs_file = gbfs_files[-1]
-        print(f"Info: 最新のGBFSデータをロードして紐付けを行います: {os.path.basename(latest_gbfs_file)}")
-        try:
-            df_gbfs = pd.read_csv(latest_gbfs_file)
-            # ポート名をキーにするため、空白を排除したクレンジング用のキーを作成してマージします
-            df_gbfs['join_key'] = df_gbfs['name'].astype(str).str.strip()
-            combined_df['join_key'] = combined_df['ポート名'].astype(str).str.strip()
-            
-            # マージ用に必要なカラムだけを抽出
-            df_gbfs_subset = df_gbfs[['join_key', 'station_id', 'lat', 'lon']].drop_duplicates(subset=['join_key'])
-            
-            # カラム名重複(lat_x/lat_yなど)を防ぐため、既に存在する場合は事前にドロップ
-            for col_to_drop in ['station_id', 'lat', 'lon']:
-                if col_to_drop in combined_df.columns:
-                    combined_df.drop(columns=[col_to_drop], inplace=True)
+    # --- 管理ポータルの完全スナップショットとの紐付け ---
+    port_master = _load_port_coordinate_master()
+    if not port_master:
+        print("Warning: 管理ポータルのポートスナップショットが空です。ポート位置を空欄にします。")
 
-            # 左結合でマージ
-            combined_df = pd.merge(combined_df, df_gbfs_subset, on='join_key', how='left')
-            
-            # 不要なキーを削除し、欠損値(NaN)を空文字等に置換
-            combined_df.drop(columns=['join_key'], inplace=True)
-            combined_df['station_id'] = combined_df['station_id'].fillna("")
-            combined_df['lat'] = combined_df['lat'].fillna("")
-            combined_df['lon'] = combined_df['lon'].fillna("")
-            print("Success: GBFSポート情報（station_id, lat, lon）の紐付けに成功しました。")
-        except Exception as e:
-            print(f"Warning: GBFSデータとの紐付け中にエラーが発生しました（結合なしで保存します）: {e}")
-            if 'join_key' in combined_df.columns:
-                combined_df.drop(columns=['join_key'], inplace=True)
-    else:
-        print("Warning: GBFSデータ（gbfs_stations_*.csv）が見つからないため、紐付け処理をスキップします。")
-        combined_df['station_id'] = ""
-        combined_df['lat'] = ""
-        combined_df['lon'] = ""
+    port_names = combined_df.get("ポート名", pd.Series([""] * len(combined_df)))
+    port_names = port_names.astype(str).str.strip().tolist()
+
+    def _existing_value(column, index):
+        if column not in combined_df.columns:
+            return ""
+        value = combined_df.iloc[index][column]
+        return "" if pd.isna(value) else value
+
+    station_ids = []
+    lats = []
+    lons = []
+    for index, port_name in enumerate(port_names):
+        item = _find_port_master_entry(
+            port_master,
+            port_name,
+            _existing_value("station_id", index),
+        )
+        if not isinstance(item, dict):
+            station_ids.append(_existing_value("station_id", index))
+            lats.append(_existing_value("lat", index))
+            lons.append(_existing_value("lon", index))
+            continue
+        station_ids.append(str(item.get("station_id") or _existing_value("station_id", index)).strip())
+        lats.append(item.get("lat") if item.get("lat") is not None else _existing_value("lat", index))
+        lons.append(item.get("lon") if item.get("lon") is not None else _existing_value("lon", index))
+
+    combined_df["station_id"] = station_ids
+    combined_df["lat"] = lats
+    combined_df["lon"] = lons
+    print("Success: 管理ポータルのポートスナップショットを紐付けました。")
 
     _add_port_position_mismatch_flag(combined_df)
 
@@ -311,8 +339,17 @@ def export_to_onedrive(df_list: list[pd.DataFrame]) -> str:
     combined_df['交換後電圧'] = replace_incr_list
     combined_df['交換日時'] = replace_time_list
 
-    # カラム順序を整理 (新しく追加した station_id, lat, lon, AT種別, 連続利用開始日時, 同一ポート継続利用時間(秒), 交換前電圧, 交換後電圧, 交換日時 も含める)
-    columns_order = ['エリア名', '識別番号', '車両状態', 'ポート名', 'station_id', 'lat', 'lon', '位置詳細取得フラグ', '位置詳細取得状態', '車両位置緯度', '車両位置経度', '車両位置測位日時', '車両位置標高', '車両位置速度', '車両位置方位', '車両位置衛星数', 'ポート位置不整合', '電圧', 'AT通知受信日時', 'AT種別', '連続利用開始日時', '同一ポート継続利用時間(秒)', '交換前電圧', '交換後電圧', '交換日時']
+    # 静止状態追跡の実行（同一地点での静止継続時間の計算）
+    try:
+        from src.stationary_tracker import update_stationary_state
+        combined_df = update_stationary_state(combined_df, Config.OUTPUT_DIR)
+    except Exception as e:
+        print(f"Warning: 静止状態の追跡に失敗しました: {e}")
+        combined_df['静止開始日時'] = ""
+        combined_df['静止継続時間(秒)'] = ""
+
+    # カラム順序を整理 (新しく追加した station_id, lat, lon, AT種別, 連続利用開始日時, 同一ポート継続利用時間(秒), 静止開始日時, 静止継続時間(秒), 交換前電圧, 交換後電圧, 交換日時 も含める)
+    columns_order = ['エリア名', '識別番号', '車両状態', 'ポート名', 'station_id', 'lat', 'lon', '位置詳細取得フラグ', '位置詳細取得状態', '車両位置緯度', '車両位置経度', '車両位置測位日時', '車両位置標高', '車両位置速度', '車両位置方位', '車両位置衛星数', 'ポート位置不整合', '電圧', 'AT通知受信日時', 'AT種別', '連続利用開始日時', '同一ポート継続利用時間(秒)', '静止開始日時', '静止継続時間(秒)', '交換前電圧', '交換後電圧', '交換日時']
 
     # 存在するカラムのみで再配置
     columns_order = [col for col in columns_order if col in combined_df.columns]
@@ -332,13 +369,26 @@ def export_to_onedrive(df_list: list[pd.DataFrame]) -> str:
     
     return output_path
 
-def upload_to_onedrive_web(local_file_path: str) -> bool:
+def upload_to_onedrive_web(
+    local_file_path: str,
+    *,
+    shared_link=None,
+    password=None,
+    use_legacy_subfolder_routing=True,
+    verify_uploaded_filename=False,
+) -> bool:
     """
-    パスワード保護されたOneDrive의共有フォルダにアクセスし、
-    対象のCSVファイルを自動でアップロードします。
+    パスワード保護されたOneDrive共有フォルダにアクセスし、
+    対象ファイルを自動でアップロードします。
+
+    ``shared_link`` / ``password`` を省略した既存呼び出しは従来の設定を使います。
+    別送信先へ送る場合は両方を明示し、既存リンクへの暗黙フォールバックを避けます。
     """
-    if not Config.ONEDRIVE_SHARED_LINK:
-        print("Warning: ONEDRIVE_SHARED_LINK が設定されていないため、Webアップロードをスキップします。")
+    resolved_link = Config.ONEDRIVE_SHARED_LINK if shared_link is None else shared_link
+    resolved_password = Config.ONEDRIVE_PASSWORD if password is None else password
+
+    if not resolved_link:
+        print("Warning: OneDrive共有リンクが設定されていないため、Webアップロードをスキップします。")
         return False
 
     from src.browser import build_driver, BrowserUtils
@@ -354,7 +404,7 @@ def upload_to_onedrive_web(local_file_path: str) -> bool:
         utils = BrowserUtils(driver)
         # 1. 共有リンクにアクセス
         print(f"Info: 共有リンクにアクセス中...")
-        driver.get(Config.ONEDRIVE_SHARED_LINK)
+        driver.get(resolved_link)
 
         # 2. パスワード画面の処理
         try:
@@ -364,7 +414,7 @@ def upload_to_onedrive_web(local_file_path: str) -> bool:
             )
             print("Info: 共有リンクのパスワードを入力中...")
             pwd_input.clear()
-            pwd_input.send_keys(Config.ONEDRIVE_PASSWORD)
+            pwd_input.send_keys(resolved_password)
 
             # 送信ボタンを特定してクリック
             btn = driver.find_element(
@@ -385,7 +435,7 @@ def upload_to_onedrive_web(local_file_path: str) -> bool:
         elif "gbfs" in filename.lower() or "station" in filename.lower():
             subfolder_name = "GBFS"
 
-        if subfolder_name:
+        if use_legacy_subfolder_routing and subfolder_name:
             print(f"Info: 子フォルダ「{subfolder_name}」へのURL直接遷移を開始します...")
             try:
                 # 初期フォルダの読み込み完了（URLリダイレクト）を待機
@@ -415,7 +465,7 @@ def upload_to_onedrive_web(local_file_path: str) -> bool:
                         parsed.fragment
                     ))
                     
-                    print(f"Info: 子フォルダのURLに直接遷移します: {subfolder_url}")
+                    print(f"Info: 子フォルダ「{subfolder_name}」へ移動します。")
                     driver.get(subfolder_url)
                     
                     # 遷移後の読み込みを待機
@@ -462,6 +512,16 @@ def upload_to_onedrive_web(local_file_path: str) -> bool:
         print("Info: アップロードの完了を待機中 (約15秒)...")
         # OneDriveのWeb UI進捗バーや完了通知があるため、安全に15秒スリープし、かつ非同期処理の完了を待ちます
         time.sleep(15)
+
+        if verify_uploaded_filename:
+            from selenium.webdriver.support.ui import WebDriverWait
+
+            print("Info: OneDriveの一覧を再読み込みしてアップロード結果を確認します...")
+            driver.refresh()
+            WebDriverWait(driver, 90).until(
+                lambda current_driver: filename
+                in current_driver.find_element(By.TAG_NAME, "body").text
+            )
 
         print("Success: OneDriveへのファイルアップロードが正常に完了しました。")
         return True
@@ -751,7 +811,7 @@ def merge_and_upload_historical_logs(until_file: str) -> bool:
     
     # マージ処理
     df_list = []
-    keep_cols = ['エリア名', '識別番号', '車両状態', 'ポート名', 'station_id', 'lat', 'lon', '位置詳細取得フラグ', '位置詳細取得状態', '車両位置緯度', '車両位置経度', '車両位置測位日時', '車両位置標高', '車両位置速度', '車両位置方位', '車両位置衛星数', 'ポート位置不整合', '電圧', 'AT通知受信日時', '連続利用開始日時', '同一ポート継続利用時間(秒)', '交換前電圧', '交換後電圧', '交換日時']
+    keep_cols = ['エリア名', '識別番号', '車両状態', 'ポート名', 'station_id', 'lat', 'lon', '位置詳細取得フラグ', '位置詳細取得状態', '車両位置緯度', '車両位置経度', '車両位置測位日時', '車両位置標高', '車両位置速度', '車両位置方位', '車両位置衛星数', 'ポート位置不整合', '電圧', 'AT通知受信日時', '連続利用開始日時', '同一ポート継続利用時間(秒)', '静止開始日時', '静止継続時間(秒)', '交換前電圧', '交換後電圧', '交換日時']
     
     print("Info: 過去ファイルの読み込みを開始します...")
     for idx, filepath in enumerate(csv_files):

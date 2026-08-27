@@ -131,3 +131,109 @@ assert.deepEqual(
 );
 
 console.log('frontend area aliases and bike-prefix filters & bike sorting: ok');
+
+// --- preparePositionMismatchData の最寄り実在ポート再配属テスト ---
+// map.js から preparePositionMismatchData, shouldMismatchBike, findNearestPort を検証可能なコンテキストを構築
+const mapJsCode = fs.readFileSync(path.join(root, 'js/map.js'), 'utf8');
+
+// preparePositionMismatchData の関数定義とその依存関係を抽出してコンテキストに注入
+const mapContext = vm.createContext({
+    console,
+    Math,
+    Array,
+    Object,
+    Number,
+    String,
+    Map,
+    window: { location: { search: '' } },
+    document: { querySelector: () => null },
+    URLSearchParams,
+    localStorage: { getItem: () => null, setItem: () => {} },
+    isPositionMismatchMode: false,
+    NEAREST_PORT_THRESHOLD_M: 100
+});
+
+// utils.js を読み込む (normalizeAreaName, findNearestPort, haversineMeters を含む)
+vm.runInContext(fs.readFileSync(path.join(root, 'js/config.js'), 'utf8'), mapContext);
+vm.runInContext(fs.readFileSync(path.join(root, 'js/utils.js'), 'utf8'), mapContext);
+
+// map.js の preparePositionMismatchData 関数を注入
+const prepareFuncMatch = mapJsCode.match(/function preparePositionMismatchData\([\s\S]*?\n\}/);
+assert.ok(prepareFuncMatch, 'preparePositionMismatchData 関数が抽出できること');
+vm.runInContext(prepareFuncMatch[0], mapContext);
+
+// テストデータ: ポートA(尾山神社前), ポートB(西金沢駅西口)
+const testData = {
+    ports: [
+        {
+            port_name: '11.尾山神社前',
+            area_name: '金沢',
+            lat: 36.566000,
+            lon: 136.654600,
+            has_gps: true,
+            bikes: [],
+            total_bikes: 0,
+            alert_bikes_count: 0,
+            max_alert_level: 0
+        },
+        {
+            port_name: '49.西金沢駅西口',
+            area_name: '金沢',
+            lat: 36.540000,
+            lon: 136.600000,
+            has_gps: true,
+            bikes: [
+                {
+                    bike_id: 'NNI042',
+                    status: '利用中',
+                    port_position_mismatch: true,
+                    vehicle_lat: 36.566065, // ポートAから約10m
+                    vehicle_lon: 136.654670,
+                    alert_level: 0,
+                    consecutive_use_duration: 25000,
+                    area_name: '金沢'
+                },
+                {
+                    bike_id: 'OUT001',
+                    status: '利用中',
+                    port_position_mismatch: true,
+                    vehicle_lat: 36.580000, // どのポートからも1km以上離れている
+                    vehicle_lon: 136.630000,
+                    alert_level: 0,
+                    consecutive_use_duration: 10000,
+                    area_name: '金沢'
+                }
+            ],
+            total_bikes: 2,
+            alert_bikes_count: 0,
+            max_alert_level: 0
+        }
+    ]
+};
+
+const processed = vm.runInContext(`preparePositionMismatchData(${JSON.stringify(testData)})`, mapContext);
+
+const portA = processed.ports.find(p => p.port_name === '11.尾山神社前');
+const portB = processed.ports.find(p => p.port_name === '49.西金沢駅西口');
+const outOfPort = processed.ports.find(p => p.port_name === 'ポート外（位置不整合）');
+
+assert.ok(portA, 'ポートAが存在すること');
+assert.ok(portB, 'ポートBが存在すること');
+assert.ok(outOfPort, '仮想ポート（ポート外）が存在すること');
+
+// NNI042 が最寄り実在ポートAに再配属されていること
+assert.equal(portA.total_bikes, 1, 'ポートAの車両数が1台になること');
+assert.equal(portA.bikes.length, 1);
+assert.equal(portA.bikes[0].bike_id, 'NNI042');
+assert.equal(portA.bikes[0].mismatch_source_port, '49.西金沢駅西口');
+assert.equal(portA.bikes[0].nearest_port_name, '11.尾山神社前');
+assert.equal(portA.bikes[0].is_reassigned_to_nearest, true);
+
+// ポートBからは不整合車両が除去されていること
+assert.equal(portB.total_bikes, 0, 'ポートBの車両数が0台になること');
+
+// 最寄りがない OUT001 は仮想ポートに配置されること
+assert.equal(outOfPort.total_bikes, 1, '最寄りのない車両は仮想ポートに入ること');
+assert.equal(outOfPort.bikes[0].bike_id, 'OUT001');
+
+console.log('preparePositionMismatchData reassignment test: ok');

@@ -339,10 +339,12 @@ function preparePositionMismatchData(data) {
     );
 
     const normalPorts = [];
-    const mismatchByArea = {};
+    const normalPortsMap = new Map();
+    const allMismatchBikes = [];
+
+    // パス1: 各ポートの通常車両をまとめ、不整合車両を抽出
     data.ports.forEach(port => {
         const normalBikes = [];
-        const mismatchBikes = [];
         (port.bikes || []).forEach(bike => {
             if (!shouldMismatchBike(bike)) {
                 normalBikes.push(bike);
@@ -362,9 +364,10 @@ function preparePositionMismatchData(data) {
                 lon: vehicleLon,
                 mismatch_source_port: port.port_name || '不明',
                 nearest_port_name: nearest ? nearest.port_name : null,
-                nearest_port_distance_m: nearest ? nearest.distance_m : null
+                nearest_port_distance_m: nearest ? nearest.distance_m : null,
+                is_reassigned_to_nearest: !!nearest
             };
-            mismatchBikes.push(movedBike);
+            allMismatchBikes.push(movedBike);
         });
 
         const normalPort = {
@@ -375,9 +378,20 @@ function preparePositionMismatchData(data) {
             max_alert_level: normalBikes.reduce((max, bike) => Math.max(max, Number(bike.alert_level) || 0), 0)
         };
         normalPorts.push(normalPort);
+        normalPortsMap.set(normalPort.port_name, normalPort);
+    });
 
-        mismatchBikes.forEach(bike => {
-            const areaName = normalizeAreaName(bike.area_name || port.area_name || 'その他');
+    // パス2: 不整合車両を、100m以内の最寄り実在ポートへ再配属。最寄りがない場合は仮想ポートへ
+    const mismatchByArea = {};
+    allMismatchBikes.forEach(bike => {
+        if (bike.nearest_port_name && normalPortsMap.has(bike.nearest_port_name)) {
+            const targetPort = normalPortsMap.get(bike.nearest_port_name);
+            targetPort.bikes.push(bike);
+            targetPort.total_bikes += 1;
+            if (Number(bike.alert_level) > 0) targetPort.alert_bikes_count += 1;
+            targetPort.max_alert_level = Math.max(targetPort.max_alert_level, Number(bike.alert_level) || 0);
+        } else {
+            const areaName = normalizeAreaName(bike.area_name || 'その他');
             if (!mismatchByArea[areaName]) {
                 mismatchByArea[areaName] = {
                     port_name: 'ポート外（位置不整合）',
@@ -397,7 +411,7 @@ function preparePositionMismatchData(data) {
             outPort.total_bikes += 1;
             if (Number(bike.alert_level) > 0) outPort.alert_bikes_count += 1;
             outPort.max_alert_level = Math.max(outPort.max_alert_level, Number(bike.alert_level) || 0);
-        });
+        }
     });
 
     return {
@@ -856,8 +870,9 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
                 }
                 
                 const displayModel = (bike.model_name || '').substring(0, 2);
+                const mismatchTitle = bike.mismatch_source_port ? `ポート位置不整合（元: ${bike.mismatch_source_port}）` : 'ポート位置不整合（100m超）';
                 const positionMismatchBadge = bike.port_position_mismatch
-                    ? '<span style="font-size: 12px; margin-right: 2px; display: inline-flex; align-items: center; color:#dc2626;" title="ポート位置不整合（100m超）">⚠️</span>'
+                    ? `<span style="font-size: 12px; margin-right: 2px; display: inline-flex; align-items: center; color:#dc2626;" title="${mismatchTitle}">⚠️</span>`
                     : '';
                 const bikeStatusTrimmed = bike.status ? bike.status.trim() : '';
                 const isBikeHighlighted = checkedHighlightStatuses.includes(bikeStatusTrimmed);
@@ -1043,7 +1058,9 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
     });
 
     allFilteredBikes.forEach(bike => {
-        if (bike.consecutive_use_duration >= thresholdSec) {
+        const isUnlocked = (typeof bike.consecutive_use_duration === 'number' && bike.consecutive_use_duration >= thresholdSec) ||
+                           (typeof bike.stationary_duration === 'number' && bike.stationary_duration >= thresholdSec);
+        if (isUnlocked) {
             unlockedBikesCount++;
         }
         if (bike.status) {
@@ -1053,6 +1070,27 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
             }
         }
     });
+
+    // ポート外（位置不整合など仮想ポート）の未施錠車両も集計
+    if (data && data.ports) {
+        data.ports.forEach(port => {
+            const isOutOfPort = (port.has_gps === false || port.lat === null || port.lon === null || (port.port_name && port.port_name.includes('ポート外')));
+            if (!isOutOfPort || !port.bikes) return;
+            port.bikes.forEach(bike => {
+                if (bike.area_name && bike.area_name !== selectedArea) return;
+                if (!bike.area_name && port.area_name !== selectedArea) return;
+                if (!isAllPrefixesChecked && bike.bike_id) {
+                    if (!matchesBikePrefix(bike.bike_id, checkedPrefixes, isAllPrefixesChecked)) return;
+                }
+                const stSec = (typeof bike.stationary_duration === 'number') ? bike.stationary_duration : 0;
+                const csSec = (typeof bike.consecutive_use_duration === 'number') ? bike.consecutive_use_duration : 0;
+                const isUsing = bike.status && (bike.status.indexOf('利用中') >= 0 || bike.status.indexOf('一時駐輪') >= 0);
+                if (isUsing && (stSec >= thresholdSec || (stSec === 0 && csSec >= thresholdSec))) {
+                    unlockedBikesCount++;
+                }
+            });
+        });
+    }
 
     document.getElementById('alert-ports-count').innerText = filteredPortsCount;
     document.getElementById('alert-bikes-count').innerText = filteredBikesCount;
@@ -1612,6 +1650,14 @@ function buildOutOfPortBikePopupSection(bike, isMismatch, isHighlighted) {
     var atTimeInfo = formatAtTime(bike.gps_datetime || bike.at_time);
     var atTimeStyle = atTimeInfo.stale ? 'color:#dc2626; font-weight:bold;' : '';
 
+    const thresholdSec = (typeof unlockedThresholdHours === 'number' ? unlockedThresholdHours : 2.0) * 3600;
+    const stDuration = (typeof bike.stationary_duration === 'number') ? bike.stationary_duration : 0;
+    const csDuration = (typeof bike.consecutive_use_duration === 'number') ? bike.consecutive_use_duration : 0;
+    const isUnlockedBike = (stDuration >= thresholdSec) || (csDuration >= thresholdSec);
+    const unlockedHtml = isUnlockedBike
+        ? `<div style="color:#db2777; font-weight:bold; font-size:11px; margin-top:2px;">🔑 未施錠（${stDuration > 0 ? '静止: ' + (stDuration / 3600).toFixed(1) : '継続: ' + (csDuration / 3600).toFixed(1)}時間）</div>`
+        : '';
+
     return `
         <div style="font-size: 12px; font-family: sans-serif; padding: 2px;">
             <div style="font-weight: bold; font-size: 13px; color: #0f172a; margin-bottom: 4px;">
@@ -1620,7 +1666,7 @@ function buildOutOfPortBikePopupSection(bike, isMismatch, isHighlighted) {
             <div style="display: flex; gap: 8px; font-size: 11px; margin-bottom: 2px;">
                 <span>電圧: <b>${voltText}</b></span>
                 <span>状態: <b>${statusText}</b></span>${isMismatch ? '<div style="color:#dc2626; font-weight:bold; margin-top:3px;">ポート位置不整合（実測位置を表示）</div>' : ''}
-            </div>
+            </div>${unlockedHtml}
             <div style="font-size: 11px; color: #475569;">${isMismatch && displayedPortName ? '表示上のポート: <b>' + displayedPortName + '</b>' : ''}</div>
             <div style="font-size: 11px; color: #475569;">${isMismatch ? nearestPortText : ''}</div>
             <div style="font-size: 11px; margin-top: 2px;">
@@ -1681,26 +1727,43 @@ function renderOutOfPortDotMarkers(data) {
                 if (!isPrefixMatch) return;
             }
 
-            // 「利用中」「一時駐輪」の表示判定:
-            // - 強調ON (isUsingHighlighted) の場合は表示
-            // - 位置不整合抽出モードON (isPositionMismatchMode) かつ isMismatch の場合は表示（乗り捨て捜索用）
-            // - 位置不整合抽出モードOFFのときは、isMismatchであっても利用中は通常走行・利用中のためマップ上には非表示（ノイズ防止）
-            var isMismatch = !!bike.port_position_mismatch;
+            // 未施錠判定 (静止時間 >= 閾値、または静止未計測時継続時間 >= 閾値)
+            const thresholdSec = (typeof unlockedThresholdHours === 'number' ? unlockedThresholdHours : 2.0) * 3600;
+            const stationaryDuration = (typeof bike.stationary_duration === 'number') ? bike.stationary_duration : 0;
+            const consecutiveDuration = (typeof bike.consecutive_use_duration === 'number') ? bike.consecutive_use_duration : 0;
             var isUsingStatus = bike.status && (
                 bike.status.indexOf('利用中') >= 0 || bike.status.indexOf('一時駐輪') >= 0
             );
+            const isStationaryUnlocked = isUsingStatus && (
+                stationaryDuration >= thresholdSec ||
+                (stationaryDuration === 0 && consecutiveDuration >= thresholdSec && !bike.is_reassigned_to_nearest)
+            );
+
+            // 「利用中」「一時駐輪」の表示判定:
+            // - 強調ON (isUsingHighlighted) の場合は表示
+            // - 位置不整合抽出モードON (isPositionMismatchMode) かつ isMismatch の場合は表示（乗り捨て捜索用）
+            // - 静止判定開始から2時間以上の未施錠乗り捨て (isStationaryUnlocked) の場合は表示！
+            // - それ以外の利用中は通常走行・移動中のためマップ上には非表示（ノイズ防止）
+            var isMismatch = !!bike.port_position_mismatch;
             var isUsingHighlighted = Array.isArray(checkedHighlightStatuses) && checkedHighlightStatuses.some(function(hs) {
                 return hs && (hs.indexOf('利用中') >= 0 || hs.indexOf('一時駐輪') >= 0);
             });
             if (isUsingStatus) {
                 const showInMismatchMode = isPositionMismatchMode && isMismatch;
-                if (!isUsingHighlighted && !showInMismatchMode) return;
+                if (!isUsingHighlighted && !showInMismatchMode && !isStationaryUnlocked) return;
             }
 
             // 車両状態フィルタで「強調」のものは赤、そうでないものはオレンジ
             var isHighlighted = Array.isArray(checkedHighlightStatuses) && bike.status && checkedHighlightStatuses.indexOf(bike.status) >= 0;
 
-            items.push({ bike: bike, lat: bLat, lon: bLon, isMismatch: isMismatch, isHighlighted: isHighlighted });
+            items.push({
+                bike: bike,
+                lat: bLat,
+                lon: bLon,
+                isMismatch: isMismatch,
+                isHighlighted: isHighlighted,
+                isUnlocked: isStationaryUnlocked
+            });
         });
     });
 
@@ -1710,18 +1773,19 @@ function renderOutOfPortDotMarkers(data) {
         const members = cluster.items;
         const anyMismatch = members.some(m => m.isMismatch);
         const anyHighlighted = members.some(m => m.isHighlighted);
+        const anyUnlocked = members.some(m => m.isUnlocked);
 
-        var radius = anyMismatch ? (isOutOfPortOnlyMode ? 12 : 9) : (anyHighlighted ? (isOutOfPortOnlyMode ? 9 : 7) : (isOutOfPortOnlyMode ? 6 : 4));
-        var fillColor = anyMismatch ? '#dc2626' : (anyHighlighted ? '#ef4444' : '#f97316');
-        var color = anyMismatch ? '#fef08a' : '#ffffff';
+        var radius = anyUnlocked ? (isOutOfPortOnlyMode ? 13 : 10) : (anyMismatch ? (isOutOfPortOnlyMode ? 12 : 9) : (anyHighlighted ? (isOutOfPortOnlyMode ? 9 : 7) : (isOutOfPortOnlyMode ? 6 : 4)));
+        var fillColor = anyUnlocked ? '#db2777' : (anyMismatch ? '#dc2626' : (anyHighlighted ? '#ef4444' : '#f97316'));
+        var color = anyUnlocked ? '#fbcfe8' : (anyMismatch ? '#fef08a' : '#ffffff');
 
         const dotMarker = L.circleMarker([cluster.lat, cluster.lon], {
             radius: radius,
             fillColor: fillColor,
             color: color,
-            weight: anyMismatch ? 3 : (anyHighlighted ? 2 : 1.5),
+            weight: (anyUnlocked || anyMismatch) ? 3 : (anyHighlighted ? 2 : 1.5),
             opacity: 0.9,
-            fillOpacity: anyMismatch ? 0.98 : (anyHighlighted ? 0.95 : 0.85)
+            fillOpacity: (anyUnlocked || anyMismatch) ? 0.98 : (anyHighlighted ? 0.95 : 0.85)
         });
 
         dotMarker.bindPopup(buildOutOfPortClusterPopupHtml(members));
@@ -1731,5 +1795,20 @@ function renderOutOfPortDotMarkers(data) {
                 outOfPortBikeMarkers[String(m.bike.bike_id)] = dotMarker;
             }
         });
+
+        // ユーザー要望: ポート外の🔑アイコンのサイズは、ポートに付与されているもの(16px)と区別がつくように少し小さめ(11px)に表示
+        if (anyUnlocked) {
+            const unlockedBadgeIcon = L.divIcon({
+                className: 'out-of-port-unlocked-icon',
+                html: '<span style="font-size: 11px; line-height: 1; display: inline-flex; align-items: center; filter: drop-shadow(0 1px 1.5px rgba(0,0,0,0.6));">🔑</span>',
+                iconSize: [14, 14],
+                iconAnchor: [-4, 12]
+            });
+            const badgeMarker = L.marker([cluster.lat, cluster.lon], {
+                icon: unlockedBadgeIcon,
+                interactive: false
+            });
+            outOfPortMarkerGroup.addLayer(badgeMarker);
+        }
     });
 }

@@ -2029,3 +2029,9 @@ body.worker-location-only #map [class*='port-marker-'] {
 .out-of-service-toggle-button:active {
     transform: scale(0.95);
 }
+
+/* ポート外マーカー用の小さな未施錠鍵アイコン（ポートの16pxと区別して11px控えめに表示） */
+.out-of-port-unlocked-icon {
+    pointer-events: none;
+    z-index: 500;
+}

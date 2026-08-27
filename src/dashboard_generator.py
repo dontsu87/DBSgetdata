@@ -2,6 +2,7 @@
 import os
 import glob
 import json
+import math
 import re
 import pandas as pd
 from datetime import datetime, timezone, timedelta
@@ -258,137 +259,34 @@ def apply_vehicle_thresholds(df_vehicle, df_threshold):
     return df_merged
 
 def sync_port_area_master(df_merged):
-    """ポート・エリアマスタ (port_area_master.json) のロードと自動学習、クレンジングを行います"""
-    master_path = os.path.join(str(ROOT_DIR), "port_area_master.json")
+    """管理ポータルの完全スナップショットからエリア対応を作る。
+
+    以前はGBFSを座標ジオフェンスで自動学習していたが、隣接自治体の
+    ステーションを誤って上田千曲へ取り込めるため、表示用のポート台帳は
+    `port_coords_master.json`（管理ポータル取得結果）だけを正本とする。
+    """
+    del df_merged  # エリア・ポート対応は車両行ではなく管理ポータルを正本とする
+    portal_ports = load_public_port_coords()
     master_data = {"ports": {}, "stations": {}}
-    
-    if os.path.exists(master_path):
-        try:
-            with open(master_path, "r", encoding="utf-8") as f:
-                master_data = json.load(f)
-            if "ports" not in master_data: master_data["ports"] = {}
-            if "stations" not in master_data: master_data["stations"] = {}
-        except Exception as e:
-            print(f"Warning: マスタファイルのロードに失敗しました (再構築します): {e}")
 
-    # 旧ポータル由来のコード付き名称は、ロード時点で現行5名称へ移行する。
-    master_data["ports"] = {
-        key: normalize_area_name(value)
-        for key, value in master_data["ports"].items()
-    }
-    master_data["stations"] = {
-        key: normalize_area_name(value)
-        for key, value in master_data["stations"].items()
-    }
-
-    # 今回の車両情報からポート名・station_idとエリアの対応関係を自動学習
-    for idx, row in df_merged.iterrows():
-        p_name = str(row['ポート名']).strip()
-        a_name = normalize_area_name(row['エリア名']) if not pd.isna(row['エリア名']) else 'その他'
-        s_id = row['station_id']
-        
-        if p_name and a_name and a_name != "その他":
-            master_data["ports"][p_name] = a_name
-        if not pd.isna(s_id) and a_name and a_name != "その他":
-            try:
-                s_id_str = f"{int(s_id):08d}"
-                master_data["stations"][s_id_str] = a_name
-            except (ValueError, TypeError):
-                pass
-
-    # 最新のGBFS JSONデータを探索して読み込み
-    gbfs_files = sorted(glob.glob(os.path.join(Config.OUTPUT_DIR, "gbfs_stations_*.json")))
-    latest_gbfs_path = gbfs_files[-1] if gbfs_files else None
-    
-    gbfs_stations = []
-    gbfs_active_names = set()
-    gbfs_active_ids = set()
-    
-    if latest_gbfs_path:
-        try:
-            with open(latest_gbfs_path, "r", encoding="utf-8") as f:
-                gbfs_stations = json.load(f)
-            for s in gbfs_stations:
-                s_id_raw = s.get("station_id", "").strip()
-                if not s_id_raw:
-                    continue
-                try:
-                    s_id = f"{int(s_id_raw):08d}"
-                except ValueError:
-                    s_id = s_id_raw
-                s_name = s.get("name", "").strip()
-                if s_name:
-                    gbfs_active_names.add(s_name)
-                if s_id and s_id != "00000000":
-                    gbfs_active_ids.add(s_id)
-            print(f"Success: 最新のGBFSデータをロードしました (ステーション数: {len(gbfs_stations)})")
-        except Exception as e:
-            print(f"Warning: GBFSデータのロードに失敗しました: {e}")
-
-    # 撤去・改名ポートの自動消し込み (クレンジング)
-    if gbfs_stations:
-        stale_ports = [p for p in master_data["ports"].keys() if p not in gbfs_active_names]
-        stale_stations = [s for s in master_data["stations"].keys() if s not in gbfs_active_ids]
-        
-        gps_active_ports = set()
-        for idx, row in df_merged.iterrows():
-            lat = row['lat']
-            lon = row['lon']
-            has_gps = not (pd.isna(lat) or pd.isna(lon) or lat == 0.0 or lon == 0.0)
-            if not has_gps:
-                p_name = str(row['ポート名']).strip()
-                gps_active_ports.add(p_name)
-        
-        deleted_ports_count = 0
-        deleted_stations_count = 0
-        
-        for p in stale_ports:
-            if p not in gps_active_ports:
-                del master_data["ports"][p]
-                deleted_ports_count += 1
-        for s in stale_stations:
-            del master_data["stations"][s]
-            deleted_stations_count += 1
-            
-        if deleted_ports_count or deleted_stations_count:
-            print(f"Info: 不要な古いポート情報をマスタから自動消し込みしました (ポート名: {deleted_ports_count}件, ID: {deleted_stations_count}件)")
-
-    # GBFSポートをもとに、マスタへのジオフェンス初回学習
-    for s in gbfs_stations:
-        s_id_raw = s.get("station_id", "").strip()
-        if not s_id_raw:
+    for port_name, item in portal_ports.items():
+        area_name = normalize_area_name(item.get("area_name"))
+        if not area_name or area_name == "その他":
             continue
-        try:
-            s_id_str = f"{int(s_id_raw):08d}"
-        except ValueError:
-            s_id_str = s_id_raw
-            
-        s_name = s.get("name", "").strip()
-        s_lat = float(s.get("lat", 0.0))
-        s_lon = float(s.get("lon", 0.0))
-        
-        if s_name not in master_data["ports"] or s_id_str not in master_data["stations"]:
-            area = get_area_by_coords(s_lat, s_lon)
-            if area:
-                if s_name: master_data["ports"][s_name] = area
-                if s_id_str and s_id_str != "00000000": master_data["stations"][s_id_str] = area
+        master_data["ports"][port_name] = area_name
+        station_id = str(item.get("station_id") or "").strip()
+        if station_id:
+            master_data["stations"][station_id] = area_name
 
-    # マスタファイルの保存
-    try:
-        with open(master_path, "w", encoding="utf-8") as f:
-            json.dump(master_data, f, ensure_ascii=False, indent=2)
-        print(f"Success: 学習型マスタファイルを更新しました: {master_path}")
-    except Exception as e:
-        print(f"Error: マスタファイルの書き込みに失敗しました: {e}")
-        
-    return master_data, gbfs_stations
+    if not portal_ports:
+        print("Warning: 管理ポータルのポートスナップショットが空です。空ポートは追加しません。")
+    else:
+        print(f"Success: 管理ポータルのポートスナップショットを使用します（{len(portal_ports)}件）。")
+
+    return master_data, portal_ports
 
 def load_public_port_coords():
-    """port_coords_master.json からマスターポート座標マップをロードします。
-
-    座標に加え、ポータルAPI由来の稼働状態(service_state)と
-    利用者公開設定(publish_flag)も保持する（提供外表示の判定で使用）。
-    """
+    """管理ポータルの完全スナップショットをロードします。"""
     coords = {}
     path = os.path.join(str(ROOT_DIR), "port_coords_master.json")
     if os.path.exists(path):
@@ -396,16 +294,73 @@ def load_public_port_coords():
             with open(path, "r", encoding="utf-8") as f:
                 data = json.load(f)
                 for p_name, item in data.items():
-                    if item.get("lat") and item.get("lon"):
-                        coords[p_name] = {
-                            "lat": float(item["lat"]),
-                            "lon": float(item["lon"]),
-                            "service_state": item.get("service_state") or None,
-                            "publish_flag": item.get("publish_flag"),
-                        }
+                    if not isinstance(item, dict):
+                        continue
+                    try:
+                        lat = float(item.get("lat"))
+                        lon = float(item.get("lon"))
+                    except (TypeError, ValueError):
+                        continue
+                    if not math.isfinite(lat) or not math.isfinite(lon) or lat == 0.0 or lon == 0.0:
+                        continue
+                    item_copy = dict(item)
+                    item_copy["lat"] = lat
+                    item_copy["lon"] = lon
+                    item_copy["snapshot_key"] = str(item_copy.get("snapshot_key") or p_name).strip()
+                    item_copy["area_name"] = normalize_area_name(item_copy.get("area_name"))
+                    item_copy["station_id"] = str(item_copy.get("station_id") or "").strip()
+                    item_copy["service_state"] = item_copy.get("service_state") or None
+                    item_copy["publish_flag"] = item_copy.get("publish_flag")
+                    try:
+                        item_copy["rack_count"] = max(0, int(float(item_copy["rack_count"])))
+                    except (KeyError, TypeError, ValueError):
+                        item_copy["rack_count"] = 0
+                    coords[str(p_name).strip()] = item_copy
         except Exception as e:
             print(f"Warning: port_coords_master.json からの座標マスタ読み込みに失敗しました: {e}")
     return coords
+
+def _normalize_station_id(value):
+    value = str(value or "").strip()
+    if not value:
+        return ""
+    try:
+        return f"{int(value):08d}"
+    except (TypeError, ValueError):
+        return value
+
+
+def _find_port_snapshot_entry(portal_ports, port_name, station_id=None, area_name=None):
+    """表示名が重複する場合もstation_id/エリアで正しいポートを選ぶ。"""
+    if not isinstance(portal_ports, dict) or not port_name:
+        return {}
+
+    target_station_id = _normalize_station_id(station_id)
+    direct = portal_ports.get(port_name)
+    if isinstance(direct, dict):
+        direct_station_id = _normalize_station_id(direct.get("station_id"))
+        if not target_station_id or not direct_station_id or direct_station_id == target_station_id:
+            return direct
+
+    candidates = [
+        item for item in portal_ports.values()
+        if isinstance(item, dict) and item.get("port_name") == port_name
+    ]
+    if target_station_id:
+        station_matches = [
+            item for item in candidates
+            if _normalize_station_id(item.get("station_id")) == target_station_id
+        ]
+        if station_matches:
+            return station_matches[0]
+    if area_name and len(candidates) > 1:
+        area_matches = [
+            item for item in candidates
+            if normalize_area_name(item.get("area_name")) == normalize_area_name(area_name)
+        ]
+        if area_matches:
+            return area_matches[0]
+    return candidates[0] if candidates else {}
 
 def is_empty_coord(val):
     if val is None or pd.isna(val):
@@ -413,10 +368,12 @@ def is_empty_coord(val):
     s = str(val).strip()
     return s in ('', 'nan', 'None', '0', '0.0', '0.000000')
 
-def aggregate_ports_data(df_merged, master_data, gbfs_stations):
-    """ポート単位の集計処理および空ポートのマージを行います"""
+def aggregate_ports_data(df_merged, master_data, portal_ports):
+    """車両をポート単位へ集計し、管理ポータルの空ポートを追加します。"""
     ports_data = {}
     public_port_coords = load_public_port_coords()
+    if not isinstance(portal_ports, dict):
+        portal_ports = public_port_coords
     
     for idx, row in df_merged.iterrows():
         raw_port_name = str(row['ポート名']).strip() if not pd.isna(row.get('ポート名')) else ""
@@ -428,24 +385,28 @@ def aggregate_ports_data(df_merged, master_data, gbfs_stations):
         else:
             port_name = raw_port_name
 
+        portal_item = (
+            _find_port_snapshot_entry(
+                public_port_coords,
+                port_name,
+                row.get("station_id"),
+                area_name,
+            )
+            if not is_no_port else {}
+        )
+        port_key = str(portal_item.get("snapshot_key") or port_name).strip()
+
         lat = row.get('lat')
         lon = row.get('lon')
 
-        # 1. port_coords_master.json マスターポート位置情報からのフォールバック（実在ポートのみ）
-        # GBFS配信が止まっている場合でも既知ポートの位置を安定させるため、
-        # 個々の車両GPS（2）より先に信頼できる静的マスタを優先する。
-        if not is_no_port and (is_empty_coord(lat) or is_empty_coord(lon)) and port_name in public_port_coords:
-            lat = public_port_coords[port_name]["lat"]
-            lon = public_port_coords[port_name]["lon"]
+        # 1. 管理ポータルの完全スナップショットからのフォールバック（実在ポートのみ）
+        # 個々の車両GPS（2）より先に、ポータルが返したポート座標を優先する。
+        if not is_no_port and (is_empty_coord(lat) or is_empty_coord(lon)) and portal_item:
+            lat = portal_item["lat"]
+            lon = portal_item["lon"]
 
-        service_state = (
-            public_port_coords[port_name]["service_state"]
-            if (not is_no_port and port_name in public_port_coords) else None
-        )
-        publish_flag = (
-            public_port_coords[port_name].get("publish_flag")
-            if (not is_no_port and port_name in public_port_coords) else None
-        )
+        service_state = portal_item.get("service_state") if portal_item else None
+        publish_flag = portal_item.get("publish_flag") if portal_item else None
 
         # 2. 車両位置緯度・経度からのフォールバック（マスタにも無い未知ポートの最終手段）
         # ポート単位の最初の行の車両GPSを採用するため、その車両が位置不整合（誤配置）だと
@@ -465,15 +426,12 @@ def aggregate_ports_data(df_merged, master_data, gbfs_stations):
         gps_datetime = str(row['車両位置測位日時']) if '車両位置測位日時' in df_merged.columns and not pd.isna(row['車両位置測位日時']) else ""
         
         s_id = row.get('station_id')
-        s_id_str = ""
-        if not pd.isna(s_id):
-            try:
-                s_id_str = f"{int(s_id):08d}"
-            except (ValueError, TypeError):
-                s_id_str = str(s_id).strip()
+        s_id_str = _normalize_station_id(s_id) if not pd.isna(s_id) else ""
+        if not s_id_str:
+            s_id_str = _normalize_station_id(portal_item.get("station_id"))
 
-        if port_name not in ports_data:
-            ports_data[port_name] = {
+        if port_key not in ports_data:
+            ports_data[port_key] = {
                 "port_name": "ポート外" if is_no_port else port_name,
                 "area_name": area_name,
                 "station_id": s_id_str,
@@ -482,20 +440,28 @@ def aggregate_ports_data(df_merged, master_data, gbfs_stations):
                 "has_gps": has_gps,
                 "service_state": service_state,
                 "publish_flag": publish_flag,
+                "port_name_en": portal_item.get("port_name_en") or "",
+                "capacity": portal_item.get("rack_count", 0),
                 "total_bikes": 0,
                 "max_alert_level": 0,
                 "alert_bikes_count": 0,
                 "bikes": []
             }
         else:
-            if not ports_data[port_name].get("station_id") and s_id_str:
-                ports_data[port_name]["station_id"] = s_id_str
+            if not ports_data[port_key].get("station_id") and s_id_str:
+                ports_data[port_key]["station_id"] = s_id_str
             
         unlocked_started_at = str(row.get('連続利用開始日時', '')).strip() if '連続利用開始日時' in df_merged.columns and not pd.isna(row.get('連続利用開始日時')) else ""
         try:
             consecutive_use_duration = int(row.get('同一ポート継続利用時間(秒)', 0)) if '同一ポート継続利用時間(秒)' in df_merged.columns and not pd.isna(row.get('同一ポート継続利用時間(秒)')) and str(row.get('同一ポート継続利用時間(秒)')).strip() != "" else 0
         except Exception:
             consecutive_use_duration = 0
+
+        stationary_started_at = str(row.get('静止開始日時', '')).strip() if '静止開始日時' in df_merged.columns and not pd.isna(row.get('静止開始日時')) else ""
+        try:
+            stationary_duration = int(row.get('静止継続時間(秒)', 0)) if '静止継続時間(秒)' in df_merged.columns and not pd.isna(row.get('静止継続時間(秒)')) and str(row.get('静止継続時間(秒)')).strip() != "" else 0
+        except Exception:
+            stationary_duration = 0
 
         replace_original_volt = row.get('交換前電圧')
         replace_increased_volt = row.get('交換後電圧')
@@ -530,6 +496,8 @@ def aggregate_ports_data(df_merged, master_data, gbfs_stations):
             "gps_datetime": gps_datetime,
             "unlocked_started_at": unlocked_started_at,
             "consecutive_use_duration": consecutive_use_duration,
+            "stationary_started_at": stationary_started_at,
+            "stationary_duration": stationary_duration,
             "replace_original_volt": replace_orig_val,
             "replace_increased_volt": replace_incr_val,
             "replaced_at": replaced_at,
@@ -544,59 +512,50 @@ def aggregate_ports_data(df_merged, master_data, gbfs_stations):
             "lon": float(row.get('車両位置経度')) if ('車両位置経度' in df_merged.columns and not is_empty_coord(row.get('車両位置経度'))) else (float(row.get('lon')) if (not is_empty_coord(row.get('lon'))) else None),
         }
         
-        ports_data[port_name]["bikes"].append(bike_info)
-        ports_data[port_name]["total_bikes"] += 1
-        
-        if row['is_alert']:
-            ports_data[port_name]["alert_bikes_count"] += 1
-            if row['alert_level'] > ports_data[port_name]["max_alert_level"]:
-                ports_data[port_name]["max_alert_level"] = int(row['alert_level'])
+        ports_data[port_key]["bikes"].append(bike_info)
+        ports_data[port_key]["total_bikes"] += 1
 
-    # GBFSデータの0台ポートをマージ
-    gbfs_merged_count = 0
-    if gbfs_stations:
-        for s in gbfs_stations:
-            s_id_raw = s.get("station_id", "").strip()
-            if not s_id_raw:
-                continue
-            try:
-                s_id = f"{int(s_id_raw):08d}"
-            except ValueError:
-                s_id = s_id_raw
-                
-            s_name = s.get("name", "").strip()
-            s_lat = float(s.get("lat", 0.0))
-            s_lon = float(s.get("lon", 0.0))
-            
-            if s_name in ports_data:
-                continue
-                
-            area = normalize_area_name(
-                master_data["stations"].get(s_id) or master_data["ports"].get(s_name)
-            )
-            if not area:
-                continue
-            
-            # 地理的ジオフェンスガード
-            if not is_coords_in_area(area, s_lat, s_lon):
-                continue
-            
-            ports_data[s_name] = {
-                "port_name": s_name,
-                "area_name": area,
-                "station_id": s_id,
-                "lat": s_lat,
-                "lon": s_lon,
-                "has_gps": True,
-                "service_state": public_port_coords.get(s_name, {}).get("service_state"),
-                "publish_flag": public_port_coords.get(s_name, {}).get("publish_flag"),
-                "total_bikes": 0,
-                "max_alert_level": 0,
-                "alert_bikes_count": 0,
-                "bikes": []
-            }
-            gbfs_merged_count += 1
-        print(f"Success: GBFSから駐輪台数0台のポートを {gbfs_merged_count} 件マージしました")
+        if row['is_alert']:
+            ports_data[port_key]["alert_bikes_count"] += 1
+            if row['alert_level'] > ports_data[port_key]["max_alert_level"]:
+                ports_data[port_key]["max_alert_level"] = int(row['alert_level'])
+
+    # 管理ポータルのスナップショットから、車両が0台のポートも追加する。
+    # GBFSの名称・座標・ジオフェンスは表示用台帳に使用しない。
+    portal_merged_count = 0
+    for s_name, item in portal_ports.items():
+        if s_name in ports_data:
+            continue
+        display_name = str(item.get("port_name") or s_name).strip()
+        area = normalize_area_name(item.get("area_name"))
+        if not area or area == "その他":
+            continue
+        try:
+            s_lat = float(item.get("lat"))
+            s_lon = float(item.get("lon"))
+        except (TypeError, ValueError):
+            continue
+        if not math.isfinite(s_lat) or not math.isfinite(s_lon) or s_lat == 0.0 or s_lon == 0.0:
+            continue
+
+        ports_data[s_name] = {
+            "port_name": display_name,
+            "area_name": area,
+            "station_id": str(item.get("station_id") or "").strip(),
+            "lat": s_lat,
+            "lon": s_lon,
+            "has_gps": True,
+            "service_state": item.get("service_state"),
+            "publish_flag": item.get("publish_flag"),
+            "port_name_en": item.get("port_name_en") or "",
+            "capacity": item.get("rack_count", 0),
+            "total_bikes": 0,
+            "max_alert_level": 0,
+            "alert_bikes_count": 0,
+            "bikes": []
+        }
+        portal_merged_count += 1
+    print(f"Success: 管理ポータルから駐輪台数0台のポートを {portal_merged_count} 件マージしました")
         
     return ports_data
 
@@ -686,14 +645,14 @@ def generate_dashboard_json(latest_vehicle_path: str = None) -> str:
         return None, None
         
     # 3. ポート・エリアマスタ同期
-    master_data, gbfs_stations = sync_port_area_master(df_merged)
+    master_data, portal_ports = sync_port_area_master(df_merged)
     
     # 4. ポートごとの集計処理
-    ports_data = aggregate_ports_data(df_merged, master_data, gbfs_stations)
+    ports_data = aggregate_ports_data(df_merged, master_data, portal_ports)
     
     # 4.5 利用者向け公開ポートデータの生成
     try:
-        generate_public_ports_data(ports_data, gbfs_stations)
+        generate_public_ports_data(ports_data)
     except Exception as e:
         print(f"Warning: 利用者向け公開ポートデータの生成に失敗しました: {e}")
 
