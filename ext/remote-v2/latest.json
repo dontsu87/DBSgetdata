@@ -1,8 +1,8 @@
 {
-  "version": "202608272050",
-  "bundle": "bundle-202608272050.js",
-  "sha256": "6a0f91fdbcbbd73330e7335d6ead4d4ebe329625332ab5359e49c88e1ed31c6c",
-  "signature": "JSvXk/HEBc4gL2tKmIrCYWaoMWC0OsJocP0gFIq96oVGtP92Zz5EpJybkJH+mkiAsiVy986vBWw9Pp/tjQh6ZQ==",
+  "version": "202608272109",
+  "bundle": "bundle-202608272109.js",
+  "sha256": "5c6af2df21bb4a45cf70c3a73998e67ba7dea07b4e7fbc2c4d3c7a0d8b4e3c89",
+  "signature": "+HTPVEZ0AEcZq7Bob3PN6pok2FVVUHapjLqLAmdTlrgJV82OhABXnNfp+SMt+vF5TWx1VqAmyo0x0JF56Mfg6A==",
   "minExtensionVersion": "0.1.1",
-  "changelog": "金沢法人請求書発行: ユーザーID幅拡大と文字拡大、日時幅調整、取得進捗プログレスバー表示"
+  "changelog": "金沢法人請求書発行: ユーザーID列幅を18%へ拡大し末尾文字の見切れを完全解消、日付列幅を12.5%に最適化"
 }
