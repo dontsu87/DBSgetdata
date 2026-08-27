@@ -1,8 +1,8 @@
 {
-  "version": "202608271438",
-  "bundle": "bundle-202608271438.js",
-  "sha256": "6d44e06e5af43babbe6a4fd966f8bbd910fe084bcaa4ed65433ecc3acc6beeea",
-  "signature": "Nuj/ziqrGYVaSaG4AfThKFNYZM8ygokNwj9AgSJ5EW5QfCxRTufNfpndz1gpB5F/qhsfX9cuPvTKAQzilogd8g==",
+  "version": "202608271742",
+  "bundle": "bundle-202608271742.js",
+  "sha256": "13143fc7d04ece5dc720c7fd8ffa962c82e3e98761452ce2424b39b97e004d03",
+  "signature": "cv3PsubAAf+8j/6+4W+WhcyWZfuGssWeDTQ++1VEEaGFTrnjY8bcvkilgeUhHVHzeAvnjqPy6/v6B3w1J7RsGA==",
   "minExtensionVersion": "0.1.1",
-  "changelog": "法人契約利用履歴の500件表示最適化とTSVファイル出力救済"
+  "changelog": "金沢エリア法人請求書・利用明細書一括PDF発行機能追加"
 }
