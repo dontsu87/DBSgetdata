@@ -1,8 +1,8 @@
 {
-  "version": "202608271742",
-  "bundle": "bundle-202608271742.js",
-  "sha256": "13143fc7d04ece5dc720c7fd8ffa962c82e3e98761452ce2424b39b97e004d03",
-  "signature": "cv3PsubAAf+8j/6+4W+WhcyWZfuGssWeDTQ++1VEEaGFTrnjY8bcvkilgeUhHVHzeAvnjqPy6/v6B3w1J7RsGA==",
+  "version": "202608272027",
+  "bundle": "bundle-202608272027.js",
+  "sha256": "2a2dce164dfda5a9321436be25510057e03b2ea0cb3c309afd4a97458a4efcff",
+  "signature": "CjjJ7aOhy7kyc5lKjsUdGEivtUBvoNmieBDKCsFVK2JSmooQEZVvJL8oJPpDE2hf+X7+OSxaV7axrHoVCFFpgg==",
   "minExtensionVersion": "0.1.1",
-  "changelog": "金沢エリア法人請求書・利用明細書一括PDF発行機能追加"
+  "changelog": "金沢エリア法人請求書・利用明細書のユーザーIDプレフィックス除去とポート名・ユーザーIDの文字サイズ自動縮小による見切れ防止"
 }
