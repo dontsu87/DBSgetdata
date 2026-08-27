@@ -1,8 +1,8 @@
 {
-  "version": "202608182313",
-  "bundle": "bundle-202608182313.js",
-  "sha256": "c4b53dc317602d7af0904db96919e74f489eb6daf93bec83d0e230d40c103705",
-  "signature": "h2XzVmQGsrDqEwGrVqvRpmDS/IPk6QIqO/6RcEYoUHLat7CwpE5rCNTNPEk7lvHdLhumPDCr8Up8PfeKK8p3fA==",
+  "version": "202608271438",
+  "bundle": "bundle-202608271438.js",
+  "sha256": "6d44e06e5af43babbe6a4fd966f8bbd910fe084bcaa4ed65433ecc3acc6beeea",
+  "signature": "Nuj/ziqrGYVaSaG4AfThKFNYZM8ygokNwj9AgSJ5EW5QfCxRTufNfpndz1gpB5F/qhsfX9cuPvTKAQzilogd8g==",
   "minExtensionVersion": "0.1.1",
-  "changelog": "車両情報の1000件DOM完成後、読み込みマスク解除直前に表示条件を畳み、Vue反映後にマスク解除"
+  "changelog": "法人契約利用履歴の500件表示最適化とTSVファイル出力救済"
 }
