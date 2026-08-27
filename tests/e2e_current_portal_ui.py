@@ -44,7 +44,7 @@ def run():
                 'bikes': [
                     {
                         'bike_id': 'KNZ001',
-                        'status': 'AT異常全般',
+                        'status': 'AT異常(AT通知受信なし)',
                         'model_name': 'DD',
                         'voltage': 25.0,
                         'alert_level': 4,
@@ -125,7 +125,7 @@ def run():
         assert prefixes == ['KNZ', 'NNI'], f'不正なプレフィックス一覧: {prefixes}'
 
         highlighted = page.locator('.status-highlight:checked').evaluate_all('els => els.map(el => el.value)')
-        assert sorted(highlighted) == ['AT異常全般', 'メンテナンス(手動)']
+        assert sorted(highlighted) == ['AT異常(AT通知受信なし)', 'AT異常(電圧値閾値未満)', 'メンテナンス(手動)']
 
         page.evaluate(
             '''() => {
