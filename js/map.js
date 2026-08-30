@@ -1787,15 +1787,19 @@ function renderOutOfPortDotMarkers(data) {
         var fillColor = anyUnlocked ? '#db2777' : (anyMismatch ? '#dc2626' : (anyHighlighted ? '#ef4444' : '#f97316'));
         var color = anyUnlocked ? '#fbcfe8' : (anyMismatch ? '#fef08a' : '#ffffff');
 
-        const dotMarker = L.circleMarker([cluster.lat, cluster.lon], {
-            pane: 'outOfPortPane',
+        const dotMarkerOptions = {
             radius: radius,
             fillColor: fillColor,
             color: color,
             weight: (anyUnlocked || anyMismatch) ? 2 : (anyHighlighted ? 1.5 : 1),
             opacity: 0.9,
             fillOpacity: (anyUnlocked || anyMismatch) ? 0.98 : (anyHighlighted ? 0.95 : 0.85)
-        });
+        };
+        if (anyUnlocked) {
+            dotMarkerOptions.pane = 'outOfPortPane';
+        }
+
+        const dotMarker = L.circleMarker([cluster.lat, cluster.lon], dotMarkerOptions);
 
         dotMarker.bindPopup(buildOutOfPortClusterPopupHtml(members));
         outOfPortMarkerGroup.addLayer(dotMarker);
