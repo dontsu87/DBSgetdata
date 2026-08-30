@@ -180,6 +180,13 @@ function initMapInstance() {
     });
 
     L.control.zoom({ position: 'topleft' }).addTo(map);
+
+    // ポート外車両マーカー用のカスタムPane（ポートバブルマーカー markerPane: 600 より前面に配置）
+    if (!map.getPane('outOfPortPane')) {
+        const outOfPortPane = map.createPane('outOfPortPane');
+        outOfPortPane.style.zIndex = '650';
+    }
+
     markerGroup = L.layerGroup().addTo(map);
     outOfPortMarkerGroup = L.layerGroup().addTo(map);
 
@@ -360,6 +367,7 @@ function preparePositionMismatchData(data) {
 
             const movedBike = {
                 ...bike,
+                area_name: bike.area_name || port.area_name,
                 lat: vehicleLat,
                 lon: vehicleLon,
                 mismatch_source_port: port.port_name || '不明',
@@ -1775,15 +1783,16 @@ function renderOutOfPortDotMarkers(data) {
         const anyHighlighted = members.some(m => m.isHighlighted);
         const anyUnlocked = members.some(m => m.isUnlocked);
 
-        var radius = anyUnlocked ? (isOutOfPortOnlyMode ? 13 : 10) : (anyMismatch ? (isOutOfPortOnlyMode ? 12 : 9) : (anyHighlighted ? (isOutOfPortOnlyMode ? 9 : 7) : (isOutOfPortOnlyMode ? 6 : 4)));
+        var radius = anyUnlocked ? (isOutOfPortOnlyMode ? 9 : 6.5) : (anyMismatch ? (isOutOfPortOnlyMode ? 8 : 5.5) : (anyHighlighted ? (isOutOfPortOnlyMode ? 6.5 : 4.5) : (isOutOfPortOnlyMode ? 5 : 3.5)));
         var fillColor = anyUnlocked ? '#db2777' : (anyMismatch ? '#dc2626' : (anyHighlighted ? '#ef4444' : '#f97316'));
         var color = anyUnlocked ? '#fbcfe8' : (anyMismatch ? '#fef08a' : '#ffffff');
 
         const dotMarker = L.circleMarker([cluster.lat, cluster.lon], {
+            pane: 'outOfPortPane',
             radius: radius,
             fillColor: fillColor,
             color: color,
-            weight: (anyUnlocked || anyMismatch) ? 3 : (anyHighlighted ? 2 : 1.5),
+            weight: (anyUnlocked || anyMismatch) ? 2 : (anyHighlighted ? 1.5 : 1),
             opacity: 0.9,
             fillOpacity: (anyUnlocked || anyMismatch) ? 0.98 : (anyHighlighted ? 0.95 : 0.85)
         });
@@ -1802,9 +1811,10 @@ function renderOutOfPortDotMarkers(data) {
                 className: 'out-of-port-unlocked-icon',
                 html: '<span style="font-size: 11px; line-height: 1; display: inline-flex; align-items: center; filter: drop-shadow(0 1px 1.5px rgba(0,0,0,0.6));">🔑</span>',
                 iconSize: [14, 14],
-                iconAnchor: [-4, 12]
+                iconAnchor: [-2, 10]
             });
             const badgeMarker = L.marker([cluster.lat, cluster.lon], {
+                pane: 'outOfPortPane',
                 icon: unlockedBadgeIcon,
                 interactive: false
             });
