@@ -1813,9 +1813,9 @@ function renderOutOfPortDotMarkers(data) {
         if (anyUnlocked) {
             const unlockedBadgeIcon = L.divIcon({
                 className: 'out-of-port-unlocked-icon',
-                html: '<span style="font-size: 11px; line-height: 1; display: inline-flex; align-items: center; filter: drop-shadow(0 1px 1.5px rgba(0,0,0,0.6));">🔑</span>',
-                iconSize: [14, 14],
-                iconAnchor: [-2, 10]
+                html: '<span style="font-size: 14px; line-height: 1; display: inline-flex; align-items: center; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.6));">🔑</span>',
+                iconSize: [17, 17],
+                iconAnchor: [-3, 11]
             });
             const badgeMarker = L.marker([cluster.lat, cluster.lon], {
                 pane: 'outOfPortPane',
