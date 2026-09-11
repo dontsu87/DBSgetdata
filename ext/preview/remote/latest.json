@@ -1,8 +1,8 @@
 {
-  "version": "202609120847",
-  "bundle": "bundle-202609120847.js",
-  "sha256": "b60169e616ff9202b80d9685d9495203d573707652a6fd31f307beb0fcaa8662",
-  "signature": "laCfZeIx7uDK9ToQEX59hP4o+be9H16+u7+YQy/MrefZjgHYMUkYRO37zUr+YWBnruu1D5agUGUfQUCQEZGXZw==",
+  "version": "202609120858",
+  "bundle": "bundle-202609120858.js",
+  "sha256": "d7b4c6505e551e5ce1eccc06253eb0db48b46cce94957395b31321a0448dfe52",
+  "signature": "Wc5kf3W+F4RMcJM1X/gXGZBsGiMQjE4NLsHnm1yK8PpGciZZ60VS5/hi+KPNJAUNKnqNW6z1A8DtxqOT5mBF1Q==",
   "minExtensionVersion": "0.1.1",
   "changelog": "preview hardening validation"
 }
