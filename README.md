@@ -47,8 +47,52 @@ DBS_VEHICLE_LOCATION_FETCH_ENABLED=false
 - `main.py`: 実行用エントリーポイント
 - AIエージェント向けの作業ルールは [`AGENTS.md`](./AGENTS.md) にまとめています。
 
+## ポート状態の予約管理
+
+管理ポータル標準の2件の更新予約を、ポートごとの週次レシピから照合・補充できます。
+予約時刻になった瞬間のPC稼働には依存せず、利用者はポート詳細画面で次の予約を確認できます。
+
+設定例は `config/port_booking_recipes.json.example` です。`recipes` に曜日、時刻、予約する状態を定義し、
+`ports` で各ポートへレシピを割り当てます。同じレシピの共有と、ポートごとの異なるレシピの両方に対応します。
+
+状態には実際の値または `inherit` を指定できます。
+
+- `service_state`: 管理ポータルの運用状態、または `inherit`
+- `publish_flag`: `true` / `false` / `inherit`
+- `parking_quantity_limitation_flag`: `true` / `false` / `inherit`
+- `parking_quantity_limit`: 1～32767、または `inherit`
+
+まず書き込みなしで差分を確認します。
+
+```powershell
+.\.venv\Scripts\python.exe -m src.port_booking_scheduler --config .\config\port_booking_recipes.json
+```
+
+不足する予約を空き枠へ登録する場合だけ `--apply` を付けます。
+
+```powershell
+.\.venv\Scripts\python.exe -m src.port_booking_scheduler --config .\config\port_booking_recipes.json --apply
+```
+
+予約済みの `inherit` 項目と現在値が異なる場合や、レシピ外の予約がある場合は、既存予約を更新・削除せず停止します。
+`SLACK_WEBHOOK_URL` が設定されていれば理由を通知し、同じ内容は30分間抑止します。毎回の結果は既定で
+`output/port_booking_scheduler_state.json` に保存されます。
+
+同時に、内部IDを含まないURL表示用の `output/port_booking_status.json` を生成します。
+`--publish-status`を付けた場合だけ、このJSONをR2の`port_booking_status.json`へ公開します。
+表示ページはGitHub Pages配下の`/booking-status/`で、ポート名、予約日時、運用状態、公開設定、
+駐輪台数制限、最終確認時刻を表示します。
+
+```powershell
+.\.venv\Scripts\python.exe -m src.port_booking_scheduler --config .\config\port_booking_recipes.json --apply --publish-status
+```
+
+本機能は既存の保存済み管理ポータルセッションを使用します。初期版は新規予約の補充だけを行い、
+競合した予約の自動更新・削除は行いません。定期実行へ登録する前に、対象ポートを `enabled: false` のまま
+読み取りモードで確認してください。
+
 ## ライセンス・注意事項
-本プログラムはデータ参照（スクレイピング）のみを行い、管理システム側のステータス更新等の変更処理は一切行わない安全設計となっています。
+通常のスクレイピングはデータ参照だけを行います。ポート予約管理は独立コマンドで、`--apply`を明示した場合だけ管理ポータルへ新規予約を登録します。
 
 ## 開発時の安全策（開発中ロックについて）
 本番環境でタスクスケジューラ等の自動実行と競合することを防ぐため、スクレイピングやエクスポート周りのソースコードを編集する際は、一時的に実行ガード（開発中ロック）を設定します。

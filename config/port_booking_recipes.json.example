@@ -1,0 +1,73 @@
+{
+  "version": 1,
+  "recipes": {
+    "monday_closed": {
+      "timezone": "Asia/Tokyo",
+      "events": [
+        {
+          "id": "close",
+          "weekday": "MON",
+          "time": "00:00",
+          "state": {
+            "service_state": "一時休止中",
+            "publish_flag": "inherit",
+            "parking_quantity_limitation_flag": "inherit",
+            "parking_quantity_limit": "inherit"
+          }
+        },
+        {
+          "id": "reopen",
+          "weekday": "TUE",
+          "time": "00:00",
+          "state": {
+            "service_state": "運用中",
+            "publish_flag": "inherit",
+            "parking_quantity_limitation_flag": "inherit",
+            "parking_quantity_limit": "inherit"
+          }
+        }
+      ]
+    },
+    "wednesday_nonpublic": {
+      "timezone": "Asia/Tokyo",
+      "events": [
+        {
+          "id": "hide",
+          "weekday": "WED",
+          "time": "09:00",
+          "state": {
+            "service_state": "inherit",
+            "publish_flag": false,
+            "parking_quantity_limitation_flag": "inherit",
+            "parking_quantity_limit": "inherit"
+          }
+        },
+        {
+          "id": "show",
+          "weekday": "WED",
+          "time": "18:00",
+          "state": {
+            "service_state": "inherit",
+            "publish_flag": true,
+            "parking_quantity_limitation_flag": "inherit",
+            "parking_quantity_limit": "inherit"
+          }
+        }
+      ]
+    }
+  },
+  "ports": [
+    {
+      "port_id": "PORT:REPLACE_ME_1",
+      "label": "休館日が月曜のポート",
+      "recipe": "monday_closed",
+      "enabled": false
+    },
+    {
+      "port_id": "PORT:REPLACE_ME_2",
+      "label": "水曜に非公開にするポート",
+      "recipe": "wednesday_nonpublic",
+      "enabled": false
+    }
+  ]
+}

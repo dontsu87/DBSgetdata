@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ポート更新予約</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main>
+    <header class="page-header">
+      <div>
+        <p class="eyebrow">DOCOMO BIKE SHARE</p>
+        <h1>ポート更新予約</h1>
+        <p id="updated-at" class="updated-at">最新情報を取得しています…</p>
+      </div>
+      <button id="refresh" type="button">再読み込み</button>
+    </header>
+    <div id="message" class="message" role="status" aria-live="polite"></div>
+    <section id="ports" class="ports" aria-label="予約投稿のあるポート"></section>
+  </main>
+  <template id="port-template">
+    <article class="port-card">
+      <div class="port-heading">
+        <h2></h2>
+        <span class="health"></span>
+      </div>
+      <div class="bookings"></div>
+    </article>
+  </template>
+  <script src="app.js"></script>
+</body>
+</html>
