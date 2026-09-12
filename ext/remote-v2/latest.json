@@ -1,8 +1,8 @@
 {
-  "version": "202608272109",
-  "bundle": "bundle-202608272109.js",
-  "sha256": "5c6af2df21bb4a45cf70c3a73998e67ba7dea07b4e7fbc2c4d3c7a0d8b4e3c89",
-  "signature": "+HTPVEZ0AEcZq7Bob3PN6pok2FVVUHapjLqLAmdTlrgJV82OhABXnNfp+SMt+vF5TWx1VqAmyo0x0JF56Mfg6A==",
+  "version": "202609120936",
+  "bundle": "bundle-202609120936.js",
+  "sha256": "4048bc7111b680536f03f61c84acd75c10255cfb088932f362af5e795d7e5097",
+  "signature": "C0PF6XrlicYQgxrPogOQnsFrd81IdFVZ60F69FeI4jnEcycRuA4HseUHJjlQCB/xbqWLZ63AMMh2QpFIr1jCYg==",
   "minExtensionVersion": "0.1.1",
-  "changelog": "金沢法人請求書発行: ユーザーID列幅を18%へ拡大し末尾文字の見切れを完全解消、日付列幅を12.5%に最適化"
+  "changelog": "ポート予約状況の2か月計画表示と問い合わせ案内"
 }
