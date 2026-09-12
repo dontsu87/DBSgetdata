@@ -212,7 +212,8 @@ def _parse_holiday_csv(content: bytes) -> tuple[set[date], date]:
             continue
     if not holidays:
         raise BookingConfigError("内閣府祝日CSVに日付がありません。")
-    return holidays, max(holidays)
+    # CSVは年内の祝日だけを列挙するため、最後の祝日ではなく収録最終年末までを網羅範囲とする。
+    return holidays, date(max(item.year for item in holidays), 12, 31)
 
 
 def load_holidays(recipe: dict[str, Any], through: date) -> set[date]:

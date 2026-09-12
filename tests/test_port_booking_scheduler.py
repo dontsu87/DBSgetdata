@@ -6,6 +6,7 @@ from datetime import date, datetime, timezone
 import pytest
 
 from src.port_booking_scheduler import (
+    _parse_holiday_csv,
     BookingApiError,
     BookingConfigError,
     BookingSessionError,
@@ -22,6 +23,12 @@ from src.port_booking_scheduler import (
 NOW = datetime(2026, 9, 11, 8, 0, tzinfo=timezone.utc)  # 17:00 JST Friday
 PORT_1 = "PORT:TEST_1"
 PORT_2 = "PORT:TEST_2"
+
+
+def test_cabinet_csv_coverage_is_end_of_latest_listed_year():
+    holidays, covered_through = _parse_holiday_csv("国民の祝日・休日月日,国民の祝日・休日名称\n2027/11/23,勤労感謝の日\n".encode("cp932"))
+    assert holidays == {date(2027, 11, 23)}
+    assert covered_through == date(2027, 12, 31)
 
 
 def state(service="inherit", publish="inherit", parking="inherit", limit="inherit"):
