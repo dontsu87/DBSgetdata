@@ -421,6 +421,11 @@ def public_booking_summary(item: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def public_port_key(port_id: str) -> str:
+    """公開JSONでポートを照合するための不可逆キー。"""
+    return hashlib.sha256(port_id.encode("utf-8")).hexdigest()[:24]
+
+
 def public_planned_summary(plan: PlannedBooking, actual: list[dict[str, Any]], portal_window: bool) -> dict[str, Any]:
     if any(_same_booking(item, plan) for item in actual):
         reflection_status = "reflected"
@@ -519,6 +524,7 @@ def reconcile_port(
         actual = bookings if source is None else source
         return {
             **value,
+            "port_key": public_port_key(port["port_id"]),
             "booking_count": len(actual),
             "bookings": [public_booking_summary(item) for item in actual],
             "schedule": [
@@ -706,6 +712,7 @@ def write_public_status(path: str | Path, result: dict[str, Any]) -> None:
         "ports": [
             {
                 "name": item.get("port"),
+                "port_key": item.get("port_key"),
                 "status": item.get("status"),
                 "booking_count": item.get("booking_count", len(item.get("bookings", []))),
                 "bookings": item.get("bookings", []),

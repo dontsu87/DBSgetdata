@@ -202,8 +202,9 @@ def test_public_status_contains_only_display_fields(tmp_path):
     payload = json.loads(path.read_text(encoding="utf-8"))
     assert payload["version"] == 2
     assert payload["updated_at"] == "2026-09-11T08:00:00+00:00"
-    assert set(payload["ports"][0]) == {"name", "status", "booking_count", "bookings", "schedule"}
+    assert set(payload["ports"][0]) == {"name", "port_key", "status", "booking_count", "bookings", "schedule"}
     assert "portId" not in json.dumps(payload)
+    assert len(payload["ports"][0]["port_key"]) == 24
     assert payload["ports"][0]["bookings"][0]["service_state"] == "一時休止中"
     assert payload["ports"][0]["schedule"][0]["reflection_status"] == "reflected"
     assert payload["ports"][0]["schedule"][1]["reflection_status"] == "missing"
