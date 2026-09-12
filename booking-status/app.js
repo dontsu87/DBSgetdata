@@ -10,6 +10,9 @@
 
   function text(value) { return value == null || value === '' ? '—' : String(value); }
   function yesNo(value) { return value === true ? '有効' : value === false ? '無効' : '—'; }
+  function reflectionStatus(value) {
+    return ({ reflected: '予約一致（反映済み）', queued: '登録待ち', missing: '未反映', mismatch: '不一致' })[value] || '—';
+  }
   function formatDate(value) {
     var date = new Date(value);
     if (Number.isNaN(date.getTime())) return text(value);
@@ -18,22 +21,27 @@
       weekday: 'short', hour: '2-digit', minute: '2-digit', hour12: false
     }).format(date);
   }
-  function addRow(list, label, value) {
-    var dt = document.createElement('dt'); dt.textContent = label;
-    var dd = document.createElement('dd'); dd.textContent = text(value);
-    list.appendChild(dt); list.appendChild(dd);
+  function addCell(row, value) {
+    var cell = document.createElement('td'); cell.textContent = text(value); row.appendChild(cell);
   }
-  function renderBooking(item, index) {
-    var box = document.createElement('section'); box.className = 'booking';
-    var label = document.createElement('p'); label.className = 'booking-label'; label.textContent = '更新予約 ' + (index + 1);
-    var time = document.createElement('p'); time.className = 'booking-time'; time.textContent = formatDate(item.update_reflection_datetime);
-    var state = document.createElement('dl'); state.className = 'state';
-    addRow(state, '運用状態', item.service_state);
-    addRow(state, '公開', yesNo(item.publish_flag));
-    addRow(state, '駐輪台数制限', yesNo(item.parking_quantity_limitation_flag));
-    if (item.parking_quantity_limitation_flag) addRow(state, '上限', text(item.parking_quantity_limit) + '台');
-    box.appendChild(label); box.appendChild(time); box.appendChild(state);
-    return box;
+  function renderTable(rows) {
+    var wrap = document.createElement('div'); wrap.className = 'schedule-wrap';
+    var table = document.createElement('table'); var head = document.createElement('tr');
+    ['更新日時', '運用状態', '公開', '駐輪台数制限', '反映状況'].forEach(function (label) {
+      var th = document.createElement('th'); th.textContent = label; head.appendChild(th);
+    });
+    var thead = document.createElement('thead'); thead.appendChild(head); table.appendChild(thead);
+    var tbody = document.createElement('tbody');
+    rows.forEach(function (item) {
+      var row = document.createElement('tr');
+      addCell(row, formatDate(item.update_reflection_datetime));
+      addCell(row, item.service_state);
+      addCell(row, item.publish_flag ? '公開' : '非公開');
+      addCell(row, item.parking_quantity_limitation_flag ? '有効（上限' + text(item.parking_quantity_limit) + '台）' : '無効');
+      addCell(row, reflectionStatus(item.reflection_status));
+      tbody.appendChild(row);
+    });
+    table.appendChild(tbody); wrap.appendChild(table); return wrap;
   }
   function render(data) {
     portsRoot.textContent = '';
@@ -48,11 +56,11 @@
       health.textContent = healthy ? '予約一致' : '要確認';
       if (!healthy) health.classList.add('attention');
       var bookings = card.querySelector('.bookings');
-      var rows = Array.isArray(port.bookings) ? port.bookings : [];
+      var rows = Array.isArray(port.schedule) ? port.schedule : (Array.isArray(port.bookings) ? port.bookings : []);
       if (!rows.length) {
         var empty = document.createElement('div'); empty.className = 'empty'; empty.textContent = '現在、予約投稿はありません。';
         bookings.appendChild(empty);
-      } else rows.forEach(function (item, index) { bookings.appendChild(renderBooking(item, index)); });
+      } else bookings.appendChild(renderTable(rows));
       portsRoot.appendChild(card);
     });
   }

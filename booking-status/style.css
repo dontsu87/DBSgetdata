@@ -21,17 +21,14 @@ button:disabled { cursor: wait; opacity: .55; }
 .port-heading h2 { margin: 0; font-size: 20px; }
 .health { flex: none; border-radius: 999px; padding: 5px 10px; background: #e7f5ec; color: #176d3a; font-size: 12px; font-weight: 700; }
 .health.attention { background: #fff1d6; color: #855700; }
-.bookings { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; background: #e7edf3; }
-.booking { padding: 20px 22px; background: #fff; }
-.booking-label { margin: 0 0 8px; color: #637384; font-size: 12px; font-weight: 700; }
-.booking-time { margin: 0 0 14px; font-size: 18px; font-weight: 700; }
-.state { display: grid; grid-template-columns: max-content 1fr; gap: 6px 14px; margin: 0; font-size: 14px; }
-.state dt { color: #637384; }
-.state dd { margin: 0; font-weight: 600; }
+.schedule-wrap { overflow-x: auto; }
+.schedule-wrap table { width: 100%; min-width: 760px; border-collapse: collapse; font-size: 13px; }
+.schedule-wrap th, .schedule-wrap td { padding: 11px 14px; border-bottom: 1px solid #e7edf3; text-align: left; white-space: nowrap; }
+.schedule-wrap th { background: #f6f8fa; color: #526679; font-weight: 700; }
+.schedule-wrap tr:last-child td { border-bottom: 0; }
 .empty { padding: 24px 22px; background: #fff; color: #637384; }
 @media (max-width: 640px) {
   main { width: min(100% - 24px, 920px); padding-top: 24px; }
   .page-header { align-items: start; }
-  .bookings { grid-template-columns: 1fr; }
   .port-heading { align-items: start; flex-direction: column; }
 }

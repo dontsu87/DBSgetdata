@@ -2,12 +2,23 @@
   "version": 1,
   "recipes": {
     "monday_closed": {
+      "type": "facility_closure",
       "timezone": "Asia/Tokyo",
+      "planning_horizon_days": 62,
+      "holiday_calendar": {
+        "source": "cabinet_office_csv",
+        "url": "https://www8.cao.go.jp/chosei/shukujitsu/syukujitsu.csv"
+      },
+      "closure": {
+        "weekly_closed_weekday": "MON",
+        "holiday_shift": "next_non_holiday_weekday",
+        "year_end_closure": {"start": "12-29", "end": "01-03"}
+      },
       "events": [
         {
           "id": "close",
-          "weekday": "MON",
-          "time": "00:00",
+          "role": "close",
+          "time": "22:00",
           "state": {
             "service_state": "一時休止中",
             "publish_flag": "inherit",
@@ -17,8 +28,8 @@
         },
         {
           "id": "reopen",
-          "weekday": "TUE",
-          "time": "00:00",
+          "role": "reopen",
+          "time": "10:00",
           "state": {
             "service_state": "運用中",
             "publish_flag": "inherit",

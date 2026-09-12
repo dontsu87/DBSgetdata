@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import csv
 from contextlib import contextmanager
 import hashlib
 import json
@@ -11,7 +12,7 @@ import os
 import sys
 import urllib.request
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, time, timedelta, timezone
 from pathlib import Path
 from typing import Any, Callable
 from urllib.parse import quote, urljoin, urlparse
@@ -25,6 +26,7 @@ from src.session_store import SESSION_FILE, app_url
 
 
 MAX_BOOKINGS = 2
+DEFAULT_PLANNING_HORIZON_DAYS = 62
 HTTP_TIMEOUT = 30
 ALLOWED_SERVICE_STATES = {
     "運用中",
@@ -117,6 +119,9 @@ def load_config(path: str | Path) -> dict[str, Any]:
             ZoneInfo(str(recipe.get("timezone", "Asia/Tokyo")))
         except ZoneInfoNotFoundError as error:
             raise BookingConfigError(f"recipes.{recipe_id}.timezone が不正です。") from error
+        recipe_type = recipe.get("type", "weekly_events")
+        if recipe_type not in ("weekly_events", "facility_closure"):
+            raise BookingConfigError(f"recipes.{recipe_id}.type が不正です。")
         events = recipe.get("events")
         if not isinstance(events, list) or not events:
             raise BookingConfigError(f"recipes.{recipe_id}.eventsを1件以上指定してください。")
@@ -127,7 +132,7 @@ def load_config(path: str | Path) -> dict[str, Any]:
             if not isinstance(event_id, str) or not event_id or event_id in seen_ids:
                 raise BookingConfigError(f"recipes.{recipe_id}のevent idが不正または重複しています。")
             seen_ids.add(event_id)
-            if str(event.get("weekday", "")).upper() not in WEEKDAYS:
+            if recipe_type == "weekly_events" and str(event.get("weekday", "")).upper() not in WEEKDAYS:
                 raise BookingConfigError(f"{event_id}.weekday はMONからSUNで指定してください。")
             try:
                 parsed_time = datetime.strptime(str(event.get("time", "")), "%H:%M")
@@ -137,6 +142,18 @@ def load_config(path: str | Path) -> dict[str, Any]:
                 raise BookingConfigError(f"{event_id}.time は15分単位で指定してください。")
             state = _require_dict(event.get("state"), f"{event_id}.state")
             _validate_state_spec(state, event_id)
+        horizon = recipe.get("planning_horizon_days", DEFAULT_PLANNING_HORIZON_DAYS)
+        if isinstance(horizon, bool) or not isinstance(horizon, int) or not 1 <= horizon <= 366:
+            raise BookingConfigError(f"recipes.{recipe_id}.planning_horizon_days は1から366で指定してください。")
+        if recipe_type == "facility_closure":
+            closure = _require_dict(recipe.get("closure"), f"recipes.{recipe_id}.closure")
+            if str(closure.get("weekly_closed_weekday", "")).upper() not in WEEKDAYS:
+                raise BookingConfigError(f"recipes.{recipe_id}.closure.weekly_closed_weekday が不正です。")
+            if closure.get("holiday_shift") not in (None, "next_non_holiday_weekday"):
+                raise BookingConfigError(f"recipes.{recipe_id}.closure.holiday_shift が不正です。")
+            calendar = _require_dict(recipe.get("holiday_calendar"), f"recipes.{recipe_id}.holiday_calendar")
+            if calendar.get("source") != "cabinet_office_csv" or not str(calendar.get("url", "")).startswith("https://www8.cao.go.jp/"):
+                raise BookingConfigError(f"recipes.{recipe_id}.holiday_calendar は内閣府CSVを指定してください。")
 
     seen_ports: set[str] = set()
     for index, port_value in enumerate(ports):
@@ -180,28 +197,136 @@ def _next_occurrence(now: datetime, weekday: int, time_text: str) -> datetime:
     return candidate
 
 
-def next_events(recipe_id: str, recipe: dict[str, Any], now: datetime) -> list[dict[str, Any]]:
+def _parse_holiday_csv(content: bytes) -> tuple[set[date], date]:
+    try:
+        text = content.decode("cp932")
+    except UnicodeDecodeError as error:
+        raise BookingConfigError("内閣府祝日CSVをCP932として読めません。") from error
+    holidays: set[date] = set()
+    for row in csv.reader(text.splitlines()):
+        if not row:
+            continue
+        try:
+            holidays.add(datetime.strptime(row[0].strip(), "%Y/%m/%d").date())
+        except ValueError:
+            continue
+    if not holidays:
+        raise BookingConfigError("内閣府祝日CSVに日付がありません。")
+    return holidays, max(holidays)
+
+
+def load_holidays(recipe: dict[str, Any], through: date) -> set[date]:
+    calendar = recipe["holiday_calendar"]
+    cache_value = calendar.get("cache_path")
+    cache_path = Path(cache_value) if cache_value else Path(Config.OUTPUT_DIR) / "cache" / "cabinet_office_holidays.csv"
+    content: bytes | None = None
+    try:
+        request = urllib.request.Request(str(calendar["url"]), headers={"User-Agent": "DBSgetdata/port-booking-scheduler"})
+        with urllib.request.urlopen(request, timeout=HTTP_TIMEOUT) as response:
+            content = response.read()
+        holidays, covered_through = _parse_holiday_csv(content)
+        cache_path.parent.mkdir(parents=True, exist_ok=True)
+        temporary = cache_path.with_suffix(cache_path.suffix + ".tmp")
+        temporary.write_bytes(content)
+        os.replace(temporary, cache_path)
+    except Exception as download_error:
+        try:
+            content = cache_path.read_bytes()
+            holidays, covered_through = _parse_holiday_csv(content)
+        except Exception as cache_error:
+            raise BookingConfigError("内閣府祝日CSVを取得できず、有効なキャッシュもありません。") from download_error
+    if covered_through < through:
+        raise BookingConfigError(
+            f"内閣府祝日CSVの収録期限({covered_through.isoformat()})が計画期間({through.isoformat()})に届きません。"
+        )
+    return holidays
+
+
+def _time_value(text: str) -> time:
+    return datetime.strptime(text, "%H:%M").time()
+
+
+def _facility_events(recipe: dict[str, Any], local_now: datetime, holidays: set[date]) -> list[dict[str, Any]]:
+    closure = recipe["closure"]
+    horizon_end = local_now.date() + timedelta(days=recipe.get("planning_horizon_days", DEFAULT_PLANNING_HORIZON_DAYS))
+    scan_start = local_now.date() - timedelta(days=8)
+    scan_end = horizon_end + timedelta(days=8)
+    closed_dates: set[date] = set()
+    weekday = WEEKDAYS[str(closure["weekly_closed_weekday"]).upper()]
+    cursor = scan_start
+    while cursor <= scan_end:
+        if cursor.weekday() == weekday:
+            closed = cursor
+            if cursor in holidays and closure.get("holiday_shift") == "next_non_holiday_weekday":
+                closed += timedelta(days=1)
+                while closed.weekday() >= 5 or closed in holidays:
+                    closed += timedelta(days=1)
+            closed_dates.add(closed)
+        cursor += timedelta(days=1)
+
+    year_end = closure.get("year_end_closure")
+    if isinstance(year_end, dict):
+        start_month, start_day = (int(value) for value in str(year_end["start"]).split("-"))
+        end_month, end_day = (int(value) for value in str(year_end["end"]).split("-"))
+        for year in range(scan_start.year - 1, scan_end.year + 1):
+            start = date(year, start_month, start_day)
+            end_year = year + 1 if (end_month, end_day) < (start_month, start_day) else year
+            end = date(end_year, end_month, end_day)
+            day = start
+            while day <= end:
+                if scan_start <= day <= scan_end:
+                    closed_dates.add(day)
+                day += timedelta(days=1)
+
+    role_events = {str(event.get("role")): event for event in recipe["events"]}
+    if set(role_events) != {"close", "reopen"}:
+        raise BookingConfigError("facility_closureのeventsにはcloseとreopenを1件ずつ指定してください。")
+    ordered = sorted(closed_dates)
+    ranges: list[tuple[date, date]] = []
+    for day in ordered:
+        if ranges and day == ranges[-1][1] + timedelta(days=1):
+            ranges[-1] = (ranges[-1][0], day)
+        else:
+            ranges.append((day, day))
+    candidates = []
+    for start, end in ranges:
+        for role, event, event_day in (
+            ("close", role_events["close"], start - timedelta(days=1)),
+            ("reopen", role_events["reopen"], end + timedelta(days=1)),
+        ):
+            reflection_at = datetime.combine(event_day, _time_value(event["time"]), tzinfo=local_now.tzinfo)
+            if local_now < reflection_at <= datetime.combine(horizon_end, time.max, tzinfo=local_now.tzinfo):
+                candidates.append({**event, "id": f"{event['id']}:{start.isoformat()}", "reflection_at": reflection_at})
+    return sorted(candidates, key=lambda item: (item["reflection_at"], item["id"]))
+
+
+def planned_events(
+    recipe_id: str,
+    recipe: dict[str, Any],
+    now: datetime,
+    *,
+    holiday_dates: set[date] | None = None,
+) -> list[dict[str, Any]]:
     zone = ZoneInfo(str(recipe.get("timezone", "Asia/Tokyo")))
     local_now = now.replace(tzinfo=zone) if now.tzinfo is None else now.astimezone(zone)
+    horizon_days = recipe.get("planning_horizon_days", DEFAULT_PLANNING_HORIZON_DAYS)
+    horizon_end = local_now + timedelta(days=horizon_days)
+    if recipe.get("type", "weekly_events") == "facility_closure":
+        holidays = holiday_dates if holiday_dates is not None else load_holidays(recipe, horizon_end.date() + timedelta(days=8))
+        return _facility_events(recipe, local_now, holidays)
     candidates = []
     for event in recipe["events"]:
-        candidates.append({
-            **event,
-            "reflection_at": _next_occurrence(
-                local_now,
-                WEEKDAYS[str(event["weekday"]).upper()],
-                event["time"],
-            ),
-        })
-    candidates.sort(key=lambda item: (item["reflection_at"], item["id"]))
-    if len(candidates) < MAX_BOOKINGS:
-        first_cycle = list(candidates)
-        while len(candidates) < MAX_BOOKINGS:
-            for item in first_cycle:
-                candidates.append({**item, "reflection_at": item["reflection_at"] + timedelta(days=7)})
-                if len(candidates) == MAX_BOOKINGS:
-                    break
-    selected = sorted(candidates, key=lambda item: (item["reflection_at"], item["id"]))[:MAX_BOOKINGS]
+        occurrence = _next_occurrence(local_now, WEEKDAYS[str(event["weekday"]).upper()], event["time"])
+        while occurrence <= horizon_end:
+            candidates.append({**event, "reflection_at": occurrence})
+            occurrence += timedelta(days=7)
+    return sorted(candidates, key=lambda item: (item["reflection_at"], item["id"]))
+
+
+def next_events(recipe_id: str, recipe: dict[str, Any], now: datetime, *, holiday_dates: set[date] | None = None) -> list[dict[str, Any]]:
+    selected = planned_events(recipe_id, recipe, now, holiday_dates=holiday_dates)[:MAX_BOOKINGS]
+    if len(selected) < MAX_BOOKINGS:
+        raise BookingConfigError(f"recipe {recipe_id} は次の予約を2件生成できません。")
     if len({item["reflection_at"] for item in selected}) != len(selected):
         raise BookingConfigError(f"recipe {recipe_id} の次回イベント日時が重複しています。")
     return selected
@@ -217,6 +342,9 @@ def resolve_plans(
     recipe: dict[str, Any],
     current: dict[str, Any],
     now: datetime,
+    *,
+    include_horizon: bool = False,
+    holiday_dates: set[date] | None = None,
 ) -> list[PlannedBooking]:
     mapping = {
         "service_state": "serviceState",
@@ -224,7 +352,10 @@ def resolve_plans(
         "parking_quantity_limitation_flag": "parkingQuantityLimitationFlag",
     }
     plans = []
-    for event in next_events(recipe_id, recipe, now):
+    events = planned_events(recipe_id, recipe, now, holiday_dates=holiday_dates) if include_horizon else next_events(
+        recipe_id, recipe, now, holiday_dates=holiday_dates
+    )
+    for event in events:
         resolved: dict[str, Any] = {}
         for config_key, api_key in mapping.items():
             value, _ = _inherit_or_value(event["state"][config_key], current.get(api_key))
@@ -286,6 +417,23 @@ def public_booking_summary(item: dict[str, Any]) -> dict[str, Any]:
         "publish_flag": item.get("publishFlag"),
         "parking_quantity_limitation_flag": item.get("parkingQuantityLimitationFlag"),
         "parking_quantity_limit": item.get("parkingQuantityLimit"),
+    }
+
+
+def public_planned_summary(plan: PlannedBooking, actual: list[dict[str, Any]], portal_window: bool) -> dict[str, Any]:
+    if any(_same_booking(item, plan) for item in actual):
+        reflection_status = "reflected"
+    elif any(_at_same_time(item, plan) for item in actual):
+        reflection_status = "mismatch"
+    else:
+        reflection_status = "missing" if portal_window else "queued"
+    return {
+        "update_reflection_datetime": plan.reflection_iso,
+        "service_state": plan.state.get("serviceState"),
+        "publish_flag": plan.state.get("publishFlag"),
+        "parking_quantity_limitation_flag": plan.state.get("parkingQuantityLimitationFlag"),
+        "parking_quantity_limit": plan.state.get("parkingQuantityLimit"),
+        "reflection_status": reflection_status,
     }
 
 
@@ -364,16 +512,21 @@ def reconcile_port(
     if current.get("portId") not in (None, port["port_id"]):
         return {"port": label, "status": "conflict", "reason": "port_identity_mismatch"}
     bookings = client.get_bookings(port["port_id"])
+    all_plans = resolve_plans(port, recipe_id, recipe, current, now, include_horizon=True)
+    plans = all_plans[:MAX_BOOKINGS]
     def with_bookings(value: dict[str, Any], source: list[dict[str, Any]] | None = None) -> dict[str, Any]:
         actual = bookings if source is None else source
         return {
             **value,
             "booking_count": len(actual),
             "bookings": [public_booking_summary(item) for item in actual],
+            "schedule": [
+                public_planned_summary(plan, actual, index < MAX_BOOKINGS)
+                for index, plan in enumerate(all_plans)
+            ],
         }
     if len(bookings) > MAX_BOOKINGS:
         return with_bookings({"port": label, "status": "conflict", "reason": "too_many_bookings"})
-    plans = resolve_plans(port, recipe_id, recipe, current, now)
     expected_summary = [
         {"event": plan.event_id, "reflection_at": plan.reflection_iso}
         for plan in plans
@@ -407,14 +560,12 @@ def reconcile_port(
     if len(bookings) + len(missing) > MAX_BOOKINGS:
         return with_bookings({"port": label, "status": "conflict", "reason": "booking_capacity"})
     if not apply:
-        return {
+        return with_bookings({
             "port": label,
             "status": "planned" if missing else "in_sync",
             "missing": [plan.event_id for plan in missing],
-            "booking_count": len(bookings),
-            "bookings": [public_booking_summary(item) for item in bookings],
             "expected": expected_summary,
-        }
+        })
 
     created = []
     for plan in missing:
@@ -437,14 +588,12 @@ def reconcile_port(
             raise BookingApiError("予約登録後の再取得で完全一致を確認できません。")
         created.append(plan.event_id)
     final_bookings = client.get_bookings(port["port_id"])
-    return {
+    return with_bookings({
         "port": label,
         "status": "created" if created else "in_sync",
         "created": created,
-        "booking_count": len(final_bookings),
-        "bookings": [public_booking_summary(item) for item in final_bookings],
         "expected": expected_summary,
-    }
+    }, final_bookings)
 
 
 def notify_alerts(
@@ -551,7 +700,7 @@ def write_public_status(path: str | Path, result: dict[str, Any]) -> None:
     target.parent.mkdir(parents=True, exist_ok=True)
     temporary = target.with_suffix(target.suffix + ".tmp")
     payload = {
-        "version": 1,
+        "version": 2,
         "updated_at": result.get("checked_at"),
         "ports": [
             {
@@ -559,6 +708,7 @@ def write_public_status(path: str | Path, result: dict[str, Any]) -> None:
                 "status": item.get("status"),
                 "booking_count": item.get("booking_count", len(item.get("bookings", []))),
                 "bookings": item.get("bookings", []),
+                "schedule": item.get("schedule", item.get("bookings", [])),
             }
             for item in result.get("results", [])
             if item.get("status") not in ("disabled", "error")

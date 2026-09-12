@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 from copy import deepcopy
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 
 import pytest
 
@@ -12,6 +12,7 @@ from src.port_booking_scheduler import (
     load_config,
     next_events,
     notify_alerts,
+    planned_events,
     resolve_plans,
     run_scheduler,
     write_public_status,
@@ -105,6 +106,48 @@ def test_next_two_events_are_close_then_reopen_in_jst():
     ]
 
 
+def facility_recipe():
+    return {
+        "type": "facility_closure",
+        "timezone": "Asia/Tokyo",
+        "planning_horizon_days": 62,
+        "holiday_calendar": {
+            "source": "cabinet_office_csv",
+            "url": "https://www8.cao.go.jp/chosei/shukujitsu/syukujitsu.csv",
+        },
+        "closure": {
+            "weekly_closed_weekday": "MON",
+            "holiday_shift": "next_non_holiday_weekday",
+            "year_end_closure": {"start": "12-29", "end": "01-03"},
+        },
+        "events": [
+            {"id": "close", "role": "close", "time": "22:00", "state": state("一時休止中")},
+            {"id": "reopen", "role": "reopen", "time": "10:00", "state": state("運用中")},
+        ],
+    }
+
+
+def test_facility_closure_shifts_holiday_monday_to_next_non_holiday_weekday():
+    holidays = {date(2026, 9, 21), date(2026, 9, 22), date(2026, 9, 23)}
+    events = planned_events("facility", facility_recipe(), NOW, holiday_dates=holidays)
+    values = [item["reflection_at"].isoformat() for item in events[:4]]
+    assert values == [
+        "2026-09-13T22:00:00+09:00",
+        "2026-09-15T10:00:00+09:00",
+        "2026-09-23T22:00:00+09:00",
+        "2026-09-25T10:00:00+09:00",
+    ]
+
+
+def test_year_end_and_weekly_closure_are_merged_without_conflicting_transition():
+    now = datetime(2026, 12, 27, 0, 0, tzinfo=timezone.utc)  # 09:00 JST
+    events = planned_events("facility", facility_recipe(), now, holiday_dates={date(2027, 1, 1)})
+    assert [item["reflection_at"].isoformat() for item in events[:2]] == [
+        "2026-12-27T22:00:00+09:00",
+        "2027-01-05T10:00:00+09:00",
+    ]
+
+
 def test_explicit_state_and_inherited_fields_are_resolved_per_event():
     config = base_config()
     plan = plans_for(config)[0]
@@ -124,14 +167,17 @@ def test_dry_run_only_reports_missing_bookings():
     result = run_scheduler(config, now=NOW, client_factory=lambda: client, apply=False, notify=False)
 
     assert result["mode"] == "read_only"
-    assert result["results"] == [{
-        "port": "試験ポート", "status": "planned",
-        "missing": ["close", "open"], "booking_count": 0, "bookings": [],
-        "expected": [
-            {"event": "close", "reflection_at": "2026-09-14T00:00:00+09:00"},
-            {"event": "open", "reflection_at": "2026-09-15T00:00:00+09:00"},
-        ],
-    }]
+    port_result = result["results"][0]
+    assert port_result["port"] == "試験ポート"
+    assert port_result["status"] == "planned"
+    assert port_result["missing"] == ["close", "open"]
+    assert port_result["booking_count"] == 0
+    assert port_result["bookings"] == []
+    assert port_result["expected"] == [
+        {"event": "close", "reflection_at": "2026-09-14T00:00:00+09:00"},
+        {"event": "open", "reflection_at": "2026-09-15T00:00:00+09:00"},
+    ]
+    assert len(port_result["schedule"]) > 2
     assert client.created == []
     assert client.closed is True
 
@@ -147,11 +193,14 @@ def test_public_status_contains_only_display_fields(tmp_path):
     write_public_status(path, result)
 
     payload = json.loads(path.read_text(encoding="utf-8"))
-    assert payload["version"] == 1
+    assert payload["version"] == 2
     assert payload["updated_at"] == "2026-09-11T08:00:00+00:00"
-    assert set(payload["ports"][0]) == {"name", "status", "booking_count", "bookings"}
+    assert set(payload["ports"][0]) == {"name", "status", "booking_count", "bookings", "schedule"}
     assert "portId" not in json.dumps(payload)
     assert payload["ports"][0]["bookings"][0]["service_state"] == "一時休止中"
+    assert payload["ports"][0]["schedule"][0]["reflection_status"] == "reflected"
+    assert payload["ports"][0]["schedule"][1]["reflection_status"] == "missing"
+    assert payload["ports"][0]["schedule"][2]["reflection_status"] == "queued"
 
 
 def test_apply_creates_and_verifies_two_missing_bookings():
