@@ -1,8 +1,8 @@
 {
-  "version": "202609120936",
-  "bundle": "bundle-202609120936.js",
-  "sha256": "4048bc7111b680536f03f61c84acd75c10255cfb088932f362af5e795d7e5097",
-  "signature": "C0PF6XrlicYQgxrPogOQnsFrd81IdFVZ60F69FeI4jnEcycRuA4HseUHJjlQCB/xbqWLZ63AMMh2QpFIr1jCYg==",
+  "version": "202609141102",
+  "bundle": "bundle-202609141102.js",
+  "sha256": "b5d08d9e82566252f00f52c9bd59742f1a3dec461d287cc2bf0466a6f60792dc",
+  "signature": "dLkSnzlRm2LaRoW+CmBLrSMr3s9/vz5HNyNH09f4G4FMc7tANAlHivhVvdFehEfRQ2wssAmL9dqm+f3Wx/AT1g==",
   "minExtensionVersion": "0.1.1",
-  "changelog": "ポート予約状況の2か月計画表示と問い合わせ案内"
+  "changelog": "車両状態一覧から対象ポートで絞り込んだ車両情報一覧へ遷移"
 }
