@@ -1,8 +1,8 @@
 {
-  "version": "202609141102",
-  "bundle": "bundle-202609141102.js",
-  "sha256": "b5d08d9e82566252f00f52c9bd59742f1a3dec461d287cc2bf0466a6f60792dc",
-  "signature": "dLkSnzlRm2LaRoW+CmBLrSMr3s9/vz5HNyNH09f4G4FMc7tANAlHivhVvdFehEfRQ2wssAmL9dqm+f3Wx/AT1g==",
+  "version": "202609251045",
+  "bundle": "bundle-202609251045.js",
+  "sha256": "1795c60f0c69b0af2efc7800139daf5094eb73fc98316e01f758f8183c1a8eed",
+  "signature": "1TFYR0NS29TUpeCVhMD82MTcurlnfC3rhG4t8hBsFQLJe4W7kmMjbogYTUGm9cLyAAvcpAJ/ensvq9maH97WOg==",
   "minExtensionVersion": "0.1.1",
-  "changelog": "車両状態一覧から対象ポートで絞り込んだ車両情報一覧へ遷移"
+  "changelog": "車両情報一覧の表示領域と折りたたみ時の高さを修正（ポータルDOM再描画との競合を回避）"
 }
