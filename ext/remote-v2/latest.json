@@ -1,8 +1,8 @@
 {
-  "version": "202610061135",
-  "bundle": "bundle-202610061135.js",
-  "sha256": "ef2074d18d93000932b53af97e6dde293f036f11528ccf6accfda452a4a2c21c",
-  "signature": "AiXE6omKGvnacciSHiFG6w1IsRG4p9ErNdFwOnoWfdwIkIazQb2TYm8xa6mu+HhXdzbaVUBrFVovtSdnUuAusQ==",
+  "version": "202610061145",
+  "bundle": "bundle-202610061145.js",
+  "sha256": "3ee1e60173e930f44660994b9041dc9e078037a64a5706f1f3094cc56f2cf7b4",
+  "signature": "2Go9RwdhMF0DMB57vS20wms9UTF34cLLaPvVOi2oxTCUT80M5w4q9gqc7sNuAk2lplccQ2kdumtK1Oyisa6DeA==",
   "minExtensionVersion": "0.1.1",
-  "changelog": "法人請求書 口座振替トグル・キャッシュ機能の追加"
+  "changelog": "DBS拡張ステータスカードを右下にピル型横並び配置へ変更"
 }
