@@ -1,8 +1,8 @@
 {
-  "version": "202610061145",
-  "bundle": "bundle-202610061145.js",
-  "sha256": "3ee1e60173e930f44660994b9041dc9e078037a64a5706f1f3094cc56f2cf7b4",
-  "signature": "2Go9RwdhMF0DMB57vS20wms9UTF34cLLaPvVOi2oxTCUT80M5w4q9gqc7sNuAk2lplccQ2kdumtK1Oyisa6DeA==",
+  "version": "202610061202",
+  "bundle": "bundle-202610061202.js",
+  "sha256": "45916d5c29438faab9dd7b62a3b587135877d0e9b3e4d23f96f432789423384f",
+  "signature": "/jYEcO05FaCngL3v4AndgagRAUIt7uPIAf/kTYOa6VviYahgJRG7NQZHIjyXLOmBnFAJJpwoa7M0PcwxEU/UwA==",
   "minExtensionVersion": "0.1.1",
-  "changelog": "DBS拡張ステータスカードを右下にピル型横並び配置へ変更"
+  "changelog": "法人契約情報画面でのボタン配置タイミング修正（Vue描画待機と自己修復）"
 }
