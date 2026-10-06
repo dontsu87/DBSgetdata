@@ -1,8 +1,8 @@
 {
-  "version": "202610011625",
-  "bundle": "bundle-202610011625.js",
-  "sha256": "0c98983995e508e0902ae1a7b79086f189c18289366cf8d00fafb722f70b053e",
-  "signature": "9g1Bi0y0vqd4+li4iRz/C8wr6M9BNfhh0Mfv8t+6Y1z9m1KZ5jUPM8y8B1gTyIw1LRe3T41g5TCKKVHLOYLDtA==",
+  "version": "202610061135",
+  "bundle": "bundle-202610061135.js",
+  "sha256": "ef2074d18d93000932b53af97e6dde293f036f11528ccf6accfda452a4a2c21c",
+  "signature": "AiXE6omKGvnacciSHiFG6w1IsRG4p9ErNdFwOnoWfdwIkIazQb2TYm8xa6mu+HhXdzbaVUBrFVovtSdnUuAusQ==",
   "minExtensionVersion": "0.1.1",
-  "changelog": "現行管理ポータルに対応：法人利用履歴100行読み込み・法人請求書の精算ジョブ・全画面のカレンダー表示を修正"
+  "changelog": "法人請求書 口座振替トグル・キャッシュ機能の追加"
 }
