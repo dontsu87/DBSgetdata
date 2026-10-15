@@ -14,6 +14,8 @@
     const langToggleBtn = document.getElementById('lang-toggle-btn');
     const areaBadge = document.getElementById('area-badge');
     const updateTimeDisplay = document.getElementById('update-time-display');
+    const headerUpdateBadge = document.getElementById('header-update-badge');
+    const headerUpdateTime = document.getElementById('header-update-time');
     const appTitleText = document.getElementById('app-title-text');
 
     // 状態管理
@@ -26,6 +28,40 @@
     let latestUpdatedAt = '';
     let isInitialLoad = true;
     let autoRefreshTimer = null;
+
+    /**
+     * 更新時刻文字列からスマートな時刻表示（HH:MM 更新）を生成
+     */
+    function formatUpdateTime(rawStr, lang = 'ja') {
+        if (!rawStr) return '--:--';
+        // "2026-10-15 19:00:09" または "2026/10/15 19:00:09" から HH:MM を抽出
+        const timePart = rawStr.includes(' ') ? rawStr.split(' ')[1] : rawStr;
+        const timeParts = timePart.split(':');
+        const hhmm = timeParts.length >= 2 ? `${timeParts[0]}:${timeParts[1]}` : timePart;
+        
+        if (lang === 'en') {
+            return `Updated ${hhmm}`;
+        }
+        return `${hhmm} 更新`;
+    }
+
+    /**
+     * 更新日時UIの反映
+     */
+    function updateTimestampUI(timestampStr) {
+        if (!timestampStr) return;
+        const formatted = formatUpdateTime(timestampStr, currentLang);
+        
+        if (headerUpdateTime) {
+            headerUpdateTime.innerText = formatted;
+        }
+        if (headerUpdateBadge) {
+            headerUpdateBadge.setAttribute('title', `約5分間隔で自動更新 (最終更新: ${timestampStr})`);
+        }
+        if (updateTimeDisplay) {
+            updateTimeDisplay.innerText = `${I18N[currentLang].updatedAt}: ${timestampStr}`;
+        }
+    }
 
     const AREA_CODE_ALIASES = Object.freeze({
         FKI: '福井',
@@ -178,9 +214,11 @@
         let data = null;
         const timestamp = new Date().getTime();
 
-        // 1. 作業員用マップと同等の Cloudflare R2 からのフェッチ
+        // 1. 作業員用マップと同等の Cloudflare R2 からのフェッチ (キャッシュ強制バイパス)
         try {
-            const response = await fetch(`${R2_PUBLIC_PORTS_URL}?t=${timestamp}`);
+            const response = await fetch(`${R2_PUBLIC_PORTS_URL}?t=${timestamp}`, {
+                cache: 'no-store'
+            });
             if (response.ok) {
                 data = await response.json();
                 console.log('Success: Cloudflare R2 から最新ポートデータを取得しました。');
@@ -192,7 +230,9 @@
         // 2. ローカル相対パスからのフェッチフォールバック（開発・ローカルテスト環境用）
         if (!data) {
             try {
-                const response = await fetch(`public_ports.json?t=${timestamp}`);
+                const response = await fetch(`public_ports.json?t=${timestamp}`, {
+                    cache: 'no-store'
+                });
                 if (response.ok) {
                     data = await response.json();
                 }
@@ -206,7 +246,6 @@
             data = window.PUBLIC_PORTS_DATA;
         }
 
-
         if (!data || !data.ports) {
             console.error('Failed to load public ports data.');
             return;
@@ -214,9 +253,16 @@
 
         // 最新のデータ作成日時の保持 & UI反映
         if (data.updated_at) {
+            const isDataChanged = latestUpdatedAt && latestUpdatedAt !== data.updated_at;
             latestUpdatedAt = data.updated_at;
-            if (updateTimeDisplay) {
-                updateTimeDisplay.innerText = `${I18N[currentLang].updatedAt}: ${latestUpdatedAt}`;
+            updateTimestampUI(latestUpdatedAt);
+
+            // データが新しく更新された場合、ヘッダーバッジを一瞬発光させて視覚的に通知
+            if (isDataChanged && headerUpdateBadge) {
+                headerUpdateBadge.classList.remove('just-updated');
+                void headerUpdateBadge.offsetWidth; // リフローを強制
+                headerUpdateBadge.classList.add('just-updated');
+                console.log(`✨ 新しいポートデータを受信・反映しました (更新日時: ${latestUpdatedAt})`);
             }
         }
 
@@ -382,13 +428,12 @@
         // UIテキストの更新
         if (appTitleText) appTitleText.innerText = I18N[lang].title;
         if (searchInput) searchInput.placeholder = I18N[lang].searchPlaceholder;
-        if (updateTimeDisplay && latestUpdatedAt) {
-            updateTimeDisplay.innerText = `${I18N[lang].updatedAt}: ${latestUpdatedAt}`;
+        if (latestUpdatedAt) {
+            updateTimestampUI(latestUpdatedAt);
         }
 
         // 地図タイル（Googleマップ等）の言語属性（hl=en / hl=ja）を更新
         setBaseMap(currentBaseKey);
-
 
         // マーカーの再描画
         renderMarkers();
@@ -399,6 +444,14 @@
      * イベントリスナーの登録
      */
     function setupEvents() {
+        // 画面アクティブ化（タブ復帰・スリープ解除）時の即時最新データ再取得
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                console.log('👀 画面がアクティブになったため、最新ポートデータを即座に取得します...');
+                loadPublicData();
+            }
+        });
+
         // 検索窓入力イベント
         if (searchInput) {
             searchInput.addEventListener('input', () => {

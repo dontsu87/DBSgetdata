@@ -27,7 +27,10 @@
         <!-- マップ上部オーバーレイヘッダー -->
         <div class="public-header-overlay">
             <div class="public-brand">
-                <span class="brand-badge">LIVE</span>
+                <span class="update-time-badge" id="header-update-badge" title="約5分間隔で自動更新">
+                    <span class="update-dot"></span>
+                    <span id="header-update-time">--:-- 更新</span>
+                </span>
                 <span class="brand-title" id="app-title-text">ポート利用状況</span>
             </div>
             
@@ -59,7 +62,6 @@
         <!-- マップ下部ステータスバー -->
         <div class="public-footer-overlay">
             <div id="area-badge" class="area-tag-badge">金沢</div>
-            <div id="update-time-display" class="update-time-tag">更新日時: --</div>
         </div>
     </div>
 
