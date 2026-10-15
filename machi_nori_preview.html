@@ -1,116 +1,370 @@
+<!-- Header -->
 <!DOCTYPE html>
 <html lang="ja" prefix="og: http://ogp.me/ns#">
 
 <head>
+  <!-- Google Tag Manager -->
+  <script>
+    (function(w, d, s, l, i) {
+      w[l] = w[l] || [];
+      w[l].push({
+        'gtm.start': new Date().getTime(),
+        event: 'gtm.js'
+      });
+      var f = d.getElementsByTagName(s)[0],
+        j = d.createElement(s),
+        dl = l != 'dataLayer' ? '&l=' + l : '';
+      j.async = true;
+      j.src =
+        'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+      f.parentNode.insertBefore(j, f);
+    })(window, document, 'script', 'dataLayer', 'GTM-K9HS2DG');
+  </script>
+  <!-- End Google Tag Manager -->
+
   <meta charset="utf-8">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="format-detection" content="telephone=no">
+
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ポートマップ（埋め込みプレビュー） | まちのり - 金沢市公共シェアサイクル</title>
-  <meta name="description" content="金沢市公共シェアサイクル『まちのり』のリアルタイムポート利用状況マップ（埋め込みテスト表示）。" />
+  <script src="https://cdn.jsdelivr.net/npm/viewport-extra@1.0.3/dist/viewport-extra.min.js" charset="UTF-8"></script>
+  <script>
+    function getScreenWidth() {
+      return window.parent.screen.width;
+    }
+    var breakPoint = 768,
+      pcMinWidth = 1080,
+      spMinWidth = 375;
+    if (getScreenWidth() >= breakPoint) {
+      new ViewportExtra(pcMinWidth);
+    } else if (getScreenWidth() < breakPoint) {
+      new ViewportExtra(spMinWidth);
+    }
+  </script>
   
-  <!-- まちのり公式スタイルのロード -->
-  <link rel="stylesheet" href="https://www.machi-nori.jp/wp/wp-content/themes/wptheme_machinori/vendor/swiper/package/css/swiper.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@500;700;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://www.machi-nori.jp/wp/wp-content/themes/wptheme_machinori/css/style.css?ver=20250401">
-  <link rel="stylesheet" href="https://www.machi-nori.jp/wp/wp-content/themes/wptheme_machinori/css/style-2025.css?ver=20250401">
+
+  <!-- icon -->
+  <link rel="apple-touch-icon" href="https://www.machi-nori.jp/wp/wp-content/themes/wptheme_machinori/icon.png">
+  <link rel="shortcut icon" href="https://www.machi-nori.jp/wp/wp-content/themes/wptheme_machinori/favicon.ico">
+
+  <script>
+    const machinoriData = {
+      themeUrl: "https://www.machi-nori.jp/wp/wp-content/themes/wptheme_machinori"
+    };
+  </script>
+  <!-- 特設ページを除く -->
+    <link rel="stylesheet" href="https://www.machi-nori.jp/wp/wp-content/themes/wptheme_machinori/vendor/swiper/package/css/swiper.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://www.machi-nori.jp/wp/wp-content/themes/wptheme_machinori/css/style.css?ver=20250401">
+    <link rel="stylesheet" href="https://www.machi-nori.jp/wp/wp-content/themes/wptheme_machinori/css/style-2025.css?ver=20250401">
+
+    <script src="https://www.machi-nori.jp/wp/wp-content/themes/wptheme_machinori/vendor/jquery-3.3.1.min.js" defer charset="UTF-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js" defer charset="UTF-8"></script>
+    <script src="https://www.machi-nori.jp/wp/wp-content/themes/wptheme_machinori/vendor/picturefill.min.js" defer charset="UTF-8"></script>
+    <script src="https://www.machi-nori.jp/wp/wp-content/themes/wptheme_machinori/js/common.js?ver=20250401" defer charset="UTF-8"></script>
+          
   <link rel="stylesheet" href="https://www.machi-nori.jp/wp/wp-content/themes/wptheme_machinori/style.css">
 
-  <style>
-    .demo-notice-banner {
-      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
-      color: #ffffff;
-      text-align: center;
-      padding: 12px 16px;
-      font-size: 0.9rem;
-      font-weight: bold;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.15);
-      position: sticky;
-      top: 0;
-      z-index: 99999;
-    }
-    .demo-notice-banner code {
-      background: rgba(255,255,255,0.2);
-      padding: 2px 6px;
-      border-radius: 4px;
-    }
-    .c-map-mymap__map iframe {
-      width: 100%;
-      height: 600px;
-      aspect-ratio: 1 / 1;
-      max-height: 80vh;
-      border: 0;
-      border-radius: 12px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-    }
+  <meta name='robots' content='index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1' />
+	<style>img:is([sizes="auto" i], [sizes^="auto," i]) { contain-intrinsic-size: 3000px 1500px }</style>
+	
+	<!-- This site is optimized with the Yoast SEO plugin v24.7 - https://yoast.com/wordpress/plugins/seo/ -->
+	<title>ポートマップ | まちのり - 金沢市公共シェアサイクル</title>
+	<meta name="description" content="ポートを探す Port ポート一覧" />
+	<link rel="canonical" href="https://www.machi-nori.jp/port/" />
+	<meta property="og:locale" content="ja_JP" />
+	<meta property="og:type" content="article" />
+	<meta property="og:title" content="ポートマップ | まちのり - 金沢市公共シェアサイクル" />
+	<meta property="og:description" content="ポートを探す Port ポート一覧" />
+	<meta property="og:url" content="https://www.machi-nori.jp/port/" />
+	<meta property="og:site_name" content="まちのり - 金沢市公共シェアサイクル" />
+	<meta property="article:publisher" content="https://www.facebook.com/machinori.kanazawa" />
+	<meta property="article:modified_time" content="2026-07-29T01:13:13+00:00" />
+	<meta property="og:image" content="https://www.machi-nori.jp/wp/wp-content/themes/wptheme_machinori/ogimage.jpg" />
+	<meta property="og:image:width" content="1200" />
+	<meta property="og:image:height" content="630" />
+	<meta property="og:image:type" content="image/jpeg" />
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:image" content="https://www.machi-nori.jp/wp/wp-content/themes/wptheme_machinori/ogimage.jpg" />
+	<meta name="twitter:site" content="@machinori_sns" />
+	<meta name="twitter:label1" content="推定読み取り時間" />
+	<meta name="twitter:data1" content="1分" />
+	<script type="application/ld+json" class="yoast-schema-graph">{"@context":"https://schema.org","@graph":[{"@type":"WebPage","@id":"https://www.machi-nori.jp/port/","url":"https://www.machi-nori.jp/port/","name":"ポートマップ | まちのり - 金沢市公共シェアサイクル","isPartOf":{"@id":"https://www.machi-nori.jp/wp/#website"},"datePublished":"2020-02-19T05:24:22+00:00","dateModified":"2026-07-29T01:13:13+00:00","description":"ポートを探す Port ポート一覧","breadcrumb":{"@id":"https://www.machi-nori.jp/port/#breadcrumb"},"inLanguage":"ja","potentialAction":[{"@type":"ReadAction","target":["https://www.machi-nori.jp/port/"]}]},{"@type":"BreadcrumbList","@id":"https://www.machi-nori.jp/port/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"ホーム","item":"https://www.machi-nori.jp/wp/"},{"@type":"ListItem","position":2,"name":"ポートマップ"}]},{"@type":"WebSite","@id":"https://www.machi-nori.jp/wp/#website","url":"https://www.machi-nori.jp/wp/","name":"まちのり - 金沢市公共シェアサイクル","description":"「まちのり」は、複数のサイクルポートのどこでも借りられて、どこでも返せる公共シェアサイクルサービスです。","publisher":{"@id":"https://www.machi-nori.jp/wp/#organization"},"potentialAction":[{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"https://www.machi-nori.jp/wp/?s={search_term_string}"},"query-input":{"@type":"PropertyValueSpecification","valueRequired":true,"valueName":"search_term_string"}}],"inLanguage":"ja"},{"@type":"Organization","@id":"https://www.machi-nori.jp/wp/#organization","name":"金沢市公共シェアサイクル「まちのり」","url":"https://www.machi-nori.jp/wp/","logo":{"@type":"ImageObject","inLanguage":"ja","@id":"https://www.machi-nori.jp/wp/#/schema/logo/image/","url":"https://www.machi-nori.jp/wp/wp-content/uploads/machinori.png","contentUrl":"https://www.machi-nori.jp/wp/wp-content/uploads/machinori.png","width":512,"height":512,"caption":"金沢市公共シェアサイクル「まちのり」"},"image":{"@id":"https://www.machi-nori.jp/wp/#/schema/logo/image/"},"sameAs":["https://www.facebook.com/machinori.kanazawa","https://x.com/machinori_sns"]}]}</script>
+	<!-- / Yoast SEO plugin. -->
 
-  </style>
-</head>
+
+<script type="text/javascript">
+/* <![CDATA[ */
+window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/15.0.3\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/15.0.3\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/www.machi-nori.jp\/wp\/wp-includes\/js\/wp-emoji-release.min.js?ver=6.7.10"}};
+/*! This file is auto-generated */
+!function(i,n){var o,s,e;function c(e){try{var t={supportTests:e,timestamp:(new Date).valueOf()};sessionStorage.setItem(o,JSON.stringify(t))}catch(e){}}function p(e,t,n){e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(t,0,0);var t=new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data),r=(e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(n,0,0),new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data));return t.every(function(e,t){return e===r[t]})}function u(e,t,n){switch(t){case"flag":return n(e,"\ud83c\udff3\ufe0f\u200d\u26a7\ufe0f","\ud83c\udff3\ufe0f\u200b\u26a7\ufe0f")?!1:!n(e,"\ud83c\uddfa\ud83c\uddf3","\ud83c\uddfa\u200b\ud83c\uddf3")&&!n(e,"\ud83c\udff4\udb40\udc67\udb40\udc62\udb40\udc65\udb40\udc6e\udb40\udc67\udb40\udc7f","\ud83c\udff4\u200b\udb40\udc67\u200b\udb40\udc62\u200b\udb40\udc65\u200b\udb40\udc6e\u200b\udb40\udc67\u200b\udb40\udc7f");case"emoji":return!n(e,"\ud83d\udc26\u200d\u2b1b","\ud83d\udc26\u200b\u2b1b")}return!1}function f(e,t,n){var r="undefined"!=typeof WorkerGlobalScope&&self instanceof WorkerGlobalScope?new OffscreenCanvas(300,150):i.createElement("canvas"),a=r.getContext("2d",{willReadFrequently:!0}),o=(a.textBaseline="top",a.font="600 32px Arial",{});return e.forEach(function(e){o[e]=t(a,e,n)}),o}function t(e){var t=i.createElement("script");t.src=e,t.defer=!0,i.head.appendChild(t)}"undefined"!=typeof Promise&&(o="wpEmojiSettingsSupports",s=["flag","emoji"],n.supports={everything:!0,everythingExceptFlag:!0},e=new Promise(function(e){i.addEventListener("DOMContentLoaded",e,{once:!0})}),new Promise(function(t){var n=function(){try{var e=JSON.parse(sessionStorage.getItem(o));if("object"==typeof e&&"number"==typeof e.timestamp&&(new Date).valueOf()<e.timestamp+604800&&"object"==typeof e.supportTests)return e.supportTests}catch(e){}return null}();if(!n){if("undefined"!=typeof Worker&&"undefined"!=typeof OffscreenCanvas&&"undefined"!=typeof URL&&URL.createObjectURL&&"undefined"!=typeof Blob)try{var e="postMessage("+f.toString()+"("+[JSON.stringify(s),u.toString(),p.toString()].join(",")+"));",r=new Blob([e],{type:"text/javascript"}),a=new Worker(URL.createObjectURL(r),{name:"wpTestEmojiSupports"});return void(a.onmessage=function(e){c(n=e.data),a.terminate(),t(n)})}catch(e){}c(n=f(s,u,p))}t(n)}).then(function(e){for(var t in e)n.supports[t]=e[t],n.supports.everything=n.supports.everything&&n.supports[t],"flag"!==t&&(n.supports.everythingExceptFlag=n.supports.everythingExceptFlag&&n.supports[t]);n.supports.everythingExceptFlag=n.supports.everythingExceptFlag&&!n.supports.flag,n.DOMReady=!1,n.readyCallback=function(){n.DOMReady=!0}}).then(function(){return e}).then(function(){var e;n.supports.everything||(n.readyCallback(),(e=n.source||{}).concatemoji?t(e.concatemoji):e.wpemoji&&e.twemoji&&(t(e.twemoji),t(e.wpemoji)))}))}((window,document),window._wpemojiSettings);
+/* ]]> */
+</script>
+<style id='wp-emoji-styles-inline-css' type='text/css'>
+
+	img.wp-smiley, img.emoji {
+		display: inline !important;
+		border: none !important;
+		box-shadow: none !important;
+		height: 1em !important;
+		width: 1em !important;
+		margin: 0 0.07em !important;
+		vertical-align: -0.1em !important;
+		background: none !important;
+		padding: 0 !important;
+	}
+</style>
+<link rel='stylesheet' id='wp-block-library-css' href='https://www.machi-nori.jp/wp/wp-includes/css/dist/block-library/style.min.css?ver=6.7.10' type='text/css' media='all' />
+<style id='classic-theme-styles-inline-css' type='text/css'>
+/*! This file is auto-generated */
+.wp-block-button__link{color:#fff;background-color:#32373c;border-radius:9999px;box-shadow:none;text-decoration:none;padding:calc(.667em + 2px) calc(1.333em + 2px);font-size:1.125em}.wp-block-file__button{background:#32373c;color:#fff;text-decoration:none}
+</style>
+<style id='global-styles-inline-css' type='text/css'>
+:root{--wp--preset--aspect-ratio--square: 1;--wp--preset--aspect-ratio--4-3: 4/3;--wp--preset--aspect-ratio--3-4: 3/4;--wp--preset--aspect-ratio--3-2: 3/2;--wp--preset--aspect-ratio--2-3: 2/3;--wp--preset--aspect-ratio--16-9: 16/9;--wp--preset--aspect-ratio--9-16: 9/16;--wp--preset--color--black: #000000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #ffffff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgba(6,147,227,1) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgba(252,185,0,1) 0%,rgba(255,105,0,1) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgba(255,105,0,1) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--font-size--small: 13px;--wp--preset--font-size--medium: 20px;--wp--preset--font-size--large: 36px;--wp--preset--font-size--x-large: 42px;--wp--preset--spacing--20: 0.44rem;--wp--preset--spacing--30: 0.67rem;--wp--preset--spacing--40: 1rem;--wp--preset--spacing--50: 1.5rem;--wp--preset--spacing--60: 2.25rem;--wp--preset--spacing--70: 3.38rem;--wp--preset--spacing--80: 5.06rem;--wp--preset--shadow--natural: 6px 6px 9px rgba(0, 0, 0, 0.2);--wp--preset--shadow--deep: 12px 12px 50px rgba(0, 0, 0, 0.4);--wp--preset--shadow--sharp: 6px 6px 0px rgba(0, 0, 0, 0.2);--wp--preset--shadow--outlined: 6px 6px 0px -3px rgba(255, 255, 255, 1), 6px 6px rgba(0, 0, 0, 1);--wp--preset--shadow--crisp: 6px 6px 0px rgba(0, 0, 0, 1);}:where(.is-layout-flex){gap: 0.5em;}:where(.is-layout-grid){gap: 0.5em;}body .is-layout-flex{display: flex;}.is-layout-flex{flex-wrap: wrap;align-items: center;}.is-layout-flex > :is(*, div){margin: 0;}body .is-layout-grid{display: grid;}.is-layout-grid > :is(*, div){margin: 0;}:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}
+:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}
+:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}
+:root :where(.wp-block-pullquote){font-size: 1.5em;line-height: 1.6;}
+</style>
+<link rel="https://api.w.org/" href="https://www.machi-nori.jp/wp-json/" /><link rel="alternate" title="JSON" type="application/json" href="https://www.machi-nori.jp/wp-json/wp/v2/pages/36415" /><link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://www.machi-nori.jp/wp/xmlrpc.php?rsd" />
+<link rel='shortlink' href='https://www.machi-nori.jp/?p=36415' />
+<link rel="alternate" title="oEmbed (JSON)" type="application/json+oembed" href="https://www.machi-nori.jp/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fwww.machi-nori.jp%2Fport%2F" />
+<link rel="alternate" title="oEmbed (XML)" type="text/xml+oembed" href="https://www.machi-nori.jp/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fwww.machi-nori.jp%2Fport%2F&#038;format=xml" />
+<style type="text/css">.broken_link, a.broken_link {
+
+	text-decoration: line-through;
+
+}</style></head>
 
 <body id="pagetop" class="">
+<div class="demo-notice-banner" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: #ffffff; text-align: center; padding: 12px 16px; font-size: 0.9rem; font-weight: bold; box-shadow: 0 2px 10px rgba(0,0,0,0.15); position: sticky; top: 0; z-index: 99999;">
+  💡 【新リアルタイムポートマップ 埋め込みプレビュー】 まちのり公式サイト（https://www.machi-nori.jp/port/）の Google マイマップ枠を、リアルタイム利用可能台数マップ（金沢エリア）に差し替えた表示確認画面です。
+</div>
+<!-- is-view_menu -->
 
-  <!-- デモプレビュー用告知ヘッダー -->
-  <div class="demo-notice-banner">
-    💡 【新リアルタイムポートマップ 埋め込みプレビュー】 Googleマイマップから『新・リアルタイムポートマップ』への差し替えテスト表示画面です。
-  </div>
+  <!--[if lte IE 9]>
+<div class="browserupgrade">
+<p>
+ご利用中のブラウザは、現在サポートされておりません。<br>
+正しくページを表示するために<a href="https://browsehappy.com/" target="_blank">ブラウザを更新</a>してください。<br>
+ブラウザの更新はセキュリティの向上にもつながります。
+</p>
+</div>
+<![endif]-->
 
-  <header class="c-header">
-    <div class="c-header__left js-menu-logo">
-      <h1 class="c-header__logo">
-        <a href="https://www.machi-nori.jp/"><img src="https://www.machi-nori.jp/wp/wp-content/themes/wptheme_machinori/img/common/logo_machinori-g.svg" alt="まちのり"></a>
-      </h1>
-    </div>
-    <div class="c-header__right">
-      <nav>
-        <ul>
-          <li><a href="https://www.machi-nori.jp/about/">まちのりとは？</a></li>
-          <li><a href="https://www.machi-nori.jp/price/">料金・利用方法</a></li>
-          <li class="active"><a href="#">ポートマップ</a></li>
-          <li><a href="https://www.machi-nori.jp/faq/">よくある質問</a></li>
-        </ul>
-      </nav>
-    </div>
-  </header>
+  <!-- Google Tag Manager (noscript) -->
+  
+  <!-- End Google Tag Manager (noscript) -->
 
-  <!-- Main Content -->
-  <main class="c-main p-port">
-    <div class="content content_1040">
-      
-      <div class="c-titlepage">
-        <h2>ポートを探す</h2>
-        <p><span>Port</span></p>
+  <!-- 特設ページを除く -->
+    <header class="c-header">
+      <div class="c-header__left js-menu-logo">
+        <h1 class="c-header__logo">
+          <a href="https://www.machi-nori.jp/"><img src="https://www.machi-nori.jp/wp/wp-content/themes/wptheme_machinori/img/common/logo_machinori-g.svg" alt=""></a>
+        </h1>
+        <div class="bnt-language">
+                      <a id="btn-language-en" class="btn-language" href="https://www.machi-nori.jp/en/port/">English</a>
+                  </div>
       </div>
-
-      <section class="ct-white">
-        <h3 class="c-title">ポート一覧（リアルタイム利用可能台数）</h3>
+      <div class="c-header__right">
+                  <a href="https://nonoichi.machi-nori.jp" target="_blank" rel="noopener noreferrer" class="btn-link-machinori">野々市市で「まちのり」を利用する方はこちら</a>
         
-        <div class="c-card9">
-          <p>ポートアイコンをタップすると、現在の貸出可能台数およびラック設置状況（満車・空き）がリアルタイムに表示されます。</p>
+        <nav>
+          <div class="f-flow">
+  <p>Follow us</p>
+  <a href="https://www.instagram.com/machinori_sns/" target="_blank" rel="noopener noreferrer"><img src="https://www.machi-nori.jp/wp/wp-content/themes/wptheme_machinori/img/common/ico_instagram_solid.svg" alt="Instagram"></a>
+  <a href="https://twitter.com/machinori_sns" target="_blank" rel="noopener noreferrer"><img src="https://www.machi-nori.jp/wp/wp-content/themes/wptheme_machinori/img/common/ico_x_solid.svg" alt="X"></a>
+  <a href="https://www.facebook.com/machinori.kanazawa" target="_blank" rel="noopener noreferrer"><img src="https://www.machi-nori.jp/wp/wp-content/themes/wptheme_machinori/img/common/ico_fb_solid.svg" alt="Facebook"></a>
+</div>          <ul>
+                          <li><a href="https://www.machi-nori.jp/about/">まちのりとは？ <span class="sm">About</span></a></li>
+              <li><a href="https://www.machi-nori.jp/price/">料金・利用方法 <span class="sm">Price</span></a></li>
+              <li><a href="https://www.machi-nori.jp/port/">ポートマップ <span class="sm">Cycle Port</span></a></li>
+              <li class="p-common__sp-hide"><a href="https://www.machi-nori.jp/faq/" class="tag-headerLink">よくある質問 <span class="sm">Faq</span></a></li>
+              <li class="p-common__pc-hide"><a href="https://www.machi-nori.jp/service/">提供サービス <span class="sm">Service</span></a></li>
+            
+                          <li class="sm mt-space"><a href="https://www.machi-nori.jp/download/">各種ダウンロード</a></li>
+              <li class="sm"><a href="https://www.machi-nori.jp/faq/" class="tag-headerLink">よくある質問</a></li>
+              <li class="sm"><a href="https://www.machi-nori.jp/newstopics/">ニュース&トピックス</a></li>
+              <li class="sm"><a href="https://www.machi-nori.jp/rule/">自転車走行のルール</a></li>
+              <li class="sm"><a href="https://www.machi-nori.jp/support/">安心サポート</a></li>
+              <li class="sm"><a href="https://www.machi-nori.jp/rental-helmet/">ヘルメット無料貸出</a></li>
+              <li class="sm"><a href="https://www.machi-nori.jp/business/">法人会員のご案内</a></li>
+                      </ul>
+        </nav>
+        <div class="bnt-header">
+          <div class="bnt-menu js-bnt-menu"><span></span></div>
         </div>
+      </div>
+      <div class="bg-overflow"></div>
+      <div class="bg-overflow2"></div>
+      <div class="menu-nav_right js-menu-toggle">
+        <div class="menu-toggle_content">
+          <div class="menu-toggle_content__inner">
+                          <ul>
+                <li><a href="https://www.machi-nori.jp/">トップページ</a></li>
+                <li><a href="https://www.machi-nori.jp/about/">まちのりとは？</a></li>
+                <li><a href="https://www.machi-nori.jp/portinfo/">ポート情報</a></li>
+                <li><a href="https://www.machi-nori.jp/newstopics/">お知らせ情報</a></li>
+              </ul>
+              <ul>
+                <li>
+                  <a href="https://www.machi-nori.jp/price/">料金・利用方法</a>
+                  <ul class="nav-sub">
+                    <li class="item-sub"><a href="https://www.machi-nori.jp/price/member/">1回会員／月額会員</a></li>
+                    <li class="item-sub"><a href="https://www.machi-nori.jp/price/oneday-store/">1日パス（販売窓口で購入）</a></li>
+                    <!-- <li class="item-sub"><a href="">1日パス（WEBサイトで購入）</a></li> -->
+                    <li class="item-sub"><a href="https://www.machi-nori.jp/price/student/">学割プラン</a></li>
+                  </ul>
+                </li>
+                <li><a href="https://www.machi-nori.jp/port/">ポートマップ</a></li>
+                <li><a href="https://www.machi-nori.jp/partner/">1日パス販売所</a></li>
+                <li><a href="https://www.machi-nori.jp/faq/">よくある質問</a></li>
+              </ul>
+              <ul>
+                <li>
+                  <a href="https://www.machi-nori.jp/service/">提供サービス</a>
+                  <ul class="nav-sub">
+                    <li class="item-sub"><a href="https://www.machi-nori.jp/service/tebura/">手荷物預かり・配送サービス</a></li>
+                    <li class="item-sub"><a href="https://www.machi-nori.jp/service/rental/">レンタル自転車Carippa（カリッパ）</a></li>
+                    <li class="item-sub"><a href="https://www.machi-nori.jp/service/rental-helmet/">ヘルメット無料貸出</a></li>
+                  </ul>
+                </li>
+                <li><a href="https://www.machi-nori.jp/download/">各種ダウンロード</a></li>
+                <li><a href="https://www.machi-nori.jp/rule/">自転車走行のルール</a></li>
+                <li><a href="https://www.machi-nori.jp/support/">安心サポート</a></li>
+                <li><a href="https://www.machi-nori.jp/business/">法人会員のご案内</a></li>
+              </ul>
+            
+            <div class="f-flow">
+  <p>Follow us</p>
+  <a href="https://www.instagram.com/machinori_sns/" target="_blank" rel="noopener noreferrer"><img src="https://www.machi-nori.jp/wp/wp-content/themes/wptheme_machinori/img/common/ico_instagram_solid.svg" alt="Instagram"></a>
+  <a href="https://twitter.com/machinori_sns" target="_blank" rel="noopener noreferrer"><img src="https://www.machi-nori.jp/wp/wp-content/themes/wptheme_machinori/img/common/ico_x_solid.svg" alt="X"></a>
+  <a href="https://www.facebook.com/machinori.kanazawa" target="_blank" rel="noopener noreferrer"><img src="https://www.machi-nori.jp/wp/wp-content/themes/wptheme_machinori/img/common/ico_fb_solid.svg" alt="Facebook"></a>
+</div>          </div>
+        </div>
+      </div>
+    </header>
+    <!-- c-header -->
+  
 
-        <!-- IFRAME 埋め込みエリア -->
-        <div class="c-map-mymap p-helmet__map">
-          <div class="c-map-mymap__map">
-            <!-- 今回作成した利用者向けマップ（エリア：金沢 KNZ）に差し替え -->
-            <iframe 
-              src="public_map.html?area=KNZ" 
-              title="まちのり リアルタイムポートマップ (金沢エリア)" 
-              allow="geolocation">
-            </iframe>
+<!-- Content -->
+<p><main class="c-main p-port"></p>
+<div class="content content_1040">
+<div class="c-titlepage">
+<h2>ポートを探す</h2>
+<p>          <span>Port</span>
+        </div>
+<section class="ct-white">
+<h3 class="c-title">ポート一覧</h3>
+<p><!-- 
+
+<div class="c-card9">
+  
+
+
+
+
+</div>
+
+ --></p>
+<div class="c-map-mymap p-helmet__map">
+<div class="c-map-mymap__map">
+              <iframe src="public_map_kanazawa.html" title="まちのり リアルタイムポートマップ (金沢エリア)" allow="geolocation" frameborder="0" style="border: 0; width: 100%; height: 100%; border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.08);" allowfullscreen=""></iframe>
+            </div>
+<p class="c-map-mymap__button">
+              <a href="public_map_kanazawa.html" target="_blank" rel="noopener noreferrer" class="c-button-01">大きい全画面マップで見る</a>
+            </p>
+</div>
+</section></div>
+<p>    </main></p>
+
+
+<!-- Footer -->
+
+<!-- 特設ページを除く -->
+  <footer class="c-footer ">
+    <!-- <div class="pageup">
+      <a href="#pagetop"><img src="https://www.machi-nori.jp/wp/wp-content/themes/wptheme_machinori/img/common/ico_button.png" alt="Pagetop"></a>
+    </div> -->
+    <div class="c-footer__inner">
+      <div class="c-footer__top">
+        <div class="c-footer__right">
+          <div class="nav-footer">
+            <ul>  <li><a href="https://www.machi-nori.jp/">トップページ</a></li>
+  <li><a href="https://www.machi-nori.jp/about/">まちのりとは？</a></li>
+  <li><a href="https://www.machi-nori.jp/portinfo/">ポート情報</a></li>
+  <li><a href="https://www.machi-nori.jp/newstopics/">お知らせ情報</a></li>
+</ul>
+            <ul>  <li>
+    <a href="https://www.machi-nori.jp/price/">料金・利用方法</a>
+    <ul class="nav-sub">
+      <li class="item-sub"><a href="https://www.machi-nori.jp/price/member/">1回会員／月額会員</a></li>
+      <li class="item-sub"><a href="https://www.machi-nori.jp/price/oneday-store/">1日パス（販売窓口で購入）</a></li>
+      <!-- <li class="item-sub"><a href="">1日パス（WEBサイトで購入）</a></li> -->
+      <li class="item-sub"><a href="https://www.machi-nori.jp/price/student/">学割プラン</a></li>
+    </ul>
+  </li>
+  <li><a href="https://www.machi-nori.jp/port/">ポートマップ</a></li>
+  <li><a href="https://www.machi-nori.jp/partner/">1日パス販売窓口</a></li>
+  <li><a href="https://www.machi-nori.jp/faq/">よくある質問</a></li>
+</ul>
+            <ul>  <li>
+    <a href="https://www.machi-nori.jp/service/">提供サービス</a>
+    <ul class="nav-sub">
+      <li class="item-sub"><a href="https://www.machi-nori.jp/service/tebura/">手荷物預かり・配送サービス</a></li>
+      <li class="item-sub"><a href="https://www.machi-nori.jp/service/rental/">レンタル自転車Carippa（カリッパ）</a></li>
+      <li class="item-sub"><a href="https://www.machi-nori.jp/service/rental-helmet/">ヘルメット無料貸出</a></li>
+    </ul>
+  </li>
+  <li><a href="https://www.machi-nori.jp/download/">各種ダウンロード</a></li>
+  <li><a href="https://www.machi-nori.jp/rule/">自転車走行のルール</a></li>
+  <li><a href="https://www.machi-nori.jp/support/">安心サポート</a></li>
+  <li><a href="https://www.machi-nori.jp/business/">法人会員のご案内</a></li>
+</ul>
           </div>
-          <p class="c-map-mymap__button" style="margin-top: 16px;">
-            <a href="public_map.html?area=KNZ" target="_blank" rel="noopener noreferrer" class="c-button-01">大きい全画面マップで見る</a>
-          </p>
         </div>
 
-      </section>
-    </div>
-  </main>
-
-  <footer class="c-footer">
-    <div class="c-footer__inner" style="text-align: center; padding: 20px; color: #666; font-size: 0.85rem;">
-      <p>&copy; 金沢市公共シェアサイクル「まちのり」 埋め込み確認用デモページ</p>
+        <div class="c-footer__left">
+          <div class="f-logo">
+            <img src="https://www.machi-nori.jp/wp/wp-content/themes/wptheme_machinori/img/common/logo_machinori-w.svg" alt="まちのり">
+          </div>
+          <div class="f-flow">
+  <p>Follow us</p>
+  <a href="https://www.instagram.com/machinori_sns/" target="_blank" rel="noopener noreferrer"><img src="https://www.machi-nori.jp/wp/wp-content/themes/wptheme_machinori/img/common/ico_instagram_w.svg" alt="Instagram"></a>
+  <a href="https://twitter.com/machinori_sns" target="_blank" rel="noopener noreferrer"><img src="https://www.machi-nori.jp/wp/wp-content/themes/wptheme_machinori/img/common/ico_x_w.svg" alt="X"></a>
+  <a href="https://www.facebook.com/machinori.kanazawa" target="_blank" rel="noopener noreferrer"><img src="https://www.machi-nori.jp/wp/wp-content/themes/wptheme_machinori/img/common/ico_fb_w.svg" alt="Facebook"></a>
+</div>        </div>
+      </div>
+      <div class="c-footer__bottom">
+        <div class="c-footer__left2">
+                      <h6 class="ttl1">まちのり事務局</h6>
+            <p class="txt1">〒920-0852 石川県金沢市此花町３-２ライブ1ビル 1F<br>TEL 076-255-1747（受付時間 9:00〜18:00）<br>実施主体：金沢市<br>運営主体：株式会社日本海コンサルタント<br>システム提供：株式会社ドコモ・バイクシェア</p>
+          
+          <ul class="nav-footer2">
+                          <li><a href="https://www.machi-nori.jp/privacy/">プライバシーポリシー</a></li>
+              <li><a href="https://www.machi-nori.jp/terms/">サービス利用規約</a></li>
+              <li><a href="https://www.machi-nori.jp/law/">特定商取引法に基づく表記</a></li>
+                      </ul>
+        </div>
+        <div class="c-footer__right2">
+          <ul class="c-partners">
+  <li class="c-partners__item">
+    <a href="https://kururu-rintorin.jp/" target="_blank" rel="noopener noreferrer">
+      <img src="https://www.machi-nori.jp/wp/wp-content/themes/wptheme_machinori/img/common/ico_partner1.svg" alt="kuru,ru" class="md">
+      <img src="https://www.machi-nori.jp/wp/wp-content/themes/wptheme_machinori/img/common/ico_partner1.svg" alt="kuru,ru" class="sm" width="105.389">
+    </a>
+  </li>
+  <li class="c-partners__item">
+    <a href="https://www.machi-nori.jp/byuun/" target="_blank" rel="noopener noreferrer">
+      <img src="https://www.machi-nori.jp/wp/wp-content/themes/wptheme_machinori/img/common/ico_partner2.svg" alt="BYUUN" class="md">
+      <img src="https://www.machi-nori.jp/wp/wp-content/themes/wptheme_machinori/img/common/ico_partner2.svg" alt="BYUUN" class="sm" width="91.586">
+    </a>
+  </li>
+</ul>          <p class="coppy_right">© MACHI-NORI All rights reserved.</p>
+        </div>
+      </div>
     </div>
   </footer>
 
 </body>
+
 </html>

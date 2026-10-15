@@ -36,46 +36,46 @@ def get_port_name_en(port_name: str, station_id: str = "") -> str:
     # 英語名が指定されていない場合、クリーンアップ後の名称を返す
     return clean_name or port_name
 
-def generate_public_ports_data(ports_data: dict, gbfs_stations: list = None) -> tuple:
+def generate_public_ports_data(ports_data: dict) -> tuple:
     """
-    ports_data (dashboard_generator が集計したポートデータ) および GBFS ステーション情報から
-    利用者用公開データを構築し、public_ports.json および public_ports.js に書き出します。
+    dashboard_generator が管理ポータルのスナップショットと車両データから集計した
+    ポートデータを利用者向けに軽量化し、public_ports.json および public_ports.js
+    に書き出します。
 
     戻り値:
         tuple (str, str): (json_path, js_path)
     """
     print("--- 利用者向け公開ポートデータの生成を開始します ---")
     
-    # GBFS から station_id / name をキーとして capacity (ラック数) マッピングを作成
-    capacity_map = {}
-    if gbfs_stations:
-        for s in gbfs_stations:
-            cap = s.get("capacity", 0)
-            s_name = s.get("name", "").strip()
-            s_id_raw = s.get("station_id", "").strip()
-            if s_name:
-                capacity_map[s_name] = cap
-            if s_id_raw:
-                try:
-                    s_id_fmt = f"{int(s_id_raw):08d}"
-                    capacity_map[s_id_fmt] = cap
-                except ValueError:
-                    capacity_map[s_id_raw] = cap
-
     public_ports = []
     
     for port_name, p_info in ports_data.items():
+        display_name = str(p_info.get("port_name") or port_name).strip()
         lat = p_info.get("lat")
         lon = p_info.get("lon")
         
         # 緯度・経度がないポートはマップにプロットできないため除外
         if lat is None or lon is None or lat == 0.0 or lon == 0.0:
             continue
+
+        # 提供外（停止中または利用者非公開）のポートは除外
+        # （本体バッテリーアプリにおける「提供外ON」で表示される管理用・倉庫・停止ポートを除外）
+        service_state = p_info.get("service_state")
+        publish_flag = p_info.get("publish_flag")
+        if service_state == "停止中" or publish_flag is False:
+            continue
+
+        # 仮想ポート（ポート外）を除外
+        if "ポート外" in display_name:
+            continue
             
         s_id = p_info.get("station_id", "")
-        
-        # ラック数の取得 (GBFSマッピング > デフォルト0)
-        capacity = capacity_map.get(port_name) or capacity_map.get(s_id) or 0
+
+        # ラック数・英語名は管理ポータルのスナップショットから集計済み。
+        try:
+            capacity = max(0, int(float(p_info.get("capacity", 0) or 0)))
+        except (TypeError, ValueError):
+            capacity = 0
         
         # 利用可能台数（車両状態が「利用可能」または「available」の車両のみをカウント）
         raw_bikes = p_info.get("bikes", [])
@@ -93,17 +93,19 @@ def generate_public_ports_data(ports_data: dict, gbfs_stations: list = None) -> 
             capacity = bikes_available
 
 
-        port_en = get_port_name_en(port_name, s_id)
+        port_en = p_info.get("port_name_en") or get_port_name_en(display_name, s_id)
         
         public_ports.append({
             "station_id": s_id,
-            "port_name": port_name,
+            "port_name": display_name,
             "port_name_en": port_en,
             "area_name": p_info.get("area_name", "その他"),
             "lat": round(float(lat), 6),
             "lon": round(float(lon), 6),
             "bikes_available": bikes_available,
-            "capacity": capacity
+            "capacity": capacity,
+            "service_state": service_state,
+            "publish_flag": publish_flag
         })
 
     # ポート名順でソート

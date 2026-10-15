@@ -17,6 +17,7 @@ def test_generate_public_ports_data(tmp_path):
             "station_id": "00000001",
             "lat": 38.269793,
             "lon": 140.874203,
+            "capacity": 20,
             "total_bikes": 3,
             "bikes": [
                 {"bike_id": "TEST1", "status": "利用可能", "voltage": 25.5},
@@ -32,18 +33,43 @@ def test_generate_public_ports_data(tmp_path):
             "lat": None,
             "lon": None,
             "total_bikes": 2
+        },
+        "保管倉庫_出雲倉庫": {
+            "port_name": "保管倉庫_出雲倉庫",
+            "area_name": "SPS_出雲・松江・境港",
+            "station_id": "00000003",
+            "lat": 35.360000,
+            "lon": 132.750000,
+            "publish_flag": False,
+            "service_state": "運用中",
+            "capacity": 10,
+            "total_bikes": 5
+        },
+        "停止中ポート": {
+            "port_name": "停止中ポート",
+            "area_name": "KNZ_金沢",
+            "station_id": "00000004",
+            "lat": 36.560000,
+            "lon": 136.650000,
+            "publish_flag": True,
+            "service_state": "停止中",
+            "capacity": 10,
+            "total_bikes": 0
+        },
+        "KNZ_ポート外": {
+            "port_name": "KNZ_ポート外",
+            "area_name": "KNZ_金沢",
+            "station_id": "",
+            "lat": 36.560000,
+            "lon": 136.650000,
+            "publish_flag": True,
+            "service_state": "運用中",
+            "capacity": 0,
+            "total_bikes": 1
         }
     }
     
-    sample_gbfs_stations = [
-        {
-            "station_id": "00000001",
-            "name": "04.ドコモ東北ビル",
-            "capacity": 20
-        }
-    ]
-    
-    json_path, js_path = generate_public_ports_data(sample_ports_data, sample_gbfs_stations)
+    json_path, js_path = generate_public_ports_data(sample_ports_data)
     
     assert json_path is not None
     assert os.path.exists(json_path)

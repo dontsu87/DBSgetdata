@@ -24,6 +24,8 @@
     let currentLang = 'ja'; // 'ja' or 'en'
     let currentAreaParam = '';
     let latestUpdatedAt = '';
+    let isInitialLoad = true;
+    let autoRefreshTimer = null;
 
     const AREA_CODE_ALIASES = Object.freeze({
         FKI: '福井',
@@ -63,9 +65,17 @@
     };
 
     /**
-     * URLパラメータからエリア制約を取得
+     * エリア制約を取得
+     * HTMLタグ (body または #public-app-container) の data-area 属性で固定されている場合は
+     * それを最優先（固定エリアモード）とし、未指定の場合は従来通り URL パラメータ (?area=...) から取得する。
      */
     function getAreaParam() {
+        const appContainer = document.getElementById('public-app-container');
+        const lockedArea = (document.body && document.body.getAttribute('data-area')) ||
+                           (appContainer && appContainer.getAttribute('data-area'));
+        if (lockedArea) {
+            return lockedArea.trim();
+        }
         const params = new URLSearchParams(window.location.search);
         return params.get('area') || '';
     }
@@ -226,6 +236,14 @@
         let areaPorts = allPorts.filter(p => {
             const aName = normalizePublicAreaName(p.area_name).toLowerCase();
             return aName === targetArea;
+        });
+
+        // 提供外（停止中または利用者非公開）および仮想ポート（ポート外）の確実な除外
+        areaPorts = areaPorts.filter(p => {
+            if (p.service_state === '停止中' || p.publish_flag === false) return false;
+            const pName = String(p.port_name || '');
+            if (pName.includes('ポート外')) return false;
+            return true;
         });
 
         // エリア名バッジの更新

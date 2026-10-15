@@ -16,11 +16,11 @@
     --public-text-muted: #94a3b8;
 }
 
-body.public-map-body {
+html, body.public-map-body {
     margin: 0;
     padding: 0;
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
     overflow: hidden;
     font-family: 'Inter', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
     background-color: var(--public-bg-dark);
