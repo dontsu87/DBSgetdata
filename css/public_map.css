@@ -448,22 +448,65 @@ html, body.public-map-body {
 }
 
 /* Mobile Responsiveness */
-@media (max-width: 480px) {
+@media (max-width: 520px) {
     .public-header-overlay {
         top: 8px;
         left: 8px;
         right: 8px;
+        flex-wrap: wrap;
+        gap: 6px;
     }
     
+    .public-brand {
+        padding: 4px 8px;
+    }
+
     .brand-title {
-        display: none; /* Hide subtitle on tiny frames */
+        display: none; /* スマホ画面では更新バッジのみにして省スペース化 */
     }
-    
+
+    .public-controls {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 6px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 2px;
+    }
+
+    /* スクロールバー非表示（スワイプ可能） */
+    .public-controls::-webkit-scrollbar {
+        display: none;
+    }
+
+    .public-search-wrapper {
+        flex: 1 1 auto;
+        min-width: 80px;
+    }
+
     #public-search-input {
-        width: 100px;
+        width: 100%;
+        min-width: 80px;
+        padding: 5px 24px 5px 10px;
+        font-size: 0.74rem;
     }
-    
+
     #public-search-input:focus {
-        width: 140px;
+        width: 100%;
+    }
+
+    .public-select {
+        flex: 0 0 auto;
+        padding: 5px 8px;
+        font-size: 0.72rem;
+        max-width: 110px;
+    }
+
+    .lang-btn {
+        flex: 0 0 auto;
+        padding: 5px 8px;
+        font-size: 0.72rem;
     }
 }
