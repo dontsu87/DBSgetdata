@@ -45,3 +45,7 @@ tmp_analyze_replaced.py
 keep_alive_tester.py
 keep_alive_profile/
 last_gbfs_run.txt
+
+# External website data
+machi_nori_site/
+preview_site/

@@ -101,6 +101,29 @@
     };
 
     /**
+     * 野々市フォーカスモードかどうかの判定
+     */
+    function isNonoichiMode() {
+        const params = new URLSearchParams(window.location.search);
+        const center = (params.get('center') || '').toLowerCase();
+        const focus = (params.get('focus') || '').toLowerCase();
+        const area = (params.get('area') || '').toLowerCase();
+        return center === 'nonoichi' || center === '野々市' ||
+               focus === 'nonoichi' || focus === '野々市' ||
+               area === 'nonoichi' || area === '野々市';
+    }
+
+    /**
+     * ポートが野々市エリアに関連するかどうかの判定
+     */
+    function isNonoichiPort(port) {
+        if (!port) return false;
+        const nameJa = String(port.port_name || '');
+        const nameEn = String(port.port_name_en || '').toLowerCase();
+        return nameJa.includes('野々市') || nameEn.includes('nonoichi') || nameJa.startsWith('N-');
+    }
+
+    /**
      * エリア制約を取得
      * HTMLタグ (body または #public-app-container) の data-area 属性で固定されている場合は
      * それを最優先（固定エリアモード）とし、未指定の場合は従来通り URL パラメータ (?area=...) から取得する。
@@ -113,7 +136,12 @@
             return lockedArea.trim();
         }
         const params = new URLSearchParams(window.location.search);
-        return params.get('area') || '';
+        const area = (params.get('area') || '').trim();
+        // 野々市は金沢エリアデータ内に包括されているため、データ取得先としては金沢を割り当てる
+        if (area.toLowerCase() === 'nonoichi' || area === '野々市') {
+            return '金沢';
+        }
+        return area;
     }
 
     /**
@@ -192,6 +220,7 @@
         setBaseMap('googleRoad');
 
         markersGroup = L.layerGroup().addTo(map);
+        window._publicMap = map;
 
         // ベースマップ切替イベントの登録
         const basemapSelect = document.getElementById('public-basemap-select');
@@ -294,10 +323,18 @@
 
         // エリア名バッジの更新
         if (areaBadge) {
-            const matchedAreaName = areaPorts.length > 0
-                ? normalizePublicAreaName(areaPorts[0].area_name)
-                : normalizePublicAreaName(currentAreaParam);
-            areaBadge.innerText = matchedAreaName;
+            if (isNonoichiMode()) {
+                areaBadge.innerText = currentLang === 'en' ? 'Nonoichi' : '野々市';
+            } else {
+                const matchedAreaName = areaPorts.length > 0
+                    ? normalizePublicAreaName(areaPorts[0].area_name)
+                    : normalizePublicAreaName(currentAreaParam);
+                if (currentLang === 'en') {
+                    areaBadge.innerText = (matchedAreaName === '金沢' || matchedAreaName === 'KNZ') ? 'Kanazawa' : matchedAreaName;
+                } else {
+                    areaBadge.innerText = matchedAreaName;
+                }
+            }
         }
 
         // 2. 検索キーワードによる追加絞り込み
@@ -401,9 +438,36 @@
             }
         });
 
-        // 初回ロード時のみエリア全体が収まるように自動ズームフィット（定期更新時はユーザー視点を維持）
-        if (isInitialLoad && bounds.isValid()) {
-            map.fitBounds(bounds, { padding: [40, 40], maxZoom: 16 });
+        // 初回ロード時のみエリア全体または指定中心が収まるように自動ズームフィット（定期更新時はユーザー視点を維持）
+        if (isInitialLoad) {
+            const params = new URLSearchParams(window.location.search);
+            const centerParam = (params.get('center') || '').trim();
+
+            if (isNonoichiMode()) {
+                // 野々市モード: 野々市エリアのポート群が収まるようにズームフィット
+                const nonoichiBounds = L.latLngBounds();
+                filteredPorts.forEach(port => {
+                    if (isNonoichiPort(port) && port.lat && port.lon) {
+                        nonoichiBounds.extend([port.lat, port.lon]);
+                    }
+                });
+                if (nonoichiBounds.isValid()) {
+                    map.fitBounds(nonoichiBounds, { padding: [35, 35], maxZoom: 15 });
+                } else {
+                    map.setView([36.533, 136.611], 14);
+                }
+            } else if (centerParam && centerParam.includes(',')) {
+                // center=lat,lon 形式の任意中心指定サポート
+                const [cLat, cLon] = centerParam.split(',').map(Number);
+                const cZoom = Number(params.get('zoom')) || 14;
+                if (!isNaN(cLat) && !isNaN(cLon)) {
+                    map.setView([cLat, cLon], cZoom);
+                } else if (bounds.isValid()) {
+                    map.fitBounds(bounds, { padding: [40, 40], maxZoom: 16 });
+                }
+            } else if (bounds.isValid()) {
+                map.fitBounds(bounds, { padding: [40, 40], maxZoom: 16 });
+            }
             isInitialLoad = false;
         }
     }
@@ -434,6 +498,15 @@
 
         // 地図タイル（Googleマップ等）の言語属性（hl=en / hl=ja）を更新
         setBaseMap(currentBaseKey);
+
+        // エリア名バッジの言語連動更新
+        if (areaBadge) {
+            if (isNonoichiMode()) {
+                areaBadge.innerText = lang === 'en' ? 'Nonoichi' : '野々市';
+            } else {
+                areaBadge.innerText = lang === 'en' ? 'Kanazawa' : '金沢';
+            }
+        }
 
         // マーカーの再描画
         renderMarkers();
@@ -494,8 +567,21 @@
             return;
         }
 
+        // URLパラメータによる初期言語の判定 (?lang=en / ?lang=ja)
+        const params = new URLSearchParams(window.location.search);
+        const langParam = (params.get('lang') || '').toLowerCase();
+        if (langParam === 'en') {
+            currentLang = 'en';
+        }
+
         initMap();
         setupEvents();
+
+        // 初期言語が英語の場合はUIに反映
+        if (currentLang === 'en') {
+            setLanguage('en');
+        }
+
         loadPublicData();
 
         // 60秒（1分）ごとのバックグラウンド自動更新ポーリング
