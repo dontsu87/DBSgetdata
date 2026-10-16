@@ -444,7 +444,7 @@
             const centerParam = (params.get('center') || '').trim();
 
             if (isNonoichiMode()) {
-                // 野々市モード: 野々市エリアのポート群が収まるようにズームフィット
+                // 野々市モード: 野々市エリアのポート群を中心に、少し引き気味で周辺も見通せるズーム設定
                 const nonoichiBounds = L.latLngBounds();
                 filteredPorts.forEach(port => {
                     if (isNonoichiPort(port) && port.lat && port.lon) {
@@ -452,9 +452,14 @@
                     }
                 });
                 if (nonoichiBounds.isValid()) {
-                    map.fitBounds(nonoichiBounds, { padding: [35, 35], maxZoom: 15 });
+                    const center = nonoichiBounds.getCenter();
+                    // Boundsから計算されるタイトな倍率より1段階ズームアウト（少し引き気味で金沢方面との接続を把握しやすく）
+                    const fitZoom = map.getBoundsZoom(nonoichiBounds, false, [40, 40]);
+                    const userZoom = Number(params.get('zoom'));
+                    const targetZoom = !isNaN(userZoom) && userZoom > 0 ? userZoom : Math.max(11, fitZoom - 1);
+                    map.setView(center, targetZoom);
                 } else {
-                    map.setView([36.533, 136.611], 14);
+                    map.setView([36.533, 136.611], 12);
                 }
             } else if (centerParam && centerParam.includes(',')) {
                 // center=lat,lon 形式の任意中心指定サポート
