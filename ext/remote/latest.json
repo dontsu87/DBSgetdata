@@ -1,0 +1,8 @@
+{
+  "version": "202608182210",
+  "bundle": "bundle-202608182210.js",
+  "sha256": "c6903695a5cc6921120039a4d00cb3d4edc1b213f0311793a1e26be472001442",
+  "signature": "/l6mJgbrtKFzBQQ3C/kjE7wwaJtktte8bmjbk9EPJOiw3sY8EZv4eZSlr3NzkojTTXdoXuy41+JOadEHlEjtCg==",
+  "minExtensionVersion": "0.1.0",
+  "changelog": "拡張機能0.1.1への更新案内（0.1.0互換配信）"
+}

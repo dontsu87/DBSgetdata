@@ -1,0 +1,8 @@
+{
+  "version": "202610061214",
+  "bundle": "bundle-202610061214.js",
+  "sha256": "15d737729b114f87e619d41124bbe93428f1b3f8640b3e3de0ebc3d9ce859aae",
+  "signature": "Y2l/Md2pMlbyQ6NfwbklBEIL+uRhjqaD//ghwaj7iW4R2bOYw37qCM+dJ+y2b1Pom3++Oq7fySrLQT27f48Oxw==",
+  "minExtensionVersion": "0.1.1",
+  "changelog": "明細書・請求書プレビュー画面での拡張ステータスカード右下配置と印刷時非表示"
+}

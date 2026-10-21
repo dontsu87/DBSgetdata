@@ -1,0 +1,4 @@
+# 配信物は署名対象そのもの。Git が改行を変換すると署名が通らなくなる。
+# 生成時に LF へ正規化しているが、ここでも変換を禁止して二重に守る。
+ext/remote/** -text
+ext/bookmarklet.txt -text

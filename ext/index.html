@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>管理ポータル 機能拡張のご案内</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="guide.js" defer></script>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1>管理ポータル 機能拡張</h1>
+      <p class="subtitle">ドコモ・バイクシェア管理ポータルの使い勝手を向上するブラウザ拡張です</p>
+    </header>
+
+    <main class="content">
+      <section class="card critical-update" id="important-update" aria-labelledby="important-update-title">
+        <p class="update-badge">重要なお知らせ</p>
+        <h2 id="important-update-title">新機能を使うには拡張機能を 0.1.1 へ更新してください</h2>
+        <p class="update-lead">通常の機能更新とは異なり、今回はChrome拡張本体の更新が必要です。旧版 0.1.0 も引き続き従来機能を利用できますが、下記の新機能は更新後に有効になります。</p>
+        <p><a href="dbs-portal-ext.zip" class="btn btn-update">⬇ 最新版 0.1.1 をダウンロード</a></p>
+        <h3>すでに旧版を利用している場合</h3>
+        <ol class="update-steps">
+          <li>上のボタンから最新版ZIPをダウンロードし、展開します。</li>
+          <li>現在Chromeへ読み込んでいる拡張フォルダの中身を、展開した最新版で上書きします。</li>
+          <li><code>chrome://extensions</code> を開き、「DBS管理ポータル拡張」の再読み込みボタンを押します。</li>
+          <li>「詳細」でバージョンが <strong>0.1.1</strong> になったことを確認し、管理ポータルを開き直します。</li>
+        </ol>
+        <p class="update-note">更新までの間も旧版向け配信は継続します。更新案内が表示されても、従来機能が直ちに使えなくなることはありません。</p>
+      </section>
+
+      <section class="card new-features" id="new-features">
+        <h2>今回追加された新機能</h2>
+        <ul>
+          <li><strong>車両情報からユーザ情報へ直接移動</strong> — ユーザ識別番号をリンク化し、7種類の会員区分に応じた正しいユーザ詳細画面を別タブで開きます。</li>
+          <li><strong>会員区分・ユーザIDを車両情報へ追加</strong> — 車両に紐づくユーザを取得し、会員区分とユーザIDを一覧へ表示します。</li>
+          <li><strong>大量データにも対応</strong> — 最大1,000件へ拡張された車両一覧でも、後から読み込まれた行を含む全行へユーザ情報を反映します。</li>
+          <li><strong>車両情報表を見やすく改善</strong> — 列幅と表示順を整え、表示条件を初期状態で折りたたみ、先頭のチェック列から不要な絞り込み欄を除きました。</li>
+        </ul>
+      </section>
+
+      <!-- ===== 1. 導入（Chrome拡張） ===== -->
+      <section class="card highlight-card" id="extension-section">
+        <h2>1. Chrome拡張を導入する</h2>
+        <p><strong>いちばんおすすめの導入方法です。</strong>一度インストールすれば、管理ポータルを開くだけで自動的に機能が使えます。</p>
+
+        <h3>できること</h3>
+        <ul>
+          <li><strong>自動で適用</strong> — ポータルを開くだけで自動適用。毎回ボタンを押す必要なし</li>
+          <li><strong>外れない</strong> — 画面を再読込しても機能が維持される</li>
+          <li><strong>サイドパネル表示</strong> — 画面横にマップを並べて表示できる</li>
+        </ul>
+
+        <h3>導入手順</h3>
+        <ol>
+          <li><a href="dbs-portal-ext.zip" class="btn btn-primary">⬇ dbs-portal-ext.zip をダウンロード</a></li>
+          <li>ダウンロードした ZIP を <strong>任意のフォルダに展開</strong> します。</li>
+          <li>Chrome のアドレス欄に <code>chrome://extensions</code> と入力して開きます。</li>
+          <li>右上の <strong>「デベロッパー モード」をオン</strong> にします。</li>
+          <li>「<strong>パッケージ化されていない拡張機能を読み込む</strong>」を押し、展開したフォルダを選択します。</li>
+          <li><strong>読み込んだ拡張の「詳細」を開き、「ユーザー スクリプトを許可」をオンにします。</strong>
+            これをオンにしないと、以降の機能更新が自動で届きません（画面自体は動きます）。</li>
+          <li>管理ポータルを開き直すと、自動で機能が適用されます。</li>
+        </ol>
+
+        <div class="alert alert-info">
+          <p><strong>【更新方法】</strong></p>
+          <p><strong>通常の機能更新は自動で届きます。</strong>管理ポータルを開き直すだけで最新になります。</p>
+          <p>ただし、今回の0.1.1のように<strong>拡張本体の更新が必要</strong>と案内された場合は、このページ上部の手順に従って最新版ZIPへ更新してください。</p>
+          <p>画面右上のパネルに、いま何で動いているかが小さく表示されます。</p>
+          <ul>
+            <li><strong>配信版</strong> — 最新の配信を受け取って動いています（正常）</li>
+            <li><strong>保存版</strong> — 今回は取得できず、前回受け取った内容で動いています</li>
+            <li><strong>同梱版</strong> — 配信を受け取れていません。
+              「ユーザー スクリプトを許可」がオフの可能性があります</li>
+          </ul>
+          <p>なお、拡張そのものの入れ替えが必要になるのは、まれな場合（数か月に一度程度）だけです。
+            そのときは改めてご案内します。</p>
+        </div>
+
+        <div class="alert alert-notice">
+          <p><strong>【お得情報】</strong></p>
+          <p>管理ポータルのブックマークは、案内された認証用URL（<code>login?...</code>）ではなく、ログイン後に表示される<strong>管理ポータルのトップページ自体</strong>を登録しておくと、2段階認証の発生頻度を抑えられます。これはこの拡張とは関係なく有効です。</p>
+        </div>
+      </section>
+
+      <!-- ===== 2. 追加される機能 ===== -->
+      <section class="card">
+        <h2>2. 追加される機能</h2>
+        <p>拡張機能（Chrome拡張版・ブックマークレット版）を適用すると、管理ポータル上で以下の機能が使えるようになります。</p>
+        <ul>
+          <li><strong>バッテリーマップを開く</strong> — 左メニュー下部のボタンから、権限に応じたエリアのマップを表示。QRコードでスマホからも同じ画面を開けます</li>
+          <li><strong>一覧の並べ替え・絞り込み</strong> — ポータルの各一覧とビーコン一覧で、列見出しからソート・絞り込みができます。車両情報の見出し全選択は、絞り込み中に表示されている行だけを対象にします</li>
+          <li><strong>見出し行の固定</strong> — 下にスクロールしても列名が常に表示される</li>
+          <li><strong>見出し上の横スクロール</strong> — 表の上部から横へ移動でき、表本体と見出し列が同じ位置へ追随します。操作列の表示／非表示や画面差し替え後も表幅へ追随します</li>
+          <li><strong>表示条件の折りたたみ</strong> — 検索前に条件入力が必要な「ユーザ情報」を除き、「表示条件」「一括車両状態変更」「一括車両操作」を既定で閉じる</li>
+          <li><strong>「戻る」ボタンで1つ前の画面へ</strong> — お客様情報を見ているときも前の画面に戻れる</li>
+          <li><strong>一覧のリンクを別タブで開く</strong> — 絞り込み結果を残したまま個別画面を確認できる</li>
+          <li><strong>車両情報の表示件数を最大化</strong> — ページャの選択肢のうち最大（500件）を自動選択</li>
+          <li><strong>車両情報のユーザ連携</strong>（0.1.1の新機能） — ユーザ識別番号から、会員区分に応じたユーザ詳細を別タブで開けます。会員区分とユーザIDも一覧へ追加し、最大1,000件の読み込み後まで含めて反映します</li>
+          <li><strong>読み込み中の表示</strong> — 通信が0.25秒を超えると表に「読み込み中…」を重ねる。1秒を超えると経過秒数も表示（Chrome拡張版では自動で、ブックマークレット版ではクリック後に有効）</li>
+          <li><strong>通信エラー・ログイン切れのお知らせ</strong> — 失敗したことが分かる。自動での再送・再ログインは行いません</li>
+          <li><strong>操作列を既定で隠す</strong> — メンテナンス／AT管理／解錠／再配置／AT一体型車両操作の5列を隠し、表の横幅を詰める。「操作列を表示」で元に戻せます</li>
+          <li><strong>先頭列の固定</strong> — 横スクロールしても車両識別番号が左に残る</li>
+          <li><strong>車両状態を色で確認</strong> — ポータル標準の緑・茶・赤の状態色を、車両識別番号のセルだけに表示します</li>
+          <li><strong>車両詳細の問題申告を正しく表示</strong> — 問題申告から車両番号を選んで開く詳細画面の表を、部位・重要度・事象が正しく対応した見やすい表に差し替えます。ヘッダ固定・フィルタ・並び替えも完備</li>
+          <li><strong>エリア内ビーコン一覧</strong> — 左メニューの「ビーコン情報」からポータル標準の画面遷移を使って開けます。標準の新規登録欄を上に残し、選択エリア内の割当済みビーコンを固定ヘッダ・7列フィルタ・並び替え付きで自動表示します。画面表示時に自動取得し、必要なときは「再取得」で更新できます。10桁のビーコン識別番号を押すと、ポータル標準の検索結果をコンパクトなモーダルで表示します。モーダル中は背景を操作できません。編集途中で閉じた場合は、標準の「取消」で編集状態を解除してから閉じます（更新・削除・保存・登録は自動実行しません）</li>
+          <li><strong>ポート情報の一括操作</strong>（新機能） — 「ポート情報」画面に一括操作用の表を追加します。チェックボックスで複数ポートを選び、運用状態（運用中／運用中（貸出制限中）／一時駐輪用／一時休止中／停止中）や公開・非公開設定をまとめて変更できます。実行前に必ず対象と変更内容の確認画面が表示され、確定すると1件ずつ確認しながら順番に実行します（複数件を同時に書き換えることはありません）。各行には現在の公開設定も自動表示され、ポート識別番号から個別編集画面を別タブで開けます。見出しのチェックボックスで表示中の行を一括選択・解除できます。<strong>この機能のみ、ポータルのデータを実際に書き換えます</strong>（詳しくは「4. 安全性について」）</li>
+          <li><strong>元の画面表示に戻す</strong> — 画面右下のボタンで、拡張が追加した見た目・機能を一時的にすべて隠し、素のポータル画面を確認できます。ページを開き直すと自動的に拡張適用の表示へ戻ります</li>
+          <li><strong>文字を読みやすく</strong> — 表の見出しなどのコントラストをWCAG AA基準まで改善し、日本語フォント（BIZ UDPGothic）を指定</li>
+          <li><strong>サイドバーを狭く</strong> — 280px → 180px。表に使える幅が広がります</li>
+          <li><strong>エリア選択を覚える</strong> — 一度選んだエリアを次回から自動で適用します。<strong>適用したことは画面に表示され、1クリックで選び直せます</strong>（初回は自動適用しません）。対応エリア外のアカウントでは、バッテリーマップの起動ボタン自体を表示しません</li>
+        </ul>
+      </section>
+
+      <!-- ===== 3. ブックマークレット版（代替の導入方法） ===== -->
+      <section class="card" id="bookmarklet-section">
+        <h2>3. ブックマークレット版（代替の導入方法）</h2>
+        <p>Chrome拡張機能をインストールできない環境（会社のポリシーなど）向けの代替手段です。拡張機能のインストール権限なしに、ブラウザへ登録するだけで使えます。</p>
+
+        <div id="bookmarklet-status-container">
+          <h3>登録方法</h3>
+          <ol>
+            <li>下の <strong>「DBS拡張」ボタンをブックマークバーへドラッグ＆ドロップ</strong> してください。</li>
+            <li>管理ポータルを開き、ログインします。</li>
+            <li>登録したブックマークをクリックすると、機能が追加されます。</li>
+          </ol>
+
+          <div class="bookmarklet-drag-area">
+            <a id="bookmarklet-link" href="#" class="btn btn-primary btn-drag">DBS拡張</a>
+            <span class="drag-help">← このボタンをブックマークバーへドラッグ</span>
+          </div>
+
+
+        <div class="alert alert-success" id="update-notice">
+          <p><strong>更新しました: 2026年8月13日 00:59</strong></p>
+          <p>ポート情報の一括操作機能（運用状態・公開設定）を追加しました。</p>
+        </div>
+<div class="bookmarklet-copy-area">
+            <label for="bookmarklet-text">ドラッグできない場合は、以下のコードをコピーしてブックマークのURL欄に貼り付けてください：</label>
+            <div class="input-group">
+              <textarea id="bookmarklet-text" readonly placeholder="読み込み中..."></textarea>
+              <button type="button" id="btn-copy-bookmarklet" class="btn btn-secondary">コピー</button>
+            </div>
+            <span id="copy-message" class="copy-message" aria-live="polite"></span>
+          </div>
+
+          <div id="version-info" class="version-info">
+            <span id="bookmarklet-version">読み込み中...</span>
+          </div>
+        </div>
+
+        <div class="alert alert-info">
+          <p><strong>【使い方】</strong></p>
+          <ul>
+            <li><strong>管理ポータルを開いているとき</strong> — その場で機能が追加されます。画面右下のパネルが<strong>青くなれば適用中</strong>です。</li>
+            <li><strong>それ以外のページのとき</strong> — 管理ポータルが新しいタブで開きます。開いたタブで<strong>もう一度ブックマークを押してください</strong>。</li>
+            <li>画面を再読込すると機能は外れます。その場合は再度ブックマークを押してください（右下パネルが赤に戻っていれば未適用です）。</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ===== 4. 安全性について ===== -->
+      <section class="card security-card">
+        <h2>4. 安全性について</h2>
+        <ul>
+          <li>ほとんどの機能は、管理ポータルのデータを<strong>書き換えません</strong>。読み取りと画面表示の変更のみです。</li>
+          <li><strong>例外は「ポート情報の一括操作」機能のみ</strong>です。選択したポートの運用状態・公開設定を実際に書き換えます。
+            この機能は、①チェックボックスで対象ポートを選ぶ、②変更内容の確認画面が必ず表示される、③「実行」を押して確定する、
+            という手順を踏んだときだけ動きます。裏側での自動実行や、確認なしでの書き換えは一切行いません。
+            実行時は1件ずつ最新の内容を取得し直してから該当箇所だけを書き換えるため、他の項目（住所・シェア設定・ビーコン紐付け等）を
+            意図せず変更することもありません。</li>
+          <li>入力内容やログイン情報を<strong>外部へ送信しません</strong>。すべてブラウザ内で完結します。</li>
+          <li>管理ポータル本体には<strong>一切手を加えていません</strong>。</li>
+        </ul>
+      </section>
+
+      <!-- ===== 5. 困ったとき ===== -->
+      <section class="card">
+        <h2>5. 困ったとき</h2>
+        <ul>
+          <li><strong>機能が動かない</strong> — ログイン前に押していませんか？ ログイン後の画面で実行してください。</li>
+          <li><strong>管理ポータルが開かない</strong> — ポップアップブロックで新しいタブが止められている可能性があります。</li>
+          <li><strong>マップが開かない</strong> — ポップアップブロックを確認し、許可してください。</li>
+          <li><strong>サイドパネルが開かない（拡張版）</strong> — Chromeツールバー右上の拡張機能アイコン（パズルピース）から選択してください。</li>
+        </ul>
+      </section>
+
+      <section class="card" id="preview-extension">
+        <h2>プレビュー版（検証用）はこちら</h2>
+        <p><a class="btn btn-primary" href="preview/dbs-portal-ext-preview-202608131710.zip">プレビュー版をダウンロード（本体 0.1.1）</a></p>
+        <ol>
+          <li>ZIPを展開します。</li>
+          <li>Chromeで <code>chrome://extensions</code> を開き、「デベロッパー モード」をオンにします。</li>
+          <li>「パッケージ化されていない拡張機能を読み込む」から、展開したフォルダを選びます。</li>
+        </ol>
+        <p><strong>検証専用です。</strong> 通常版と同時に有効化せず、できればプレビュー専用のChromeプロファイルでお試しください。</p>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>管理ポータル 機能拡張</p>
+    </footer>
+  </div>
+</body>
+</html>
+
+

@@ -1,0 +1,2037 @@
+/* タブレット用の全画面・高視認性スタイル */
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: #f3f4f6;
+    overflow: hidden;
+}
+
+#app-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+}
+
+/* 現場での読みやすさを重視した高コントラストヘッダー */
+header {
+    background-color: #1e293b;
+    color: #ffffff;
+    padding: 10px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    z-index: 2200;
+}
+
+.header-top {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.header-bottom {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.header-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.update-time {
+    font-size: 14px;
+    font-weight: bold;
+    color: #f8fafc;
+    background-color: #334155;
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid #475569;
+    text-align: right;
+    line-height: 1.3;
+}
+.update-note {
+    font-size: 9px;
+    color: #94a3b8;
+    font-weight: normal;
+    margin-top: 2px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* 高機能更新ボタンのスタイル */
+.refresh-button {
+    background-color: #007aff;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    transition: all 0.2s;
+    touch-action: manipulation;
+}
+.refresh-button:active {
+    background-color: #0056b3;
+    transform: scale(0.95);
+}
+.refresh-button svg {
+    transition: transform 0.5s ease;
+}
+.refresh-button.spinning svg {
+    transform: rotate(360deg);
+}
+
+#main-content {
+    flex: 1;
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+/* 地図を画面いっぱいに広げる */
+#map {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+/* 現場でグローブをしていても押しやすい、超巨大GPSボタン */
+.gps-button {
+    position: absolute;
+    bottom: 30px;
+    right: 20px;
+    background-color: #007aff;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    width: 70px;
+    height: 70px;
+    font-size: 14px;
+    font-weight: bold;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    touch-action: manipulation;
+    transition: background-color 0.2s;
+}
+
+.gps-button:active {
+    background-color: #0056b3;
+}
+
+.gps-button svg {
+    width: 24px;
+    height: 24px;
+    margin-bottom: 2px;
+    fill: currentColor;
+}
+
+/* ポート外車両ボタン基本スタイル */
+.out-of-port-button {
+    position: absolute;
+    bottom: 30px;
+    right: 100px;
+    background: linear-gradient(135deg, #ea580c 0%, #f97316 100%);
+    color: #ffffff;
+    border: 1px solid #fb923c;
+    border-radius: 50px;
+    width: 70px;
+    height: 70px;
+    font-size: 11px;
+    font-weight: bold;
+    box-shadow: 0 4px 16px rgba(249, 115, 22, 0.6);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    touch-action: manipulation;
+    transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, transform 0.1s;
+    cursor: pointer;
+}
+.out-of-port-button:hover {
+    background: linear-gradient(135deg, #c2410c 0%, #ea580c 100%);
+    box-shadow: 0 6px 20px rgba(249, 115, 22, 0.8);
+}
+.out-of-port-button:active {
+    transform: scale(0.95);
+}
+.out-of-port-button svg {
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
+    margin-bottom: 2px;
+}
+
+/* アラート状況サマリーパネル */
+.summary-panel {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background-color: rgba(30, 41, 59, 0.95);
+    color: white;
+    padding: 14px 18px;
+    border-radius: 8px;
+    font-size: 14px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+    z-index: 1000;
+    pointer-events: auto;
+    border-left: 5px solid #ef4444;
+    min-width: 360px;
+    max-width: 420px;
+}
+
+/* 強調アラートサマリのコンテナとバッジ */
+.highlight-summary-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 10px;
+    margin-bottom: 6px;
+    padding: 6px 10px;
+    background-color: rgba(15, 23, 42, 0.6); /* バッジを引き立たせるため少し暗めの背景 */
+    border-radius: 6px;
+    border: 1px solid rgba(71, 85, 105, 0.5);
+}
+.highlight-summary-item {
+    font-size: 12px;
+    font-weight: bold;
+    color: #6b21a8; /* 濃い紫 */
+    background-color: #faf5ff; /* 非常に薄い紫 */
+    border: 1px solid #e9d5ff; /* 明瞭な紫の境界線 */
+    padding: 2px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+}
+.highlight-summary-item-unlocked {
+    font-size: 12px;
+    font-weight: bold;
+    color: #9d174d; /* 濃いピンク */
+    background-color: #fdf2f8; /* 非常に薄いピンク */
+    border: 1px solid #fbcfe8; /* 明瞭なピンクの境界線 */
+    padding: 2px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+}
+
+/* サマリーマトリクス表のスタイル */
+.summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+    font-size: 11px;
+    color: #e2e8f0;
+    border: 1px solid #475569;
+}
+.summary-table th, .summary-table td {
+    border: 1px solid #475569;
+    padding: 6px 4px;
+    text-align: center;
+}
+.summary-table th {
+    background-color: #334155;
+    font-weight: bold;
+    color: #cbd5e1;
+}
+.summary-table td.count-cell {
+    font-weight: bold;
+}
+.summary-table td.has-count {
+    background-color: rgba(0, 122, 255, 0.25);
+    color: #60a5fa;
+}
+
+.summary-panel div {
+    margin-bottom: 4px;
+}
+.summary-panel div:last-child {
+    margin-bottom: 0;
+}
+
+.summary-panel .count {
+    font-size: 20px;
+    font-weight: bold;
+    color: #f87171;
+}
+
+/* タブレットで見やすいようにポップアップのフォントとサイズを巨大化 */
+.leaflet-popup-content-wrapper {
+    font-size: 16px;
+    border-radius: 12px;
+    box-shadow: 0 3px 14px rgba(0,0,0,0.4);
+    padding: 4px;
+}
+
+.leaflet-popup-content {
+    margin: 12px 14px;
+    line-height: 1.4;
+}
+
+.popup-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #1e293b;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 6px;
+    margin-bottom: 8px;
+}
+
+.popup-desc {
+    font-size: 14px;
+    color: #64748b;
+    margin-bottom: 6px;
+}
+
+/* ポップアップ内車種別内訳表示 */
+.popup-model-counts-container {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 0;
+    border: 1.5px solid #ef4444;
+    border-radius: 4px;
+    background-color: #fffaf0;
+    overflow: hidden;
+}
+
+.popup-model-count-item {
+    display: contents; /* grid の直接の子要素として扱う */
+}
+
+.popup-model-name {
+    grid-column: 1;
+    font-size: 11px;
+    font-weight: bold;
+    color: #334155;
+    background-color: #f1f5f9;
+    padding: 3px 6px;
+    border-right: 1.5px solid #ef4444;
+    border-bottom: 1.5px solid #ef4444;
+    text-align: center;
+}
+
+.popup-model-count-num {
+    grid-column: 2;
+    font-size: 14px;
+    font-weight: bold;
+    color: #ef4444;
+    padding: 1px 8px; /* フォントサイズを大きくしたため、上下のpaddingを調整して高さを揃える */
+    border-bottom: 1.5px solid #ef4444;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 最後の行のボーダーを消す */
+.popup-model-count-item:last-child .popup-model-name,
+.popup-model-count-item:last-child .popup-model-count-num {
+    border-bottom: none;
+}
+
+/* ポップアップ内の警告車両リストスタイル */
+.popup-bike-list {
+    margin-top: 8px;
+    max-height: 350px; /* 150px から 350px に拡張 */
+    overflow-y: auto;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 0;
+    list-style: none;
+}
+
+.popup-bike-item {
+    padding: 6px 10px; /* 縦幅スペース縮小のため、やや狭めに設定 */
+    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.popup-bike-item:hover {
+    background-color: #f8fafc;
+}
+
+.popup-bike-item:active {
+    background-color: #f1f5f9;
+}
+
+.popup-bike-item.self-replaced.my-check {
+    background-color: rgba(240, 253, 244, 0.65); /* 薄い緑色 */
+    border-left: 3px solid #22c55e; /* 自己申告済みを示す緑の左ボーダー */
+    padding-left: 7px; /* ボーダー分の調整 (10px - 3px = 7px) */
+    cursor: pointer;
+}
+
+.popup-bike-item.self-replaced.my-check:hover {
+    background-color: rgba(220, 252, 231, 0.75);
+}
+
+.popup-bike-item.self-replaced.other-check {
+    background-color: rgba(248, 250, 252, 0.65); /* 薄いグレー */
+    border-left: 3px solid #cbd5e1; /* グレーの左ボーダー */
+    padding-left: 7px;
+    cursor: not-allowed;
+}
+
+.popup-bike-item.self-replaced.other-check:hover {
+    background-color: rgba(248, 250, 252, 0.65); /* ホバー変化なし */
+}
+
+.replacement-icons-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    line-height: 1;
+    margin-left: 6px;
+    flex: 0 0 auto;
+    font-size: 11px;
+}
+
+.popup-bike-item:last-child {
+    border-bottom: none;
+}
+
+.popup-bike-id {
+    font-weight: bold;
+    color: #0f172a;
+    font-size: 16px;
+}
+
+.popup-bike-col-id {
+    flex: 0 0 auto;
+}
+
+.popup-bike-col-model {
+    flex: 0 0 auto;
+}
+
+.popup-bike-model-tag {
+    font-size: 11px;
+    color: #64748b;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.popup-bike-col-status {
+    flex: 1 1 0%;
+    min-width: 0;
+}
+
+.popup-bike-status {
+    font-size: 11px;
+    color: #0284c7;
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+}
+
+.popup-bike-col-badges {
+    flex: 0 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 4px;
+    max-width: 120px;
+}
+
+/* 通信中のローディング */
+#loader {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.9);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.spinner {
+    border: 6px solid #e2e8f0;
+    border-top: 6px solid #007aff;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin-bottom: 15px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* エラー表示 */
+#error-screen {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #fee2e2;
+    color: #991b1b;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    padding: 20px;
+    text-align: center;
+}
+
+.retry-button {
+    margin-top: 20px;
+    padding: 12px 24px;
+    font-size: 15px;
+    font-weight: bold;
+    background-color: #ef4444;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(239, 68, 68, 0.2);
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.retry-button:active {
+    transform: scale(0.95);
+    background-color: #dc2626;
+    box-shadow: 0 2px 4px rgba(239, 68, 68, 0.1);
+}
+
+/* ========================================== */
+/* 新しいカスタムマーカー（DivIcon）用スタイル */
+/* ========================================== */
+
+/* 共通マーカー設定 */
+.port-marker-base {
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    line-height: 1;
+}
+
+/* 正常なポート（グレー、数字あり） */
+.port-marker-normal {
+    background-color: #94a3b8;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    width: 28px !important;
+    height: 28px !important;
+    box-shadow: 0 3px 6px rgba(148, 163, 184, 0.5), 0 1px 3px rgba(0,0,0,0.2);
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* 自転車0台のポート（白背景に濃いめの灰色ふちどり・赤文字） */
+.port-marker-empty {
+    background-color: #ffffff; /* 白 */
+    border: 2px solid #64748b; /* 濃いめの灰色ふちどり */
+    border-radius: 50%;
+    width: 28px !important;
+    height: 28px !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    color: #ef4444; /* 赤文字 */
+    font-size: 12px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* レンタル可能0台のポート（白背景・青枠・青文字）補充が必要なポート */
+.port-marker-rental-empty {
+    background-color: #ffffff; /* 白 */
+    border: 2px solid #0ea5e9; /* 青の実線枠 */
+    border-radius: 50%;
+    width: 28px !important;
+    height: 28px !important;
+    box-shadow: 0 2px 4px rgba(14, 165, 233, 0.25);
+    color: #0ea5e9; /* 青文字 */
+    font-size: 12px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+/* レベル5: AT異常 (黒紫系統、最大) */
+.port-marker-level5 {
+    background-color: #4c1d95; /* 濃い黒紫 */
+    border: 2.5px solid #ffffff;
+    border-radius: 50%;
+    width: 32px !important;
+    height: 32px !important;
+    box-shadow: 0 4px 8px rgba(76, 29, 149, 0.6), 0 2px 4px rgba(0,0,0,0.3);
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 900;
+}
+
+/* レベル4: 電圧閾値/画面強調 (赤系統) */
+.port-marker-level4 {
+    background-color: #ef4444; /* 赤 */
+    border: 2.5px solid #ffffff;
+    border-radius: 50%;
+    width: 32px !important;
+    height: 32px !important;
+    box-shadow: 0 4px 8px rgba(239, 68, 68, 0.6), 0 2px 4px rgba(0,0,0,0.3);
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 900;
+}
+
+/* レベル3: Lv.1 (橙系統) */
+.port-marker-level3 {
+    background-color: #f97316; /* 橙 */
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    width: 28px !important;
+    height: 28px !important;
+    box-shadow: 0 3px 6px rgba(249, 115, 22, 0.5), 0 1px 3px rgba(0,0,0,0.2);
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* レベル2: Lv.2 (黄系統) */
+.port-marker-level2 {
+    background-color: #eab308; /* 黄 */
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    width: 28px !important;
+    height: 28px !important;
+    box-shadow: 0 3px 6px rgba(234, 179, 8, 0.5), 0 1px 3px rgba(0,0,0,0.2);
+    color: #000000;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* レベル1: Lv.3 (薄緑系統) */
+.port-marker-level1 {
+    background-color: #22c55e; /* 薄緑 */
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    width: 28px !important;
+    height: 28px !important;
+    box-shadow: 0 3px 6px rgba(34, 197, 94, 0.5), 0 1px 3px rgba(0,0,0,0.2);
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* 警告度バッジ用スタイル (ポップアップ内) */
+.badge {
+    font-size: 11px;
+    font-weight: bold;
+    padding: 3px 6px;
+    border-radius: 4px;
+    color: #ffffff;
+    margin-left: 5px;
+}
+.badge-level5 { background-color: #4c1d95; }
+.badge-level4 { background-color: #ef4444; }
+.badge-level3 { background-color: #f97316; }
+.badge-level2 { background-color: #eab308; color: #000000; }
+.badge-level1 { background-color: #22c55e; }
+
+/* 地図上の凡例 (Legend) パネル */
+.map-legend {
+    position: absolute;
+    bottom: 25px;
+    left: 15px;
+    background-color: rgba(30, 41, 59, 0.95);
+    color: #ffffff;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    z-index: 1000;
+    border: 1px solid #475569;
+    min-width: 250px;
+}
+
+.map-legend-title {
+    font-weight: bold;
+    font-size: 13px;
+    border-bottom: 1px solid #475569;
+    padding-bottom: 6px;
+    margin-bottom: 8px;
+    color: #e2e8f0;
+}
+
+.map-legend-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    cursor: pointer;
+    user-select: none;
+    padding: 4px 0;
+}
+.map-legend-item:last-child {
+    margin-bottom: 0;
+}
+
+.map-legend-color {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    margin-right: 8px;
+    border: 1px solid #ffffff;
+}
+
+/* 大きめのタップしやすいチェックボックス */
+.legend-filter {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    accent-color: #007aff;
+    margin-left: 12px;
+}
+
+/* 右上のマップコントロール横並びコンテナ */
+.map-top-right-controls {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    display: flex;
+    flex-direction: row-reverse; /* 右から順に並べる */
+    align-items: flex-start; /* 引き伸ばしを防ぎ、各々の高さを維持する */
+    gap: 12px;
+    z-index: 1100; /* ボタンのz-index: 1000より前面に表示 */
+    pointer-events: none;
+}
+.map-top-right-controls > div {
+    pointer-events: auto;
+}
+
+/* 地図上の車両状態 (Status) フィルターパネル */
+.status-filter-panel {
+    background-color: rgba(30, 41, 59, 0.95);
+    color: #ffffff;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    border: 1px solid #475569;
+    min-width: 200px;
+}
+
+/* 地図上のベースマップ選択パネル */
+.basemap-panel {
+    background-color: rgba(30, 41, 59, 0.95);
+    color: #ffffff;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    border: 1px solid #475569;
+    min-width: 200px;
+}
+
+.basemap-title, .status-filter-title {
+    font-weight: bold;
+    font-size: 13px;
+    color: #e2e8f0;
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: color 0.2s;
+}
+
+.basemap-title:hover, .status-filter-title:hover {
+    color: #ffffff;
+}
+
+.panel-arrow {
+    font-size: 10px;
+    transition: transform 0.3s ease;
+    color: #94a3b8;
+}
+
+.basemap-options-container, .status-options-container {
+    max-height: 0;
+    overflow: hidden;
+    overflow-y: auto;
+    transition: max-height 0.3s ease-out;
+}
+
+.basemap-options {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding-top: 8px;
+    border-top: 1px solid #475569;
+    margin-top: 8px;
+}
+
+.status-filter-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    cursor: pointer;
+    user-select: none;
+    padding: 4px 0;
+}
+.status-filter-item:last-child {
+    margin-bottom: 0;
+}
+
+/* 大きめのタップしやすいチェックボックス */
+.status-filter {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    accent-color: #007aff;
+    margin-left: 12px;
+}
+
+/* エリア選択タブ用スタイル */
+.area-tabs-container {
+    background-color: #1e293b;
+    border-top: 1px solid #334155;
+    padding: 8px 16px;
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    white-space: nowrap;
+    z-index: 2190;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    /* スクロールバー非表示 */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+.area-tabs-container::-webkit-scrollbar {
+    display: none;
+}
+
+.area-tab {
+    background-color: #334155;
+    color: #cbd5e1;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+    touch-action: manipulation;
+}
+
+.area-tab.active {
+    background-color: #007aff;
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(0, 122, 255, 0.4);
+}
+
+/* モバイル対応：通常時は非表示、スマホ画面幅のときだけ有効になるスタイル */
+.panel-header-mobile {
+    display: none; /* デフォルト（PC）では非表示 */
+}
+
+.mobile-only-controls {
+    display: none;
+}
+
+/* 📱 スマホ・タブレットサイズ (画面幅1280px以下、またはタッチデバイスかつ1366px以下) のスタイル定義 */
+@media screen and (max-width: 1280px), screen and (max-width: 1366px) and (pointer: coarse) {
+    header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 6px;
+        padding: 6px 12px;
+    }
+
+    .header-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        gap: 8px;
+    }
+
+    /* ヘッダーの文字を小さくして収まりを良くする */
+    header h1 {
+        font-size: 15px;
+        white-space: nowrap;
+    }
+
+    .update-time {
+        font-size: 10px;
+        padding: 2px 8px;
+        line-height: 1.2;
+        text-align: right;
+    }
+
+    .update-note {
+        display: none; /* スマホでは詳細テキストを隠してすっきりさせる */
+    }
+
+    /* ボタン類を小さくして1行に収まりやすくする */
+    .selection-toggle-button, .reset-view-button, .help-button {
+        padding: 5px 8px;
+        font-size: 11px;
+    }
+
+    .header-bottom {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        width: 100%;
+        gap: 6px;
+        overflow-x: auto;
+        white-space: nowrap;
+        padding-bottom: 2px;
+        /* スクロールバー非表示 */
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    .header-bottom::-webkit-scrollbar {
+        display: none;
+    }
+
+    .header-bottom > div,
+    .header-bottom > button,
+    .header-bottom > a {
+        flex-shrink: 0;
+    }
+
+    /* エリア切り替えタブのサイズ調整 */
+    .area-tab {
+        padding: 8px 14px;
+        font-size: 12px;
+    }
+
+    .map-top-right-controls {
+        display: contents;
+    }
+
+    /* 1. 凡例・サマリー・ベースマップパネルを画面下のスライド式ドロワーに変更 */
+    .map-legend, .summary-panel, .status-filter-panel, .basemap-panel {
+        display: none !important; /* 初期表示は完全に非表示 */
+        position: fixed;
+        bottom: -600px; /* 初期状態は画面外に隠す */
+        left: 0;
+        right: 0;
+        width: 100%;
+        min-width: 100%;
+        max-height: calc(100% - 110px); /* 上部ヘッダー（約105px）と被らない最大高さ */
+        overflow-y: auto;
+        border-radius: 16px 16px 0 0;
+        margin: 0;
+        padding: 16px 20px 30px 20px;
+        box-sizing: border-box;
+        transition: bottom 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        border-top: 2px solid #475569;
+        border-left: none;
+        border-right: none;
+        border-bottom: none;
+        background-color: rgba(30, 41, 59, 0.98);
+        z-index: 2500; /* ヘッダー(2200)やタブ(2190)より前面に表示 */
+    }
+
+    .map-legend.show-mobile-drawer, .summary-panel.show-mobile-drawer, .status-filter-panel.show-mobile-drawer, .basemap-panel.show-mobile-drawer {
+        display: block !important; /* トグルの時だけ表示 */
+        bottom: 0px; /* 画面内にスライドイン */
+    }
+
+    /* スマホのドロワー内ではアコーディオンを全展開する */
+    .basemap-options-container, .status-options-container {
+        max-height: none !important;
+        overflow: visible !important;
+    }
+    .panel-arrow {
+        display: none !important; /* スマホでは矢印非表示 */
+    }
+    .basemap-title, .status-filter-title {
+        cursor: default !important;
+        color: #cbd5e1 !important;
+        border-bottom: 1px solid #475569 !important;
+        padding-bottom: 8px !important;
+        margin-top: 0 !important;
+        margin-bottom: 12px !important;
+    }
+
+    .map-legend-title {
+        display: none; /* スマホ用タイトルがあるので従来のものは非表示 */
+    }
+
+    /* モバイル用ドロワーヘッダー（閉じるボタン付き）の有効化 */
+    .panel-header-mobile {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #475569;
+        padding-bottom: 8px;
+        margin-bottom: 12px;
+        color: #cbd5e1;
+        font-size: 14px;
+    }
+
+    .close-panel-btn {
+        background: none;
+        border: none;
+        color: #94a3b8;
+        font-size: 20px;
+        font-weight: bold;
+        cursor: pointer;
+        padding: 4px 8px;
+    }
+
+    /* 3. スマホ下部に浮かぶ、フローティング操作ボタンバー */
+    .mobile-only-controls {
+        display: flex;
+        position: absolute;
+        bottom: 20px;
+        left: 15px;
+        gap: 10px;
+        z-index: 1001; /* Leafletより上 */
+        pointer-events: auto;
+    }
+
+    .mobile-toggle-btn {
+        background-color: #1e293b;
+        color: #ffffff;
+        border: 1px solid #475569;
+        padding: 10px 14px;
+        border-radius: 30px;
+        font-size: 13px;
+        font-weight: bold;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .mobile-toggle-btn:active {
+        background-color: #334155;
+    }
+    
+    /* GPSボタンの位置調整 (フローティングバーと重ならないように上に上げる) */
+    .gps-button {
+        bottom: 85px;
+        right: 15px;
+        width: 55px;
+        height: 55px;
+        font-size: 11px;
+    }
+    .gps-button svg {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .out-of-port-button {
+        bottom: 85px;
+        right: 80px;
+        width: 55px;
+        height: 55px;
+        font-size: 9px;
+    }
+    .out-of-port-button svg {
+        width: 20px;
+        height: 20px;
+    }
+    
+    /* モバイルでのモーダル右端切れ・マージン微調整 */
+    .modal-overlay {
+        padding: 8px;
+    }
+    .modal-content {
+        max-width: 96%;
+        max-height: 75%;
+    }
+    .modal-body {
+        padding: 10px;
+    }
+    .modal-table th, .modal-table td {
+        padding: 8px 6px;
+        font-size: 11px;
+    }
+    .modal-badge {
+        padding: 2px 4px;
+        font-size: 9px;
+        margin-left: 2px !important;
+    }
+    
+    /* スマホ画面でのヘルプボタン微調整 */
+    .help-button {
+    }
+}
+
+/* ヘルプボタンの基本スタイル */
+.help-button {
+    background-color: #334155;
+    color: #ffffff;
+    text-decoration: none;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    transition: all 0.2s;
+    white-space: nowrap;
+    user-select: none;
+}
+
+.help-button:hover {
+    background-color: #475569;
+    border-color: #64748b;
+}
+
+.help-button:active {
+    background-color: #1e293b;
+    transform: scale(0.95);
+}
+
+/* ポップアップが凡例やサマリーパネルの下に入り込まないよう、最前面に表示 */
+.leaflet-popup-pane {
+    z-index: 1100 !important;
+}
+
+/* アテンション（未施錠未返却や強調表示）のポートピン用スタイル（バッテリーレベル色を保ちながらマゼンタ枠を追加） */
+.port-marker-attention,
+.port-marker-has-unlocked {
+    border: 3.5px solid #db2777 !important; /* 目立つマゼンタピンクの外枠 */
+}
+
+/* 波紋は合成処理しやすい transform / opacity で描画し、マーカー本体を再ペイントしない */
+.port-marker-attention::after,
+.port-marker-has-unlocked::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border: 2px solid #db2777;
+    border-radius: 50%;
+    box-sizing: border-box;
+    pointer-events: none;
+    transform-origin: center;
+    animation: pulse-attention-ring 2s infinite ease-out;
+    will-change: transform, opacity;
+}
+
+/* ピン右上の警告バッジ用コンテナ（⚠️と⭐などが横に並ぶようにする） */
+.marker-badges-container {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    display: flex;
+    gap: 1px;
+    z-index: 100;
+    line-height: 1;
+}
+
+.marker-badge-item {
+    font-size: 16px;
+    text-shadow: 
+        1px 1px 0 #fff, -1px -1px 0 #fff,
+        1px -1px 0 #fff, -1px 1px 0 #fff,
+        0 1px 0 #fff, 0 -1px 0 #fff,
+        1px 0 0 #fff, -1px 0 0 #fff,
+        0 0 4px #fff;
+}
+
+.warning-badge-svg {
+    display: inline-block;
+    vertical-align: middle;
+    filter: drop-shadow(0px 1px 1.5px rgba(0, 0, 0, 0.4));
+    flex-shrink: 0;
+}
+
+/* ピン右上の未施錠未返却警告アイコン (⚠️絵文字) - 互換性維持のため残す */
+.unlocked-dot {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    font-size: 16px;
+    z-index: 100;
+    line-height: 1;
+    text-shadow: 
+        1px 1px 0 #fff, -1px -1px 0 #fff,
+        1px -1px 0 #fff, -1px 1px 0 #fff,
+        0 1px 0 #fff, 0 -1px 0 #fff,
+        1px 0 0 #fff, -1px 0 0 #fff,
+        0 0 4px #fff;
+}
+
+/* 未施錠未返却のバッジ（ポップアップ内） */
+.badge-unlocked {
+    background-color: #db2777;
+    color: #ffffff;
+    border: 1px solid #ffffff;
+}
+
+/* 外側のリングだけを拡大・フェードさせる軽量な波紋アニメーション */
+@keyframes pulse-attention-ring {
+    0% { transform: scale(0.85); opacity: 0.9; }
+    100% { transform: scale(1.65); opacity: 0; }
+}
+
+/* 閾値数値入力フォームのスタイル微調整 */
+#unlocked-threshold-input:focus {
+    outline: none;
+    border-color: #007aff;
+    box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.2);
+}
+
+/* ========================================== */
+/* ポート選択サマリーモード用スタイル         */
+/* ========================================== */
+
+/* トグルスイッチ */
+.selection-mode-toggle-container {
+    display: flex;
+    align-items: center;
+}
+
+.selection-toggle-label {
+    cursor: pointer;
+    user-select: none;
+}
+
+.selection-toggle-label input[type="checkbox"],
+.replaced-toggle-label input[type="checkbox"] {
+    display: none;
+}
+
+.selection-toggle-button,
+.replaced-toggle-button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background-color: #334155;
+    color: #cbd5e1;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.selection-toggle-label input[type="checkbox"]:checked + .selection-toggle-button {
+    background-color: #007aff;
+    color: #ffffff;
+    border-color: #0056b3;
+    box-shadow: 0 2px 8px rgba(0, 122, 255, 0.4);
+}
+
+.replaced-toggle-label input[type="checkbox"]:checked + .replaced-toggle-button {
+    background-color: #10b981;
+    color: #ffffff;
+    border-color: #047857;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+}
+
+.selection-toggle-button:active,
+.replaced-toggle-button:active {
+    transform: scale(0.95);
+}
+
+/* ビュー初期化ボタン */
+.reset-view-button {
+    background-color: #334155;
+    color: #cbd5e1;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.reset-view-button:hover {
+    background-color: #475569;
+    border-color: #64748b;
+    color: #ffffff;
+}
+
+.reset-view-button:active {
+    background-color: #1e293b;
+    transform: scale(0.95);
+}
+
+/* 選択されたマーカーの強調表示 */
+.port-marker-selected {
+    outline: 4px solid #007aff !important;
+    outline-offset: 2px;
+    box-shadow: 0 0 15px rgba(0, 122, 255, 0.8) !important;
+    animation: pulse-selected-marker 1.5s infinite !important;
+    z-index: 99999 !important; /* 最前面 */
+}
+
+@keyframes pulse-selected-marker {
+    0% { outline-color: rgba(0, 122, 255, 1); }
+    50% { outline-color: rgba(0, 122, 255, 0.4); }
+    100% { outline-color: rgba(0, 122, 255, 1); }
+}
+
+/* 選択ポート一覧カードコンテナ */
+.selected-ports-container {
+    background-color: rgba(15, 23, 42, 0.6);
+    border: 1px solid #334155;
+    border-radius: 6px;
+    padding: 10px;
+    margin-bottom: 12px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.selected-ports-title {
+    font-size: 11px;
+    font-weight: bold;
+    color: #94a3b8;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #334155;
+    padding-bottom: 4px;
+}
+
+.selected-ports-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* 選択ポートの個別カード */
+.selected-port-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #1e293b;
+    border: 1px solid #475569;
+    border-radius: 4px;
+    padding: 6px 10px;
+    font-size: 12px;
+    color: #f8fafc;
+    transition: all 0.2s;
+}
+
+.selected-port-card:hover {
+    border-color: #007aff;
+    background-color: #0f172a;
+}
+
+.selected-port-card-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+}
+
+.selected-port-card-name {
+    font-weight: bold;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.selected-port-card-badge {
+    background-color: #ef4444;
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 1px 5px;
+    border-radius: 10px;
+    flex-shrink: 0;
+}
+
+.selected-port-card-remove {
+    background: none;
+    border: none;
+    color: #94a3b8;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 0 4px;
+    margin-left: 6px;
+    transition: color 0.2s;
+}
+
+.selected-port-card-remove:hover {
+    color: #ef4444;
+}
+
+/* モバイル表示で選択モードON時のコンパクトなサマリー表示スタイル */
+@media screen and (max-width: 1280px), screen and (max-width: 1366px) and (pointer: coarse) {
+    .summary-panel.selection-active-mobile {
+        display: none !important; /* 通常は非表示 */
+        position: fixed;
+        top: auto !important; /* 元の top: 15px を打ち消す */
+        bottom: 80px; /* フローティングバーの上に配置 */
+        left: 15px;
+        right: 15px;
+        width: calc(100% - 30px);
+        min-width: auto;
+        max-height: 40vh; /* 高さを抑えて地図が見えるようにする */
+        border-radius: 12px;
+        padding: 10px 12px;
+        border: 1px solid #475569;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        background-color: rgba(30, 41, 59, 0.95);
+        z-index: 2500;
+        transition: none; /* スライドインはさせずにその場に浮かせる */
+    }
+
+    .summary-panel.selection-active-mobile.show-mobile-drawer {
+        display: block !important; /* トグルの時だけ表示 */
+    }
+    
+    /* 選択モードONで表示中のときは、GPSボタンをさらに上に上げる（ただしサマリーが表示されているときのみ） */
+    .selection-active-mode-layout:has(.summary-panel.show-mobile-drawer) .gps-button {
+        bottom: calc(40vh + 95px) !important;
+    }
+    
+    /* サマリーテーブルのコンパクト化 */
+    .summary-panel.selection-active-mobile .summary-table {
+        font-size: 9px;
+        margin-top: 6px;
+    }
+    .summary-panel.selection-active-mobile .summary-table th,
+    .summary-panel.selection-active-mobile .summary-table td {
+        padding: 3px 2px;
+    }
+    .summary-panel.selection-active-mobile .selected-ports-container {
+        max-height: 60px;
+        padding: 4px 6px;
+        margin-bottom: 6px;
+    }
+    .summary-panel.selection-active-mobile .selected-port-card {
+        padding: 3px 6px;
+        font-size: 10px;
+    }
+    .summary-panel.selection-active-mobile .panel-header-mobile {
+        display: flex !important; /* 選択モード時でもヘッダーと閉じるボタンを表示 */
+        border-bottom: 1px solid #475569;
+        margin-bottom: 8px;
+        padding-bottom: 4px;
+    }
+}
+
+/* ========================================== */
+/* 作業選択・位置情報表示用スタイル           */
+/* ========================================== */
+
+.worker-select-container {
+    display: flex;
+    align-items: center;
+}
+
+.worker-select-label {
+    cursor: pointer;
+    user-select: none;
+}
+
+.worker-select-label input[type="checkbox"] {
+    display: none;
+}
+
+.worker-select-button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background-color: #334155;
+    color: #cbd5e1;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.worker-select-label input[type="checkbox"]:checked + .worker-select-button {
+    background-color: #007aff;
+    color: #ffffff;
+    border-color: #0056b3;
+    box-shadow: 0 2px 8px rgba(0, 122, 255, 0.4);
+}
+
+.worker-select-button:active {
+    transform: scale(0.95);
+}
+
+/* ポート位置不整合モード トグル */
+.position-mismatch-container {
+    display: flex;
+    align-items: center;
+}
+
+.position-mismatch-label {
+    cursor: pointer;
+    user-select: none;
+}
+
+.position-mismatch-label input[type="checkbox"] {
+    display: none;
+}
+
+.position-mismatch-button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background-color: #334155;
+    color: #cbd5e1;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.position-mismatch-label input[type="checkbox"]:checked + .position-mismatch-button {
+    background: linear-gradient(135deg, #b91c1c 0%, #ef4444 100%);
+    color: #ffffff;
+    border-color: #f87171;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.5);
+}
+
+.position-mismatch-button:active {
+    transform: scale(0.95);
+}
+/* マップ上の作業員マーカーのスタイル */
+.worker-map-marker {
+    background-color: #007aff;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    width: 32px !important;
+    height: 32px !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+}
+
+.worker-map-marker::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 11px;
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 6px solid #007aff;
+}
+
+.worker-marker-pulse {
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    width: 32px;
+    height: 32px;
+    border: 2px solid #007aff;
+    border-radius: 50%;
+    animation: worker-pulse-anim 2s infinite ease-out;
+    pointer-events: none;
+    box-sizing: content-box;
+}
+
+@keyframes worker-pulse-anim {
+    0% { transform: scale(0.9); opacity: 0.8; }
+    100% { transform: scale(1.6); opacity: 0; }
+}
+
+/* 長時間通信なし（オフライン）状態の作業員マーカースタイル */
+.worker-map-marker-container.offline .worker-map-marker {
+    background-color: #64748b; /* slate-500 */
+    border-color: #cbd5e1; /* slate-300 */
+}
+
+.worker-map-marker-container.offline .worker-map-marker::after {
+    border-top-color: #64748b;
+}
+
+.worker-map-marker-container.offline .worker-marker-pulse {
+    border-color: #64748b;
+}
+
+/* モーダルオーバーレイ & コンテンツスタイル */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(4px);
+    z-index: 2500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+.modal-content {
+    background-color: #1e293b;
+    border: 1px solid #475569;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 700px;
+    max-height: 75%;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.5);
+    animation: modalFadeIn 0.2s ease-out;
+}
+@keyframes modalFadeIn {
+    from { opacity: 0; transform: scale(0.96); }
+    to { opacity: 1; transform: scale(1); }
+}
+.modal-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid #334155;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.modal-header h3 {
+    margin: 0;
+    color: #f8fafc;
+    font-size: 16px;
+    font-weight: bold;
+}
+.close-modal-btn {
+    background: none;
+    border: none;
+    color: #94a3b8;
+    font-size: 22px;
+    cursor: pointer;
+    transition: color 0.15s;
+    padding: 4px;
+    line-height: 1;
+}
+.close-modal-btn:hover {
+    color: #f1f5f9;
+}
+.modal-body {
+    padding: 20px;
+    overflow-y: auto;
+    flex: 1;
+}
+.modal-table-container {
+    overflow-x: auto;
+    border-radius: 8px;
+    border: 1px solid #334155;
+    background-color: #0f172a;
+}
+.modal-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 13px;
+    color: #cbd5e1;
+}
+.modal-table th, .modal-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #334155;
+}
+.modal-table th {
+    background-color: #1e293b;
+    color: #94a3b8;
+    font-weight: bold;
+    white-space: nowrap;
+}
+.modal-table tbody tr:hover {
+    background-color: #1e293b;
+}
+
+/* モーダル内バッジスタイル */
+.modal-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: bold;
+    text-align: center;
+}
+.modal-badge.at-error {
+    background-color: #ef4444; /* red-500 */
+    color: white;
+}
+.modal-badge.strong {
+    background-color: #f97316; /* orange-500 */
+    color: white;
+}
+.modal-badge.normal {
+    background-color: #10b981; /* emerald-500 */
+    color: white;
+}
+.modal-badge.unknown {
+    background-color: #64748b; /* slate-500 */
+    color: white;
+}
+.map-link-btn {
+    display: inline-flex;
+    align-items: center;
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 11px;
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: bold;
+    gap: 4px;
+}
+.map-link-btn:hover {
+    background-color: #2563eb;
+}
+
+/* ==========================================================================
+   Announcements & Maintenance Overlays
+   ========================================================================== */
+
+/* 障害時の縮退表示: 地図と作業員位置情報機能だけを残す */
+body.worker-location-only header {
+    justify-content: center !important;
+}
+
+body.worker-location-only .header-top,
+body.worker-location-only .header-bottom > :not(.worker-select-container),
+body.worker-location-only #area-tabs,
+body.worker-location-only #summary-panel,
+body.worker-location-only #map-legend-panel,
+body.worker-location-only .map-top-right-controls,
+body.worker-location-only #mobile-control-bar,
+body.worker-location-only #out-of-port-btn,
+body.worker-location-only #out-of-port-modal,
+body.worker-location-only #gps-btn,
+body.worker-location-only #loader,
+body.worker-location-only #error-screen {
+    display: none !important;
+}
+
+body.worker-location-only .header-bottom {
+    width: 100%;
+    justify-content: center !important;
+    overflow: visible !important;
+}
+
+body.worker-location-only .worker-select-container {
+    display: flex !important;
+}
+
+/* 既に描画済みの場合も、車両・ポートマーカーだけを確実に隠す */
+body.worker-location-only #map [class*='port-marker-'] {
+    display: none !important;
+    pointer-events: none !important;
+}
+
+/* お知らせバナー (マップ内フローティング窓型) */
+.announcement-banner {
+    position: absolute;
+    top: 15px; /* マップ上部からの距離（タブやヘッダーの下） */
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(15, 23, 42, 0.85); /* 高級感のあるダークな半透明背景 */
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: #fef08a; /* 視認性の高い黄色の文字 */
+    border: 1px solid rgba(254, 240, 138, 0.25);
+    border-radius: 24px;
+    padding: 8px 16px;
+    z-index: 2000; /* マップ(1000付近)より前面、ドロワー(2500)より背面 */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+    width: 380px; /* デフォルト幅（スマホ・タブレット向け） */
+    max-width: 80%;
+    overflow: hidden;
+    pointer-events: auto; /* マップのクリックイベント等をバナー上で遮断 */
+}
+
+/* PCモード時のみ：中央寄せで、左サマリーや右コントロールと被らないよう安全な固定幅に設定 */
+@media screen and (min-width: 1281px) {
+    .announcement-banner {
+        left: 50%;
+        transform: translateX(-50%);
+        width: 360px;
+        max-width: 360px;
+    }
+}
+
+@media screen and (max-width: 640px) {
+    .announcement-banner {
+        width: calc(100% - 100px); /* モバイル画面ではさらにコンパクトにする */
+        max-width: 80%;
+        top: 10px;
+    }
+}
+
+.announcement-banner .banner-icon {
+    font-size: 15px;
+    flex-shrink: 0;
+    animation: pulse 2s infinite;
+}
+
+/* 文字を流すためのスクロールコンテナ */
+.banner-scroll-container {
+    overflow: hidden;
+    white-space: nowrap;
+    width: 100%;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.announcement-banner .banner-text {
+    display: inline-block;
+    padding-left: 100%; /* 初期位置を右端にする */
+    animation: marquee 15s linear infinite;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: 0.02em;
+}
+
+/* マップ上からのスライドインアニメーション */
+@keyframes slideDownFloating {
+    from { transform: translate(-50%, -30px); opacity: 0; }
+    to { transform: translate(-50%, 0); opacity: 1; }
+}
+
+.announcement-banner {
+    animation: slideDownFloating 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* 無限スクロールのmarqueeアニメーション */
+@keyframes marquee {
+    0% { transform: translate3d(0, 0, 0); }
+    100% { transform: translate3d(-100%, 0, 0); }
+}
+
+/* メンテナンスオーバーレイ（全画面） */
+.maintenance-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.85); /* ダーク背景 */
+    backdrop-filter: blur(10px); /* すりガラス効果 */
+    -webkit-backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999; /* 最前面 */
+    animation: fadeIn 0.4s ease-out;
+}
+
+/* メンテナンスカード */
+.maintenance-card {
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.5);
+    border-radius: 16px;
+    padding: 40px 32px;
+    max-width: 480px;
+    width: 90%;
+    text-align: center;
+    color: #f8fafc;
+    animation: scaleUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.maintenance-logo {
+    font-size: 48px;
+    margin-bottom: 16px;
+    display: inline-block;
+    animation: bounce 2s infinite;
+}
+
+.maintenance-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: #f1f5f9;
+    letter-spacing: -0.025em;
+}
+
+.maintenance-text {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #cbd5e1;
+    margin: 0;
+    white-space: pre-wrap; /* 改行を有効に */
+}
+
+/* アニメーション定義 */
+@keyframes slideDown {
+    from { transform: translateY(-100%); }
+    to { transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes scaleUp {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+/* ポート外専用モード トグルボタンのスタイル */
+.out-of-port-only-toggle-container {
+    display: inline-flex;
+    align-items: center;
+    user-select: none;
+}
+
+.out-of-port-only-toggle-button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background-color: #334155;
+    color: #cbd5e1;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.out-of-port-only-toggle-label input[type="checkbox"]:checked + .out-of-port-only-toggle-button {
+    background: linear-gradient(135deg, #ea580c 0%, #f97316 100%);
+    color: #ffffff;
+    border-color: #fb923c;
+    box-shadow: 0 2px 8px rgba(249, 115, 22, 0.5);
+}
+
+.out-of-port-only-toggle-button:active {
+    transform: scale(0.95);
+}
+
+/* 提供外ポート表示モード トグルボタンのスタイル */
+.out-of-service-toggle-container {
+    display: inline-flex;
+    align-items: center;
+    user-select: none;
+}
+
+.out-of-service-toggle-button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background-color: #334155;
+    color: #cbd5e1;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.out-of-service-toggle-label input[type="checkbox"]:checked + .out-of-service-toggle-button {
+    background: linear-gradient(135deg, #6d28d9 0%, #8b5cf6 100%);
+    color: #ffffff;
+    border-color: #a78bfa;
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.5);
+}
+
+.out-of-service-toggle-button:active {
+    transform: scale(0.95);
+}
+
+/* ポート外マーカー用の小さな未施錠鍵アイコン（ポートの16pxと区別して11px控えめに表示） */
+.out-of-port-unlocked-icon {
+    pointer-events: none;
+    z-index: 500;
+}

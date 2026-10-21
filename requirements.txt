@@ -1,0 +1,12 @@
+selenium>=4.0.0
+webdriver-manager
+beautifulsoup4
+pandas
+python-dotenv
+requests
+boto3
+flask
+flask-cors
+gunicorn
+pyarrow
+

@@ -1,0 +1,51 @@
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Output files
+*.csv
+*.xlsx
+*.png
+!docs/images/*.png
+!images/*.png
+!images/*.svg
+*.log
+*.json
+!manifest.json
+# 拡張のリモート更新に必須。*.json で除外されると配信が成立しない
+!ext/remote/latest.json
+dashboard_data.json
+dashboard_data.js
+output/
+debug/
+scratch/
+error_report/
+
+
+
+# Python cache / virtual environments
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+env/
+venv/
+.pytest_cache/
+
+# IDE files
+.vscode/
+
+# Reference scripts (prevent upload)
+refference/
+
+# Temporary test scripts
+tmp_analyze_replaced.py
+keep_alive_tester.py
+keep_alive_profile/
+last_gbfs_run.txt
+
+# External website data
+machi_nori_site/
+preview_site/

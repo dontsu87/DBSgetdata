@@ -1,0 +1,15 @@
+{
+  "banner": {
+    "enabled": false,
+    "message": "ドコモバイクシェア本体システム側の不具合により現場の状態と異なることがあります",
+    "start_time": "2026-08-02T12:27:00+09:00",
+    "end_time": "2026-08-31T23:59:59+09:00"
+  },
+  "maintenance": {
+    "enabled": false,
+    "worker_location_only": false,
+    "scraping_disabled": false,
+    "message": "通常運用中",
+    "start_time": "2026-08-05T18:00:00+09:00"
+  }
+}
