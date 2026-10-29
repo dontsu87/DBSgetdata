@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <!-- 透過背景のため、背景 rect は無し -->
+  <g fill="none" stroke="#7af916" stroke-width="12" stroke-linecap="round" stroke-linejoin="round">
+    <!-- 前輪 -->
+    <circle cx="350" cy="290" r="65" />
+    <!-- 後輪 -->
+    <circle cx="162" cy="290" r="65" />
+    
+    <!-- フロントフォークからハンドル -->
+    <path d="M 350,290 L 315,190 L 340,175 C 350,170 355,180 345,188 L 325,190" />
+    <!-- チェーンステイ -->
+    <path d="M 162,290 L 245,290" />
+    <!-- シートステイ -->
+    <path d="M 162,290 L 220,205" />
+    <!-- シートチューブ -->
+    <path d="M 245,290 L 215,185" />
+    <!-- サドル -->
+    <path d="M 195,185 L 235,185" />
+    <!-- ダウンチューブ -->
+    <path d="M 245,290 Q 290,285 318,200" />
+    <!-- トップチューブ -->
+    <path d="M 215,200 Q 280,240 318,200" />
+  </g>
+
+  <!-- バッテリーの外枠 (重なり部分を隠すためダークグレーで塗りつぶし) -->
+  <rect x="132" y="210" width="60" height="140" rx="22" fill="#181d20" stroke="#7af916" stroke-width="12" stroke-linejoin="round" />
+  <!-- バッテリー上部突起 -->
+  <rect x="150" y="198" width="24" height="12" rx="4" fill="#7af916" />
+
+  <!-- プラスマーク -->
+  <path d="M 156,230 L 168,230 M 162,224 L 162,236" stroke="#7af916" stroke-width="4" stroke-linecap="round" />
+  
+  <!-- 各目盛り (下から赤、黄、青) -->
+  <rect x="146" y="246" width="32" height="12" rx="4" fill="#00d8f6" />
+  <rect x="146" y="268" width="32" height="12" rx="4" fill="#fbd115" />
+  <rect x="146" y="290" width="32" height="12" rx="4" fill="#ff3b30" />
+  <!-- 最下部インジケーター -->
+  <rect x="152" y="312" width="20" height="8" rx="3" fill="#7af916" />
+</svg>
