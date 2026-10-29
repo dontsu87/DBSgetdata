@@ -1,0 +1,28 @@
+# プロプライエタリ・ソフトウェア利用許諾規約 (Proprietary Software License)
+
+Copyright (C) 2026 株式会社日本海コンサルタント (Nihonkai Consultant Co., Ltd.) and dontsu87. All Rights Reserved.
+
+本リポジトリに含まれるすべてのソースコード、ユーザーインターフェース（UI）デザイン、スタイルシート、スクリプト、データ構造、および関連ドキュメント等（以下「本ソフトウェア」といいます）に関する著作権その他の知的財産権は、株式会社日本海コンサルタント および dontsu87（以下「著作権者」といいます）に帰属します。
+
+## 1. 利用条件 (Terms of Use)
+本ソフトウェアは、著作権者から直接共有または提供を受けた正当な関係者による**閲覧および評価の目的に限り**利用を許諾するものです。
+
+## 2. 禁止事項 (Prohibitions)
+著作権者の事前の書面による明示的な承諾がない限り、以下の行為を固く禁じます：
+1. 本ソフトウェアの全部または一部を複製、転載、再配布、公衆送信、販売、譲渡、または二次利用すること。
+2. 本ソフトウェアのソースコード、UIデザイン、機能ロジック等を自社または第三者の商用システム、サービス、業務アプリケーション等へ組み込み、または模倣して実装すること。
+3. 本ソフトウェアのリバースエンジニアリング、逆コンパイル、逆アセンブル等を行うこと。
+4. 本ソフトウェアに付された著作権表示、ライセンス表示等を削除または改変すること。
+
+## 3. お問い合わせ
+本ソフトウェアの利用許諾、機能連携、または正式導入に関するお問い合わせは、著作権者までご連絡ください。
+
+---
+
+# English Summary
+
+Copyright (C) 2026 Nihonkai Consultant Co., Ltd. and dontsu87. All Rights Reserved.
+
+All rights, titles, and interests in and to this software, including but not limited to the source code, user interface designs, stylesheets, scripts, and related documentation, are the exclusive property of Nihonkai Consultant Co., Ltd. and dontsu87.
+
+Unauthorized copying, modification, reproduction, redistribution, reverse engineering, or integration into any third-party or commercial systems without prior written permission from the copyright holders is strictly prohibited.

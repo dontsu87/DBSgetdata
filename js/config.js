@@ -1,3 +1,8 @@
+/*!
+ * Docomo Bike Share Visualization Dashboard
+ * Copyright (C) 2026 Nihonkai Consultant Co., Ltd. and dontsu87. All Rights Reserved.
+ * Unauthorized copying, reproduction, modification, or redistribution is strictly prohibited.
+ */
 // Global Configuration
 const EMOJI_UNLOCKED = '🔑';
 const EMOJI_HIGHLIGHT = '⚠️';

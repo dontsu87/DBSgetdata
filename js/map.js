@@ -1,3 +1,8 @@
+/*!
+ * Docomo Bike Share Visualization Dashboard
+ * Copyright (C) 2026 Nihonkai Consultant Co., Ltd. and dontsu87. All Rights Reserved.
+ * Unauthorized copying, reproduction, modification, or redistribution is strictly prohibited.
+ */
 // Map Initialization and Render Logic
 
 function getHighlightBadgeSvg(color, size = 16) {
