@@ -77,6 +77,18 @@ function matchesBikePrefix(bikeId, selectedPrefixes, isAllSelected) {
         && selectedPrefixes.includes(extractBikePrefix(bikeId));
 }
 
+function formatModelShortName(modelName) {
+    if (!modelName) return '';
+    if (modelName === 'マチガード') return 'ﾏﾁｶﾞ';
+    return modelName.substring(0, 2);
+}
+
+function matchesBikeModel(modelName, selectedModels, isAllSelected) {
+    if (isAllSelected) return true;
+    const model = modelName || 'その他';
+    return Array.isArray(selectedModels) && selectedModels.includes(model);
+}
+
 function getRestrictedArea() {
     const params = new URLSearchParams(searchQuery);
     if (params.has('kanriall')) {

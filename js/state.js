@@ -10,6 +10,8 @@ let checkedStatuses = [];
 let checkedHighlightStatuses = []; 
 let checkedPrefixes = []; 
 let isAllPrefixesChecked = true; 
+let checkedModels = [];
+let isAllModelsChecked = true;
 
 const DEFAULT_HIGHLIGHT_STATUSES = [
     'AT異常(AT通知受信なし)',

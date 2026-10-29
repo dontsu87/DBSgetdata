@@ -595,6 +595,15 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
                 );
             }
             
+            let isModelMatch = true;
+            if (!isAllModelsChecked) {
+                isModelMatch = matchesBikeModel(
+                    bike.model_name,
+                    checkedModels,
+                    isAllModelsChecked
+                );
+            }
+            
             let isReplaced = false;
             if (isReplacedModeEnabled && bike.replaced_at) {
                 try {
@@ -611,7 +620,7 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
                 }
             }
             
-            return (isReplaced || isLevelMatch || (isUnlocked && isUnlockedFilterChecked) || isHighlighted) && isStatusMatch && isPrefixMatch;
+            return (isReplaced || isLevelMatch || (isUnlocked && isUnlockedFilterChecked) || isHighlighted) && isStatusMatch && isPrefixMatch && isModelMatch;
         });
 
         // バッテリー警告対象が1台でもいれば、利用可能0台より警告マーカーを優先する
@@ -817,16 +826,25 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
             `;
         } else {
             // 表示対象の自転車リスト。表示対象(matchingBikes)があればそれを、なければそのポートにあるすべての自転車(port.bikes)を表示
-            const filterBikesByPrefix = (bikes) => {
-                if (isAllPrefixesChecked) return bikes;
-                if (!Array.isArray(checkedPrefixes)) return [];
-                return bikes.filter(bike => matchesBikePrefix(
-                    bike.bike_id,
-                    checkedPrefixes,
-                    isAllPrefixesChecked
-                ));
+            const filterBikesByPrefixAndModel = (bikes) => {
+                let filtered = bikes;
+                if (!isAllPrefixesChecked && Array.isArray(checkedPrefixes)) {
+                    filtered = filtered.filter(bike => matchesBikePrefix(
+                        bike.bike_id,
+                        checkedPrefixes,
+                        isAllPrefixesChecked
+                    ));
+                }
+                if (!isAllModelsChecked && Array.isArray(checkedModels)) {
+                    filtered = filtered.filter(bike => matchesBikeModel(
+                        bike.model_name,
+                        checkedModels,
+                        isAllModelsChecked
+                    ));
+                }
+                return filtered;
             };
-            const displayBikes = filterBikesByPrefix((matchingBikes.length > 0) ? matchingBikes : port.bikes);
+            const displayBikes = filterBikesByPrefixAndModel((matchingBikes.length > 0) ? matchingBikes : port.bikes);
             displayBikes.sort((a, b) => (a.bike_id || '').localeCompare(b.bike_id || '', undefined, { numeric: true, sensitivity: 'base' }));
 
             const modelCounts = {};
@@ -877,7 +895,7 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
                     bikeUnlockedBadge = `<span style="font-size: 12px; margin-right: 2px; display: inline-flex; align-items: center;" title="未施錠未返却 (${durationStr})">${EMOJI_UNLOCKED}</span>`;
                 }
                 
-                const displayModel = (bike.model_name || '').substring(0, 2);
+                const displayModel = formatModelShortName(bike.model_name);
                 const mismatchTitle = bike.mismatch_source_port ? `ポート位置不整合（元: ${bike.mismatch_source_port}）` : 'ポート位置不整合（100m超）';
                 const positionMismatchBadge = bike.port_position_mismatch
                     ? `<span style="font-size: 12px; margin-right: 2px; display: inline-flex; align-items: center; color:#dc2626;" title="${mismatchTitle}">⚠️</span>`
@@ -1089,6 +1107,9 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
                 if (!bike.area_name && port.area_name !== selectedArea) return;
                 if (!isAllPrefixesChecked && bike.bike_id) {
                     if (!matchesBikePrefix(bike.bike_id, checkedPrefixes, isAllPrefixesChecked)) return;
+                }
+                if (!isAllModelsChecked) {
+                    if (!matchesBikeModel(bike.model_name, checkedModels, isAllModelsChecked)) return;
                 }
                 const stSec = (typeof bike.stationary_duration === 'number') ? bike.stationary_duration : 0;
                 const csSec = (typeof bike.consecutive_use_duration === 'number') ? bike.consecutive_use_duration : 0;
@@ -1733,6 +1754,16 @@ function renderOutOfPortDotMarkers(data) {
                     isAllPrefixesChecked
                 );
                 if (!isPrefixMatch) return;
+            }
+
+            // 車種フィルター判定
+            if (!isAllModelsChecked) {
+                const isModelMatch = matchesBikeModel(
+                    bike.model_name,
+                    checkedModels,
+                    isAllModelsChecked
+                );
+                if (!isModelMatch) return;
             }
 
             // 未施錠判定 (静止時間 >= 閾値、または静止未計測時継続時間 >= 閾値)

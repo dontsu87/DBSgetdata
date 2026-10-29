@@ -15,6 +15,7 @@ function checkAndApplyPendingUpdate() {
             
             initAreaTabs(cachedDashboardData);
             updatePrefixFilterUI(cachedDashboardData);
+            updateModelFilterUI(cachedDashboardData);
             initStatusFilter(cachedDashboardData);
             updateFilterAndRender(false); 
         }
@@ -64,6 +65,7 @@ function loadDashboardData(isAutoUpdate = false, retryCount = 0) {
         cachedDashboardData = window.dashboardData;
         initAreaTabs(cachedDashboardData);
         updatePrefixFilterUI(cachedDashboardData);
+            updateModelFilterUI(cachedDashboardData);
         initStatusFilter(cachedDashboardData);
         const hasCachedPosition = localStorage.getItem('map_center_lat') !== null;
         const shouldFitBounds = !isAutoUpdate && isFirstLoad && !hasCachedPosition;
@@ -101,6 +103,7 @@ function loadDashboardData(isAutoUpdate = false, retryCount = 0) {
             cachedDashboardData = data;
             initAreaTabs(cachedDashboardData);
             updatePrefixFilterUI(cachedDashboardData);
+            updateModelFilterUI(cachedDashboardData);
             initStatusFilter(cachedDashboardData);
             
             const hasCachedPosition = localStorage.getItem('map_center_lat') !== null;
@@ -139,6 +142,7 @@ function loadDashboardData(isAutoUpdate = false, retryCount = 0) {
                 cachedDashboardData = data;
                 initAreaTabs(cachedDashboardData);
                 updatePrefixFilterUI(cachedDashboardData);
+            updateModelFilterUI(cachedDashboardData);
                 initStatusFilter(cachedDashboardData);
                 
                 const hasCachedPosition = localStorage.getItem('map_center_lat') !== null;

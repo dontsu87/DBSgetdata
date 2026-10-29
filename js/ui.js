@@ -219,7 +219,7 @@ function initUIComponents() {
                 keysToRemove.forEach(key => localStorage.removeItem(key));
                 for (let i = localStorage.length - 1; i >= 0; i--) {
                     const key = localStorage.key(i);
-                    if (key && key.startsWith('checked_prefixes_')) {
+                    if (key && (key.startsWith('checked_prefixes_') || key.startsWith('checked_models_'))) {
                         localStorage.removeItem(key);
                     }
                 }
@@ -368,6 +368,7 @@ function initAreaTabs(data) {
             selectedArea = area;
             saveToCache('selected_area', area);
             updatePrefixFilterUI(cachedDashboardData);
+            updateModelFilterUI(cachedDashboardData);
             updateFilterAndRender();
         });
         
@@ -637,6 +638,90 @@ function updatePrefixFilterUI(data) {
     });
 }
 
+// 車種フィルターの動的生成
+function updateModelFilterUI(data) {
+    const container = document.getElementById('model-filter-container');
+    const checkboxesContainer = document.getElementById('model-checkboxes');
+    
+    if (!container || !checkboxesContainer) return;
+
+    if (!data || !data.ports || !selectedArea) {
+        container.style.display = 'none';
+        checkedModels = [];
+        return;
+    }
+
+    const targetArea = normalizeAreaName(selectedArea);
+    const models = new Set();
+    data.ports.forEach(port => {
+        if (port.bikes) {
+            port.bikes.forEach(bike => {
+                const bikeArea = normalizeAreaName(bike.area_name || port.area_name);
+                if (bikeArea === targetArea) {
+                    const model = bike.model_name || 'その他';
+                    models.add(model);
+                }
+            });
+        }
+    });
+    const sortedModels = Array.from(models).sort();
+
+    // 車種が2種類以上ある場合のみフィルターを表示する
+    if (sortedModels.length <= 1) {
+        container.style.display = 'none';
+        checkedModels = []; // フィルターは適用しない (全表示)
+        isAllModelsChecked = true;
+        return;
+    }
+
+    container.style.display = 'flex';
+    
+    // エリアごとの選択状態をキャッシュから読み込み
+    const cachedChecked = loadFromCache('checked_models_' + selectedArea, null);
+    
+    if (Array.isArray(cachedChecked)) {
+        checkedModels = cachedChecked.filter(m => sortedModels.includes(m));
+        if (cachedChecked.length > 0 && checkedModels.length === 0) {
+            checkedModels = [...sortedModels];
+        }
+    } else {
+        checkedModels = [...sortedModels];
+    }
+
+    isAllModelsChecked = (checkedModels.length === sortedModels.length);
+
+    checkboxesContainer.innerHTML = '';
+
+    sortedModels.forEach(model => {
+        const label = document.createElement('label');
+        label.className = 'status-filter-item';
+        label.style.cssText = 'display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border: 1px solid #475569; border-radius: 4px; background-color: #1e293b; color: #cbd5e1; cursor: pointer; font-size: 11px; margin: 0;';
+        
+        const isChecked = checkedModels.includes(model);
+        
+        label.innerHTML = `
+            <input type="checkbox" class="model-filter" value="${model}" ${isChecked ? 'checked' : ''} style="margin: 0;">
+            <span style="font-weight: bold;">${model}</span>
+        `;
+        
+        const checkbox = label.querySelector('input');
+        checkbox.addEventListener('change', function() {
+            if (checkbox.checked) {
+                if (!checkedModels.includes(model)) {
+                    checkedModels.push(model);
+                }
+            } else {
+                checkedModels = checkedModels.filter(m => m !== model);
+            }
+            isAllModelsChecked = (checkedModels.length === sortedModels.length);
+            saveToCache('checked_models_' + selectedArea, checkedModels);
+            updateFilterAndRender(false);
+        });
+
+        checkboxesContainer.appendChild(label);
+    });
+}
+
 // ポート外車両モーダルの生成と表示
 function showOutOfPortModal(data) {
     data = preparePositionMismatchData(filterPortsByServiceState(data));
@@ -679,6 +764,16 @@ function showOutOfPortModal(data) {
                                     isAllPrefixesChecked
                                 );
                                 if (!isPrefixMatch) return;
+                            }
+
+                            // 車種フィルター判定
+                            if (!isAllModelsChecked) {
+                                const isModelMatch = matchesBikeModel(
+                                    bike.model_name,
+                                    checkedModels,
+                                    isAllModelsChecked
+                                );
+                                if (!isModelMatch) return;
                             }
 
                             outOfPortBikes.push({
