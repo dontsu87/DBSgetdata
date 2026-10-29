@@ -1,0 +1,15 @@
+{
+  "schema": "dbsext.preview-release/v1",
+  "version": "202610291605",
+  "extensionId": "hdodfafcpfjhbcjpbbigoedfcplnhkjk",
+  "remotePublicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEQmXj33c+OsMQ/CVxWQU6phCWTeviocT+We25Kgk4QKTGDgfwHlAtlESSVGUMV8uS7KF+9v1tCkgZQJ9Vq1d7pQ==",
+  "files": [
+    "dbs-portal-ext-preview-202610291605.zip",
+    "dbs-portal-ext-preview-202610291605.crx",
+    "bundle-202610291605.js",
+    "latest.json",
+    "updates.xml"
+  ],
+  "bundleSha256": "971945d1a74ccc9fbb2d7e53064913b6d7049e0d02cabebef5249f26dfa0bded",
+  "diagnosticsEnabled": false
+}

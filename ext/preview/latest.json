@@ -1,0 +1,8 @@
+{
+  "version": "202610291605",
+  "bundle": "bundle-202610291605.js",
+  "sha256": "971945d1a74ccc9fbb2d7e53064913b6d7049e0d02cabebef5249f26dfa0bded",
+  "signature": "iG1AqdBP/wm8YEx+VaJMBioJ4f+sKQvflQrGtyFqiKVatbiTl2/07AvHU0a3Vh5BT4TcW4WiHOqCxVdvVUySMQ==",
+  "minExtensionVersion": "0.1.1",
+  "changelog": "preview hardening validation"
+}
