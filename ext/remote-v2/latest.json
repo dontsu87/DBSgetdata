@@ -1,8 +1,8 @@
 {
-  "version": "202611021537",
-  "bundle": "bundle-202611021537.js",
-  "sha256": "e1d7717de148d206843c0f9a3c4fb8dcd5a088e8a7b5f731500a2ad0b69d99bd",
-  "signature": "iLNyqlZ48eFIcACAZ9AmwKB0ce9eZhPi9tTPIlQ8yM3tpxLisGJ2fTVmUWn9x8CRsECX/zT+BmKR5vmnBrPAAQ==",
+  "version": "202611021656",
+  "bundle": "bundle-202611021656.js",
+  "sha256": "bfd62b6afbfba3851d47203ac4aef472f753aa42d0dc91c69451e2cb59395f9e",
+  "signature": "MBNFwkZWS2GXoyH2zH3PExjM57uGz6goG6LbbOUDtcOStkuaRmI9PFaBzVQ77Aup9Sgs92EVDHnxn83UAIrPgg==",
   "minExtensionVersion": "0.1.1",
-  "changelog": "202611021536 --changelog=11月ポータル本体改修対応（ユーザー詳細URLの生コロン化および別タブ直接GET時のSSR 403自動リカバリ機構、d払い会員対応）"
+  "changelog": "202611021656 --changelog=11月ポータル本体改修対応（隔離ワールドUSER_SCRIPT環境でのhistory+popstateによる403自動リカバリ修正）"
 }
