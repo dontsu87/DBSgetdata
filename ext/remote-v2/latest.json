@@ -1,8 +1,8 @@
 {
-  "version": "202610291653",
-  "bundle": "bundle-202610291653.js",
-  "sha256": "2fcff94861e245e6227973dba2271957362c8bd182c8509e7b65587ba5355e87",
-  "signature": "LhjDFSy2fUWwsZycoGJXnyZ2DOt3nCgRBaLAIw1T2IW+Ceg4EXhm5AWZH/lVhFqTahywOMA66msKQ7WQPxZ7GA==",
+  "version": "202611021537",
+  "bundle": "bundle-202611021537.js",
+  "sha256": "e1d7717de148d206843c0f9a3c4fb8dcd5a088e8a7b5f731500a2ad0b69d99bd",
+  "signature": "iLNyqlZ48eFIcACAZ9AmwKB0ce9eZhPi9tTPIlQ8yM3tpxLisGJ2fTVmUWn9x8CRsECX/zT+BmKR5vmnBrPAAQ==",
   "minExtensionVersion": "0.1.1",
-  "changelog": "202610291655"
+  "changelog": "202611021536 --changelog=11月ポータル本体改修対応（ユーザー詳細URLの生コロン化および別タブ直接GET時のSSR 403自動リカバリ機構、d払い会員対応）"
 }
