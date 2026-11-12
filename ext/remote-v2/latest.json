@@ -1,8 +1,8 @@
 {
-  "version": "202611021656",
-  "bundle": "bundle-202611021656.js",
-  "sha256": "bfd62b6afbfba3851d47203ac4aef472f753aa42d0dc91c69451e2cb59395f9e",
-  "signature": "MBNFwkZWS2GXoyH2zH3PExjM57uGz6goG6LbbOUDtcOStkuaRmI9PFaBzVQ77Aup9Sgs92EVDHnxn83UAIrPgg==",
+  "version": "202611121044",
+  "bundle": "bundle-202611121044.js",
+  "sha256": "68a8c65ef11d1a0fd9cc8d37320ab2a1bd1c3afa66fdc2e4f2bfee8f47ec3424",
+  "signature": "b/KzKgi3shvpJGXnR5ceBPghN3KNSYR2XGNFmqwClWFc1wpu2ACFtbUpr5BrKFrsW8HZ43lLd8xfUWuaKkwq3Q==",
   "minExtensionVersion": "0.1.1",
-  "changelog": "202611021656 --changelog=11月ポータル本体改修対応（隔離ワールドUSER_SCRIPT環境でのhistory+popstateによる403自動リカバリ修正）"
+  "changelog": "fix(ui-tweaks): support SSR 403 recovery on corporate-clients histories page"
 }
