@@ -1,8 +1,8 @@
 {
-  "version": "202611121108",
-  "bundle": "bundle-202611121108.js",
-  "sha256": "30b8256ae2f433a9ee5f643d024226fe4eb042f775e47668243ba0a331acd259",
-  "signature": "L7FTYUvVSesf+P2NX4RemkXhCPVf+aCquyrzx0A7Ay6kEXyxLvTfPNhWViVVb0TooN2o5OYcCTc93Y9Nqm2ZDA==",
+  "version": "202611121126",
+  "bundle": "bundle-202611121126.js",
+  "sha256": "45a6ebd3e6b9b44bc1b2f122291041344fc94b013ba693bd8f7ed71e3a5957e0",
+  "signature": "5yHyJSN4nWpAvGOBeaf7OPxklPA9M4C84pnMLTsuuTEy8V8q5C4d18/FHImETUajALAecg/WdKE80axcpuEDHw==",
   "minExtensionVersion": "0.1.1",
-  "changelog": "fix(ui-tweaks,table-wrap): SSR 403 loading mask, full route auto-recovery, and table scrollbar height sync"
+  "changelog": "汎用テーブル高さ同期: ユーザー利用履歴・ユーザー一覧・問題申告一覧等のインラインmaxHeightによる最下部スクロールバー隠れを防止"
 }
