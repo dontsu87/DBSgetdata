@@ -1,8 +1,8 @@
 {
-  "version": "202611121044",
-  "bundle": "bundle-202611121044.js",
-  "sha256": "68a8c65ef11d1a0fd9cc8d37320ab2a1bd1c3afa66fdc2e4f2bfee8f47ec3424",
-  "signature": "b/KzKgi3shvpJGXnR5ceBPghN3KNSYR2XGNFmqwClWFc1wpu2ACFtbUpr5BrKFrsW8HZ43lLd8xfUWuaKkwq3Q==",
+  "version": "202611121108",
+  "bundle": "bundle-202611121108.js",
+  "sha256": "30b8256ae2f433a9ee5f643d024226fe4eb042f775e47668243ba0a331acd259",
+  "signature": "L7FTYUvVSesf+P2NX4RemkXhCPVf+aCquyrzx0A7Ay6kEXyxLvTfPNhWViVVb0TooN2o5OYcCTc93Y9Nqm2ZDA==",
   "minExtensionVersion": "0.1.1",
-  "changelog": "fix(ui-tweaks): support SSR 403 recovery on corporate-clients histories page"
+  "changelog": "fix(ui-tweaks,table-wrap): SSR 403 loading mask, full route auto-recovery, and table scrollbar height sync"
 }
