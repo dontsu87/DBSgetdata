@@ -1,6 +1,6 @@
 {
   "banner": {
-    "enabled": true,
+    "enabled": false,
     "message": "Office 365 ネットワーク障害の影響により、現在データの自動更新が停止しています",
     "start_time": "2026-11-13T14:00:00+09:00",
     "end_time": "2026-11-15T23:59:59+09:00"
