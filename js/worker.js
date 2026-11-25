@@ -7,6 +7,51 @@
 (function() {
     let workerPollInterval = null;
     let workerMarkers = {}; // tid をキーとしてマーカーオブジェクトを保持
+    let lastWorkerData = null;
+
+    function resolveAreaName(value) {
+        if (typeof normalizeAreaName === 'function') {
+            return normalizeAreaName(value);
+        }
+        return String(value || '').trim();
+    }
+
+    /**
+     * 設定ルール（WORKER_AREA_RULES）に基づき、指定エリアで作業員を表示するか判定する
+     */
+    function isWorkerVisibleInArea(tid, areaName, rules) {
+        const activeRules = Array.isArray(rules)
+            ? rules
+            : (typeof WORKER_AREA_RULES !== 'undefined' && Array.isArray(WORKER_AREA_RULES) ? WORKER_AREA_RULES : []);
+        if (activeRules.length === 0) return true;
+
+        const normalizedTid = String(tid || '').trim().toLowerCase();
+        const normalizedArea = resolveAreaName(areaName);
+
+        for (const rule of activeRules) {
+            if (!rule) continue;
+            const prefix = rule.tidPrefix ? String(rule.tidPrefix).trim().toLowerCase() : '';
+            const tids = Array.isArray(rule.tids) ? rule.tids.map(t => String(t).trim().toLowerCase()) : [];
+            const matchesPrefix = prefix && normalizedTid.startsWith(prefix);
+            const matchesExact = tids.length > 0 && tids.includes(normalizedTid);
+
+            if (matchesPrefix || matchesExact) {
+                if (!normalizedArea) return false;
+                const allowed = Array.isArray(rule.allowedAreas) ? rule.allowedAreas : [];
+                return allowed.some(area => resolveAreaName(area) === normalizedArea);
+            }
+        }
+        return true;
+    }
+
+    window.isWorkerVisibleInArea = isWorkerVisibleInArea;
+    window.refreshWorkerMarkersForArea = function() {
+        const checkbox = document.getElementById('worker-select-checkbox');
+        if (checkbox && !checkbox.checked) return;
+        if (lastWorkerData) {
+            plotWorkers(lastWorkerData);
+        }
+    };
 
     // APIのURL設定
     const R2_WORKER_LOCATIONS_URL = 'https://pub-1c068f2df9ab42a0b9dcc5d112078269.r2.dev/worker_locations.json';
@@ -132,12 +177,15 @@
             return;
         }
 
+        lastWorkerData = workerData;
+        const currentArea = typeof selectedArea !== 'undefined' ? selectedArea : '';
         const activeTids = new Set();
 
         // データをループしてマーカーを作成・更新
         for (const tid in workerData) {
             const worker = workerData[tid];
             if (!worker.lat || !worker.lon) continue;
+            if (!isWorkerVisibleInArea(tid, currentArea)) continue;
 
             // 時間経過によるフィルタリング（日本時間 JST 基準）
             let isOffline = false;

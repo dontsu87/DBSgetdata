@@ -334,6 +334,9 @@ function initAreaTabs(data) {
     }
     if (selectedArea) {
         saveToCache('selected_area', selectedArea);
+        if (typeof window.refreshWorkerMarkersForArea === 'function') {
+            window.refreshWorkerMarkersForArea();
+        }
     }
 
     const currentAreasStr = areas.sort().join(',');
@@ -375,6 +378,9 @@ function initAreaTabs(data) {
             updatePrefixFilterUI(cachedDashboardData);
             updateModelFilterUI(cachedDashboardData);
             updateFilterAndRender();
+            if (typeof window.refreshWorkerMarkersForArea === 'function') {
+                window.refreshWorkerMarkersForArea();
+            }
         });
         
         tabsContainer.appendChild(btn);

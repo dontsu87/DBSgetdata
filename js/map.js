@@ -222,6 +222,7 @@ function initMapInstance() {
         }
         if (e.popup && e.popup._container) {
             L.DomEvent.disableClickPropagation(e.popup._container);
+            requestAnimationFrame(() => initPopupStatusMarquee(e.popup._container));
         }
         if (interactionTimer) clearTimeout(interactionTimer);
     });
@@ -307,7 +308,7 @@ function updateFilterAndRender(shouldFitBounds = true) {
     renderDashboardWithFilter(cachedDashboardData, checkedLevels, checkedStatuses, shouldFitBounds);
 }
 
-// 「提供外」トグルがOFFのとき、停止中または利用者非公開のポートを表示から除外する。
+// 「提供外」トグルがOFFのとき、停止中・一時休止中または利用者非公開のポートを表示から除外する。
 // 状態・公開設定が無い古いデータや仮想「ポート外」は、誤って隠さず従来どおり残す。
 function filterPortsByServiceState(data) {
     if (isOutOfServiceVisible || !data || !Array.isArray(data.ports)) {
@@ -316,7 +317,9 @@ function filterPortsByServiceState(data) {
     return {
         ...data,
         ports: data.ports.filter(port =>
-            port.service_state !== '停止中' && port.publish_flag !== false
+            port.service_state !== '停止中' &&
+            port.service_state !== '一時休止中' &&
+            port.publish_flag !== false
         )
     };
 }
@@ -982,7 +985,7 @@ function renderDashboardWithFilter(data, checkedLevels, targetStatuses, shouldFi
                             <span class="popup-bike-model-tag">${displayModel}</span>
                         </div>
                         <div class="popup-bike-col-status">
-                            <span class="popup-bike-status">[${bike.status}]</span>
+                            <span class="popup-bike-status" title="[${bike.status}]">[${bike.status}]</span>
                         </div>
                         <div class="popup-bike-col-badges">
                             ${bikeHighlightBadge}
@@ -1623,6 +1626,26 @@ document.addEventListener('click', function(e) {
         toggleSelfReplacement(bikeId, alertLevel, voltage, item);
     }
 });
+
+function initPopupStatusMarquee(container) {
+    if (!container) return;
+    const cols = container.querySelectorAll('.popup-bike-col-status');
+    cols.forEach(col => {
+        const statusEl = col.querySelector('.popup-bike-status');
+        if (!statusEl) return;
+        col.classList.remove('is-marquee');
+        statusEl.style.removeProperty('--marquee-shift');
+        statusEl.style.removeProperty('--marquee-duration');
+
+        const overflowPx = Math.ceil(statusEl.scrollWidth - col.clientWidth);
+        if (overflowPx > 2) {
+            const durationSec = Math.max(4, Math.min(12, 3 + overflowPx / 18));
+            statusEl.style.setProperty('--marquee-shift', `${overflowPx}px`);
+            statusEl.style.setProperty('--marquee-duration', `${durationSec.toFixed(1)}s`);
+            col.classList.add('is-marquee');
+        }
+    });
+}
 
 function formatAtTime(raw) {
     if (!raw) return { text: '--', stale: false };

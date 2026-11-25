@@ -453,6 +453,7 @@ header h1 {
 .popup-bike-col-status {
     flex: 1 1 0%;
     min-width: 0;
+    overflow: hidden;
 }
 
 .popup-bike-status {
@@ -463,6 +464,29 @@ header h1 {
     overflow: hidden;
     text-overflow: ellipsis;
     display: block;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .popup-bike-col-status.is-marquee .popup-bike-status {
+        display: inline-block;
+        overflow: visible;
+        text-overflow: clip;
+        will-change: transform;
+        animation: popup-status-marquee var(--marquee-duration, 6s) ease-in-out infinite alternate;
+    }
+
+    .popup-bike-item:hover .popup-bike-col-status.is-marquee .popup-bike-status {
+        animation-play-state: paused;
+    }
+}
+
+@keyframes popup-status-marquee {
+    0%, 20% {
+        transform: translateX(0);
+    }
+    80%, 100% {
+        transform: translateX(calc(-1 * var(--marquee-shift, 0px)));
+    }
 }
 
 .popup-bike-col-badges {

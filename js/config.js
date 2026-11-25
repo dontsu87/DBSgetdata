@@ -37,3 +37,9 @@ const KINDAI_PORTS_MASTER = {
 };
 
 const KINDAI_STATION_IDS = Object.keys(KINDAI_PORTS_MASTER);
+
+// 作業員TIDの表示エリア制御ルール（プレフィックスまたはTIDごとに表示許可エリアを指定）
+// ルールに一致しない作業員は全エリアで表示される。
+const WORKER_AREA_RULES = Object.freeze([
+    Object.freeze({ tidPrefix: 'm', allowedAreas: Object.freeze(['金沢']) })
+]);
